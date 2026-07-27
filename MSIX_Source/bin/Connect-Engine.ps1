@@ -11,7 +11,11 @@ param(
     [switch]$ConnectOnly
 )
 
-function adb { ConnectPhone-adb.exe @args }
+if ($PSScriptRoot -match "WindowsApps") {
+    function adb { ConnectPhone-adb.exe @args }
+} else {
+    function adb { & "$PSScriptRoot\adb.exe" @args }
+}
 
 # Force STA Mode Threading for Windows Forms & Tray Icons
 Add-Type -AssemblyName System.Windows.Forms
@@ -512,7 +516,12 @@ $actionPull = {
                 
                 Invoke-Item $outDir
             }
-            Start-Job -ScriptBlock $jobScript -ArgumentList $target, $outDir, $filesToPull, "ConnectPhone-adb.exe", "$PSScriptRoot\app-icon.ico" | Out-Null
+            if ($PSScriptRoot -match "WindowsApps") {
+                $adbExe = "ConnectPhone-adb.exe"
+            } else {
+                $adbExe = "$PSScriptRoot\adb.exe"
+            }
+            Start-Job -ScriptBlock $jobScript -ArgumentList $target, $outDir, $filesToPull, $adbExe, "$PSScriptRoot\app-icon.ico" | Out-Null
         }
         $pickerWindow.Close()
     })

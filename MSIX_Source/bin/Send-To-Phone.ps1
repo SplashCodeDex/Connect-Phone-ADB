@@ -12,7 +12,11 @@ param(
     [string]$Destination = "/sdcard/Download/"
 )
 
-function adb { ConnectPhone-adb.exe @args }
+if ($PSScriptRoot -match "WindowsApps") {
+    function adb { ConnectPhone-adb.exe @args }
+} else {
+    function adb { & "$PSScriptRoot\adb.exe" @args }
+}
 
 Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue
 Add-Type -AssemblyName System.Drawing -ErrorAction SilentlyContinue
