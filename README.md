@@ -1,5 +1,14 @@
 # Connect Phone ADB
 
+## Features
+- **Zero-Touch Connection:** Auto-connects when your PC joins your mobile hotspot.
+- **Native Windows Share:** Right-click any file in Windows Explorer -> Share -> Send straight to your phone.
+- **Pull Downloads:** One-click sync from your phone's `/sdcard/Download` straight to your PC.
+
+## Previews
+![Tray UI](images/tray-ui.png)
+<!-- ![Share Target](images/share-ui.png) (Coming soon) -->
+
 ## Installation (Windows)
 
 Because this app is not yet on the Microsoft Store, it uses a self-signed certificate. Windows will block the installation unless you trust the certificate first.
