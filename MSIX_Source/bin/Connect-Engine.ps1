@@ -11,18 +11,7 @@ param(
     [switch]$ConnectOnly
 )
 
-$adbCacheDir = Join-Path $env:LOCALAPPDATA "ConnectPhoneADB\adb_cache"
-if (-not (Test-Path $adbCacheDir)) { New-Item -ItemType Directory -Path $adbCacheDir | Out-Null }
-$adbExePath = Join-Path $adbCacheDir "adb.exe"
-$sourceAdb = Join-Path $PSScriptRoot "adb.exe"
-
-if (-not (Test-Path $adbExePath) -or ((Get-Item $adbExePath).Length -ne (Get-Item $sourceAdb).Length)) {
-    Copy-Item -Path $sourceAdb -Destination $adbCacheDir -Force
-    Copy-Item -Path (Join-Path $PSScriptRoot "AdbWinApi.dll") -Destination $adbCacheDir -Force
-    Copy-Item -Path (Join-Path $PSScriptRoot "AdbWinUsbApi.dll") -Destination $adbCacheDir -Force
-}
-
-function adb { & $adbExePath @args }
+function adb { ConnectPhone-adb.exe @args }
 
 # Force STA Mode Threading for Windows Forms & Tray Icons
 Add-Type -AssemblyName System.Windows.Forms
@@ -523,7 +512,7 @@ $actionPull = {
                 
                 Invoke-Item $outDir
             }
-            Start-Job -ScriptBlock $jobScript -ArgumentList $target, $outDir, $filesToPull, $adbExePath, "$PSScriptRoot\app-icon.ico" | Out-Null
+            Start-Job -ScriptBlock $jobScript -ArgumentList $target, $outDir, $filesToPull, "ConnectPhone-adb.exe", "$PSScriptRoot\app-icon.ico" | Out-Null
         }
         $pickerWindow.Close()
     })
