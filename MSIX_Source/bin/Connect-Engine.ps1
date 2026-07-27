@@ -206,7 +206,7 @@ function Show-Toast {
 $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStyle="None" Background="#1C1C1E"
         Topmost="True" ShowInTaskbar="False" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize">
     <Window.Resources>
@@ -255,11 +255,8 @@ $xaml = @"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border Background="Transparent" Padding="20">
-        <Border Background="#1C1C1E" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="25" ShadowDepth="8" Opacity="0.5" Color="Black" />
-            </Border.Effect>
+    <Border Background="#1C1C1E" BorderBrush="#333333" BorderThickness="1">
+        <Border Background="#1C1C1E">
             <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Connect ADB">
@@ -404,35 +401,15 @@ $actionPull = {
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Phone Files" Width="450" Height="600" WindowStartupLocation="CenterScreen"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True">
-    <Border Background="#E61C1C1E" CornerRadius="16" BorderBrush="#333333" BorderThickness="1" Margin="20">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="30" ShadowDepth="10" Opacity="0.6" Color="Black"/>
-        </Border.Effect>
-        <Grid Margin="20">
+        WindowStyle="SingleBorderWindow" Background="#1C1C1E" Topmost="True">
+    <Border Background="#1C1C1E" BorderBrush="#333333" BorderThickness="1">
+        <Grid Margin="15">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <Grid Grid.Row="0" Margin="0,0,0,15">
-                <TextBlock Text="Phone Files" FontSize="22" FontWeight="Bold" Foreground="White" FontFamily="Segoe UI" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Button Name="btnClosePicker" Content="&#x2715;" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand" Padding="5">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-            </Grid>
-            
-            <ListBox Name="lstFiles" Grid.Row="1" Background="#802C2C2E" Foreground="White" SelectionMode="Extended" BorderThickness="0" FontFamily="Segoe UI" FontSize="14" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox Name="lstFiles" Grid.Row="0" Background="#802C2C2E" Foreground="White" SelectionMode="Extended" BorderThickness="0" FontFamily="Segoe UI" FontSize="14" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.Resources>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Padding" Value="10,8"/>
@@ -459,7 +436,7 @@ $actionPull = {
                 </ListBox.Resources>
             </ListBox>
             
-            <Button Name="btnPullItems" Grid.Row="2" Margin="0,15,0,0" Content="Pull Selected Files" Background="#00E676" Foreground="Black" BorderThickness="0" FontWeight="Bold" FontSize="15" Cursor="Hand">
+            <Button Name="btnPullItems" Grid.Row="1" Margin="0,15,0,0" Content="Pull Selected Files" Background="#00E676" Foreground="Black" BorderThickness="0" FontWeight="Bold" FontSize="15" Cursor="Hand">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border Name="border" Background="{TemplateBinding Background}" CornerRadius="12" Padding="0,14">
@@ -484,9 +461,9 @@ $actionPull = {
     $pickerWindow = [System.Windows.Markup.XamlReader]::Load($pickerReader)
     $lstFiles = $pickerWindow.FindName("lstFiles")
     
-    foreach ($f in $files) { $null = $lstFiles.Items.Add($f) }
+    $pickerWindow.Icon = [System.Windows.Media.Imaging.BitmapFrame]::Create([System.Uri]::new("file:///$($PSScriptRoot.Replace('\','/'))/app-icon.ico"))
     
-    $pickerWindow.FindName("btnClosePicker").Add_Click({ $pickerWindow.Close() })
+    foreach ($f in $files) { $null = $lstFiles.Items.Add($f) }
     
     $pickerWindow.FindName("btnPullItems").Add_Click({
         $selected = $lstFiles.SelectedItems
