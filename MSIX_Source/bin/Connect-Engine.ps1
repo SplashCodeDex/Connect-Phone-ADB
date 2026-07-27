@@ -1004,11 +1004,8 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Top  = $workArea.Bottom - $script:wpfWindow.Height - 12
         
         $script:wpfWindow.Topmost = $true
-        
-        # Ensure the app gets OS-level foreground focus so clicking away reliably fires Deactivated
-        try { [Microsoft.VisualBasic.Interaction]::AppActivate([System.Diagnostics.Process]::GetCurrentProcess().Id) } catch {}
-        
         $script:wpfWindow.Show()
+        $script:wpfWindow.Activate()
         $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
     }
 })

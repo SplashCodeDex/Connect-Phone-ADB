@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.6.9] - 2026-07-27
+
+### [fix] Spatial Menu Tray Click — Deactivated Race Fix (v1.6.9)
+- **Root Cause Identified:** `AppActivate` was called on the PowerShell *process*, not the WPF window. This gave OS focus to the wrong target, causing `Deactivated` to fire on the WPF window the instant it became visible, which called `Hide()` before the user ever saw it.
+- **Fix:** Replaced `AppActivate` with `$wpfWindow.Activate()` called immediately after `Show()`. This issues `SetForegroundWindow` on the WPF window's own HWND — correct window gets focus, `Deactivated` only fires when the user genuinely clicks away.
+
+
 ## [v1.6.8] - 2026-07-27
 
 ### [fix] WorkArea-Anchored Positioning & Tray Click Race Fix (v1.6.8)
