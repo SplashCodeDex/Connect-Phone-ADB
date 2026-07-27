@@ -40,7 +40,7 @@ function Show-Notification {
         $xml = New-Object Windows.Data.Xml.Dom.XmlDocument
         $xml.LoadXml($xmlString)
         $toast = [Windows.UI.Notifications.ToastNotification]::new($xml)
-        $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Connect Phone ADB")
+        $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Connect Phone")
         $notifier.Show($toast)
         return $null
     } catch {
