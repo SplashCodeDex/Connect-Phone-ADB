@@ -6,6 +6,12 @@
 - **Centralized Animation Physics:** Extracted duplicated inline `ElasticEase` overshoot definitions across dozens of XAML elements into a single, highly refined `StaticResource` (`BouncyEase`), cutting massive code bloat and strictly enforcing DRY (Don't Repeat Yourself) architecture.
 - **Cascading Grid Entrance:** Programmatically injected index-based staggering to the File Explorer grid! When loading phone directories, folders and files now gracefully cascade upwards sequentially with a 35ms stagger, dynamically inheriting the global `BouncyEase` physics curve for a breathtaking load-in effect.
 
+## [v1.6.4] - 2026-07-27
+
+### [feature] Spatial Menu User List & Devices (v1.6.4)
+- **Profile Customization**: Refined the User List UI to display `joe.belfiore@gmail.com` as the subtext and bound the avatar to a real image placeholder (`Assets/JoeAvatar.jpg`).
+- **Device Ecosystem Integration**: Replaced the placeholder "Bill Gates" entry with a sleek, multi-platform device list. Added a `Galaxy S21` mobile node and a `Windows` laptop node, both styled with vibrant purple (`#6200EE`) backgrounds and matching `Segoe Fluent Icons` device glyphs (`&#xE8EA;` and `&#xE7F8;`).
+
 ## [v1.6.3] - 2026-07-27
 
 ### [fix] WPF ShowDialog Deadlock (v1.6.3)

@@ -561,20 +561,46 @@ $xaml = @"
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="#4A4A4C" />
-                            <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="White" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Ellipse>
+                                <Ellipse.Fill>
+                                    <!-- Placeholder path for the uploaded picture -->
+                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/Assets/JoeAvatar.jpg" Stretch="UniformToFill" />
+                                </Ellipse.Fill>
+                            </Ellipse>
                             <Ellipse Width="12" Height="12" Fill="#00E676" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
-                            <TextBlock Text="In a world far away" FontSize="13" Foreground="#A0A0A0" />
+                            <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="#A0A0A0" />
                         </StackPanel>
                     </Grid>
                 </Button>
 
-                <!-- User Bill -->
-                <Button x:Name="btnUserBill" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                <!-- Device: Galaxy S21 -->
+                <Button x:Name="btnDeviceGalaxy" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse Fill="#6200EE" />
+                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Galaxy S21" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
+                        </StackPanel>
+                        
+                        <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="#555555" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    </Grid>
+                </Button>
+
+                <!-- Device: Windows -->
+                <Button x:Name="btnDeviceWindows" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -582,14 +608,12 @@ $xaml = @"
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="#3A3A3C" />
-                            <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="White" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            <Ellipse Width="12" Height="12" Fill="#00E676" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            <Ellipse Fill="#6200EE" />
+                            <TextBlock Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Bill Gates" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
-                            <TextBlock Text="What I'm doing here?" FontSize="13" Foreground="#A0A0A0" />
+                            <TextBlock Text="Windows" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
                         </StackPanel>
                     </Grid>
                 </Button>
@@ -732,26 +756,6 @@ $script:lbFiles.Add_MouseDoubleClick({
         }
     }
 })
-
-function Update-WpfUI {
-    $brushConverter = New-Object System.Windows.Media.BrushConverter
-    if (Get-AutoConnectStatus) { 
-        $script:txtQAAuto.Foreground = $brushConverter.ConvertFromString("#00E676")
-    } else { 
-        $script:txtQAAuto.Foreground = [System.Windows.Media.Brushes]::White
-    }
-    
-    $devices = adb devices 2>&1
-    if ($devices -match "\bdevice\b") {
-        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Visible'
-        $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
-    } else {
-        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Visible'
-        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
-    }
-}
 
 $script:wpfWindow.Add_Deactivated({
     $script:wpfWindow.Hide()
@@ -935,20 +939,39 @@ $script:wpfWindow.Add_KeyDown({
     }
 })
 
-function Sync-AdbStatus {
-    $devices = adb devices 2>&1
-    $connectedDevice = ($devices | Where-Object { $_ -match ':5555\s+device' })
-    if (-not $connectedDevice) { $connectedDevice = ($devices | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
+function Update-WpfUI {
+    param([string[]]$DevicesOutput)
+    
+    if (-not $DevicesOutput) {
+        $DevicesOutput = adb devices 2>&1
+    }
+
+    $brushConverter = New-Object System.Windows.Media.BrushConverter
+    if ($script:AutoConnectEnabled) { 
+        $script:txtQAAuto.Foreground = $brushConverter.ConvertFromString("#00E676")
+    } else { 
+        $script:txtQAAuto.Foreground = [System.Windows.Media.Brushes]::White
+    }
+    
+    $connectedDevice = ($DevicesOutput | Where-Object { $_ -match ':5555\s+device' })
+    if (-not $connectedDevice) { $connectedDevice = ($DevicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
     $connectedDevice = $connectedDevice | Select-Object -First 1
+
     if ($connectedDevice) {
         $target = $connectedDevice.Split()[0].Trim()
         $script:notifyIcon.Icon = $iconGreen
         $script:notifyIcon.Text = "Connected: $target"
         $script:txtStatus.Text = "Connected: $target"
+        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
     } else {
         $script:notifyIcon.Icon = $iconRed
         $script:notifyIcon.Text = "Disconnected"
         $script:txtStatus.Text = "Status: Disconnected"
+        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
     }
 }
 
@@ -960,7 +983,6 @@ $script:notifyIcon.Add_MouseUp({
             return
         }
         
-        Sync-AdbStatus
         Update-WpfUI
         $script:wpfWindow.Measure([System.Windows.Size]::new([double]::PositiveInfinity, [double]::PositiveInfinity))
         $script:wpfWindow.Left = [System.Windows.Forms.Cursor]::Position.X - $script:wpfWindow.DesiredSize.Width + 20
@@ -971,8 +993,6 @@ $script:notifyIcon.Add_MouseUp({
         
         $script:wpfWindow.Topmost = $true
         
-        # Ensure the app gets OS-level foreground focus so clicking away reliably fires Deactivated
-        Add-Type -AssemblyName Microsoft.VisualBasic
         try { [Microsoft.VisualBasic.Interaction]::AppActivate([System.Diagnostics.Process]::GetCurrentProcess().Id) } catch {}
         
         if ($script:wpfWindow.Visibility -ne 'Visible') {
@@ -981,10 +1001,11 @@ $script:notifyIcon.Add_MouseUp({
     }
 })
 # Passive sync initial state on startup
-Sync-AdbStatus
+$script:AutoConnectEnabled = Get-AutoConnectStatus
+Update-WpfUI
 
 # Fix MSIX Version Path Drift: Re-register the task if already enabled so the path points to the new updated folder
-if (Get-AutoConnectStatus) {
+if ($script:AutoConnectEnabled) {
     Set-AutoConnectStatus -Enable $true
 }
 
