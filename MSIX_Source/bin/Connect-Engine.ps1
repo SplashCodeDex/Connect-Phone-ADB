@@ -280,21 +280,21 @@ $xaml = @"
                 <Button Name="btnConnect" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
                     <Grid>
                         <TextBlock Text="Connect ADB" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
-                        <TextBlock Text="⌘C" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                        <TextBlock Text="&#x2318;C" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
                 
                 <Button Name="btnDisconnect" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
                     <Grid>
                         <TextBlock Text="Disconnect ADB" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
-                        <TextBlock Text="⌘D" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                        <TextBlock Text="&#x2318;D" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
                 
                 <Button Name="btnPull" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
                     <Grid>
                         <TextBlock Text="Phone Files" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
-                        <TextBlock Text="⌘P" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                        <TextBlock Text="&#x2318;P" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
                 
@@ -303,7 +303,7 @@ $xaml = @"
                 <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
                     <Grid>
                         <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="#FF453A" HorizontalAlignment="Left"/>
-                        <TextBlock Text="⌘Q &#x1F5D1;" FontSize="14" Foreground="#FF453A" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                        <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="#FF453A" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
             </StackPanel>
