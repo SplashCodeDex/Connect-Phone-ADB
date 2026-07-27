@@ -1,3 +1,4 @@
 *.msix
-*.cer
-*.pfx
+ConnectPhoneShareTarget/bin/
+ConnectPhoneShareTarget/obj/
+*.appx

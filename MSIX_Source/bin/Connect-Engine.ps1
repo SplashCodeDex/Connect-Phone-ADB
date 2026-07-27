@@ -116,7 +116,7 @@ $script:notifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $script:notifyIcon.Text = "Connect Phone ADB: Initializing..."
 
 function Create-StatusIcon([System.Drawing.Color]$Color) {
-    $iconPath = "C:\ICO\yuzu-emu.ico"
+    $iconPath = Join-Path $PSScriptRoot "app-icon.ico"
     if (Test-Path $iconPath) {
         $baseIcon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
         $bmp = $baseIcon.ToBitmap()
@@ -171,7 +171,7 @@ function Show-Toast {
     <binding template="ToastGeneric">
       <text>$escTitle</text>
       <text>$escMsg</text>
-      <image placement="appLogoOverride" hint-crop="none" src="file:///C:/ICO/yuzu-emu.ico"/>
+      <image placement="appLogoOverride" hint-crop="none" src="file:///$($PSScriptRoot -replace '\\', '/')/app-icon.ico"/>
     </binding>
   </visual>
 </toast>

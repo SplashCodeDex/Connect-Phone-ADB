@@ -32,7 +32,7 @@ function Show-Notification {
     <binding template="ToastGeneric">
       <text>$escTitle</text>
       <text>$escMsg</text>
-      <image placement="appLogoOverride" hint-crop="none" src="file:///C:/ICO/yuzu-emu.ico"/>
+      <image placement="appLogoOverride" hint-crop="none" src="file:///$($PSScriptRoot -replace '\\', '/')/app-icon.ico"/>
     </binding>
   </visual>
 </toast>
@@ -47,7 +47,7 @@ function Show-Notification {
         Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue
         Add-Type -AssemblyName System.Drawing -ErrorAction SilentlyContinue
         $balloon = New-Object System.Windows.Forms.NotifyIcon
-        $iconPath = "C:\ICO\yuzu-emu.ico"
+        $iconPath = Join-Path $PSScriptRoot "app-icon.ico"
         if (Test-Path $iconPath) {
             $balloon.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
         } else {
