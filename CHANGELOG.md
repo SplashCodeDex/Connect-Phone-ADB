@@ -2,7 +2,11 @@
 
 All notable changes to the Connect Phone ADB project will be documented in this file.
 
-## [Unreleased] - 2026-07-27
+## [v1.4.2] - 2026-07-27
+
+### [fix] WPF Threading & Installation Bump (v1.4.2)
+- Fixed a bug where `Phone Files` would crash instantly due to calling `.Show()` instead of `.ShowDialog()` inside a WinForms thread.
+- Bumped AppxManifest version to `1.4.2.0` to resolve Windows package identity installation blocks.
 
 ### [major] The Blip Engine Rewrite (v1.4.0)
 - **Hardcore C# Transfer Engine**: Completely retired `Send-To-Phone.ps1`. The C# `ConnectPhoneShareTarget` application is now a fully-fledged WPF streaming engine.
