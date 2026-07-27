@@ -185,10 +185,12 @@ namespace ConnectPhoneShareTarget
                     if (new[] { ".mp4", ".mkv", ".mov", ".avi" }.Contains(ext)) destPath = $"/sdcard/Movies/{fileName}";
                     if (new[] { ".jpg", ".jpeg", ".png", ".gif" }.Contains(ext)) destPath = $"/sdcard/Pictures/{fileName}";
 
+                    string safeDestPath = destPath.Replace("'", "'\\''");
+
                     txtStatus.Text = $"Transferring {fileName}...";
 
                     long existingSize = 0;
-                    string statOut = RunAdbCommand($"-s {targetDevice} shell \"stat -c %s '{destPath}' 2>/dev/null\"");
+                    string statOut = await Task.Run(() => RunAdbCommand($"-s {targetDevice} shell \"stat -c %s '{safeDestPath}' 2>/dev/null\""));
                     if (long.TryParse(statOut, out long sz))
                     {
                         existingSize = sz;
@@ -204,12 +206,17 @@ namespace ConnectPhoneShareTarget
                     string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                     string adbPath = Path.Combine(exeDir, "bin", "adb.exe");
                     
+                    if (!File.Exists(adbPath))
+                    {
+                        throw new FileNotFoundException("adb.exe is missing from the bin folder.");
+                    }
+                    
                     var pushProc = new Process
                     {
                         StartInfo = new ProcessStartInfo
                         {
                             FileName = adbPath,
-                            Arguments = $"-s {targetDevice} shell \"cat >> '{destPath}'\"",
+                            Arguments = $"-s {targetDevice} shell \"cat >> '{safeDestPath}'\"",
                             UseShellExecute = false,
                             RedirectStandardInput = true,
                             CreateNoWindow = true

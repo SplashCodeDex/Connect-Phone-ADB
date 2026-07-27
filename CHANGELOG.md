@@ -2,6 +2,13 @@
 
 All notable changes to the Connect Phone ADB project will be documented in this file.
 
+## [v1.4.4] - 2026-07-27
+
+### [fix] Deep Edge-Case Audit (v1.4.4)
+- **UI Responsiveness:** Fixed a bug where polling the remote file size blocked the WPF UI thread, causing the transfer window to temporarily hang before the transfer started.
+- **ADB Path Escaping:** Fixed a critical bug where transferring files with single quotes (e.g. `O'Brian.mp4`) would completely crash the ADB shell syntax during standard input streaming.
+- **Missing Binaries:** Added explicit verification for `adb.exe` presence before executing streams.
+
 ## [v1.4.3] - 2026-07-27
 
 ### [fix] TreeView Scope Crash (v1.4.3)
