@@ -2,6 +2,11 @@
 
 All notable changes to the Connect Phone ADB project will be documented in this file.
 
+## [v1.4.3] - 2026-07-27
+
+### [fix] TreeView Scope Crash (v1.4.3)
+- Fixed a fatal scoping bug where PowerShell's `.add_Expanded()` threw a silent `MethodNotFound` exception on the WPF TreeView because `TreeView` does not expose `Expanded` directly. Refactored to use standard WPF `AddHandler` for `TreeViewItem::ExpandedEvent`.
+
 ## [v1.4.2] - 2026-07-27
 
 ### [fix] WPF Threading & Installation Bump (v1.4.2)

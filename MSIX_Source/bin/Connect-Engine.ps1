@@ -558,7 +558,7 @@ $actionPull = {
         return $node
     }
 
-    $tvFiles.add_Expanded({
+    $expandedHandler = [System.Windows.RoutedEventHandler]{
         param($sender, $e)
         $item = $e.Source
         if (-not ($item -is [System.Windows.Controls.TreeViewItem])) { return }
@@ -600,7 +600,8 @@ $actionPull = {
                 $item.Items.Add("(Empty)") | Out-Null
             }
         }
-    })
+    }
+    $tvFiles.AddHandler([System.Windows.Controls.TreeViewItem]::ExpandedEvent, $expandedHandler)
     
     $rootNode = New-TreeNode "Internal Storage (/sdcard/)" "/sdcard/" $true
     $tvFiles.Items.Add($rootNode) | Out-Null
