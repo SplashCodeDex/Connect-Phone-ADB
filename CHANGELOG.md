@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.7.1] - 2026-07-27
+
+### [fix] Spatial Menu Tray Click Debouncer (v1.7.1)
+- **Root Cause:** The `ApplicationIdle` dispatcher queue was being starved by the WinForms message pump, preventing the menu from opening.
+- **Fix:** Implemented a robust 200ms Deactivation Debouncer that ignores spurious `Deactivated` events firing immediately after `Show()`.
+
+
 ## [v1.7.0] - 2026-07-27
 
 ### [fix] Spatial Menu Tray Click — Dispatcher ApplicationIdle Fix (v1.7.0)
