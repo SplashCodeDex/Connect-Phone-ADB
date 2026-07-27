@@ -259,9 +259,6 @@ $xaml = @"
                     <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#x1F504;" FontSize="20"/>
                     </Button>
-                    <Button Name="btnQAStartup" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Toggle Startup">
-                        <TextBlock Name="txtQAStartup" Text="&#x1F680;" FontSize="20"/>
-                    </Button>
                 </StackPanel>
                 
                 <Separator Background="#2C2C2E" Height="1" Margin="16,0" />
@@ -301,9 +298,6 @@ $script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
 
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
-$script:txtQAStartup = $script:wpfWindow.FindName("txtQAStartup")
-$regRunPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
-$regRunName = "ConnectPhoneADB"
 
 function Update-WpfUI {
     $brushConverter = New-Object System.Windows.Media.BrushConverter
@@ -311,12 +305,6 @@ function Update-WpfUI {
         $script:txtQAAuto.Foreground = $brushConverter.ConvertFromString("#00E676")
     } else { 
         $script:txtQAAuto.Foreground = [System.Windows.Media.Brushes]::White
-    }
-    
-    if ((Get-ItemProperty -Path $regRunPath -Name $regRunName -ErrorAction SilentlyContinue) -ne $null) { 
-        $script:txtQAStartup.Foreground = $brushConverter.ConvertFromString("#00E676")
-    } else { 
-        $script:txtQAStartup.Foreground = [System.Windows.Media.Brushes]::White
     }
 }
 
@@ -367,20 +355,6 @@ $actionAuto = {
 }
 $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
 
-$actionStartup = {
-    $isStartupEnabled = (Get-ItemProperty -Path $regRunPath -Name $regRunName -ErrorAction SilentlyContinue) -ne $null
-    $newState = -not $isStartupEnabled
-    if ($newState) {
-        $startupCommand = "wscript.exe `"W:\CodeDeX\Connect-Phone-ADB\bin\Start-App.vbs`""
-        Set-ItemProperty -Path $regRunPath -Name $regRunName -Value $startupCommand
-        Show-Toast -Title "Startup Enabled" -Message "Connect Phone ADB will now launch automatically."
-    } else {
-        Remove-ItemProperty -Path $regRunPath -Name $regRunName -ErrorAction SilentlyContinue
-        Show-Toast -Title "Startup Disabled" -Message "Removed from Windows startup."
-    }
-}
-$script:wpfWindow.FindName("btnQAStartup").Add_Click({ Invoke-MenuAction $actionStartup })
-
 $script:wpfWindow.FindName("btnExit").Add_Click({
     $script:wpfWindow.Hide()
     $script:notifyIcon.Visible = $false
@@ -403,23 +377,6 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Activate()
     }
 })
-
-# Polling Timer (Every 10s)
-$timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = 10000
-$timer.Add_Tick({
-    $res = Invoke-AdbConnect
-    if ($res.Success) {
-        $script:notifyIcon.Icon = $iconGreen
-        $script:notifyIcon.Text = "Connected: $($res.Target)"
-        $script:txtStatus.Text = "Connected: $($res.Target)"
-    } else {
-        $script:notifyIcon.Icon = $iconRed
-        $script:notifyIcon.Text = "Connect Phone ADB: Disconnected"
-        $script:txtStatus.Text = "Status: Disconnected"
-    }
-})
-
 # Sync initial state & start
 $initialRes = Invoke-AdbConnect
 if ($initialRes.Success) {
@@ -431,8 +388,6 @@ if ($initialRes.Success) {
     $script:notifyIcon.Text = "Connect Phone ADB: Disconnected"
     $script:txtStatus.Text = "Status: Disconnected"
 }
-
-$timer.Start()
 
 Show-Toast -Title "Connect Phone ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
 
