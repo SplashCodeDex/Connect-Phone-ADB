@@ -11,6 +11,13 @@ param(
     [switch]$ConnectOnly
 )
 
+$mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
+$mutex = New-Object System.Threading.Mutex($false, $mutexName)
+if (-not $mutex.WaitOne(0, $false)) {
+    # Another instance is already running
+    exit
+}
+
 if ($PSScriptRoot -match "WindowsApps") {
     function adb { ConnectPhone-adb.exe @args }
 } else {
@@ -541,11 +548,11 @@ $actionPull = {
     function New-TreeNode($name, $path, $isDir) {
         $node = New-Object System.Windows.Controls.TreeViewItem
         if ($isDir) {
-            $node.Header = "📁 $name"
+            $node.Header = "[DIR] $name"
             $node.Tag = "DIR|$path"
             $node.Items.Add("Loading...") | Out-Null
         } else {
-            $node.Header = "📄 $name"
+            $node.Header = $name
             $node.Tag = "FILE|$path"
         }
         return $node
@@ -600,7 +607,7 @@ $actionPull = {
         if ($selected -and $selected -is [System.Windows.Controls.TreeViewItem]) {
             $tagParts = $selected.Tag.Split('|', 2)
             $remotePath = $tagParts[1]
-            $name = $selected.Header -replace '^[📁📄]\s+', ''
+            $name = $selected.Header -replace '^\[DIR\]\s+', ''
             
             Show-Toast -Title "Pulling Data" -Message "Pulling $name in background..."
             
