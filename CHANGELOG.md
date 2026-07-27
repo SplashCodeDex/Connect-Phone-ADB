@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.6.6] - 2026-07-27
+
+### [fix] Spatial Menu Opening Lag (v1.6.6)
+- **UI Responsiveness:** Refactored the System Tray click handler (`Connect-Engine.ps1`) to consolidate redundant `adb devices` calls and cache the `Get-AutoConnectStatus` Task Scheduler query. This eliminates UI thread blocking and noticeable opening lag caused by synchronously querying COM objects and spawning external processes on every single click.
+
 ## [v1.6.5] - 2026-07-27
 
 ### [minor] Staggered Physics Cascades & DRY Architecture (v1.6.5)
