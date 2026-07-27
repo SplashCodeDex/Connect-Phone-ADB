@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AppInstaller
-    Uri="https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/ConnectPhoneADB.appinstaller"
+    Uri="https://CodeDeX.github.io/Connect-Phone-ADB/ConnectPhoneADB.appinstaller"
     Version="1.0.0.0"
     xmlns="http://schemas.microsoft.com/appx/appinstaller/2018">
     <MainPackage

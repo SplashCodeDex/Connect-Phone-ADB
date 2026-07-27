@@ -31,9 +31,12 @@ function Invoke-AdbConnect {
                   Select-Object -First 1 -ExpandProperty NextHop)
     
     if (-not $GatewayIP) {
-        # Clear ghost connections when not on hotspot
-        $null = adb disconnect 2>&1
-        return @{ Success = $false; Message = "Not connected to Phone Hotspot Wi-Fi" }
+        Add-Type -AssemblyName Microsoft.VisualBasic
+        $GatewayIP = [Microsoft.VisualBasic.Interaction]::InputBox("Not on Phone Hotspot. Enter Phone IP manually (e.g. 192.168.1.15):", "Connect Phone ADB")
+        if (-not $GatewayIP) {
+            $null = adb disconnect 2>&1
+            return @{ Success = $false; Message = "No IP provided." }
+        }
     }
     
     $target = "${GatewayIP}:5555"
