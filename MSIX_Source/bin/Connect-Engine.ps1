@@ -11,6 +11,8 @@ param(
     [switch]$ConnectOnly
 )
 
+function adb { & "$PSScriptRoot\adb.exe" @args }
+
 # Force STA Mode Threading for Windows Forms & Tray Icons
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing

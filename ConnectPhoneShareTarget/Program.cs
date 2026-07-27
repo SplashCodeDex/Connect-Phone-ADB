@@ -13,6 +13,8 @@ namespace ConnectPhoneShareTarget
         [STAThread]
         static async Task Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => File.WriteAllText(Path.Combine(Path.GetTempPath(), $"ConnectPhoneCrash_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), e.ExceptionObject.ToString());
+            
             var activatedArgs = AppInstance.GetActivatedEventArgs();
             
             if (activatedArgs != null && activatedArgs.Kind == ActivationKind.ShareTarget)

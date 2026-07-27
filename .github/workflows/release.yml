@@ -31,5 +31,6 @@ jobs:
           files: |
             ConnectPhoneADB.msix
             CodeDeX.cer
+            Install-App.ps1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

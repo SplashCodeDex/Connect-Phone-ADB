@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppInstaller
+    Uri="https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/ConnectPhoneADB.appinstaller"
+    Version="1.0.0.0"
+    xmlns="http://schemas.microsoft.com/appx/appinstaller/2018">
+    <MainPackage
+        Name="ConnectPhoneADB"
+        Publisher="CN=CodeDeX"
+        Version="1.0.0.0"
+        ProcessorArchitecture="x64"
+        Uri="https://github.com/YOUR_GITHUB_USER/YOUR_REPO/releases/latest/download/ConnectPhoneADB.msix" />
+    <UpdateSettings>
+        <OnLaunch HoursBetweenUpdateChecks="12" ShowPrompt="true" />
+    </UpdateSettings>
+</AppInstaller>
