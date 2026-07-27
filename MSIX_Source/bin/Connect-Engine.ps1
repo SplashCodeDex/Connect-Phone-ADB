@@ -229,43 +229,186 @@ $xaml = @"
         ResizeMode="NoResize">
     <Window.Resources>
         <Storyboard x:Key="ExpandMenu">
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="500" Duration="0:0:0.6">
+            <!-- Window Size Expansion with ElasticEase (Overshoot + Reverse Subtle Overshoot) -->
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="500" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-500" Duration="0:0:0.6">
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-500" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="140" Duration="0:0:0.6">
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="140" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-140" Duration="0:0:0.6">
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-140" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.4" BeginTime="0:0:0.2"/>
+            
+            <!-- Parallax on File Explorer: Slide from Right to Left while fading -->
+            <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8">
+                <DoubleAnimation.EasingFunction>
+                    <ElasticEase Oscillations="1" Springiness="6" EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.6" BeginTime="0:0:0.1"/>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
+            
+            <!-- Subtle Parallax on Main Menu: Slide Right slightly -->
+            <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8">
+                <DoubleAnimation.EasingFunction>
+                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
         </Storyboard>
         
         <DataTemplate x:Key="FolderGridTemplate">
-            <StackPanel Width="100" Height="100" Margin="10" Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}">
-                <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="#FFD700" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                <TextBlock Text="{Binding Name}" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
-            </StackPanel>
+            <Border Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}" Margin="10" RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
+                        <TranslateTransform X="0" Y="0" x:Name="itemTrans" />
+                    </TransformGroup>
+                </Border.RenderTransform>
+                <StackPanel Width="100" Height="100">
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="#FFD700" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding Name}" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
+                </StackPanel>
+                <Border.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="PreviewMouseDown">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="0.92" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="0.92" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="5" Duration="0:0:0.1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="PreviewMouseUp">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
+            </Border>
         </DataTemplate>
         <DataTemplate x:Key="FileGridTemplate">
-            <StackPanel Width="100" Height="100" Margin="10" Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}">
-                <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="#A0A0A0" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                <TextBlock Text="{Binding Name}" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
-            </StackPanel>
+            <Border Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}" Margin="10" RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
+                        <TranslateTransform X="0" Y="0" x:Name="itemTrans" />
+                    </TransformGroup>
+                </Border.RenderTransform>
+                <StackPanel Width="100" Height="100">
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="#A0A0A0" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding Name}" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
+                </StackPanel>
+                <Border.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="PreviewMouseDown">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="0.92" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="0.92" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="5" Duration="0:0:0.1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="PreviewMouseUp">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
+            </Border>
         </DataTemplate>
         <Style x:Key="SpatialListItem" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
@@ -277,7 +420,10 @@ $xaml = @"
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}" Margin="8,1" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
+                                    <TranslateTransform X="0" Y="0" x:Name="btnTrans" />
+                                </TransformGroup>
                             </Border.RenderTransform>
                             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
                         </Border>
@@ -288,27 +434,51 @@ $xaml = @"
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="#3A3A3C"/>
                             </Trigger>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
                             <EventTrigger RoutedEvent="PreviewMouseDown">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="0.97" Duration="0:0:0.05" />
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="0.97" Duration="0:0:0.05" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="0.96" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="0.96" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="12" Duration="0:0:0.1" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="PreviewMouseUp">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1" />
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="MouseLeave">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1" />
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -330,7 +500,10 @@ $xaml = @"
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="20" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
+                                    <TranslateTransform X="0" Y="0" x:Name="btnTrans" />
+                                </TransformGroup>
                             </Border.RenderTransform>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -338,27 +511,57 @@ $xaml = @"
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="#3A3A3C"/>
                             </Trigger>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
                             <EventTrigger RoutedEvent="PreviewMouseDown">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="0.85" Duration="0:0:0.05" />
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="0.85" Duration="0:0:0.05" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="0.85" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="0.85" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="3" Duration="0:0:0.1" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="PreviewMouseUp">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1" />
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="MouseLeave">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.1" />
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -375,6 +578,9 @@ $xaml = @"
         </Grid.ColumnDefinitions>
         
         <Grid Name="FileExplorer" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="15,25,15,15">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="fileTrans" X="150" />
+            </Grid.RenderTransform>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -394,7 +600,10 @@ $xaml = @"
         </Grid>
         
         <Border Grid.Column="1" Background="Transparent" Padding="0">
-            <Border Background="#1C1C1E" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="menuTrans" X="0" />
+            </Border.RenderTransform>
+            <Border Background="Transparent" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
                 <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Connect ADB">

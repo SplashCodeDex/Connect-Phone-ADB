@@ -7,6 +7,12 @@
 - Restored `AllowsTransparency="True"` and a solid `#1C1C1E` background to guarantee pixel-perfect 34px rounded corners.
 - **Process Reaping**: Exiting the engine (`btnExit` or `Q`) now forcefully reaps any stray `adb.exe` and `scrcpy.exe` background processes.
 
+## [v1.5.7] - 2026-07-27
+
+### [minor] Global UI Spring Physics & Parallax (v1.5.7)
+- **Universal ElasticEase:** Applied the advanced WPF `ElasticEase` (Oscillations=1, Springiness=4/5) to absolutely every interactive element in the app. This creates that highly-requested organic, physical bouncy feel (overshoot with a subtle reverse-overshoot recoil).
+- **Parallax Translations:** Upgraded every single button hover, press, and menu expansion state to include subtle spatial `TranslateTransform` parallax shifts. Elements now physically move and scale organically on hover and click rather than just instantly snapping states.
+
 ## [v1.5.6] - 2026-07-27
 
 ### [fix] Absolute Compilation Cleanup & MSIX Packaging Pipeline (v1.5.6)
