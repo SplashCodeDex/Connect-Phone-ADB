@@ -330,7 +330,25 @@ $xaml = @"
                 </StackPanel>
                 
                 <Separator Background="#2C2C2E" Height="1" Margin="16,0" />
-                <TextBlock Name="txtStatus" Text="Status: Initializing..." Foreground="#A0A0A0" FontSize="13" Margin="24,10,24,10" FontFamily="Segoe UI" />
+                <StackPanel Orientation="Horizontal" Margin="24,10,24,10">
+                    <TextBlock Name="txtStatus" Text="Status: Initializing..." Foreground="#A0A0A0" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
+                    <Button Name="btnCopyIP" Background="Transparent" BorderThickness="0" Foreground="#A0A0A0" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Copy IP:Port" Cursor="Hand" Visibility="Collapsed" VerticalAlignment="Center" Margin="6,0,0,0">
+                        <TextBlock Text="&#xE8C8;" />
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="border" Background="Transparent" CornerRadius="4" Padding="4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#3A3A3C"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
                 <Separator Background="#2C2C2E" Height="1" Margin="16,0" />
                 
                 <Button Name="btnConnect" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
@@ -388,11 +406,13 @@ function Update-WpfUI {
         $script:wpfWindow.FindName("btnDisconnect").Visibility = 'Visible'
         $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
     } else {
         $script:wpfWindow.FindName("btnConnect").Visibility = 'Visible'
         $script:wpfWindow.FindName("btnDisconnect").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Visible'
         $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
     }
 }
 
@@ -403,6 +423,14 @@ $script:wpfWindow.Add_Deactivated({
 function Invoke-MenuAction([scriptblock]$Action) {
     & $Action
 }
+
+$script:wpfWindow.FindName("btnCopyIP").Add_Click({
+    $statusText = $script:txtStatus.Text
+    if ($statusText -match "Connected:\s*(.+)") {
+        Set-Clipboard -Value $Matches[1]
+        Show-Toast -Title "Copied" -Message "IP Address copied to clipboard: $($Matches[1])"
+    }
+})
 
 $actionConnect = {
     $script:wpfWindow.Hide()
