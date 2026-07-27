@@ -21,6 +21,12 @@
 - **Manual Trigger Support**: Added `workflow_dispatch` to allow manual execution of build & release pipeline from GitHub Actions web UI.
 - **Isolated Release Notes Extractor**: Enhanced regex parsing in PowerShell step to capture the exact top tag heading and notes verbatim into `RELEASE_NOTES.md` without pulling trailing historical changelog entries.
 
+## [v1.5.1] - 2026-07-27
+
+### [fix] Execution Path Bug & Acrylic Aesthetics (v1.5.1)
+- **Execution Fix:** Fixed a silent crash where the System Tray `Connect-Engine.ps1` was resolving `ConnectPhoneShareTarget.exe` inside the `bin` directory instead of the application root.
+- **Acrylic Aesthetics:** Wired in `dwmapi.dll` P/Invoke calls to inject native Windows 11 Acrylic (`DWMWA_SYSTEMBACKDROP_TYPE = 3`) into the WPF window background for a gorgeous translucent glass effect.
+
 ## [v1.5.0] - 2026-07-27
 
 ### [major] Native C# File Picker (v1.5.0)

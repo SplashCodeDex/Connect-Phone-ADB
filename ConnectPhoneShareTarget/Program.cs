@@ -19,6 +19,7 @@ namespace ConnectPhoneShareTarget
         [STAThread]
         static void Main(string[] args)
         {
+            File.WriteAllText(Path.Combine(Path.GetTempPath(), "ConnectPhoneArgs.txt"), $"Args Length: {args.Length}, Args: {string.Join(" | ", args)}");
             try 
             {
                 if (args.Length >= 2 && args[0] == "--pull")

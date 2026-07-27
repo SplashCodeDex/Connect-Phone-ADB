@@ -540,11 +540,10 @@ $actionPull = {
         return
     }
     
-    if ($PSScriptRoot -match "WindowsApps") {
-        $engineExe = "ConnectPhoneShareTarget.exe"
-    } else {
-        $engineExe = "$PSScriptRoot\ConnectPhoneShareTarget.exe"
-    }
+    # The executable is in the root of the app directory, but Connect-Engine.ps1 is in bin\
+    $appRoot = Split-Path $PSScriptRoot
+    $engineExe = Join-Path $appRoot "ConnectPhoneShareTarget.exe"
+    
     Start-Process -FilePath $engineExe -ArgumentList "--pull", "`"$target`""
 }
 $script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull })

@@ -19,6 +19,9 @@ namespace ConnectPhoneShareTarget
 
     public partial class PickerWindow : Window
     {
+        [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
         private string _targetDevice;
         private string _adbPath;
 
@@ -40,10 +43,26 @@ namespace ConnectPhoneShareTarget
             
             this.Loaded += (s, e) => 
             {
-                if (tvFiles.Items.Count > 0 && tvFiles.Items[0] is TreeViewItem rootNode)
+                try 
                 {
-                    rootNode.IsExpanded = true;
+                    var interopHelper = new System.Windows.Interop.WindowInteropHelper(this);
+                    int trueValue = 1;
+                    DwmSetWindowAttribute(interopHelper.Handle, 20, ref trueValue, sizeof(int)); // DWMWA_USE_IMMERSIVE_DARK_MODE
+                    
+                    int backdropType = 3; // 3 = Acrylic, 2 = Mica
+                    DwmSetWindowAttribute(interopHelper.Handle, 38, ref backdropType, sizeof(int)); // DWMWA_SYSTEMBACKDROP_TYPE
+
+                    if (tvFiles.Items.Count > 0 && tvFiles.Items[0] is TreeViewItem rootNode)
+                    {
+                        rootNode.IsExpanded = true;
+                    }
                 }
+                catch { }
+            };
+            
+            this.Closed += (s, e) => 
+            {
+                // Cleanup if needed
             };
         }
 
