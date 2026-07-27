@@ -976,7 +976,7 @@ $script:notifyIcon.Add_MouseUp({
         try { [Microsoft.VisualBasic.Interaction]::AppActivate([System.Diagnostics.Process]::GetCurrentProcess().Id) } catch {}
         
         if ($script:wpfWindow.Visibility -ne 'Visible') {
-            $script:wpfWindow.ShowDialog() | Out-Null
+            $script:wpfWindow.Show()
         }
     }
 })

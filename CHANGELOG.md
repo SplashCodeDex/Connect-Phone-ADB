@@ -6,6 +6,11 @@
 - **Centralized Animation Physics:** Extracted duplicated inline `ElasticEase` overshoot definitions across dozens of XAML elements into a single, highly refined `StaticResource` (`BouncyEase`), cutting massive code bloat and strictly enforcing DRY (Don't Repeat Yourself) architecture.
 - **Cascading Grid Entrance:** Programmatically injected index-based staggering to the File Explorer grid! When loading phone directories, folders and files now gracefully cascade upwards sequentially with a 35ms stagger, dynamically inheriting the global `BouncyEase` physics curve for a breathtaking load-in effect.
 
+## [v1.6.3] - 2026-07-27
+
+### [fix] WPF ShowDialog Deadlock (v1.6.3)
+- **Tray Icon Unresponsiveness**: Replaced `$script:wpfWindow.ShowDialog()` with `$script:wpfWindow.Show()`. Since the Spatial Menu is repeatedly hidden using `.Hide()` on deactivation, `ShowDialog()` was leaving the window stuck in a hidden modal loop, preventing the menu from re-opening on subsequent tray icon clicks and locking users out of the UI.
+
 ## [v1.6.2] - 2026-07-27
 
 ### [feature] Spatial Menu User List (v1.6.2)
