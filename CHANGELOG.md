@@ -7,6 +7,13 @@
 - **Removed Legacy Fallbacks**: Cut out the WinForms BalloonTip fallback in `Show-Toast` (YAGNI on Windows 10+).
 - **Simplified ADB Paths**: Centralized `$global:AdbExePath` resolution at the root scope, eliminating duplicate `Split-Path`/`Join-Path` logic inside the Async Pull worker job.
 
+## [v1.6.1] - 2026-07-27
+
+### [minor] Massive Diagonal Expansion & Fly-Off Fix (v1.6.1)
+- **Massive Spatial Expansion:** Dramatically increased the `ExpandMenu` animation target size (Width expands `By=1160` up to `1450px` total width, Height `By=300`), resulting in a sweeping diagonal (top-left) flyout effect that gives you enormous visual space to explore the Phone Files grid view.
+- **State Constraint Fix:** Fixed a critical animation flaw where repeatedly clicking "Phone Files" would cumulatively push the window's spatial coordinates permanently off-screen.
+- **Deactivated Reset:** The menu now flawlessly collapses back to its default compact 290x460 size whenever you click away (losing focus), ensuring a fresh state every time it's reopened.
+
 ## [v1.6.0] - 2026-07-27
 
 ### [major] Purple-Black Gradient Restoration & Mica Purge (v1.6.0)

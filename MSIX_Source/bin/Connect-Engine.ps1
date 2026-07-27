@@ -218,22 +218,22 @@ $xaml = @"
     <Window.Resources>
         <Storyboard x:Key="ExpandMenu">
             <!-- Window Size Expansion with ElasticEase (Overshoot + Reverse Subtle Overshoot) -->
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="500" Duration="0:0:0.8">
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="1160" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
                     <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-500" Duration="0:0:0.8">
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-1160" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
                     <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="140" Duration="0:0:0.8">
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="300" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
                     <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-140" Duration="0:0:0.8">
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-300" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
                     <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
@@ -808,6 +808,12 @@ function Update-WpfUI {
 
 $script:wpfWindow.Add_Deactivated({
     $script:wpfWindow.Hide()
+    $script:wpfWindow.Width = 290
+    $script:wpfWindow.Height = 460
+    $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+    $script:wpfWindow.FindName("fileTrans").X = 150
+    $script:wpfWindow.FindName("menuTrans").X = 0
 })
 
 function Invoke-MenuAction([scriptblock]$Action) {
@@ -922,6 +928,10 @@ $actionPull = {
     }
     
     $script:currentTarget = $target
+    
+    if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') {
+        return
+    }
     
     $sb = $script:wpfWindow.Resources["ExpandMenu"]
     $sb.Begin($script:wpfWindow)
