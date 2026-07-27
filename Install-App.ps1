@@ -18,9 +18,9 @@ if (Test-Path $CertPath) {
 }
 
 if (Test-Path $AppPath) {
-    Write-Host "Installing MSIX package..."
-    Add-AppxPackage -Path $AppPath
-    Write-Host "App installed successfully."
+    Write-Host "Installing/Updating MSIX package..."
+    Add-AppxPackage -Path $AppPath -ForceUpdateFromAnyVersion -ForceApplicationShutdown
+    Write-Host "App installed/updated successfully."
 } else {
     Write-Error "Could not find ConnectPhoneADB.msix in $ScriptDir"
 }
