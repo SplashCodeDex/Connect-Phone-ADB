@@ -1,6 +1,11 @@
 # Changelog
 
-All notable changes to the Connect Phone ADB project will be documented in this file.
+## [v1.5.1] - 2026-07-27
+
+### [minor] Spatial Menu Folder Icon & Persist Open (v1.5.1)
+- **Segoe Fluent Folder Icon**: Replaced `Phone Files` icon (`&#xE896;`) in spatial menu with official Segoe Fluent Icons / Segoe MDL2 Assets Folder glyph (`&#xE8B7;`).
+- **Persistent Spatial Menu**: Removed auto-hide behavior on item click (`Connect`, `Disconnect`, `Phone Files`, `Toggle Auto-Connect`). The spatial menu remains open for multi-action execution with live UI state updates.
+- **Keyboard Shortcut Acceleration**: Added `Esc` to instantly dismiss spatial menu overlay, alongside key handling (`C`, `D`, `P`, `Q`).
 
 ## [v1.4.5] - 2026-07-27
 
