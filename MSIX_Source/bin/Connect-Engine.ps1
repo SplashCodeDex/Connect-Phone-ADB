@@ -222,13 +222,54 @@ function Show-Toast {
 $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="winSpatial"
         WindowStyle="None" Background="Transparent"
-        Topmost="True" ShowInTaskbar="False" SizeToContent="WidthAndHeight"
+        Topmost="True" ShowInTaskbar="False"
+        Width="290" Height="460"
         ResizeMode="NoResize">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" CornerRadius="0" />
     </WindowChrome.WindowChrome>
     <Window.Resources>
+        <Storyboard x:Key="ExpandMenu">
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="500" Duration="0:0:0.6">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-500" Duration="0:0:0.6">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="140" Duration="0:0:0.6">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-140" Duration="0:0:0.6">
+                <DoubleAnimation.EasingFunction>
+                    <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.4" BeginTime="0:0:0.2"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        
+        <DataTemplate x:Key="FolderGridTemplate">
+            <StackPanel Width="100" Height="100" Margin="10" Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}">
+                <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="#FFD700" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                <TextBlock Text="{Binding Name}" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="FileGridTemplate">
+            <StackPanel Width="100" Height="100" Margin="10" Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}">
+                <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="#A0A0A0" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                <TextBlock Text="{Binding Name}" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
+            </StackPanel>
+        </DataTemplate>
         <Style x:Key="SpatialListItem" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
@@ -330,9 +371,34 @@ $xaml = @"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border Background="Transparent" Padding="0">
-        <Border Background="Transparent" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
-            <StackPanel Width="270" Margin="0,12">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="290" />
+        </Grid.ColumnDefinitions>
+        
+        <Grid Name="FileExplorer" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="15,25,15,15">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Margin="5,0,0,15">
+                <Button Name="btnUpDir" Background="Transparent" BorderThickness="0" Foreground="White" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="20" Content="&#xE72B;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,15,0" />
+                <TextBlock Name="txtCurrentDir" Text="/sdcard/" FontSize="18" Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+            
+            <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        </Grid>
+        
+        <Border Grid.Column="1" Background="Transparent" Padding="0">
+            <Border Background="Transparent" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
+                <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />
@@ -411,7 +477,7 @@ $xaml = @"
                 </Button>
             </StackPanel>
         </Border>
-    </Border>
+    </Grid>
 </Window>
 "@
 
@@ -434,6 +500,92 @@ $script:wpfWindow.Add_SourceInitialized({
 
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
+
+$script:lbFiles = $script:wpfWindow.FindName("lbFiles")
+$script:txtCurrentDir = $script:wpfWindow.FindName("txtCurrentDir")
+$script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")
+$script:currentTarget = ""
+$script:adbOutputSub = $null
+
+function Load-Directory($dirPath) {
+    $script:txtCurrentDir.Text = $dirPath
+    $script:lbFiles.Items.Clear()
+    
+    $proc = New-Object System.Diagnostics.Process
+    $proc.StartInfo.FileName = "adb.exe"
+    $proc.StartInfo.Arguments = "-s $($script:currentTarget) shell ls -1aF `"$dirPath`""
+    $proc.StartInfo.UseShellExecute = $false
+    $proc.StartInfo.RedirectStandardOutput = $true
+    $proc.StartInfo.CreateNoWindow = $true
+    
+    $action = {
+        $e = $Event.SourceEventArgs
+        if ($e.Data) {
+            $line = $e.Data.Trim()
+            if ($line -eq "./" -or $line -eq "../") { return }
+            
+            $isDir = $line.EndsWith("/")
+            $name = $line.TrimEnd('/', '*', '@', '=')
+            if ($isDir) {
+                $full = $dirPath + $name + "/"
+                $template = $script:wpfWindow.Resources["FolderGridTemplate"]
+            } else {
+                $full = $dirPath + $name
+                $template = $script:wpfWindow.Resources["FileGridTemplate"]
+            }
+            
+            $script:wpfWindow.Dispatcher.Invoke([Action]{
+                $item = New-Object System.Windows.Controls.ListBoxItem
+                $item.Content = @{ Name = $name; FullPath = $full; IsDir = $isDir }
+                $item.ContentTemplate = $template
+                $item.Tag = $full
+                $script:lbFiles.Items.Add($item)
+            })
+        }
+    }
+    if ($script:adbOutputSub) { Unregister-Event -SourceIdentifier $script:adbOutputSub.Name -ErrorAction SilentlyContinue }
+    $script:adbOutputSub = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action $action
+    $proc.Start() | Out-Null
+    $proc.BeginOutputReadLine()
+}
+
+$script:btnUpDir.Add_Click({
+    $curr = $script:txtCurrentDir.Text
+    if ($curr -ne "/sdcard/" -and $curr.Length -gt 1) {
+        $trimmed = $curr.TrimEnd('/')
+        $lastSlash = $trimmed.LastIndexOf('/')
+        if ($lastSlash -ge 0) {
+            $newDir = $trimmed.Substring(0, $lastSlash + 1)
+            Load-Directory $newDir
+        }
+    }
+})
+
+$script:lbFiles.Add_MouseDoubleClick({
+    $sel = $script:lbFiles.SelectedItem
+    if ($sel) {
+        $data = $sel.Content
+        if ($data.IsDir) {
+            Load-Directory $data.FullPath
+        } else {
+            $remotePath = $data.FullPath
+            $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
+            if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir }
+            
+            $actionBg = {
+                param($exePath, $tgt, $rem, $out)
+                Start-Process $exePath -ArgumentList "-s $tgt pull `"$rem`" `"$out`"" -Wait -NoNewWindow
+                Start-Process "explorer.exe" -ArgumentList "`"$out`""
+            }
+            
+            $appRoot = Split-Path $PSScriptRoot
+            $exePath = if ($PSScriptRoot -match "WindowsApps") { "ConnectPhone-adb.exe" } else { Join-Path $appRoot "bin\adb.exe" }
+            Start-Job -ScriptBlock $actionBg -ArgumentList $exePath, $script:currentTarget, $remotePath, $outDir
+            
+            $script:wpfWindow.Close()
+        }
+    }
+})
 
 function Update-WpfUI {
     $brushConverter = New-Object System.Windows.Media.BrushConverter
@@ -570,11 +722,12 @@ $actionPull = {
         }
     }
     
-    # The executable is in the root of the app directory, but Connect-Engine.ps1 is in bin\
-    $appRoot = Split-Path $PSScriptRoot
-    $engineExe = Join-Path $appRoot "ConnectPhoneShareTarget.exe"
+    $script:currentTarget = $target
     
-    Start-Process -FilePath $engineExe -ArgumentList "--pull", "`"$target`""
+    $sb = $script:wpfWindow.Resources["ExpandMenu"]
+    $sb.Begin($script:wpfWindow)
+    
+    $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
 }
 $script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull })
 $script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
@@ -646,6 +799,11 @@ function Sync-AdbStatus {
 $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
+        if ($script:wpfWindow.Visibility -eq 'Visible') {
+            $script:wpfWindow.Hide()
+            return
+        }
+        
         Sync-AdbStatus
         Update-WpfUI
         $script:wpfWindow.Measure([System.Windows.Size]::new([double]::PositiveInfinity, [double]::PositiveInfinity))
@@ -656,8 +814,14 @@ $script:notifyIcon.Add_MouseUp({
         if ($script:wpfWindow.Top -lt 0) { $script:wpfWindow.Top = 0 }
         
         $script:wpfWindow.Topmost = $true
-        $script:wpfWindow.ShowDialog() | Out-Null
-        $script:wpfWindow.Activate()
+        
+        # Ensure the app gets OS-level foreground focus so clicking away reliably fires Deactivated
+        Add-Type -AssemblyName Microsoft.VisualBasic
+        try { [Microsoft.VisualBasic.Interaction]::AppActivate([System.Diagnostics.Process]::GetCurrentProcess().Id) } catch {}
+        
+        if ($script:wpfWindow.Visibility -ne 'Visible') {
+            $script:wpfWindow.ShowDialog() | Out-Null
+        }
     }
 })
 # Passive sync initial state on startup

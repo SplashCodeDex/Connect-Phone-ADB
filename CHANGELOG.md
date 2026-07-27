@@ -1,7 +1,19 @@
 # Changelog
 
-## [v1.5.3] - 2026-07-27
+## [v1.5.4] - 2026-07-27
 
+### [fix] Spatial Menu Focus & Hide Reliability (v1.5.4)
+- **ShowDialog Crash Fix**: Fixed a bug where clicking the tray icon when the spatial menu was already active would throw an `InvalidOperationException` due to re-invoking `ShowDialog()`. The tray icon now properly toggles visibility.
+- **Deactivated Event Reliability**: Forced the underlying PowerShell process to gain OS-level foreground lock (`AppActivate`) before showing the WPF overlay. This guarantees that clicking outside the spatial menu reliably fires the `Deactivated` event to auto-hide it.
+
+## [v1.5.5] - 2026-07-27
+
+### [major] Unified Spatial File Explorer & Overshoot UI Rewrite (v1.5.5)
+- **Nuked PickerWindow:** Eliminated the standalone C# File Picker EXE (`PickerWindow.xaml`), consolidating everything back into the core PowerShell engine to honor the strict minimalist protocol.
+- **Fluid Overshoot Shape-Shifting:** Clicking 'Phone Files' now triggers a gorgeous `BackEase` WPF DoubleAnimation that dynamically scales the Spatial Menu diagonally to reveal a nested phone grid-view directly within the Mica surface.
+- **Async ADB Runspace Bypass:** Engineered a raw `OutputDataReceived` pipeline in PowerShell to scrape directories from `adb` asynchronously in the background. Completely negates UI freezing without needing external C# assemblies.
+
+## [v1.5.3] - 2026-07-27
 ### [minor] Spatial Menu Mica Integration (v1.5.3)
 - **Mica Backdrop**: Applied native Windows 11 Mica Glass (`DWMWA_SYSTEMBACKDROP_TYPE = 2`) to the Spatial Menu (Tray UI), stripping away the solid black background via `WindowChrome` while retaining the native floating UI characteristics.
 
