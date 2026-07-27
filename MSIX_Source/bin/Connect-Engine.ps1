@@ -379,17 +379,86 @@ $actionPull = {
         return
     }
     
+    $script:wpfWindow.Hide()
+    
     $pickerXaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        Title="Select files to pull" Width="400" Height="500" Background="#1C1C1E" WindowStartupLocation="CenterScreen">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <ListBox Name="lstFiles" Background="#2C2C2E" Foreground="White" SelectionMode="Extended" BorderThickness="0" Margin="0,0,0,10"/>
-        <Button Name="btnPullItems" Grid.Row="1" Content="Pull Selected Files" Background="#00E676" Foreground="Black" Padding="10" BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
-    </Grid>
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Phone Files" Width="450" Height="600" WindowStartupLocation="CenterScreen"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True">
+    <Border Background="#E61C1C1E" CornerRadius="16" BorderBrush="#333333" BorderThickness="1" Margin="20">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="30" ShadowDepth="10" Opacity="0.6" Color="Black"/>
+        </Border.Effect>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <Grid Grid.Row="0" Margin="0,0,0,15">
+                <TextBlock Text="Phone Files" FontSize="22" FontWeight="Bold" Foreground="White" FontFamily="Segoe UI" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Button Name="btnClosePicker" Content="&#x2715;" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand" Padding="5">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+            
+            <ListBox Name="lstFiles" Grid.Row="1" Background="#802C2C2E" Foreground="White" SelectionMode="Extended" BorderThickness="0" FontFamily="Segoe UI" FontSize="14" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.Resources>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="10,8"/>
+                        <Setter Property="Margin" Value="0,2"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="#3A3A3C"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="#00E676"/>
+                                            <Setter Property="Foreground" Value="Black"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.Resources>
+            </ListBox>
+            
+            <Button Name="btnPullItems" Grid.Row="2" Margin="0,15,0,0" Content="Pull Selected Files" Background="#00E676" Foreground="Black" BorderThickness="0" FontWeight="Bold" FontSize="15" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" Background="{TemplateBinding Background}" CornerRadius="12" Padding="0,14">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#33FF95"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#00C853"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+    </Border>
 </Window>
 "@
     $pickerReader = (New-Object System.Xml.XmlNodeReader ([xml]$pickerXaml))
@@ -397,6 +466,8 @@ $actionPull = {
     $lstFiles = $pickerWindow.FindName("lstFiles")
     
     foreach ($f in $files) { $null = $lstFiles.Items.Add($f) }
+    
+    $pickerWindow.FindName("btnClosePicker").Add_Click({ $pickerWindow.Close() })
     
     $pickerWindow.FindName("btnPullItems").Add_Click({
         $selected = $lstFiles.SelectedItems
