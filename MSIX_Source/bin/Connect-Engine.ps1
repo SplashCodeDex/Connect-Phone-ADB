@@ -571,7 +571,14 @@ $xaml = @"
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid>
+    <Border CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#1D1226" Offset="0.0" />
+                <GradientStop Color="#09090D" Offset="1.0" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="290" />
@@ -603,7 +610,7 @@ $xaml = @"
             <Border.RenderTransform>
                 <TranslateTransform x:Name="menuTrans" X="0" />
             </Border.RenderTransform>
-            <Border Background="Transparent" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
+            <Border Background="Transparent" CornerRadius="34">
                 <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Connect ADB">
@@ -685,6 +692,7 @@ $xaml = @"
         </Border>
         </Border>
     </Grid>
+    </Border>
 </Window>
 "@
 

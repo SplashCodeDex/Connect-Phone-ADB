@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.6.0] - 2026-07-27
+
+### [major] Purple-Black Gradient Restoration & Mica Purge (v1.6.0)
+- **Gradient Background Restored:** Re-introduced the signature deep purple-to-black linear gradient (`#1D1226` to `#09090D`) as the primary background for the entire unified Spatial Menu.
+- **Glassmorphism Purged:** Completely stripped all traces of Windows 11 Mica, acrylic blur, and transparent glass backdrop styling from the visual tree to ensure the gradient perfectly renders as a solid, sleek 34px rounded spatial shape.
+
 ## [v1.5.9] - 2026-07-27
 
 ### [hotfix] XAML UI Tree Syntax Repair (v1.5.9)
