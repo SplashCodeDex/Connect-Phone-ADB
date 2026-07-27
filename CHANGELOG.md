@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.6.8] - 2026-07-27
+
+### [fix] WorkArea-Anchored Positioning & Tray Click Race Fix (v1.6.8)
+- **WorkArea Anchor (Windows 11 UX):** Replaced cursor-follow positioning with `SystemParameters.WorkArea`-anchored placement. The spatial menu now always opens flush against the taskbar corner (bottom-right by default), matching the Windows 11 Fluent Design language used by Volume, Quick Settings, and Clock flyouts.
+- **Tray Click Race Condition:** Fixed the spatial menu silently failing to open. The root cause was a double Visibility guard — `Update-WpfUI` blocks on `adb devices` while the second `Visibility` check ran immediately after and could see a stale Collapsed state. Removed the redundant inner check; `IsVisible` is now the single gatekeeper, and `Show()` is called unconditionally on the open path.
+- **Removed Unnecessary Measure:** Cut the `Measure(Infinity)` call that was called on a hidden window before layout; the window has fixed dimensions so `Width`/`Height` are directly usable for positioning.
+
 ## [v1.6.7] - 2026-07-27
 
 ### [feature] Spatial Menu Bouncy Entrance (v1.6.7)

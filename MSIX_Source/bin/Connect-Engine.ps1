@@ -991,29 +991,25 @@ function Update-WpfUI {
 $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
-        if ($script:wpfWindow.Visibility -eq 'Visible') {
+        if ($script:wpfWindow.IsVisible) {
             $script:wpfWindow.Hide()
             return
         }
         
         Update-WpfUI
-        $script:wpfWindow.Measure([System.Windows.Size]::new([double]::PositiveInfinity, [double]::PositiveInfinity))
-        $script:wpfWindow.Left = [System.Windows.Forms.Cursor]::Position.X - $script:wpfWindow.DesiredSize.Width + 20
-        $script:wpfWindow.Top = [System.Windows.Forms.Cursor]::Position.Y - $script:wpfWindow.DesiredSize.Height + 20
         
-        if ($script:wpfWindow.Left -lt 0) { $script:wpfWindow.Left = 0 }
-        if ($script:wpfWindow.Top -lt 0) { $script:wpfWindow.Top = 0 }
+        # Anchor to WorkArea corner (taskbar-aware, Windows 11 Fluent UX pattern)
+        $workArea = [System.Windows.SystemParameters]::WorkArea
+        $script:wpfWindow.Left = $workArea.Right  - $script:wpfWindow.Width  - 12
+        $script:wpfWindow.Top  = $workArea.Bottom - $script:wpfWindow.Height - 12
         
         $script:wpfWindow.Topmost = $true
         
         # Ensure the app gets OS-level foreground focus so clicking away reliably fires Deactivated
         try { [Microsoft.VisualBasic.Interaction]::AppActivate([System.Diagnostics.Process]::GetCurrentProcess().Id) } catch {}
         
-        if ($script:wpfWindow.Visibility -ne 'Visible') {
-            $script:wpfWindow.Show()
-            $sbPop = $script:wpfWindow.Resources["PopIn"]
-            $sbPop.Begin($script:wpfWindow)
-        }
+        $script:wpfWindow.Show()
+        $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
     }
 })
 # Passive sync initial state on startup
