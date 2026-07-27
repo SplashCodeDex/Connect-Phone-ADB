@@ -988,6 +988,17 @@ function Update-WpfUI {
     }
 }
 
+$script:lastDeactivated = [DateTime]::MinValue
+
+$script:wpfWindow.Add_Deactivated({
+    if ($script:wpfWindow.IsVisible) {
+        $now = [DateTime]::Now
+        if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
+            $script:wpfWindow.Hide()
+        }
+    }
+})
+
 $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
@@ -998,19 +1009,15 @@ $script:notifyIcon.Add_MouseUp({
         
         Update-WpfUI
         
-        $script:wpfWindow.Dispatcher.BeginInvoke(
-            [System.Windows.Threading.DispatcherPriority]::ApplicationIdle,
-            [Action]{
-                # Anchor to WorkArea corner (taskbar-aware, Windows 11 Fluent UX pattern)
-                $workArea = [System.Windows.SystemParameters]::WorkArea
-                $script:wpfWindow.Left = $workArea.Right  - $script:wpfWindow.Width  - 12
-                $script:wpfWindow.Top  = $workArea.Bottom - $script:wpfWindow.Height - 12
-                $script:wpfWindow.Topmost = $true
-                $script:wpfWindow.Show()
-                $script:wpfWindow.Activate()
-                $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
-            }
-        )
+        $workArea = [System.Windows.SystemParameters]::WorkArea
+        $script:wpfWindow.Left = $workArea.Right  - $script:wpfWindow.Width  - 12
+        $script:wpfWindow.Top  = $workArea.Bottom - $script:wpfWindow.Height - 12
+        $script:wpfWindow.Topmost = $true
+        
+        $script:lastDeactivated = [DateTime]::Now
+        $script:wpfWindow.Show()
+        $script:wpfWindow.Activate()
+        $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
     }
 })
 # Passive sync initial state on startup

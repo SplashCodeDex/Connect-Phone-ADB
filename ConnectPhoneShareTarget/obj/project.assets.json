@@ -11,7 +11,7 @@
     "C:\\Users\\NicoDex\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "1.7.0",
     "restore": {
       "projectUniqueName": "W:\\CodeDeX\\Connect-Phone-ADB\\ConnectPhoneShareTarget\\ConnectPhoneShareTarget.csproj",
       "projectName": "ConnectPhoneShareTarget",
