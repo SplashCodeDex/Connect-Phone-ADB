@@ -2,7 +2,7 @@
 
 All notable changes to the Connect Phone ADB project will be documented in this file.
 
-## [Unreleased] - 2026-07-27
+## [v1.3.23] - 2026-07-27
 
 ### [major] TreeView File Explorer (v1.3.18)
 - **Dynamic Phone Files**: Replaced the static, path-restricted ListBox file picker with a dynamic, lazy-loading WPF `<TreeView>` file explorer.
