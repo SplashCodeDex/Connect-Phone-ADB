@@ -6,9 +6,8 @@
 #>
 
 param(
-    [Parameter(Mandatory=$true)]
     [string]$FilePath,
-
+    [string]$FileList,
     [string]$Destination = "/sdcard/Download/"
 )
 
@@ -67,30 +66,15 @@ function Show-Notification {
     }
 }
 
-if (-not (Test-Path $FilePath)) {
-    $b = Show-Notification -Title "Send to Phone Failed" -Message "File not found: $FilePath" -IconType Error
-    Start-Sleep -Seconds 3
-    if ($b) { $b.Dispose() }
-    exit 1
+$paths = @()
+if ($FileList -and (Test-Path $FileList)) {
+    $paths = Get-Content $FileList
+} elseif ($FilePath -and (Test-Path $FilePath)) {
+    $paths = @($FilePath)
 }
 
-$fileName = Split-Path $FilePath -Leaf
-
-# Smart Destination Routing
-$isContainer = (Get-Item $FilePath) -is [System.IO.DirectoryInfo]
-if (-not $isContainer) {
-    $ext = [System.IO.Path]::GetExtension($FilePath).ToLower()
-    $audioExts = @('.mp3', '.flac', '.wav', '.m4a', '.ogg', '.aac')
-    $videoExts = @('.mp4', '.mkv', '.avi', '.mov', '.webm', '.wmv')
-    $imageExts = @('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
-    
-    if ($audioExts -contains $ext) {
-        $Destination = "/sdcard/Music/"
-    } elseif ($videoExts -contains $ext) {
-        $Destination = "/sdcard/Movies/"
-    } elseif ($imageExts -contains $ext) {
-        $Destination = "/sdcard/Pictures/"
-    }
+if ($paths.Count -eq 0) {
+    exit 1
 }
 
 # Determine Gateway IP
@@ -129,16 +113,44 @@ if (-not $targetDevice) {
     exit 1
 }
 
-$b1 = Show-Notification -Title "Sending to Phone..." -Message "Transferring $fileName to $Destination"
+$titleName = if ($paths.Count -eq 1) { Split-Path $paths[0] -Leaf } else { "$($paths.Count) items" }
+$b1 = Show-Notification -Title "Sending to Phone..." -Message "Transferring $titleName"
+
+$successCount = 0
 $startTime = Get-Date
-$pushOutput = adb -s $targetDevice push "$FilePath" "$Destination" 2>&1
+
+foreach ($p in $paths) {
+    if (-not (Test-Path $p)) { continue }
+    
+    $Dest = $Destination
+    $isContainer = (Get-Item $p) -is [System.IO.DirectoryInfo]
+    if (-not $isContainer) {
+        $ext = [System.IO.Path]::GetExtension($p).ToLower()
+        $audioExts = @('.mp3', '.flac', '.wav', '.m4a', '.ogg', '.aac')
+        $videoExts = @('.mp4', '.mkv', '.avi', '.mov', '.webm', '.wmv')
+        $imageExts = @('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
+        
+        if ($audioExts -contains $ext) { $Dest = "/sdcard/Music/" }
+        elseif ($videoExts -contains $ext) { $Dest = "/sdcard/Movies/" }
+        elseif ($imageExts -contains $ext) { $Dest = "/sdcard/Pictures/" }
+    }
+    
+    $pushOutput = adb -s $targetDevice push "$p" "$Dest" 2>&1
+    if ($LASTEXITCODE -eq 0 -or $pushOutput -like "*pushed*") {
+        $successCount++
+    }
+}
+
 $elapsed = [math]::Round(((Get-Date) - $startTime).TotalSeconds, 1)
 if ($b1) { $b1.Dispose() }
 
-if ($LASTEXITCODE -eq 0 -or $pushOutput -like "*pushed*") {
-    $b2 = Show-Notification -Title "Sent to Phone!" -Message "Successfully pushed $fileName (${elapsed}s)"
+if ($successCount -eq $paths.Count) {
+    $b2 = Show-Notification -Title "Sent to Phone!" -Message "Successfully pushed $successCount items (${elapsed}s)"
 } else {
-    $b2 = Show-Notification -Title "Send to Phone Failed" -Message "Error pushing $fileName"
+    $b2 = Show-Notification -Title "Transfer Incomplete" -Message "Sent $successCount of $($paths.Count) items."
 }
+
+if ($FileList -and (Test-Path $FileList)) { Remove-Item $FileList -ErrorAction SilentlyContinue }
+
 Start-Sleep -Seconds 4
 if ($b2) { $b2.Dispose() }

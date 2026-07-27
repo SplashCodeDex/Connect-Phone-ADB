@@ -25,9 +25,16 @@ namespace ConnectPhoneShareTarget
                 if (shareOperation.Data.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.StorageItems))
                 {
                     var items = await shareOperation.Data.GetStorageItemsAsync();
+                    var filePaths = new System.Collections.Generic.List<string>();
                     foreach (var item in items)
                     {
-                        string filePath = item.Path;
+                        filePaths.Add(item.Path);
+                    }
+                    
+                    if (filePaths.Count > 0)
+                    {
+                        string tempFile = Path.Combine(Path.GetTempPath(), $"ConnectPhoneShare_{Guid.NewGuid():N}.txt");
+                        File.WriteAllLines(tempFile, filePaths);
                         
                         string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                         string ps1Path = Path.Combine(exeDir, "bin", "Send-To-Phone.ps1");
@@ -35,7 +42,7 @@ namespace ConnectPhoneShareTarget
                         var startInfo = new ProcessStartInfo
                         {
                             FileName = "powershell.exe",
-                            Arguments = $"-ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -File \"{ps1Path}\" -FilePath \"{filePath}\"",
+                            Arguments = $"-ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -File \"{ps1Path}\" -FileList \"{tempFile}\"",
                             CreateNoWindow = true,
                             UseShellExecute = false
                         };

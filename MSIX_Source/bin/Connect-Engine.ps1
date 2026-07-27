@@ -329,7 +329,7 @@ $xaml = @"
                         <TextBlock Text="&#xE7E8;" />
                     </Button>
                     <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Phone Files">
-                        <TextBlock Text="&#xE896;" />
+                        <TextBlock Text="&#xE8B7;" />
                     </Button>
                     <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#xE895;" />
@@ -444,7 +444,6 @@ $script:wpfWindow.FindName("btnCopyIP").Add_Click({
 })
 
 $actionConnect = {
-    $script:wpfWindow.Hide()
     $res = Invoke-AdbConnect
     if ($res.Success) {
         $script:notifyIcon.Icon = $iconGreen
@@ -457,24 +456,23 @@ $actionConnect = {
         $script:txtStatus.Text = "Status: $($res.Message)"
         Show-Toast -Title "Connection Failed" -Message $res.Message
     }
+    Update-WpfUI
 }
 $script:wpfWindow.FindName("btnConnect").Add_Click({ Invoke-MenuAction $actionConnect })
 $script:wpfWindow.FindName("btnQAConnect").Add_Click({ Invoke-MenuAction $actionConnect })
 
 $actionDisconnect = {
-    $script:wpfWindow.Hide()
     $null = adb disconnect 2>&1
     $script:notifyIcon.Icon = $iconRed
     $script:notifyIcon.Text = "Connect ADB: Disconnected"
     $script:txtStatus.Text = "Status: Disconnected"
     Show-Toast -Title "ADB Disconnected" -Message "Severed all wireless connections."
+    Update-WpfUI
 }
 $script:wpfWindow.FindName("btnDisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 $script:wpfWindow.FindName("btnQADisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 
 $actionPull = {
-    $script:wpfWindow.Hide()
-    
     $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
     if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
     
@@ -576,6 +574,10 @@ $actionPull = {
             
             if ($lsOut -match "Permission denied" -or $lsOut -match "No such file") {
                 $item.Items.Add("(Access Denied)") | Out-Null
+                return
+            }
+            if ($lsOut -match "device offline" -or $lsOut -match "not found") {
+                $item.Items.Add("(Disconnected)") | Out-Null
                 return
             }
             
