@@ -543,7 +543,9 @@ $actionPull = {
     $pickerWindow = [System.Windows.Markup.XamlReader]::Load($pickerReader)
     $tvFiles = $pickerWindow.FindName("tvFiles")
     
-    $pickerWindow.Icon = [System.Windows.Media.Imaging.BitmapFrame]::Create([System.Uri]::new("file:///$($PSScriptRoot.Replace('\','/'))/app-icon.ico"))
+    try {
+        $pickerWindow.Icon = [System.Windows.Media.Imaging.BitmapFrame]::Create([System.Uri]::new("file:///$($PSScriptRoot.Replace('\','/'))/app-icon.ico"))
+    } catch {}
     
     function New-TreeNode($name, $path, $isDir) {
         $node = New-Object System.Windows.Controls.TreeViewItem
