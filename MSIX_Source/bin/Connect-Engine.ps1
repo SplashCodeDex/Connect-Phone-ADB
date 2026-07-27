@@ -32,7 +32,7 @@ function Invoke-AdbConnect {
     
     if (-not $GatewayIP) {
         Add-Type -AssemblyName Microsoft.VisualBasic
-        $GatewayIP = [Microsoft.VisualBasic.Interaction]::InputBox("Not on Phone Hotspot. Enter Phone IP manually (e.g. 192.168.1.15):", "Connect Phone ADB")
+        $GatewayIP = [Microsoft.VisualBasic.Interaction]::InputBox("Not on Phone Hotspot. Enter Phone IP manually (e.g. 192.168.1.15):", "Connect Phone")
         if (-not $GatewayIP) {
             $null = adb disconnect 2>&1
             return @{ Success = $false; Message = "No IP provided." }
@@ -116,7 +116,7 @@ function Set-AutoConnectStatus([bool]$Enable) {
 
 # Create System Tray Icon
 $script:notifyIcon = New-Object System.Windows.Forms.NotifyIcon
-$script:notifyIcon.Text = "Connect Phone ADB: Initializing..."
+$script:notifyIcon.Text = "Connect Phone: Initializing..."
 
 function Create-StatusIcon([System.Drawing.Color]$Color) {
     $iconPath = Join-Path $PSScriptRoot "app-icon.ico"
@@ -182,7 +182,7 @@ function Show-Toast {
         $xml = New-Object Windows.Data.Xml.Dom.XmlDocument
         $xml.LoadXml($xmlString)
         $toast = [Windows.UI.Notifications.ToastNotification]::new($xml)
-        $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Connect Phone ADB")
+        $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Connect Phone")
         $notifier.Show($toast)
     } catch {
         # Fallback to legacy balloon tip
@@ -253,7 +253,7 @@ $xaml = @"
             </Border.Effect>
             <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
-                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Connect ADB">
+                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Connect">
                         <TextBlock Text="&#x1F517;" FontSize="20"/>
                     </Button>
                     <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Disconnect">
@@ -270,14 +270,14 @@ $xaml = @"
                 
                 <Button Name="btnConnect" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
                     <Grid>
-                        <TextBlock Text="Connect Phone ADB" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
+                        <TextBlock Text="Connect Phone" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
                         <TextBlock Text="⌘C" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
                 
-                <Button Name="btnDisconnect" Style="{StaticResource SpatialListItem}">
+                <Button Name="btnDisconnect" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
                     <Grid>
-                        <TextBlock Text="Disconnect ADB" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
+                        <TextBlock Text="Disconnect Phone" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
                         <TextBlock Text="⌘D" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
@@ -316,6 +316,19 @@ function Update-WpfUI {
     } else { 
         $script:txtQAAuto.Foreground = [System.Windows.Media.Brushes]::White
     }
+    
+    $devices = adb devices 2>&1
+    if ($devices -match "\bdevice\b") {
+        $script:wpfWindow.FindName("btnConnect").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnDisconnect").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Visible'
+    } else {
+        $script:wpfWindow.FindName("btnConnect").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnDisconnect").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Collapsed'
+    }
 }
 
 $script:wpfWindow.Add_Deactivated({
@@ -333,7 +346,7 @@ $actionConnect = {
         $script:notifyIcon.Icon = $iconGreen
         $script:notifyIcon.Text = "Connected: $($res.Target)"
         $script:txtStatus.Text = "Connected: $($res.Target)"
-        Show-Toast -Title "ADB Connected" -Message "Successfully connected to $($res.Target)"
+        Show-Toast -Title "Phone Connected" -Message "Successfully connected to $($res.Target)"
     } else {
         $script:notifyIcon.Icon = $iconRed
         $script:notifyIcon.Text = "Disconnected"
@@ -347,9 +360,9 @@ $script:wpfWindow.FindName("btnQAConnect").Add_Click({ Invoke-MenuAction $action
 $actionDisconnect = {
     $null = adb disconnect 2>&1
     $script:notifyIcon.Icon = $iconRed
-    $script:notifyIcon.Text = "Connect Phone ADB: Disconnected"
+    $script:notifyIcon.Text = "Connect Phone: Disconnected"
     $script:txtStatus.Text = "Status: Disconnected"
-    Show-Toast -Title "ADB Disconnected" -Message "Severed all ADB connections."
+    Show-Toast -Title "Phone Disconnected" -Message "Severed all wireless connections."
 }
 $script:wpfWindow.FindName("btnDisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 $script:wpfWindow.FindName("btnQADisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
@@ -406,7 +419,7 @@ $actionAuto = {
     $newState = -not (Get-AutoConnectStatus)
     Set-AutoConnectStatus -Enable $newState
     if ($newState) {
-        Show-Toast -Title "Auto-Connect Enabled" -Message "ADB will auto-connect whenever PC joins phone hotspot."
+        Show-Toast -Title "Auto-Connect Enabled" -Message "Will auto-connect whenever PC joins phone hotspot."
     } else {
         Show-Toast -Title "Auto-Connect Disabled" -Message "Auto-connection trigger removed."
     }
@@ -443,10 +456,10 @@ if ($initialRes.Success) {
     $script:txtStatus.Text = "Connected: $($initialRes.Target)"
 } else {
     $script:notifyIcon.Icon = $iconRed
-    $script:notifyIcon.Text = "Connect Phone ADB: Disconnected"
+    $script:notifyIcon.Text = "Connect Phone: Disconnected"
     $script:txtStatus.Text = "Status: Disconnected"
 }
 
-Show-Toast -Title "Connect Phone ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
+Show-Toast -Title "Connect Phone Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
 
 [System.Windows.Forms.Application]::Run()
