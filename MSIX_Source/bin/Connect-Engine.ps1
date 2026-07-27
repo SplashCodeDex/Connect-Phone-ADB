@@ -357,10 +357,48 @@ $script:wpfWindow.FindName("btnQADisconnect").Add_Click({ Invoke-MenuAction $act
 $actionPull = {
     $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
     if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
-    Show-Toast -Title "Pulling Downloads" -Message "Pulling /sdcard/Download from phone..."
-    $null = adb pull "/sdcard/Download" $outDir 2>&1
-    Show-Toast -Title "Pull Complete" -Message "Downloads saved to $outDir"
-    Invoke-Item $outDir
+    
+    $files = adb shell ls -1 "/sdcard/Download" 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { $_.Trim() }
+    if (-not $files -or $files -match "No such file") {
+        Show-Toast -Title "Pull Failed" -Message "Could not read /sdcard/Download"
+        return
+    }
+    
+    $pickerXaml = @"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        Title="Select files to pull" Width="400" Height="500" Background="#1C1C1E" WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ListBox Name="lstFiles" Background="#2C2C2E" Foreground="White" SelectionMode="Extended" BorderThickness="0" Margin="0,0,0,10"/>
+        <Button Name="btnPullItems" Grid.Row="1" Content="Pull Selected Files" Background="#00E676" Foreground="Black" Padding="10" BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
+    </Grid>
+</Window>
+"@
+    $pickerReader = (New-Object System.Xml.XmlNodeReader ([xml]$pickerXaml))
+    $pickerWindow = [System.Windows.Markup.XamlReader]::Load($pickerReader)
+    $lstFiles = $pickerWindow.FindName("lstFiles")
+    
+    foreach ($f in $files) { $null = $lstFiles.Items.Add($f) }
+    
+    $pickerWindow.FindName("btnPullItems").Add_Click({
+        $selected = $lstFiles.SelectedItems
+        if ($selected.Count -gt 0) {
+            Show-Toast -Title "Pulling Downloads" -Message "Pulling $($selected.Count) items..."
+            foreach ($item in $selected) {
+                # Escape spaces for the remote shell path, but not for the local path
+                $remotePath = "/sdcard/Download/$item" -replace ' ', '\ '
+                $null = adb pull $remotePath $outDir 2>&1
+            }
+            Show-Toast -Title "Pull Complete" -Message "Saved to Downloads\Phone_ADB"
+            Invoke-Item $outDir
+        }
+        $pickerWindow.Close()
+    })
+    
+    $pickerWindow.ShowDialog() | Out-Null
 }
 $script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull })
 
