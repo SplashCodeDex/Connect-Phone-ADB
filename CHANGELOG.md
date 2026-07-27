@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.5.9] - 2026-07-27
+
+### [hotfix] XAML UI Tree Syntax Repair (v1.5.9)
+- **NotifyIcon Crash Resolved:** Fixed a critical regression where the UI would silently fail to parse its XAML due to an unmatched `<Border>` tag generated during the Parallax upgrade. This previously caused `FindName` bindings to remain null, resulting in the `Text` property exception when clicking the tray icon.
+
 ## [v1.5.8] - 2026-07-27
 
 ### [fix] Hardened Connections & File Explorer UX (v1.5.8)

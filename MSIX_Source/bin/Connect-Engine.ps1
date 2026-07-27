@@ -683,6 +683,7 @@ $xaml = @"
                 </Button>
             </StackPanel>
         </Border>
+        </Border>
     </Grid>
 </Window>
 "@
