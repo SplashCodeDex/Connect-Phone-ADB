@@ -220,29 +220,29 @@ $xaml = @"
             <!-- Window Size Expansion with ElasticEase (Overshoot + Reverse Subtle Overshoot) -->
             <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="1160" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-1160" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="300" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-300" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             
             <!-- Parallax on File Explorer: Slide from Right to Left while fading -->
             <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="6" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.6" BeginTime="0:0:0.1"/>
@@ -253,7 +253,7 @@ $xaml = @"
             <!-- Subtle Parallax on Main Menu: Slide Right slightly -->
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8">
                 <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" />
+                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
@@ -275,13 +275,13 @@ $xaml = @"
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                             </Storyboard>
                         </BeginStoryboard>
@@ -290,13 +290,13 @@ $xaml = @"
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                             </Storyboard>
                         </BeginStoryboard>
@@ -314,13 +314,13 @@ $xaml = @"
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                             </Storyboard>
                         </BeginStoryboard>
@@ -345,13 +345,13 @@ $xaml = @"
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                             </Storyboard>
                         </BeginStoryboard>
@@ -360,13 +360,13 @@ $xaml = @"
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                             </Storyboard>
                         </BeginStoryboard>
@@ -384,13 +384,13 @@ $xaml = @"
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                                 <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="4" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
                             </Storyboard>
                         </BeginStoryboard>
@@ -426,7 +426,7 @@ $xaml = @"
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -444,13 +444,13 @@ $xaml = @"
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -459,13 +459,13 @@ $xaml = @"
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -503,13 +503,13 @@ $xaml = @"
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -527,13 +527,13 @@ $xaml = @"
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -542,13 +542,13 @@ $xaml = @"
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="5" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
                                         </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
