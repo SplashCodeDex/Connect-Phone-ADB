@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.7.0] - 2026-07-27
+
+### [fix] Spatial Menu Tray Click — Dispatcher ApplicationIdle Fix (v1.7.0)
+- **True Root Cause:** When clicking a `NotifyIcon`, Windows queues a WM_ACTIVATE/Deactivate message to the WPF window as part of the tray click sequence. Calling `Show()` synchronously inside `MouseUp` races against this queued message — `Deactivated` fired *after* `Show()`, calling `Hide()` before the user ever saw anything. Neither `AppActivate` nor `Activate()` resolved this because the problem was message ordering, not focus ownership.
+- **Fix:** Wrapped `Show()` + `Activate()` + `PopIn` inside `$wpfWindow.Dispatcher.BeginInvoke(ApplicationIdle)`. This defers the open path until all pending WM_ACTIVATE/Deactivated messages have drained from the WPF Dispatcher queue, guaranteeing `Deactivated` fires *before* `Show()`, not after.
+
+
 ## [v1.6.9] - 2026-07-27
 
 ### [fix] Spatial Menu Tray Click — Deactivated Race Fix (v1.6.9)

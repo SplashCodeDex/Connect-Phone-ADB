@@ -998,15 +998,19 @@ $script:notifyIcon.Add_MouseUp({
         
         Update-WpfUI
         
-        # Anchor to WorkArea corner (taskbar-aware, Windows 11 Fluent UX pattern)
-        $workArea = [System.Windows.SystemParameters]::WorkArea
-        $script:wpfWindow.Left = $workArea.Right  - $script:wpfWindow.Width  - 12
-        $script:wpfWindow.Top  = $workArea.Bottom - $script:wpfWindow.Height - 12
-        
-        $script:wpfWindow.Topmost = $true
-        $script:wpfWindow.Show()
-        $script:wpfWindow.Activate()
-        $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
+        $script:wpfWindow.Dispatcher.BeginInvoke(
+            [System.Windows.Threading.DispatcherPriority]::ApplicationIdle,
+            [Action]{
+                # Anchor to WorkArea corner (taskbar-aware, Windows 11 Fluent UX pattern)
+                $workArea = [System.Windows.SystemParameters]::WorkArea
+                $script:wpfWindow.Left = $workArea.Right  - $script:wpfWindow.Width  - 12
+                $script:wpfWindow.Top  = $workArea.Bottom - $script:wpfWindow.Height - 12
+                $script:wpfWindow.Topmost = $true
+                $script:wpfWindow.Show()
+                $script:wpfWindow.Activate()
+                $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
+            }
+        )
     }
 })
 # Passive sync initial state on startup
