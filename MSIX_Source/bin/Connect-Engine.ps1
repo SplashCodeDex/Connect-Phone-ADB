@@ -542,12 +542,12 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Activate()
     }
 })
-# Sync initial state & start
-$initialRes = Invoke-AdbConnect
-if ($initialRes.Success) {
+# Passive sync initial state on startup
+$devices = adb devices 2>&1
+if ($devices -match "((?:\d{1,3}\.){3}\d{1,3}:5555)\s+device") {
     $script:notifyIcon.Icon = $iconGreen
-    $script:notifyIcon.Text = "Connected: $($initialRes.Target)"
-    $script:txtStatus.Text = "Connected: $($initialRes.Target)"
+    $script:notifyIcon.Text = "Connected: $($Matches[1])"
+    $script:txtStatus.Text = "Connected: $($Matches[1])"
 } else {
     $script:notifyIcon.Icon = $iconRed
     $script:txtStatus.Text = "Status: Disconnected"
