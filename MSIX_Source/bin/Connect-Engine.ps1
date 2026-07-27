@@ -28,6 +28,15 @@ if ($PSScriptRoot -match "WindowsApps") {
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class DwmApi {
+    [DllImport("dwmapi.dll")]
+    public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+}
+"@
+
 Add-Type -AssemblyName PresentationFramework
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -213,9 +222,12 @@ function Show-Toast {
 $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStyle="None" Background="Transparent"
         Topmost="True" ShowInTaskbar="False" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
     <Window.Resources>
         <Style x:Key="SpatialListItem" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
@@ -319,7 +331,7 @@ $xaml = @"
         </Style>
     </Window.Resources>
     <Border Background="Transparent" Padding="0">
-        <Border Background="#1C1C1E" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
+        <Border Background="Transparent" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
             <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Connect ADB">
@@ -405,6 +417,20 @@ $xaml = @"
 
 $reader = (New-Object System.Xml.XmlNodeReader ([xml]$xaml))
 $script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
+
+$script:wpfWindow.Add_SourceInitialized({
+    $helper = [System.Windows.Interop.WindowInteropHelper]::new($script:wpfWindow)
+    $hwnd = $helper.Handle
+    
+    # 20 = DWMWA_USE_IMMERSIVE_DARK_MODE
+    $trueValue = 1
+    [DwmApi]::DwmSetWindowAttribute($hwnd, 20, [ref]$trueValue, 4)
+    
+    # 38 = DWMWA_SYSTEMBACKDROP_TYPE
+    # 2 = Mica, 3 = Acrylic, 4 = Mica Alt
+    $micaValue = 2
+    [DwmApi]::DwmSetWindowAttribute($hwnd, 38, [ref]$micaValue, 4)
+})
 
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")

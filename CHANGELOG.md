@@ -1,7 +1,11 @@
 # Changelog
 
-## [v1.5.2] - 2026-07-27
+## [v1.5.3] - 2026-07-27
 
+### [minor] Spatial Menu Mica Integration (v1.5.3)
+- **Mica Backdrop**: Applied native Windows 11 Mica Glass (`DWMWA_SYSTEMBACKDROP_TYPE = 2`) to the Spatial Menu (Tray UI), stripping away the solid black background via `WindowChrome` while retaining the native floating UI characteristics.
+
+## [v1.5.2] - 2026-07-27
 ### [fix] Dynamic Connection Syncing & Auto-Connect Fallback (v1.5.2)
 - **Auto-Connect Fallback:** Clicking 'Phone Files' when no device is connected now automatically attempts to connect using the supplied IP Address before pulling.
 - **Dynamic Connection Syncing:** Refactored the Tray Menu connection logic to actively resync and extract the `<ip:port>` natively every time the menu is opened, addressing edge-cases where background connections didn't update the UI.
