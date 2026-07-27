@@ -19,6 +19,20 @@ namespace ConnectPhoneShareTarget
         [STAThread]
         static void Main(string[] args)
         {
+            if (args.Length >= 2 && args[0] == "--pull")
+            {
+                string targetDevice = args[1];
+                var app = new Application();
+                app.Run(new PickerWindow(targetDevice));
+                return;
+            }
+
+            var program = new Program();
+            program.Run();
+        }
+
+        public void Run()
+        {
             AppDomain.CurrentDomain.UnhandledException += (s, e) => File.WriteAllText(Path.Combine(Path.GetTempPath(), $"ConnectPhoneCrash_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), e.ExceptionObject.ToString());
             
             var activatedArgs = AppInstance.GetActivatedEventArgs();
