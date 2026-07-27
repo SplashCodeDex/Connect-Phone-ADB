@@ -370,16 +370,16 @@ $script:wpfWindow.FindName("btnDisconnect").Add_Click({ Invoke-MenuAction $actio
 $script:wpfWindow.FindName("btnQADisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 
 $actionPull = {
+    $script:wpfWindow.Hide()
+    
     $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
     if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
     
     $files = adb shell ls -1 "/sdcard/Download" 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { $_.Trim() }
-    if (-not $files -or $files -match "No such file") {
-        Show-Toast -Title "Pull Failed" -Message "Could not read /sdcard/Download"
+    if (-not $files -or $files -match "No such file" -or $files -match "no devices") {
+        Show-Toast -Title "Pull Failed" -Message "Could not read /sdcard/Download. Make sure phone is connected."
         return
     }
-    
-    $script:wpfWindow.Hide()
     
     $pickerXaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -484,7 +484,7 @@ $actionPull = {
         $pickerWindow.Close()
     })
     
-    $pickerWindow.ShowDialog() | Out-Null
+    $pickerWindow.Show()
 }
 $script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull })
 $script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
