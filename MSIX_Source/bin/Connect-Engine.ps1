@@ -375,9 +375,17 @@ $actionPull = {
     $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
     if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
     
-    $files = adb shell ls -1 "/sdcard/Download" 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { $_.Trim() }
+    $devicesOutput = adb devices 2>&1
+    $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' } | Select-Object -First 1)
+    if (-not $connectedDevice) {
+        Show-Toast -Title "Pull Failed" -Message "No phone connected."
+        return
+    }
+    $target = $connectedDevice.Split()[0].Trim()
+    
+    $files = adb -s $target shell ls -1 "/sdcard/Download" 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { $_.Trim() }
     if (-not $files -or $files -match "No such file" -or $files -match "no devices") {
-        Show-Toast -Title "Pull Failed" -Message "Could not read /sdcard/Download. Make sure phone is connected."
+        Show-Toast -Title "Pull Failed" -Message "Could not read /sdcard/Download. Ensure storage is accessible."
         return
     }
     
@@ -472,14 +480,32 @@ $actionPull = {
     $pickerWindow.FindName("btnPullItems").Add_Click({
         $selected = $lstFiles.SelectedItems
         if ($selected.Count -gt 0) {
-            Show-Toast -Title "Pulling Downloads" -Message "Pulling $($selected.Count) items..."
-            foreach ($item in $selected) {
-                # Escape spaces for the remote shell path, but not for the local path
-                $remotePath = "/sdcard/Download/$item" -replace ' ', '\ '
-                $null = adb pull $remotePath $outDir 2>&1
+            $filesToPull = @($selected | ForEach-Object { $_ })
+            Show-Toast -Title "Pulling Downloads" -Message "Pulling $($filesToPull.Count) items in background..."
+            
+            $jobScript = {
+                param($target, $outDir, $filesToPull, $adbExe, $iconPath)
+                foreach ($item in $filesToPull) {
+                    $remotePath = "/sdcard/Download/$item"
+                    & $adbExe -s $target pull $remotePath $outDir | Out-Null
+                }
+                
+                try {
+                    [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+                    [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom, ContentType = WindowsRuntime] | Out-Null
+                    $xmlString = @"
+<toast><visual><binding template="ToastGeneric"><text>Pull Complete</text><text>Saved to Downloads\Phone_ADB</text><image placement="appLogoOverride" hint-crop="none" src="file:///$($iconPath -replace '\\', '/')"/></binding></visual></toast>
+"@
+                    $xml = New-Object Windows.Data.Xml.Dom.XmlDocument
+                    $xml.LoadXml($xmlString)
+                    $toast = [Windows.UI.Notifications.ToastNotification]::new($xml)
+                    $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Connect Phone")
+                    $notifier.Show($toast)
+                } catch {}
+                
+                Invoke-Item $outDir
             }
-            Show-Toast -Title "Pull Complete" -Message "Saved to Downloads\Phone_ADB"
-            Invoke-Item $outDir
+            Start-Job -ScriptBlock $jobScript -ArgumentList $target, $outDir, $filesToPull, "$PSScriptRoot\adb.exe", "$PSScriptRoot\app-icon.ico" | Out-Null
         }
         $pickerWindow.Close()
     })
