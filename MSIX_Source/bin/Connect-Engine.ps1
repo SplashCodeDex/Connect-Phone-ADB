@@ -253,13 +253,13 @@ $xaml = @"
             </Border.Effect>
             <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
-                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Connect">
+                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Connect Phone">
                         <TextBlock Text="&#x1F517;" FontSize="20"/>
                     </Button>
                     <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Disconnect">
                         <TextBlock Text="&#x26A1;" FontSize="20"/>
                     </Button>
-                    <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Pull Downloads">
+                    <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Phone Files">
                         <TextBlock Text="&#x1F4E5;" FontSize="20"/>
                     </Button>
                     <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Toggle Auto-Connect">
@@ -287,7 +287,7 @@ $xaml = @"
                 
                 <Button Name="btnPull" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
                     <Grid>
-                        <TextBlock Text="Pull Downloads" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
+                        <TextBlock Text="Phone Files" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
                         <TextBlock Text="⌘P" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
@@ -339,7 +339,6 @@ $script:wpfWindow.Add_Deactivated({
 })
 
 function Invoke-MenuAction([scriptblock]$Action) {
-    $script:wpfWindow.Hide()
     & $Action
 }
 
