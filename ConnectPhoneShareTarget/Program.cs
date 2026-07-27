@@ -44,6 +44,22 @@ namespace ConnectPhoneShareTarget
                 
                 shareOperation.ReportCompleted();
             }
+            else
+            {
+                // Normal Launch (e.g. from Start Menu or Startup Task)
+                string exeDir = AppDomain.CurrentDomain.BaseDirectory;
+                string ps1Path = Path.Combine(exeDir, "bin", "Connect-Engine.ps1");
+                
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = $"-ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -File \"{ps1Path}\"",
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                };
+                
+                Process.Start(startInfo);
+            }
         }
     }
 }

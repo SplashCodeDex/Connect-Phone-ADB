@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ConnectPhoneShareTarget")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+601a4013af77adec1063042bc843ec3e0b125b1c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2a067ada8b4e771ad45fb8cbd82d130720a4b667")]
 [assembly: System.Reflection.AssemblyProductAttribute("ConnectPhoneShareTarget")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ConnectPhoneShareTarget")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

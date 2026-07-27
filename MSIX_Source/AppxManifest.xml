@@ -50,6 +50,11 @@
             <uap:DataFormat>StorageItems</uap:DataFormat>
           </uap:ShareTarget>
         </uap:Extension>
+        
+        <!-- Native MSIX Startup Task -->
+        <desktop:Extension Category="windows.startupTask" Executable="ConnectPhoneShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="ConnectPhoneStartup" Enabled="true" DisplayName="Connect Phone ADB Engine" />
+        </desktop:Extension>
       </Extensions>
     </Application>
   </Applications>
