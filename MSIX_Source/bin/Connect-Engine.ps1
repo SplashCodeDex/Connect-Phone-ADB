@@ -523,6 +523,33 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
     [System.Windows.Forms.Application]::Exit()
 })
 
+$script:wpfWindow.Add_KeyDown({
+    param($sender, $e)
+    if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
+        $script:wpfWindow.Hide()
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::C) {
+        if ($script:wpfWindow.FindName("btnConnect").Visibility -eq 'Visible') {
+            Invoke-MenuAction $actionConnect
+        }
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::D) {
+        if ($script:wpfWindow.FindName("btnDisconnect").Visibility -eq 'Visible') {
+            Invoke-MenuAction $actionDisconnect
+        }
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::P) {
+        Invoke-MenuAction $actionPull
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::Q) {
+        $script:wpfWindow.Hide()
+        $script:notifyIcon.Visible = $false
+        $script:notifyIcon.Dispose()
+        [System.Windows.Forms.Application]::Exit()
+        $e.Handled = $true
+    }
+})
+
 $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {

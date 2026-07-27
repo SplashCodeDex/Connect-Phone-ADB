@@ -37,6 +37,14 @@ namespace ConnectPhoneShareTarget
             catch { }
 
             LoadRoot();
+            
+            this.Loaded += (s, e) => 
+            {
+                if (tvFiles.Items.Count > 0 && tvFiles.Items[0] is TreeViewItem rootNode)
+                {
+                    rootNode.IsExpanded = true;
+                }
+            };
         }
 
         private void LoadRoot()
@@ -51,7 +59,6 @@ namespace ConnectPhoneShareTarget
             rootNode.Expanded += Node_Expanded;
             
             tvFiles.Items.Add(rootNode);
-            rootNode.IsExpanded = true;
         }
 
         private async void Node_Expanded(object sender, RoutedEventArgs e)

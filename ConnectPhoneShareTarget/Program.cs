@@ -19,16 +19,23 @@ namespace ConnectPhoneShareTarget
         [STAThread]
         static void Main(string[] args)
         {
-            if (args.Length >= 2 && args[0] == "--pull")
+            try 
             {
-                string targetDevice = args[1];
-                var app = new Application();
-                app.Run(new PickerWindow(targetDevice));
-                return;
-            }
+                if (args.Length >= 2 && args[0] == "--pull")
+                {
+                    string targetDevice = args[1];
+                    var app = new Application();
+                    app.Run(new PickerWindow(targetDevice));
+                    return;
+                }
 
-            var program = new Program();
-            program.Run();
+                var program = new Program();
+                program.Run();
+            }
+            catch (Exception ex)
+            {
+                File.WriteAllText(Path.Combine(Path.GetTempPath(), $"ConnectPhoneCrash_Main_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), ex.ToString());
+            }
         }
 
         public void Run()
