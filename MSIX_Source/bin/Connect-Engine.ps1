@@ -657,10 +657,35 @@ function Load-Directory($dirPath) {
             }
             
             $script:wpfWindow.Dispatcher.Invoke([Action]{
+                $idx = $script:lbFiles.Items.Count
+                
                 $item = New-Object System.Windows.Controls.ListBoxItem
                 $item.Content = @{ Name = $name; FullPath = $full; IsDir = $isDir }
                 $item.ContentTemplate = $template
                 $item.Tag = $full
+                
+                # Staggered Entrance Animation Setup
+                $trans = New-Object System.Windows.Media.TranslateTransform
+                $trans.Y = 80
+                $item.RenderTransform = $trans
+                $item.Opacity = 0
+                
+                $delay = [TimeSpan]::FromMilliseconds($idx * 35) # 35ms stagger per item
+                
+                $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
+                $daY.To = 0
+                $daY.Duration = [TimeSpan]::FromSeconds(0.6)
+                $daY.BeginTime = $delay
+                $daY.EasingFunction = $script:wpfWindow.Resources["BouncyEase"]
+                
+                $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
+                $daOp.To = 1
+                $daOp.Duration = [TimeSpan]::FromSeconds(0.4)
+                $daOp.BeginTime = $delay
+                
+                $trans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
+                $item.BeginAnimation([System.Windows.Controls.ListBoxItem]::OpacityProperty, $daOp)
+                
                 $script:lbFiles.Items.Add($item)
             })
         }
