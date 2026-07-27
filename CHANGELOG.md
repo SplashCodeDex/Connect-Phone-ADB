@@ -6,8 +6,13 @@
 - **ShowDialog Crash Fix**: Fixed a bug where clicking the tray icon when the spatial menu was already active would throw an `InvalidOperationException` due to re-invoking `ShowDialog()`. The tray icon now properly toggles visibility.
 - **Deactivated Event Reliability**: Forced the underlying PowerShell process to gain OS-level foreground lock (`AppActivate`) before showing the WPF overlay. This guarantees that clicking outside the spatial menu reliably fires the `Deactivated` event to auto-hide it.
 
-## [v1.5.5] - 2026-07-27
+## [v1.5.6] - 2026-07-27
 
+### [fix] Absolute Compilation Cleanup & MSIX Packaging Pipeline (v1.5.6)
+- **Compiler Purge:** Triggered a hard re-compile (`dotnet build`) to physically obliterate the deprecated `PickerWindow` from the underlying `ConnectPhoneShareTarget.dll` assembly. The previous MSIX build only contained the source deletions without recompiling the binary.
+- **Automated Pipeline Fix:** Updated `PackMSIX.ps1` to actively trigger `dotnet build -c Release` prior to packaging, ensuring the compiled C# binaries and MSIX payload are fundamentally permanently synced.
+
+## [v1.5.5] - 2026-07-27
 ### [major] Unified Spatial File Explorer & Overshoot UI Rewrite (v1.5.5)
 - **Nuked PickerWindow:** Eliminated the standalone C# File Picker EXE (`PickerWindow.xaml`), consolidating everything back into the core PowerShell engine to honor the strict minimalist protocol.
 - **Fluid Overshoot Shape-Shifting:** Clicking 'Phone Files' now triggers a gorgeous `BackEase` WPF DoubleAnimation that dynamically scales the Spatial Menu diagonally to reveal a nested phone grid-view directly within the Mica surface.

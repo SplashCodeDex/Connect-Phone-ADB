@@ -748,6 +748,7 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
     $script:wpfWindow.Hide()
     $script:notifyIcon.Visible = $false
     $script:notifyIcon.Dispose()
+    Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
     [System.Windows.Forms.Application]::Exit()
 })
 
@@ -776,6 +777,7 @@ $script:wpfWindow.Add_KeyDown({
         $script:wpfWindow.Hide()
         $script:notifyIcon.Visible = $false
         $script:notifyIcon.Dispose()
+        Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
         [System.Windows.Forms.Application]::Exit()
         $e.Handled = $true
     }

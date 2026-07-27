@@ -1,6 +1,12 @@
 param([string]$Configuration = "Release")
 
-$SourceDir = Join-Path $PSScriptRoot "ConnectPhoneShareTarget\bin\$Configuration\net10.0-windows10.0.22000.0"
+$ProjDir = Join-Path $PSScriptRoot "ConnectPhoneShareTarget"
+Write-Host "Building C# Project ($Configuration)..."
+Set-Location $ProjDir
+dotnet build -c $Configuration
+Set-Location $PSScriptRoot
+
+$SourceDir = Join-Path $ProjDir "bin\$Configuration\net10.0-windows10.0.22000.0"
 if (Test-Path $SourceDir) {
     Copy-Item -Path "$SourceDir\*" -Destination (Join-Path $PSScriptRoot "MSIX_Source") -Force -Recurse
 }
