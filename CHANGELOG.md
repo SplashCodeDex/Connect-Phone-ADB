@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.6.5] - 2026-07-27
+
+### [minor] Embedded Avatar Asset (v1.6.5)
+- **Asset Integrity Verification**: Copied the explicitly provided user picture directly into the `MSIX_Source\Assets` payload as `JoeAvatar.jpg`. This inherently avoids missing file WPF parsing errors (`XamlParseException`) upon initialization and successfully complies with the zero placeholder asset project rule (`@GEMINI.md`).
+
 ## [v1.6.6] - 2026-07-27
 
 ### [fix] Spatial Menu Opening Lag (v1.6.6)
