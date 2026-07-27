@@ -10,7 +10,7 @@
   <Identity
     Name="CodeDeX.ConnectPhoneADB"
     Publisher="CN=CodeDeX"
-    Version="1.3.7.0"
+    Version="1.3.8.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
@@ -55,6 +55,13 @@
         <desktop:Extension Category="windows.startupTask" Executable="ConnectPhoneShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
           <desktop:StartupTask TaskId="ConnectPhoneStartup" Enabled="true" DisplayName="Connect Phone ADB Engine" />
         </desktop:Extension>
+
+        <!-- ADB Executable Alias (Bypass Execution Block + Inherit Firewall Rules) -->
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="bin\adb.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="ConnectPhone-adb.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
       </Extensions>
     </Application>
   </Applications>
