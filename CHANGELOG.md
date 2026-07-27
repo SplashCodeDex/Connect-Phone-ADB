@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.6.7] - 2026-07-27
+
+### [feature] Spatial Menu Bouncy Entrance (v1.6.7)
+- **Fluid Animation Physics**: Integrated the signature `BouncyEase` (ElasticEase overshoot-with-reverse-subtle-overshoot) physics directly into the spatial menu's opening sequence. The main window now seamlessly scales up from 85% and glides upwards into position natively using WPF Storyboards when clicking the tray icon.
 ## [v1.6.5] - 2026-07-27
 
 ### [minor] Embedded Avatar Asset (v1.6.5)

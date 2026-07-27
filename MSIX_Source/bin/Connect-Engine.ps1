@@ -235,6 +235,13 @@ $xaml = @"
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
         
+        <Storyboard x:Key="PopIn">
+            <DoubleAnimation Storyboard.TargetName="winScale" Storyboard.TargetProperty="ScaleX" From="0.85" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="winScale" Storyboard.TargetProperty="ScaleY" From="0.85" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="winTrans" Storyboard.TargetProperty="Y" From="15" To="0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.15" />
+        </Storyboard>
+        
         <DataTemplate x:Key="FolderGridTemplate">
             <Border Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}" Margin="10" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
@@ -468,7 +475,13 @@ $xaml = @"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
+    <Border x:Name="mainBorder" CornerRadius="34" BorderBrush="#333333" BorderThickness="1" RenderTransformOrigin="0.5,1">
+        <Border.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleX="1" ScaleY="1" x:Name="winScale" />
+                <TranslateTransform Y="0" x:Name="winTrans" />
+            </TransformGroup>
+        </Border.RenderTransform>
         <Border.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="#1D1226" Offset="0.0" />
@@ -993,10 +1006,13 @@ $script:notifyIcon.Add_MouseUp({
         
         $script:wpfWindow.Topmost = $true
         
+        # Ensure the app gets OS-level foreground focus so clicking away reliably fires Deactivated
         try { [Microsoft.VisualBasic.Interaction]::AppActivate([System.Diagnostics.Process]::GetCurrentProcess().Id) } catch {}
         
         if ($script:wpfWindow.Visibility -ne 'Visible') {
             $script:wpfWindow.Show()
+            $sbPop = $script:wpfWindow.Resources["PopIn"]
+            $sbPop.Begin($script:wpfWindow)
         }
     }
 })
