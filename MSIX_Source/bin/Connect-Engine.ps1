@@ -322,16 +322,19 @@ $xaml = @"
         <Border Background="#1C1C1E" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
             <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
-                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Connect ADB">
+                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />
                     </Button>
-                    <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Disconnect">
+                    <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Disconnect">
                         <TextBlock Text="&#xE7E8;" />
                     </Button>
-                    <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Phone Files">
+                    <Button Name="btnQAMirror" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Mirror Phone">
+                        <TextBlock Text="&#xE8EA;" />
+                    </Button>
+                    <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Phone Files">
                         <TextBlock Text="&#xE8B7;" />
                     </Button>
-                    <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Toggle Auto-Connect">
+                    <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#xE895;" />
                     </Button>
                 </StackPanel>
@@ -369,6 +372,13 @@ $xaml = @"
                     <Grid>
                         <TextBlock Text="Disconnect ADB" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
                         <TextBlock Text="&#x2318;D" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                    </Grid>
+                </Button>
+                
+                <Button Name="btnMirror" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
+                    <Grid>
+                        <TextBlock Text="Mirror Phone" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
+                        <TextBlock Text="&#x2318;M" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
                 
@@ -472,6 +482,42 @@ $actionDisconnect = {
 $script:wpfWindow.FindName("btnDisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 $script:wpfWindow.FindName("btnQADisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 
+$actionMirror = {
+    $statusText = $script:txtStatus.Text
+    $target = $null
+    
+    if ($statusText -match "Connected:\s*(.+)") {
+        $target = $Matches[1]
+    } else {
+        $devicesOutput = adb devices 2>&1
+        $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' } | Select-Object -First 1)
+        if ($connectedDevice) {
+            $target = $connectedDevice.Split()[0].Trim()
+        }
+    }
+    
+    if (-not $target) {
+        Show-Toast -Title "Mirror Failed" -Message "No phone connected over ADB."
+        Update-WpfUI
+        return
+    }
+    
+    $scrcpyExe = Get-Command scrcpy.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+    if (-not $scrcpyExe -and (Test-Path "$PSScriptRoot\scrcpy.exe")) {
+        $scrcpyExe = "$PSScriptRoot\scrcpy.exe"
+    }
+    
+    if ($scrcpyExe) {
+        Show-Toast -Title "Mirroring Phone" -Message "Launching zero-latency screen mirror for $target..."
+        Start-Process -FilePath $scrcpyExe -ArgumentList "-s `"$target`" --window-title `"Connect Phone ADB - Screen Mirror ($target)`"" -WindowStyle Normal
+    } else {
+        Show-Toast -Title "Mirroring Requires scrcpy" -Message "scrcpy.exe not found in PATH or app directory. Place scrcpy.exe in PATH to mirror."
+    }
+    Update-WpfUI
+}
+$script:wpfWindow.FindName("btnMirror").Add_Click({ Invoke-MenuAction $actionMirror })
+$script:wpfWindow.FindName("btnQAMirror").Add_Click({ Invoke-MenuAction $actionMirror })
+
 $actionPull = {
     $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
     if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
@@ -537,6 +583,9 @@ $script:wpfWindow.Add_KeyDown({
         if ($script:wpfWindow.FindName("btnDisconnect").Visibility -eq 'Visible') {
             Invoke-MenuAction $actionDisconnect
         }
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::M) {
+        Invoke-MenuAction $actionMirror
         $e.Handled = $true
     } elseif ($e.Key -eq [System.Windows.Input.Key]::P) {
         Invoke-MenuAction $actionPull

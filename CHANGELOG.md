@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.5.2] - 2026-07-27
+
+### [minor] Mirror Phone Quick Action & Shortcut (v1.5.2)
+- **CellPhone Segoe Fluent Icon**: Added Phone icon button (`&#xE8EA;`) to the top spatial quick action bar and spatial menu list item (`Mirror Phone`).
+- **Scrcpy Auto-Detection & Launch**: Integrated zero-latency screen mirroring launcher via `scrcpy.exe -s <target>`. Auto-detects `scrcpy` in system `PATH` or local `bin` folder, and gracefully prompts if missing.
+- **Keyboard Shortcut**: Bound key `M` (`⌘M`) to trigger Mirror Phone instantly.
+
 ## [v1.5.1] - 2026-07-27
 
 ### [minor] Spatial Menu Folder Icon & Persist Open (v1.5.1)
