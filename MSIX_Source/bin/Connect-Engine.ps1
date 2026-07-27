@@ -348,6 +348,7 @@ function Invoke-MenuAction([scriptblock]$Action) {
 }
 
 $actionConnect = {
+    $script:wpfWindow.Hide()
     $res = Invoke-AdbConnect
     if ($res.Success) {
         $script:notifyIcon.Icon = $iconGreen
@@ -365,6 +366,7 @@ $script:wpfWindow.FindName("btnConnect").Add_Click({ Invoke-MenuAction $actionCo
 $script:wpfWindow.FindName("btnQAConnect").Add_Click({ Invoke-MenuAction $actionConnect })
 
 $actionDisconnect = {
+    $script:wpfWindow.Hide()
     $null = adb disconnect 2>&1
     $script:notifyIcon.Icon = $iconRed
     $script:notifyIcon.Text = "Connect ADB: Disconnected"
@@ -521,6 +523,7 @@ $script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull 
 $script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
 
 $actionAuto = {
+    $script:wpfWindow.Hide()
     $newState = -not (Get-AutoConnectStatus)
     Set-AutoConnectStatus -Enable $newState
     if ($newState) {
@@ -561,8 +564,12 @@ if ($initialRes.Success) {
     $script:txtStatus.Text = "Connected: $($initialRes.Target)"
 } else {
     $script:notifyIcon.Icon = $iconRed
-    $script:notifyIcon.Text = "Connect ADB: Disconnected"
     $script:txtStatus.Text = "Status: Disconnected"
+}
+
+# Fix MSIX Version Path Drift: Re-register the task if already enabled so the path points to the new updated folder
+if (Get-AutoConnectStatus) {
+    Set-AutoConnectStatus -Enable $true
 }
 
 Show-Toast -Title "Connect ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
