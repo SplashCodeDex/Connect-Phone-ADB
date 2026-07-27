@@ -2,7 +2,12 @@
 
 All notable changes to the Connect Phone ADB project will be documented in this file.
 
-## [v1.3.23] - 2026-07-27
+## [Unreleased] - 2026-07-27
+
+### [major] The Blip Engine Rewrite (v1.4.0)
+- **Hardcore C# Transfer Engine**: Completely retired `Send-To-Phone.ps1`. The C# `ConnectPhoneShareTarget` application is now a fully-fledged WPF streaming engine.
+- **Byte-Level Auto-Resume**: The engine now polls the Android device for existing file sizes and streams bytes directly via `adb shell cat >>`, enabling seamless mid-byte resume if a transfer fails or network drops.
+- **Live Progress UI**: Replaced standard Toast notifications with a beautiful, floating WPF window that displays a live progress bar, precise megabytes-per-second (MB/s) speed tracker, and taskbar progress states.
 
 ### [major] TreeView File Explorer (v1.3.18)
 - **Dynamic Phone Files**: Replaced the static, path-restricted ListBox file picker with a dynamic, lazy-loading WPF `<TreeView>` file explorer.
