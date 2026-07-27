@@ -259,6 +259,9 @@ $xaml = @"
                     <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Disconnect">
                         <TextBlock Text="&#x26A1;" FontSize="20"/>
                     </Button>
+                    <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Pull Downloads">
+                        <TextBlock Text="&#x1F4E5;" FontSize="20"/>
+                    </Button>
                     <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#x1F504;" FontSize="20"/>
                     </Button>
@@ -414,6 +417,7 @@ $actionPull = {
     $pickerWindow.ShowDialog() | Out-Null
 }
 $script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull })
+$script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
 
 $actionAuto = {
     $newState = -not (Get-AutoConnectStatus)
