@@ -1,32 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop10="http://schemas.microsoft.com/appx/manifest/desktop/windows10/10" IgnorableNamespaces="uap uap3 rescap desktop desktop10">
-  <Identity Name="CodeDeX.ConnectPhoneADB" Publisher="CN=CodeDeX" Version="1.0.0.0" ProcessorArchitecture="x64" />
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  IgnorableNamespaces="uap uap3 rescap desktop">
+
+  <Identity
+    Name="CodeDeX.ConnectPhoneADB"
+    Publisher="CN=CodeDeX"
+    Version="1.0.0.0"
+    ProcessorArchitecture="x64" />
+
   <Properties>
     <DisplayName>Connect Phone ADB</DisplayName>
     <PublisherDisplayName>CodeDeX</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
+
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22621.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.22621.0" />
   </Dependencies>
+
   <Resources>
-    <Resource Language="en-us" />
+    <Resource Language="en-us"/>
   </Resources>
+
   <Applications>
-    <Application Id="App" Executable="ConnectPhoneShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="Connect Phone ADB" Description="Send files directly to your ADB connected phone" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
+    <Application
+      Id="App"
+      Executable="ConnectPhoneShareTarget.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Connect Phone ADB"
+        Description="Send files directly to your ADB connected phone"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
       </uap:VisualElements>
       <Extensions>
         <!-- Share Target Definition -->
-        <desktop10:Extension Category="windows.shareTarget">
-          <desktop10:ShareTarget>
-            <desktop10:SupportedFileTypes>
-              <desktop10:SupportsAnyFileType />
-            </desktop10:SupportedFileTypes>
-            <desktop10:DataFormat>StorageItems</desktop10:DataFormat>
-          </desktop10:ShareTarget>
-        </desktop10:Extension>
+        <uap:Extension Category="windows.shareTarget">
+          <uap:ShareTarget>
+            <uap:SupportedFileTypes>
+              <uap:SupportsAnyFileType />
+            </uap:SupportedFileTypes>
+            <uap:DataFormat>StorageItems</uap:DataFormat>
+          </uap:ShareTarget>
+        </uap:Extension>
+        
         <!-- Native MSIX Startup Task -->
         <desktop:Extension Category="windows.startupTask" Executable="ConnectPhoneShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
           <desktop:StartupTask TaskId="ConnectPhoneStartup" Enabled="true" DisplayName="Connect Phone ADB Engine" />
@@ -34,6 +58,7 @@
       </Extensions>
     </Application>
   </Applications>
+
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
     <Capability Name="privateNetworkClientServer" />
