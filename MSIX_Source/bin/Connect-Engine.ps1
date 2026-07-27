@@ -427,8 +427,12 @@ function Invoke-MenuAction([scriptblock]$Action) {
 $script:wpfWindow.FindName("btnCopyIP").Add_Click({
     $statusText = $script:txtStatus.Text
     if ($statusText -match "Connected:\s*(.+)") {
-        Set-Clipboard -Value $Matches[1]
-        Show-Toast -Title "Copied" -Message "IP Address copied to clipboard: $($Matches[1])"
+        try {
+            Set-Clipboard -Value $Matches[1] -ErrorAction Stop
+            Show-Toast -Title "Copied" -Message "IP Address copied to clipboard: $($Matches[1])"
+        } catch {
+            Show-Toast -Title "Clipboard Error" -Message "Could not copy IP. Your clipboard is locked by another app."
+        }
     }
 })
 
@@ -467,13 +471,23 @@ $actionPull = {
     $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
     if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
     
-    $devicesOutput = adb devices 2>&1
-    $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' } | Select-Object -First 1)
-    if (-not $connectedDevice) {
+    $statusText = $script:txtStatus.Text
+    $target = $null
+    
+    if ($statusText -match "Connected:\s*(.+)") {
+        $target = $Matches[1]
+    } else {
+        $devicesOutput = adb devices 2>&1
+        $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' } | Select-Object -First 1)
+        if ($connectedDevice) {
+            $target = $connectedDevice.Split()[0].Trim()
+        }
+    }
+    
+    if (-not $target) {
         Show-Toast -Title "Pull Failed" -Message "No phone connected."
         return
     }
-    $target = $connectedDevice.Split()[0].Trim()
     
     $files = adb -s $target shell ls -1 "/sdcard/Download" 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { $_.Trim() }
     if (-not $files -or $files -match "No such file" -or $files -match "no devices") {
