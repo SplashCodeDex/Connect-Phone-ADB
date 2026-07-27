@@ -650,7 +650,6 @@ $script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull 
 $script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
 
 $actionAuto = {
-    $script:wpfWindow.Hide()
     $newState = -not (Get-AutoConnectStatus)
     Set-AutoConnectStatus -Enable $newState
     if ($newState) {
@@ -658,6 +657,7 @@ $actionAuto = {
     } else {
         Show-Toast -Title "Auto-Connect Disabled" -Message "Auto-connection trigger removed."
     }
+    Update-WpfUI
 }
 $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
 
