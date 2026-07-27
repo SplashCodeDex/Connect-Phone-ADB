@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
+    <Version>1.7.0</Version>
     <!-- We target windows TFM to get access to WinRT APIs natively -->
   </PropertyGroup>
 
