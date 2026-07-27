@@ -216,46 +216,23 @@ $xaml = @"
         Width="290" Height="460"
         ResizeMode="NoResize">
     <Window.Resources>
+        <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
         <Storyboard x:Key="ExpandMenu">
             <!-- Window Size Expansion with ElasticEase (Overshoot + Reverse Subtle Overshoot) -->
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="1160" Duration="0:0:0.8">
-                <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-1160" Duration="0:0:0.8">
-                <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="300" Duration="0:0:0.8">
-                <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-300" Duration="0:0:0.8">
-                <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="300" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-300" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <!-- Parallax on File Explorer: Slide from Right to Left while fading -->
-            <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8">
-                <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.6" BeginTime="0:0:0.1"/>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
             
             <!-- Subtle Parallax on Main Menu: Slide Right slightly -->
-            <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8">
-                <DoubleAnimation.EasingFunction>
-                    <ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
         
         <DataTemplate x:Key="FolderGridTemplate">
@@ -274,30 +251,18 @@ $xaml = @"
                     <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -313,15 +278,9 @@ $xaml = @"
                     <EventTrigger RoutedEvent="PreviewMouseUp">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -344,30 +303,18 @@ $xaml = @"
                     <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -383,15 +330,9 @@ $xaml = @"
                     <EventTrigger RoutedEvent="PreviewMouseUp">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="8" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -425,9 +366,7 @@ $xaml = @"
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -443,30 +382,18 @@ $xaml = @"
                             <EventTrigger RoutedEvent="PreviewMouseUp">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="MouseLeave">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -502,15 +429,9 @@ $xaml = @"
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -526,30 +447,18 @@ $xaml = @"
                             <EventTrigger RoutedEvent="PreviewMouseUp">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="MouseLeave">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5">
-                                            <DoubleAnimation.EasingFunction><ElasticEase Oscillations="1" Springiness="7" EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -640,31 +549,48 @@ $xaml = @"
                 </StackPanel>
                 <Separator Background="#2C2C2E" Height="1" Margin="16,0" />
                 
-                <Button Name="btnConnect" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
+                <!-- TODO: File sharing user list integration -->
+                <TextBlock Text="Nearby Users" FontSize="13" Foreground="#A0A0A0" FontWeight="SemiBold" Margin="12,12,0,4" />
+
+                <!-- User Joe -->
+                <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                     <Grid>
-                        <TextBlock Text="Connect ADB" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
-                        <TextBlock Text="&#x2318;C" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse Fill="#4A4A4C" />
+                            <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="White" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Ellipse Width="12" Height="12" Fill="#00E676" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
+                            <TextBlock Text="In a world far away" FontSize="13" Foreground="#A0A0A0" />
+                        </StackPanel>
                     </Grid>
                 </Button>
-                
-                <Button Name="btnDisconnect" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
+
+                <!-- User Bill -->
+                <Button x:Name="btnUserBill" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                     <Grid>
-                        <TextBlock Text="Disconnect ADB" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
-                        <TextBlock Text="&#x2318;D" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
-                    </Grid>
-                </Button>
-                
-                <Button Name="btnMirror" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
-                    <Grid>
-                        <TextBlock Text="Mirror Phone" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
-                        <TextBlock Text="&#x2318;M" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
-                    </Grid>
-                </Button>
-                
-                <Button Name="btnPull" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
-                    <Grid>
-                        <TextBlock Text="Phone Files" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
-                        <TextBlock Text="&#x2318;P" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse Fill="#3A3A3C" />
+                            <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="White" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Ellipse Width="12" Height="12" Fill="#00E676" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Bill Gates" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
+                            <TextBlock Text="What I'm doing here?" FontSize="13" Foreground="#A0A0A0" />
+                        </StackPanel>
                     </Grid>
                 </Button>
                 
@@ -792,14 +718,10 @@ function Update-WpfUI {
     
     $devices = adb devices 2>&1
     if ($devices -match "\bdevice\b") {
-        $script:wpfWindow.FindName("btnConnect").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("btnDisconnect").Visibility = 'Visible'
         $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Visible'
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
     } else {
-        $script:wpfWindow.FindName("btnConnect").Visibility = 'Visible'
-        $script:wpfWindow.FindName("btnDisconnect").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Visible'
         $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
@@ -847,7 +769,6 @@ $actionConnect = {
     }
     Update-WpfUI
 }
-$script:wpfWindow.FindName("btnConnect").Add_Click({ Invoke-MenuAction $actionConnect })
 $script:wpfWindow.FindName("btnQAConnect").Add_Click({ Invoke-MenuAction $actionConnect })
 
 $actionDisconnect = {
@@ -858,7 +779,6 @@ $actionDisconnect = {
     Show-Toast -Title "ADB Disconnected" -Message "Severed all wireless connections."
     Update-WpfUI
 }
-$script:wpfWindow.FindName("btnDisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 $script:wpfWindow.FindName("btnQADisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 
 $actionMirror = {
@@ -896,7 +816,6 @@ $actionMirror = {
     }
     Update-WpfUI
 }
-$script:wpfWindow.FindName("btnMirror").Add_Click({ Invoke-MenuAction $actionMirror })
 $script:wpfWindow.FindName("btnQAMirror").Add_Click({ Invoke-MenuAction $actionMirror })
 
 $actionPull = {
@@ -938,7 +857,6 @@ $actionPull = {
     
     $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
 }
-$script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull })
 $script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
 
 $actionAuto = {
@@ -967,12 +885,12 @@ $script:wpfWindow.Add_KeyDown({
         $script:wpfWindow.Hide()
         $e.Handled = $true
     } elseif ($e.Key -eq [System.Windows.Input.Key]::C) {
-        if ($script:wpfWindow.FindName("btnConnect").Visibility -eq 'Visible') {
+        if ($script:wpfWindow.FindName("btnQAConnect").Visibility -eq 'Visible') {
             Invoke-MenuAction $actionConnect
         }
         $e.Handled = $true
     } elseif ($e.Key -eq [System.Windows.Input.Key]::D) {
-        if ($script:wpfWindow.FindName("btnDisconnect").Visibility -eq 'Visible') {
+        if ($script:wpfWindow.FindName("btnQADisconnect").Visibility -eq 'Visible') {
             Invoke-MenuAction $actionDisconnect
         }
         $e.Handled = $true

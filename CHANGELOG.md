@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.6.2] - 2026-07-27
+
+### [feature] Spatial Menu User List (v1.6.2)
+- **UI Overhaul**: Replaced the redundant legacy text buttons (Connect, Mirror, Pull) with a beautifully animated `Nearby Users` list for upcoming local/global file sharing features.
+- **Premium Aesthetics**: Implemented fluid floating parallax micro-animations, vibrant online presence badges with stroke cutouts, and 34px corner-radii matching the primary app window.
+- **Shortcut Hardening**: Migrated keyboard shortcuts (`Ctrl+C`, `Ctrl+D`) to depend on the Quick Action icons' visibility, guaranteeing shortcuts continue to function flawlessly despite UI restructuring.
+
 ## [v1.6.1] - 2026-07-27
 
 ### [minor] Ponytail Cuts (v1.6.1)
