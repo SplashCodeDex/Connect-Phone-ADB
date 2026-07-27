@@ -707,10 +707,15 @@ $script:txtCurrentDir = $script:wpfWindow.FindName("txtCurrentDir")
 $script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")
 $script:currentTarget = ""
 $script:adbOutputSub = $null
+$script:adbLsProc = $null
 
 function Load-Directory($dirPath) {
     $script:txtCurrentDir.Text = $dirPath
     $script:lbFiles.Items.Clear()
+    
+    if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
+        try { $script:adbLsProc.Kill() } catch {}
+    }
     
     $proc = New-Object System.Diagnostics.Process
     $proc.StartInfo.FileName = "adb.exe"
@@ -747,6 +752,7 @@ function Load-Directory($dirPath) {
     if ($script:adbOutputSub) { Unregister-Event -SourceIdentifier $script:adbOutputSub.Name -ErrorAction SilentlyContinue }
     $script:adbOutputSub = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action $action
     $proc.Start() | Out-Null
+    $script:adbLsProc = $proc
     $proc.BeginOutputReadLine()
 }
 
@@ -783,7 +789,7 @@ $script:lbFiles.Add_MouseDoubleClick({
             $exePath = if ($PSScriptRoot -match "WindowsApps") { "ConnectPhone-adb.exe" } else { Join-Path $appRoot "bin\adb.exe" }
             Start-Job -ScriptBlock $actionBg -ArgumentList $exePath, $script:currentTarget, $remotePath, $outDir
             
-            $script:wpfWindow.Close()
+            $script:wpfWindow.Hide()
         }
     }
 })
@@ -869,7 +875,9 @@ $actionMirror = {
         $target = $Matches[1]
     } else {
         $devicesOutput = adb devices 2>&1
-        $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' } | Select-Object -First 1)
+        $connectedDevice = ($devicesOutput | Where-Object { $_ -match ':5555\s+device' })
+        if (-not $connectedDevice) { $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
+        $connectedDevice = $connectedDevice | Select-Object -First 1
         if ($connectedDevice) {
             $target = $connectedDevice.Split()[0].Trim()
         }
@@ -905,7 +913,9 @@ $actionPull = {
         $target = $Matches[1]
     } else {
         $devicesOutput = adb devices 2>&1
-        $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' } | Select-Object -First 1)
+        $connectedDevice = ($devicesOutput | Where-Object { $_ -match ':5555\s+device' })
+        if (-not $connectedDevice) { $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
+        $connectedDevice = $connectedDevice | Select-Object -First 1
         if ($connectedDevice) {
             $target = $connectedDevice.Split()[0].Trim()
         }
@@ -986,7 +996,9 @@ $script:wpfWindow.Add_KeyDown({
 
 function Sync-AdbStatus {
     $devices = adb devices 2>&1
-    $connectedDevice = ($devices | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' } | Select-Object -First 1)
+    $connectedDevice = ($devices | Where-Object { $_ -match ':5555\s+device' })
+    if (-not $connectedDevice) { $connectedDevice = ($devices | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
+    $connectedDevice = $connectedDevice | Select-Object -First 1
     if ($connectedDevice) {
         $target = $connectedDevice.Split()[0].Trim()
         $script:notifyIcon.Icon = $iconGreen

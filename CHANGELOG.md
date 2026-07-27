@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.5.8] - 2026-07-27
+
+### [fix] Hardened Connections & File Explorer UX (v1.5.8)
+- **Zombie Process Prevention**: Optimized the Async File Explorer (`Load-Directory`) to explicitly kill previously spawned `adb shell ls` processes before generating new ones, preventing background CPU bloat during rapid folder navigation.
+- **WPF Close() Crash Fix**: Fixed a fatal bug in the File Explorer where double-clicking a file to pull it would call `$script:wpfWindow.Close()`, permanently destroying the WPF object and crashing the app upon subsequent tray clicks. Now uses `.Hide()`.
+- **Target Connection Hardening**: Refactored device parsing logic across `Sync-AdbStatus`, `Mirror`, and `Pull` actions to strictly prioritize wireless connections (`*:5555`) over USB or emulators.
+
 ## [v1.5.7] - 2026-07-27
 
 ### [minor] Spatial Menu Visual Revert (v1.5.7)
