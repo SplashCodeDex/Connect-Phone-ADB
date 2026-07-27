@@ -489,12 +489,6 @@ $actionPull = {
         return
     }
     
-    $files = adb -s $target shell ls -1 "/sdcard/Download" 2>&1 | Where-Object { $_ -match '\S' } | ForEach-Object { $_.Trim() }
-    if (-not $files -or $files -match "No such file" -or $files -match "no devices") {
-        Show-Toast -Title "Pull Failed" -Message "Could not read /sdcard/Download. Ensure storage is accessible."
-        return
-    }
-    
     $pickerXaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -507,34 +501,17 @@ $actionPull = {
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <ListBox Name="lstFiles" Grid.Row="0" Background="#802C2C2E" Foreground="White" SelectionMode="Extended" BorderThickness="0" FontFamily="Segoe UI" FontSize="14" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListBox.Resources>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Padding" Value="10,8"/>
-                        <Setter Property="Margin" Value="0,2"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListBoxItem">
-                                    <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="Bd" Property="Background" Value="#3A3A3C"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Bd" Property="Background" Value="#00E676"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
+            <TreeView Name="tvFiles" Grid.Row="0" Background="#1C1C1E" Foreground="White" BorderThickness="0" FontFamily="Segoe UI" FontSize="15" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <TreeView.Resources>
+                    <Style TargetType="TreeViewItem">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Padding" Value="4,4"/>
                     </Style>
-                </ListBox.Resources>
-            </ListBox>
+                </TreeView.Resources>
+            </TreeView>
             
-            <Button Name="btnPullItems" Grid.Row="1" Margin="0,15,0,0" Content="Pull Selected Files" Background="#00E676" Foreground="Black" BorderThickness="0" FontWeight="Bold" FontSize="15" Cursor="Hand">
+            <Button Name="btnPullItems" Grid.Row="1" Margin="0,15,0,0" Content="Pull Selected Item" Background="#00E676" Foreground="Black" BorderThickness="0" FontWeight="Bold" FontSize="15" Cursor="Hand">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border Name="border" Background="{TemplateBinding Background}" CornerRadius="12" Padding="0,14">
@@ -557,24 +534,79 @@ $actionPull = {
 "@
     $pickerReader = (New-Object System.Xml.XmlNodeReader ([xml]$pickerXaml))
     $pickerWindow = [System.Windows.Markup.XamlReader]::Load($pickerReader)
-    $lstFiles = $pickerWindow.FindName("lstFiles")
+    $tvFiles = $pickerWindow.FindName("tvFiles")
     
     $pickerWindow.Icon = [System.Windows.Media.Imaging.BitmapFrame]::Create([System.Uri]::new("file:///$($PSScriptRoot.Replace('\','/'))/app-icon.ico"))
     
-    foreach ($f in $files) { $null = $lstFiles.Items.Add($f) }
+    function New-TreeNode($name, $path, $isDir) {
+        $node = New-Object System.Windows.Controls.TreeViewItem
+        if ($isDir) {
+            $node.Header = "📁 $name"
+            $node.Tag = "DIR|$path"
+            $node.Items.Add("Loading...") | Out-Null
+        } else {
+            $node.Header = "📄 $name"
+            $node.Tag = "FILE|$path"
+        }
+        return $node
+    }
+
+    $tvFiles.add_Expanded({
+        param($sender, $e)
+        $item = $e.Source
+        if (-not ($item -is [System.Windows.Controls.TreeViewItem])) { return }
+        
+        if ($item.Items.Count -eq 1 -and $item.Items[0] -eq "Loading...") {
+            $item.Items.Clear()
+            
+            $tagParts = $item.Tag.Split('|', 2)
+            if ($tagParts[0] -ne "DIR") { return }
+            $dirPath = $tagParts[1]
+            
+            $lsOut = adb -s $target shell ls -1aF "`"$dirPath`"" 2>&1 | Where-Object { $_ -match '\S' -and $_ -notmatch '^\.\/?$' -and $_ -notmatch '^\.\.\/?$' }
+            
+            if ($lsOut -match "Permission denied" -or $lsOut -match "No such file") {
+                $item.Items.Add("(Access Denied)") | Out-Null
+                return
+            }
+            
+            $dirs = @()
+            $files = @()
+            foreach ($line in $lsOut) {
+                $line = $line.Trim()
+                if ($line.EndsWith('/')) {
+                    $dirs += $line.TrimEnd('/')
+                } else {
+                    $clean = $line -replace '[@|*=]$',''
+                    $files += $clean
+                }
+            }
+            
+            foreach ($d in $dirs) { $item.Items.Add((New-TreeNode $d "$dirPath$d/" $true)) | Out-Null }
+            foreach ($f in $files) { $item.Items.Add((New-TreeNode $f "$dirPath$f" $false)) | Out-Null }
+            
+            if ($item.Items.Count -eq 0) {
+                $item.Items.Add("(Empty)") | Out-Null
+            }
+        }
+    })
+    
+    $rootNode = New-TreeNode "Internal Storage (/sdcard/)" "/sdcard/" $true
+    $tvFiles.Items.Add($rootNode) | Out-Null
+    $rootNode.IsExpanded = $true
     
     $pickerWindow.FindName("btnPullItems").Add_Click({
-        $selected = $lstFiles.SelectedItems
-        if ($selected.Count -gt 0) {
-            $filesToPull = @($selected | ForEach-Object { $_ })
-            Show-Toast -Title "Pulling Downloads" -Message "Pulling $($filesToPull.Count) items in background..."
+        $selected = $tvFiles.SelectedItem
+        if ($selected -and $selected -is [System.Windows.Controls.TreeViewItem]) {
+            $tagParts = $selected.Tag.Split('|', 2)
+            $remotePath = $tagParts[1]
+            $name = $selected.Header -replace '^[📁📄]\s+', ''
+            
+            Show-Toast -Title "Pulling Data" -Message "Pulling $name in background..."
             
             $jobScript = {
-                param($target, $outDir, $filesToPull, $adbExe, $iconPath)
-                foreach ($item in $filesToPull) {
-                    $remotePath = "/sdcard/Download/$item"
-                    & $adbExe -s $target pull $remotePath $outDir | Out-Null
-                }
+                param($target, $outDir, $remotePath, $adbExe, $iconPath)
+                & $adbExe -s $target pull $remotePath $outDir | Out-Null
                 
                 try {
                     [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
@@ -596,7 +628,7 @@ $actionPull = {
             } else {
                 $adbExe = "$PSScriptRoot\adb.exe"
             }
-            Start-Job -ScriptBlock $jobScript -ArgumentList $target, $outDir, $filesToPull, $adbExe, "$PSScriptRoot\app-icon.ico" | Out-Null
+            Start-Job -ScriptBlock $jobScript -ArgumentList $target, $outDir, $remotePath, $adbExe, "$PSScriptRoot\app-icon.ico" | Out-Null
         }
         $pickerWindow.Close()
     })
