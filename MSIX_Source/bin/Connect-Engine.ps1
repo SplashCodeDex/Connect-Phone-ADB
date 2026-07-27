@@ -519,9 +519,6 @@ $script:wpfWindow.FindName("btnMirror").Add_Click({ Invoke-MenuAction $actionMir
 $script:wpfWindow.FindName("btnQAMirror").Add_Click({ Invoke-MenuAction $actionMirror })
 
 $actionPull = {
-    $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
-    if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
-    
     $statusText = $script:txtStatus.Text
     $target = $null
     
@@ -536,8 +533,15 @@ $actionPull = {
     }
     
     if (-not $target) {
-        Show-Toast -Title "Pull Failed" -Message "No phone connected."
-        return
+        & $actionConnect
+        $statusText = $script:txtStatus.Text
+        if ($statusText -match "Connected:\s*(.+)") {
+            $target = $Matches[1]
+        }
+        
+        if (-not $target) {
+            return
+        }
     }
     
     # The executable is in the root of the app directory, but Connect-Engine.ps1 is in bin\
@@ -598,9 +602,25 @@ $script:wpfWindow.Add_KeyDown({
     }
 })
 
+function Sync-AdbStatus {
+    $devices = adb devices 2>&1
+    $connectedDevice = ($devices | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' } | Select-Object -First 1)
+    if ($connectedDevice) {
+        $target = $connectedDevice.Split()[0].Trim()
+        $script:notifyIcon.Icon = $iconGreen
+        $script:notifyIcon.Text = "Connected: $target"
+        $script:txtStatus.Text = "Connected: $target"
+    } else {
+        $script:notifyIcon.Icon = $iconRed
+        $script:notifyIcon.Text = "Disconnected"
+        $script:txtStatus.Text = "Status: Disconnected"
+    }
+}
+
 $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
+        Sync-AdbStatus
         Update-WpfUI
         $script:wpfWindow.Measure([System.Windows.Size]::new([double]::PositiveInfinity, [double]::PositiveInfinity))
         $script:wpfWindow.Left = [System.Windows.Forms.Cursor]::Position.X - $script:wpfWindow.DesiredSize.Width + 20
@@ -615,15 +635,7 @@ $script:notifyIcon.Add_MouseUp({
     }
 })
 # Passive sync initial state on startup
-$devices = adb devices 2>&1
-if ($devices -match "((?:\d{1,3}\.){3}\d{1,3}:5555)\s+device") {
-    $script:notifyIcon.Icon = $iconGreen
-    $script:notifyIcon.Text = "Connected: $($Matches[1])"
-    $script:txtStatus.Text = "Connected: $($Matches[1])"
-} else {
-    $script:notifyIcon.Icon = $iconRed
-    $script:txtStatus.Text = "Status: Disconnected"
-}
+Sync-AdbStatus
 
 # Fix MSIX Version Path Drift: Re-register the task if already enabled so the path points to the new updated folder
 if (Get-AutoConnectStatus) {
