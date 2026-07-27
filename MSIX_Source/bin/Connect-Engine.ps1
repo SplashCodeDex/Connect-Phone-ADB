@@ -206,7 +206,7 @@ function Show-Toast {
 $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        WindowStyle="None" Background="#1C1C1E"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         Topmost="True" ShowInTaskbar="False" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize">
     <Window.Resources>
@@ -255,8 +255,8 @@ $xaml = @"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border Background="#1C1C1E" BorderBrush="#333333" BorderThickness="1">
-        <Border Background="#1C1C1E">
+    <Border Background="Transparent" Padding="0">
+        <Border Background="#1C1C1E" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
             <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="5,0" ToolTip="Connect ADB">
