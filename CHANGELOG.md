@@ -1,14 +1,21 @@
 # Changelog
 
+## [v1.6.1] - 2026-07-27
+
+### [minor] Ponytail Cuts (v1.6.1)
+- **Removed Dead Code**: Eliminated `dwmapi.dll` PInvoke hook and `System.Runtime.InteropServices` type definitions since dark mode is already forced via solid dark background and WPF `AllowsTransparency="True"`.
+- **Removed Legacy Fallbacks**: Cut out the WinForms BalloonTip fallback in `Show-Toast` (YAGNI on Windows 10+).
+- **Simplified ADB Paths**: Centralized `$global:AdbExePath` resolution at the root scope, eliminating duplicate `Split-Path`/`Join-Path` logic inside the Async Pull worker job.
+
 ## [v1.6.0] - 2026-07-27
 
 ### [major] Purple-Black Gradient Restoration & Mica Purge (v1.6.0)
 - **Gradient Background Restored:** Re-introduced the signature deep purple-to-black linear gradient (`#1D1226` to `#09090D`) as the primary background for the entire unified Spatial Menu.
 - **Glassmorphism Purged:** Completely stripped all traces of Windows 11 Mica, acrylic blur, and transparent glass backdrop styling from the visual tree to ensure the gradient perfectly renders as a solid, sleek 34px rounded spatial shape.
 
-## [v1.5.9] - 2026-07-27
+## [v1.6.1] - 2026-07-27
 
-### [hotfix] XAML UI Tree Syntax Repair (v1.5.9)
+### [hotfix] XAML UI Tree Syntax Repair (v1.6.1)
 - **NotifyIcon Crash Resolved:** Fixed a critical regression where the UI would silently fail to parse its XAML due to an unmatched `<Border>` tag generated during the Parallax upgrade. This previously caused `FindName` bindings to remain null, resulting in the `Text` property exception when clicking the tray icon.
 
 ## [v1.5.8] - 2026-07-27

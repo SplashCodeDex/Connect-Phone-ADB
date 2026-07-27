@@ -19,23 +19,17 @@ if (-not $mutex.WaitOne(0, $false)) {
 }
 
 if ($PSScriptRoot -match "WindowsApps") {
-    function adb { ConnectPhone-adb.exe @args }
+    $global:AdbExePath = "ConnectPhone-adb.exe"
 } else {
-    function adb { & "$PSScriptRoot\adb.exe" @args }
+    $global:AdbExePath = "$PSScriptRoot\adb.exe"
 }
+function adb { & $global:AdbExePath @args }
 
 # Force STA Mode Threading for Windows Forms & Tray Icons
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-Add-Type -TypeDefinition @"
-using System;
-using System.Runtime.InteropServices;
-public class DwmApi {
-    [DllImport("dwmapi.dll")]
-    public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
-}
-"@
+
 
 Add-Type -AssemblyName PresentationFramework
 
@@ -209,13 +203,7 @@ function Show-Toast {
         $toast = [Windows.UI.Notifications.ToastNotification]::new($xml)
         $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Connect ADB")
         $notifier.Show($toast)
-    } catch {
-        # Fallback to legacy balloon tip
-        $script:notifyIcon.BalloonTipTitle = $Title
-        $script:notifyIcon.BalloonTipText = $Message
-        $script:notifyIcon.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Info
-        $script:notifyIcon.ShowBalloonTip(4000)
-    }
+    } catch {}
 }
 
 # Spatial UI WPF Overlay
@@ -699,14 +687,7 @@ $xaml = @"
 $reader = (New-Object System.Xml.XmlNodeReader ([xml]$xaml))
 $script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
 
-$script:wpfWindow.Add_SourceInitialized({
-    $helper = [System.Windows.Interop.WindowInteropHelper]::new($script:wpfWindow)
-    $hwnd = $helper.Handle
-    
-    # 20 = DWMWA_USE_IMMERSIVE_DARK_MODE
-    $trueValue = 1 # Apply dark mode to window frame
-    [DwmApi]::DwmSetWindowAttribute($hwnd, 20, [ref]$trueValue, 4) | Out-Null
-})
+
 
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
@@ -794,9 +775,7 @@ $script:lbFiles.Add_MouseDoubleClick({
                 Start-Process "explorer.exe" -ArgumentList "`"$out`""
             }
             
-            $appRoot = Split-Path $PSScriptRoot
-            $exePath = if ($PSScriptRoot -match "WindowsApps") { "ConnectPhone-adb.exe" } else { Join-Path $appRoot "bin\adb.exe" }
-            Start-Job -ScriptBlock $actionBg -ArgumentList $exePath, $script:currentTarget, $remotePath, $outDir
+            Start-Job -ScriptBlock $actionBg -ArgumentList $global:AdbExePath, $script:currentTarget, $remotePath, $outDir
             
             $script:wpfWindow.Hide()
         }
