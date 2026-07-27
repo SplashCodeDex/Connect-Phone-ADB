@@ -22,14 +22,6 @@ namespace ConnectPhoneShareTarget
             File.WriteAllText(Path.Combine(Path.GetTempPath(), "ConnectPhoneArgs.txt"), $"Args Length: {args.Length}, Args: {string.Join(" | ", args)}");
             try 
             {
-                if (args.Length >= 2 && args[0] == "--pull")
-                {
-                    string targetDevice = args[1];
-                    var app = new Application();
-                    app.Run(new PickerWindow(targetDevice));
-                    return;
-                }
-
                 var program = new Program();
                 program.Run();
             }
