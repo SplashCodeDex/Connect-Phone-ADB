@@ -22,7 +22,7 @@ Add-Type -AssemblyName PresentationFramework
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $env:ADB_MDNS_OPENSCREEN = 1
 $TaskName = "AutoConnectADB_Hotspot"
-$ScriptPath = "W:\CodeDeX\Connect-Phone-ADB\bin\Connect-Engine.ps1"
+$ScriptPath = $PSCommandPath
 
 # Function: Connect ADB to Gateway
 function Invoke-AdbConnect {
