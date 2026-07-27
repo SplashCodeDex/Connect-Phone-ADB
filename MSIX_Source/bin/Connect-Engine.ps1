@@ -282,6 +282,13 @@ $xaml = @"
                     </Grid>
                 </Button>
                 
+                <Button Name="btnPull" Style="{StaticResource SpatialListItem}" Margin="0,8,0,0">
+                    <Grid>
+                        <TextBlock Text="Pull Downloads" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" HorizontalAlignment="Left"/>
+                        <TextBlock Text="⌘P" FontSize="14" Foreground="#A0A0A0" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                    </Grid>
+                </Button>
+                
                 <Separator Background="#2C2C2E" Height="1" Margin="16,8" />
                 
                 <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
@@ -346,6 +353,16 @@ $actionDisconnect = {
 }
 $script:wpfWindow.FindName("btnDisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
 $script:wpfWindow.FindName("btnQADisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
+
+$actionPull = {
+    $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
+    if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
+    Show-Toast -Title "Pulling Downloads" -Message "Pulling /sdcard/Download from phone..."
+    $null = adb pull "/sdcard/Download" $outDir 2>&1
+    Show-Toast -Title "Pull Complete" -Message "Downloads saved to $outDir"
+    Invoke-Item $outDir
+}
+$script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull })
 
 $actionAuto = {
     $newState = -not (Get-AutoConnectStatus)
