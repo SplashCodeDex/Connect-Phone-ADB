@@ -644,7 +644,7 @@ $actionPull = {
         $pickerWindow.Close()
     })
     
-    $pickerWindow.Show()
+    $pickerWindow.ShowDialog() | Out-Null
 }
 $script:wpfWindow.FindName("btnPull").Add_Click({ Invoke-MenuAction $actionPull })
 $script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
@@ -679,7 +679,8 @@ $script:notifyIcon.Add_MouseUp({
         if ($script:wpfWindow.Left -lt 0) { $script:wpfWindow.Left = 0 }
         if ($script:wpfWindow.Top -lt 0) { $script:wpfWindow.Top = 0 }
         
-        $script:wpfWindow.Show()
+        $script:wpfWindow.Topmost = $true
+        $script:wpfWindow.ShowDialog() | Out-Null
         $script:wpfWindow.Activate()
     }
 })
