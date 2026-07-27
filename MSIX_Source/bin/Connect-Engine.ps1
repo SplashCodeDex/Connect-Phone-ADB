@@ -223,13 +223,10 @@ $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Name="winSpatial"
-        WindowStyle="None" Background="Transparent"
+        WindowStyle="None" Background="Transparent" AllowsTransparency="True"
         Topmost="True" ShowInTaskbar="False"
         Width="290" Height="460"
         ResizeMode="NoResize">
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" CornerRadius="0" />
-    </WindowChrome.WindowChrome>
     <Window.Resources>
         <Storyboard x:Key="ExpandMenu">
             <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="500" Duration="0:0:0.6">
@@ -397,7 +394,7 @@ $xaml = @"
         </Grid>
         
         <Border Grid.Column="1" Background="Transparent" Padding="0">
-            <Border Background="Transparent" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
+            <Border Background="#1C1C1E" CornerRadius="34" BorderBrush="#333333" BorderThickness="1">
                 <StackPanel Width="270" Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Connect ADB">
@@ -489,13 +486,8 @@ $script:wpfWindow.Add_SourceInitialized({
     $hwnd = $helper.Handle
     
     # 20 = DWMWA_USE_IMMERSIVE_DARK_MODE
-    $trueValue = 1
-    [DwmApi]::DwmSetWindowAttribute($hwnd, 20, [ref]$trueValue, 4)
-    
-    # 38 = DWMWA_SYSTEMBACKDROP_TYPE
-    # 2 = Mica, 3 = Acrylic, 4 = Mica Alt
-    $micaValue = 2
-    [DwmApi]::DwmSetWindowAttribute($hwnd, 38, [ref]$micaValue, 4)
+    $trueValue = 1 # Apply dark mode to window frame
+    [DwmApi]::DwmSetWindowAttribute($hwnd, 20, [ref]$trueValue, 4) | Out-Null
 })
 
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
