@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,8 +19,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+          include-prerelease: true
           
-      - name: Build C# Proxy
+      - name: Build C# Transfer Engine
         run: dotnet build ConnectPhoneShareTarget --configuration Release
 
       - name: Pack MSIX
@@ -29,20 +31,21 @@ jobs:
         run: powershell -ExecutionPolicy Bypass -File SignMSIX.ps1
 
       - name: Extract Release Notes from CHANGELOG
+        shell: powershell
         run: |
           $content = Get-Content CHANGELOG.md -Raw
-          $regex = '(?sm)^## \[[^\]]+\][^\n]*\n+(.*?)(?=\n^## |\z)'
+          $regex = '(?sm)^(## \[[^\]]+\][^\n]*\n+.*?)(?=\n^## |\z)'
           if ($content -match $regex) {
               $Matches[1].Trim() | Out-File -FilePath RELEASE_NOTES.md -Encoding utf8
           } else {
               "See CHANGELOG.md for details." | Out-File -FilePath RELEASE_NOTES.md -Encoding utf8
           }
-        shell: powershell
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         with:
           body_path: RELEASE_NOTES.md
+          name: Release ${{ github.ref_name }}
           files: |
             ConnectPhoneADB.msix
             CodeDeX.cer

@@ -2,6 +2,13 @@
 
 All notable changes to the Connect Phone ADB project will be documented in this file.
 
+## [v1.4.5] - 2026-07-27
+
+### [fix] GitHub Action Release Workflow Fixes (v1.4.5)
+- **.NET 10 Prerelease Setup**: Added `include-prerelease: true` to `actions/setup-dotnet@v4` so GitHub Actions runner resolves `.NET 10` preview builds on `windows-latest`.
+- **Manual Trigger Support**: Added `workflow_dispatch` to allow manual execution of build & release pipeline from GitHub Actions web UI.
+- **Isolated Release Notes Extractor**: Enhanced regex parsing in PowerShell step to capture the exact top tag heading and notes verbatim into `RELEASE_NOTES.md` without pulling trailing historical changelog entries.
+
 ## [v1.4.4] - 2026-07-27
 
 ### [fix] Deep Edge-Case Audit (v1.4.4)
