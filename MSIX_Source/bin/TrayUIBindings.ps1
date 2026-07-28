@@ -515,9 +515,18 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
         
-        $script:lastDeactivated = [DateTime]::Now
-        $script:wpfWindow.Show()
-        $script:wpfWindow.Activate()
+        $script:wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle, [Action]{
+            $script:lastDeactivated = [DateTime]::Now
+            $script:wpfWindow.Show()
+            $script:wpfWindow.Activate()
+            $script:wpfWindow.Focus()
+            $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
+        })
+    }
+})
+
+# Edge Case 11 & 14: lbFiles KeyDown for Ctrl+A (visible only), Escape deselect, and Enter key execution
+$script:lbFiles.Add_KeyDown({
     param($sender, $e)
     if ($e.Key -eq [System.Windows.Input.Key]::A -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Control)) {
         foreach ($item in $script:lbFiles.Items) {
@@ -679,44 +688,6 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
 })
 
-$script:notifyIcon.Add_MouseUp({
-    param($sender, $e)
-    Write-Trace "MouseUp fired! Button: $($e.Button)"
-    if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
-        $now = [DateTime]::Now
-        Write-Trace "IsVisible: $($script:wpfWindow.IsVisible) | Ms since lastDeactivated: $(($now - $script:lastDeactivated).TotalMilliseconds)"
-        if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
-            Write-Trace "MouseUp: Hiding window (debounce or visible)"
-            $script:wpfWindow.Hide()
-            return
-        }
-        
-        try {
-            Update-WpfUI
-        } catch { Write-Trace "Update-WpfUI error: $_" }
-        
-        # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
-        $workArea = [System.Windows.SystemParameters]::WorkArea
-        $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
-        $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
-        
-        $left = $workArea.Right - $winWidth - 12
-        $top = $workArea.Bottom - $winHeight - 12
-        
-        if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
-        if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
-        
-        $script:wpfWindow.Left = $left
-        $script:wpfWindow.Top = $top
-        $script:wpfWindow.Topmost = $true
-        
-        $script:lastDeactivated = [DateTime]::Now
-        $script:wpfWindow.Show()
-        $script:wpfWindow.Activate()
-        $script:wpfWindow.Focus()
-        $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
-    }
-})
 
 function Show-PairingPrompt {
     param([string]$IPPort)
