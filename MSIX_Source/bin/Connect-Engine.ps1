@@ -1051,8 +1051,23 @@ $script:currentDirPath = "/sdcard/"
 $script:adbLsProc = $null
 
 function Load-Directory($dirPath) {
+    if ($null -ne $script:searchTimer) { $script:searchTimer.Stop() }
+    
+    # Auto-reset search bar text so the new directory displays all items cleanly
+    if ($null -ne $script:txtSearch) {
+        $script:txtSearch.Text = "Search files..."
+        $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
+    }
+    
     $script:currentDirPath = $dirPath
     $script:lbFiles.Items.Clear()
+    
+    if ([string]::IsNullOrWhiteSpace($script:currentTarget)) {
+        $statusText = $script:txtStatus.Text
+        if ($statusText -match "Connected:\s*(.+)") {
+            $script:currentTarget = $Matches[1]
+        }
+    }
     
     if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
         try { $script:adbLsProc.Kill() } catch {}
@@ -1070,7 +1085,12 @@ function Load-Directory($dirPath) {
     $output = $proc.StandardOutput.ReadToEnd()
     $proc.WaitForExit()
     
-    $lines = $output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" -and $_ -ne "./" -and $_ -ne "../" }
+    $lines = $output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { 
+        $_ -ne "" -and 
+        $_ -ne "./" -and 
+        $_ -ne "../" -and 
+        $_ -notmatch "^(ls:|error:|adb:|failed|Permission denied|\* daemon)"
+    }
     
     $idx = 0
     foreach ($line in $lines) {

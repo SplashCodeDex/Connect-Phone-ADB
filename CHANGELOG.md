@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.9.2.5]
+- **[fix]** Filtered out ADB error outputs (`ls:`, `error:`, `Permission denied`) to prevent invalid items from being parsed into the File Explorer grid.
+- **[fix]** Auto-reset search bar filter text upon subfolder navigation so subfolder contents are never hidden by stale parent query strings.
+- **[fix]** Stopped pending search debouncer timers before navigating directories to eliminate cross-directory item mutation conflicts.
+
 ## [v1.9.2.0]
 - **[minor]** Implemented dual highlighters for File Explorer items: persistent greenish highlight for single-clicked `IsSelected` items and a separate active hover highlight for `IsMouseOver` items.
 - **[minor]** Calibrated Light Mode highlight brushes (`ItemHoverBrush`, `ItemSelectedBrush`, `ItemSelectedHoverBrush`, `ItemSelectedBorderBrush`) with deeper green shades (`#34C759`) for crisp visibility against light backgrounds.
