@@ -809,6 +809,7 @@ $xaml = @"
                     </Button>
                     <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#xE895;" />
+                    </Button>
                 </StackPanel>
                 
                 <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,0" />
@@ -997,8 +998,19 @@ $xaml = @"
 </Window>
 "@
 
-$reader = (New-Object System.Xml.XmlNodeReader ([xml]$xaml))
-$script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
+# Fail fast: if the XAML fails to parse/load, $script:wpfWindow stays null and the tray icon
+# would keep running as a zombie that silently ignores every click. Exit loudly instead.
+try {
+    $reader = New-Object System.Xml.XmlNodeReader ([xml]$xaml)
+    $script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
+    if ($null -eq $script:wpfWindow) { throw "XamlReader returned a null window." }
+    $reader.Close()
+} catch {
+    [System.Windows.MessageBox]::Show("Connect Phone ADB failed to initialize its interface.`n`n$($_.Exception.Message)", "Connect Phone ADB - Startup Error", 'OK', 'Error') | Out-Null
+    $script:notifyIcon.Visible = $false
+    $script:notifyIcon.Dispose()
+    exit 1
+}
 
 $global:CurrentTheme = "DarkTheme"
 function Set-AppTheme {
@@ -1696,6 +1708,11 @@ $script:wpfWindow.Add_KeyDown({
 function Update-WpfUI {
     param([string[]]$DevicesOutput)
     
+    trap {
+        Write-Trace "Update-WpfUI Trap: $($_.Exception.Message) at line $($_.InvocationInfo.ScriptLineNumber)"
+        continue
+    }
+    
     if (-not $DevicesOutput) {
         $DevicesOutput = adb devices -l 2>&1
     }
@@ -1739,13 +1756,20 @@ function Update-WpfUI {
 
 $script:lastDeactivated = [DateTime]::MinValue
 
+function Write-Trace($msg) {
+    Out-File -FilePath "$env:TEMP\connect-adb-trace.txt" -InputObject "[$(Get-Date -Format 'HH:mm:ss.fff')] $msg" -Append
+}
+
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({
+    Write-Trace "Deactivated fired! IsVisible: $($script:wpfWindow.IsVisible)"
     if ($script:wpfWindow.IsVisible) {
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
         $now = [DateTime]::Now
+        Write-Trace "Deactivated - Ms since last: $(($now - $script:lastDeactivated).TotalMilliseconds)"
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
+            Write-Trace "Deactivated: Hiding window"
             $script:wpfWindow.Hide()
             $script:lastDeactivated = $now
         }
@@ -1770,16 +1794,19 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
 
 $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
+    Write-Trace "MouseUp fired! Button: $($e.Button)"
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
         $now = [DateTime]::Now
+        Write-Trace "IsVisible: $($script:wpfWindow.IsVisible) | Ms since lastDeactivated: $(($now - $script:lastDeactivated).TotalMilliseconds)"
         if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
+            Write-Trace "MouseUp: Hiding window (debounce or visible)"
             $script:wpfWindow.Hide()
             return
         }
         
         try {
             Update-WpfUI
-        } catch {}
+        } catch { Write-Trace "Update-WpfUI error: $_" }
         
         # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
         $workArea = [System.Windows.SystemParameters]::WorkArea
@@ -1797,13 +1824,10 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
-        $action = [System.Action]{
-            $script:wpfWindow.Show()
-            $script:wpfWindow.Activate()
-            $script:wpfWindow.Focus()
-            $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
-        }
-        $script:wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle, $action) | Out-Null
+        $script:wpfWindow.Show()
+        $script:wpfWindow.Activate()
+        $script:wpfWindow.Focus()
+        $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
     }
 })
 # Passive sync initial state on startup
