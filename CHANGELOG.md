@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.9.6.0]
+- **[fix]** Added 5-second process execution timeout guard to `Load-Directory` to prevent hanging ADB processes on unreachable phone daemons.
+- **[minor]** Added middle-ellipsis path truncation to floating download dock text when path length exceeds 35 characters while preserving full path in ToolTip.
+- **[minor]** Added `Alt + Up Arrow` and `Backspace` keyboard navigation shortcuts for parent directory navigation (`btnUpDir`).
+- **[fix]** Implemented dynamic screen working area bounds clipping protection to ensure spatial menu never gets cut off by taskbars docked on top, left, right, or bottom.
+- **[fix]** Added explicit window activation and focus synchronization on tray icon clicks.
+
 ## [v1.9.5.0]
 - **[minor]** Added `Ctrl+A` Select All (visible items only) and `Escape` deselect support to `lbFiles`.
 - **[minor]** Added 400ms double-click speed thresholding guard (`$script:lastDoubleClickTime`) to prevent rapid accidental triple-click job duplication.

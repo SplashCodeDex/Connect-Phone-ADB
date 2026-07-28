@@ -1078,6 +1078,11 @@ function Load-Directory($dirPath) {
             $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
         }
         
+        # Edge Case 27: Normalize and sanitize directory path
+        $dirPath = ($dirPath -replace '(?<!:)/+', '/').Trim()
+        if (-not $dirPath.StartsWith("/")) { $dirPath = "/" + $dirPath }
+        if (-not $dirPath.EndsWith("/")) { $dirPath = $dirPath + "/" }
+        
         $script:currentDirPath = $dirPath
         $script:lbFiles.Items.Clear()
         
@@ -1111,8 +1116,14 @@ function Load-Directory($dirPath) {
         
         $proc.Start() | Out-Null
         $script:adbLsProc = $proc
+        
+        # Edge Case 22: 5-second timeout guard to prevent hanging ADB processes
+        if (-not $proc.WaitForExit(5000)) {
+            try { $proc.Kill() } catch {}
+            Show-Toast -Title "ADB Timeout" -Message "Device did not respond within 5 seconds."
+            return
+        }
         $output = $proc.StandardOutput.ReadToEnd()
-        $proc.WaitForExit()
         
         $lines = $output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { 
             $_ -ne "" -and 
@@ -1199,7 +1210,13 @@ function Show-DownloadDockToast([string]$pathText) {
     $dock = $script:wpfWindow.FindName("dockDownloadToast")
     $txt = $script:wpfWindow.FindName("txtDownloadToast")
     if ($null -ne $dock -and $null -ne $txt) {
-        $txt.Text = "Saved to $pathText"
+        # Edge Case 23: Truncate long path text with middle ellipsis while preserving full path in ToolTip
+        $dispText = $pathText
+        if ($dispText.Length -gt 35) {
+            $dispText = $dispText.Substring(0, 15) + "..." + $dispText.Substring($dispText.Length - 15)
+        }
+        $txt.Text = "Saved to $dispText"
+        $txt.ToolTip = $pathText
         $dock.Visibility = 'Visible'
         
         $tg = $dock.RenderTransform
@@ -1644,6 +1661,12 @@ $script:wpfWindow.Add_KeyDown({
         $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
         $e.Handled = $true
+    } elseif (($e.Key -eq [System.Windows.Input.Key]::Up -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Alt)) -or ($e.Key -eq [System.Windows.Input.Key]::Back)) {
+        # Edge Case 25: Alt + Up Arrow / Backspace navigates Up Directory
+        if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible' -and $null -ne $script:btnUpDir) {
+            $script:btnUpDir.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Primitives.ButtonBase]::ClickEvent)))
+            $e.Handled = $true
+        }
     } elseif ($e.Key -eq [System.Windows.Input.Key]::C) {
         if ($script:wpfWindow.FindName("btnQAConnect").Visibility -eq 'Visible') {
             Invoke-MenuAction $actionConnect
@@ -1753,14 +1776,25 @@ $script:notifyIcon.Add_MouseUp({
             Update-WpfUI
         } catch {}
         
+        # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
         $workArea = [System.Windows.SystemParameters]::WorkArea
-        $script:wpfWindow.Left = $workArea.Right  - 1420 - 12
-        $script:wpfWindow.Top  = $workArea.Bottom - 760 - 12
+        $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
+        $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
+        
+        $left = $workArea.Right - $winWidth - 12
+        $top = $workArea.Bottom - $winHeight - 12
+        
+        if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
+        if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
+        
+        $script:wpfWindow.Left = $left
+        $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
+        $script:wpfWindow.Focus()
         $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
     }
 })
