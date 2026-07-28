@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.9.0.4]
+- **[fix]** Removed explicit width and height constraints on profile avatars, allowing them to size naturally within the list item container margins and preventing horizontal clipping.
+
 ## [v1.9.0.3]
 - **[fix]** Adjusted the margins of the Profile Avatars to prevent them from being clipped by the main window's rounded corners or overlapping with the spatial menu borders.
 
