@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.8.4.0]
+- **[minor]** Virtualized the "Nearby Users" list by replacing static UI elements with dynamic `ListBox`es and `VirtualizingStackPanel`s bound to a PowerShell `ObservableCollection`. This ensures zero UI stutter when discovering large numbers of devices.
+- **[minor]** Re-introduced a sleek, minimal scrollbar for the "Nearby Users" list using the custom spatial scrollbar template.
 ## [v1.8.3.3]
 - **[fix]** Made the "Nearby Users" list scrollable by replacing the static `StackPanel` container with a `DockPanel` and a `ScrollViewer` (with hidden scrollbars) to prevent the user list from overflowing on smaller screens.
 ## [v1.8.2.3]

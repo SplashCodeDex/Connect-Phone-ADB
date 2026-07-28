@@ -216,6 +216,52 @@ $xaml = @"
         Width="1420" Height="760"
         ResizeMode="NoResize">
     <Window.Resources>
+        <!-- Nearby User DataTemplate -->
+        <DataTemplate x:Key="NearbyUserTemplate">
+            <Button Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid Width="38" Height="38" Margin="0,0,12,0">
+                        <Ellipse Fill="{DynamicResource PrimaryBrush}" Visibility="{Binding DeviceIconVisibility}" />
+                        <TextBlock Text="{Binding DeviceIcon}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding DeviceIconVisibility}" />
+                        
+                        <Ellipse Visibility="{Binding AvatarVisibility}">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding AvatarSource}" Stretch="UniformToFill" AlignmentY="Top" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <Ellipse Width="12" Height="12" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Fill" Value="{DynamicResource SecondaryBrush}" />
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                            <Setter Property="Fill" Value="#4CAF50" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding HideStatus}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                    </Grid>
+                    
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name}" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <TextBlock Text="{Binding Subtitle}" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" Visibility="{Binding SubtitleVisibility}" />
+                    </StackPanel>
+                    
+                    <TextBlock Grid.Column="2" Text="{Binding RightIcon}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" Visibility="{Binding RightIconVisibility}" />
+                </Grid>
+            </Button>
+        </DataTemplate>
             <!-- Minimal Spatial ScrollBar Style -->
             <Style TargetType="ScrollBar">
                 <Setter Property="Background" Value="Transparent"/>
@@ -611,7 +657,24 @@ $xaml = @"
                 </Button>
                 
                 <Border Grid.Column="1" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="20" Padding="12,8">
-                    <TextBox Name="txtCurrentDir" Text="/sdcard/" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
+                    <Grid>
+                        <TextBlock Text="Search files..." Foreground="{DynamicResource SecondaryTextBrush}" FontSize="14" VerticalAlignment="Center" IsHitTestVisible="False" Margin="4,0,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text.Length, ElementName=txtSearch}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Text, ElementName=txtSearch}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBox Name="txtSearch" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="Medium" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
+                    </Grid>
                 </Border>
             </Grid>
             
@@ -727,153 +790,36 @@ $xaml = @"
                     </StackPanel>
                 
                     <!-- Nearby Users Section -->
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly">
-                        <StackPanel Margin="0,0,0,8">
-                            <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
-
-                <!-- User Joe (always visible when contracted) -->
-                <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                    <DockPanel LastChildFill="True" Margin="0,0,0,8">
+                        <TextBlock DockPanel.Dock="Top" Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
                         
-                        <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse>
-                                <Ellipse.Fill>
-                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/JoeAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
-                                </Ellipse.Fill>
-                            </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-                        </Grid>
+                        <!-- Pinned Users ListBox -->
+                        <ListBox DockPanel.Dock="Top" x:Name="lbPinnedUsers" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemTemplate="{StaticResource NearbyUserTemplate}">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
                         
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-
-                <!-- Device: Galaxy S21 (unhidden, original phone icon avatar) -->
-                <Button x:Name="btnDeviceGalaxy" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="{DynamicResource PrimaryBrush}" />
-                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Grid>
-                        
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Galaxy S21" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        </StackPanel>
-                        
-                        <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
-                    </Grid>
-                </Button>
-
-                <!-- Device: Windows (always visible when contracted) -->
-                <Button x:Name="btnDeviceWindows" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="{DynamicResource PrimaryBrush}" />
-                            <TextBlock Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Grid>
-                        
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Windows" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                        </StackPanel>
-                    </Grid>
-                </Button>
-
-                <!-- Nearby Expand Panel: hidden when contracted, staggers in when expanded -->
-                <StackPanel x:Name="NearbyExpandPanel" Visibility="Collapsed" Opacity="0">
-                    <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,6" />
-
-                    <!-- User 1 -->
-                    <Button x:Name="btnUser1" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <!-- Expandable Users Panel -->
+                        <Grid x:Name="NearbyExpandPanel" Visibility="Collapsed" Opacity="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Separator Grid.Row="0" Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,6" />
                             
-                            <Grid Width="38" Height="38" Margin="0,0,12,0">
-                                <Ellipse>
-                                    <Ellipse.Fill>
-                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User1Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
-                                    </Ellipse.Fill>
-                                </Ellipse>
-                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-                            </Grid>
-                            
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Ama Serwaa" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
-                            </StackPanel>
+                            <!-- Other Users ListBox with sleek scrollbar -->
+                            <ListBox Grid.Row="1" x:Name="lbOtherUsers" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemTemplate="{StaticResource NearbyUserTemplate}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Margin="0,0,10,0">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
                         </Grid>
-                    </Button>
-
-                    <!-- User 2 -->
-                    <Button x:Name="btnUser2" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            
-                            <Grid Width="38" Height="38" Margin="0,0,12,0">
-                                <Ellipse>
-                                    <Ellipse.Fill>
-                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User2Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
-                                    </Ellipse.Fill>
-                                </Ellipse>
-                                <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-                            </Grid>
-                            
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Akua Donkor" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
-                            </StackPanel>
-                        </Grid>
-                    </Button>
-
-                    <!-- User 3 -->
-                    <Button x:Name="btnUser3" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            
-                            <Grid Width="38" Height="38" Margin="0,0,12,0">
-                                <Ellipse>
-                                    <Ellipse.Fill>
-                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User3Avatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
-                                    </Ellipse.Fill>
-                                </Ellipse>
-                                <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-                            </Grid>
-                            
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Kwame Asante" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="Global · via Hotspot" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
-                            </StackPanel>
-                        </Grid>
-                    </Button>
-                </StackPanel>
-                        </StackPanel>
-                    </ScrollViewer>
+                    </DockPanel>
                 </DockPanel>
                 
                 </DockPanel>
@@ -886,6 +832,101 @@ $xaml = @"
 
 $reader = (New-Object System.Xml.XmlNodeReader ([xml]$xaml))
 $script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
+
+# Initialize Nearby Users dynamic data
+$script:lbPinnedUsers = $script:wpfWindow.FindName("lbPinnedUsers")
+$script:lbOtherUsers = $script:wpfWindow.FindName("lbOtherUsers")
+
+$pinnedUsers = New-Object System.Collections.ObjectModel.ObservableCollection[Object]
+$otherUsers = New-Object System.Collections.ObjectModel.ObservableCollection[Object]
+
+$pinnedUsers.Add([PSCustomObject]@{
+    Name = "Joe Belfiore"
+    Subtitle = "joe.belfiore@gmail.com"
+    SubtitleVisibility = "Visible"
+    AvatarSource = "file:///$($PSScriptRoot -replace '\\', '/')/../Assets/JoeAvatar.jpg"
+    AvatarVisibility = "Visible"
+    DeviceIcon = ""
+    DeviceIconVisibility = "Collapsed"
+    RightIcon = ""
+    RightIconVisibility = "Collapsed"
+    IsActive = $false
+    HideStatus = $false
+})
+
+$pinnedUsers.Add([PSCustomObject]@{
+    Name = "Galaxy S21"
+    Subtitle = ""
+    SubtitleVisibility = "Collapsed"
+    AvatarSource = ""
+    AvatarVisibility = "Collapsed"
+    DeviceIcon = [char]0xE8EA
+    DeviceIconVisibility = "Visible"
+    RightIcon = [char]0xE8EA
+    RightIconVisibility = "Visible"
+    IsActive = $false
+    HideStatus = $true
+})
+
+$pinnedUsers.Add([PSCustomObject]@{
+    Name = "Windows"
+    Subtitle = ""
+    SubtitleVisibility = "Collapsed"
+    AvatarSource = ""
+    AvatarVisibility = "Collapsed"
+    DeviceIcon = [char]0xE7F8
+    DeviceIconVisibility = "Visible"
+    RightIcon = ""
+    RightIconVisibility = "Collapsed"
+    IsActive = $false
+    HideStatus = $true
+})
+
+$otherUsers.Add([PSCustomObject]@{
+    Name = "Ama Serwaa"
+    Subtitle = "Local Network"
+    SubtitleVisibility = "Visible"
+    AvatarSource = "file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User1Avatar.png"
+    AvatarVisibility = "Visible"
+    DeviceIcon = ""
+    DeviceIconVisibility = "Collapsed"
+    RightIcon = ""
+    RightIconVisibility = "Collapsed"
+    IsActive = $false
+    HideStatus = $false
+})
+
+$otherUsers.Add([PSCustomObject]@{
+    Name = "Akua Donkor"
+    Subtitle = "Local Network"
+    SubtitleVisibility = "Visible"
+    AvatarSource = "file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User2Avatar.png"
+    AvatarVisibility = "Visible"
+    DeviceIcon = ""
+    DeviceIconVisibility = "Collapsed"
+    RightIcon = ""
+    RightIconVisibility = "Collapsed"
+    IsActive = $true
+    HideStatus = $false
+})
+
+$otherUsers.Add([PSCustomObject]@{
+    Name = "Kwame Asante"
+    Subtitle = "Global · via Hotspot"
+    SubtitleVisibility = "Visible"
+    AvatarSource = "file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User3Avatar.jpg"
+    AvatarVisibility = "Visible"
+    DeviceIcon = ""
+    DeviceIconVisibility = "Collapsed"
+    RightIcon = ""
+    RightIconVisibility = "Collapsed"
+    IsActive = $true
+    HideStatus = $false
+})
+
+if ($script:lbPinnedUsers) { $script:lbPinnedUsers.ItemsSource = $pinnedUsers }
+if ($script:lbOtherUsers) { $script:lbOtherUsers.ItemsSource = $otherUsers }
+
 
 $global:CurrentTheme = "DarkTheme"
 function Set-AppTheme {
@@ -930,8 +971,8 @@ function Load-Directory($dirPath) {
     }
     
     $proc = New-Object System.Diagnostics.Process
-    $proc.StartInfo.FileName = $global:AdbExePath
-    $proc.StartInfo.Arguments = "-s $($script:currentTarget) shell ls -1aF `"$dirPath`""
+    $proc.StartInfo.FileName = "cmd.exe"
+    $proc.StartInfo.Arguments = "/c `"$global:AdbExePath`" -s $($script:currentTarget) shell ls -1aF `"$dirPath`""
     $proc.StartInfo.UseShellExecute = $false
     $proc.StartInfo.RedirectStandardOutput = $true
     $proc.StartInfo.CreateNoWindow = $true
@@ -953,37 +994,10 @@ function Load-Directory($dirPath) {
             }
             
             $script:wpfWindow.Dispatcher.Invoke([Action]{
-                $idx = $script:lbFiles.Items.Count
-                
                 $item = New-Object System.Windows.Controls.ListBoxItem
                 $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
                 $item.ContentTemplate = $template
                 $item.Tag = $full
-                
-                # Ensure it's visible even if animation skips
-                $item.Opacity = 1
-                
-                # Staggered Entrance Animation Setup
-                $trans = New-Object System.Windows.Media.TranslateTransform
-                $trans.Y = 80
-                $item.RenderTransform = $trans
-                $item.Opacity = 0
-                
-                $delay = [TimeSpan]::FromMilliseconds($idx * 35) # 35ms stagger per item
-                
-                $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
-                $daY.To = 0
-                $daY.Duration = [TimeSpan]::FromSeconds(0.6)
-                $daY.BeginTime = $delay
-                $daY.EasingFunction = $script:wpfWindow.Resources["HoverEase"]
-                
-                $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
-                $daOp.To = 1
-                $daOp.Duration = [TimeSpan]::FromSeconds(0.4)
-                $daOp.BeginTime = $delay
-                
-                $trans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
-                $item.BeginAnimation([System.Windows.Controls.ListBoxItem]::OpacityProperty, $daOp)
                 
                 $script:lbFiles.Items.Add($item)
             })
