@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.7.2] - 2026-07-28
+
+### [fix] Spatial Menu Tray Click — Duplicate Deactivated Handler (v1.7.2)
+- **Root Cause:** Two separate `Add_Deactivated` handlers were registered on the WPF window. The first (line 773) fired unconditionally — no debounce guard — hiding the window instantly on any focus loss. The second (line 993) had the 200ms debounce but was useless because the first handler already killed the window before it could act. When `Show()` + `Activate()` ran from the tray click, WPF's focus transfer briefly triggered `Deactivated`, and the unguarded handler won the race every time.
+- **Fix:** Removed the unconditional handler; merged its state-reset logic (Width/Height/FileExplorer collapse) into the single debounced handler. One handler, one code path, zero race.
+- **Project Rules:** Added version bump rule to `GEMINI.md` — all versions must be bumped in `AppxManifest.xml` before build/sign/push.
+
 ## [v1.7.1] - 2026-07-27
 
 ### [fix] Spatial Menu Tray Click Debouncer (v1.7.1)

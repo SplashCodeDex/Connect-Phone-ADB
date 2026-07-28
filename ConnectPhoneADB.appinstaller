@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<AppInstaller Uri="https://SplashCodeDex.github.io/Connect-Phone-ADB/ConnectPhoneADB.appinstaller" Version="1.7.1.0" xmlns="http://schemas.microsoft.com/appx/appinstaller/2018">
-  <MainPackage Name="CodeDeX.ConnectPhoneADB" Publisher="CN=CodeDeX" Version="1.7.1.0" ProcessorArchitecture="x64" Uri="https://github.com/SplashCodeDex/Connect-Phone-ADB/releases/latest/download/ConnectPhoneADB.msix" />
+<AppInstaller Uri="https://SplashCodeDex.github.io/Connect-Phone-ADB/ConnectPhoneADB.appinstaller" Version="1.7.2.0" xmlns="http://schemas.microsoft.com/appx/appinstaller/2018">
+  <MainPackage Name="CodeDeX.ConnectPhoneADB" Publisher="CN=CodeDeX" Version="1.7.2.0" ProcessorArchitecture="x64" Uri="https://github.com/SplashCodeDex/Connect-Phone-ADB/releases/latest/download/ConnectPhoneADB.msix" />
   <UpdateSettings>
     <OnLaunch HoursBetweenUpdateChecks="12" ShowPrompt="false" UpdateBlocksActivation="false" />
   </UpdateSettings>

@@ -770,15 +770,6 @@ $script:lbFiles.Add_MouseDoubleClick({
     }
 })
 
-$script:wpfWindow.Add_Deactivated({
-    $script:wpfWindow.Hide()
-    $script:wpfWindow.Width = 290
-    $script:wpfWindow.Height = 460
-    $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("FileExplorer").Opacity = 0
-    $script:wpfWindow.FindName("fileTrans").X = 150
-    $script:wpfWindow.FindName("menuTrans").X = 0
-})
 
 function Invoke-MenuAction([scriptblock]$Action) {
     & $Action
@@ -995,6 +986,12 @@ $script:wpfWindow.Add_Deactivated({
         $now = [DateTime]::Now
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
             $script:wpfWindow.Hide()
+            $script:wpfWindow.Width = 290
+            $script:wpfWindow.Height = 460
+            $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+            $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+            $script:wpfWindow.FindName("fileTrans").X = 150
+            $script:wpfWindow.FindName("menuTrans").X = 0
         }
     }
 })
