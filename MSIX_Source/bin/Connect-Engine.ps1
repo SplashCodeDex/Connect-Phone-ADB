@@ -181,25 +181,48 @@ if ($script:AutoConnectEnabled) {
     Set-AutoConnectStatus -Enable $true
 }
 
-# Start mDNS auto-discovery if Auto-Connect is enabled
+# Start Omni-Mesh Transfer Server
+$script:transferJob = Start-OmniTransferServer
+
+# Start mDNS & Omni-Mesh auto-discovery
 $script:mdnsJob = $null
 if ($script:AutoConnectEnabled) {
     $script:mdnsJob = Start-MdnsDiscovery
     
+    # Hide placeholders initially
+    foreach ($i in 1..3) {
+        $btnName = "btnUser$i"
+        $btn = $script:wpfWindow.FindName($btnName)
+        if ($btn) { $btn.Visibility = 'Collapsed' }
+    }
+    $script:omniPeers = @{}
+    
     $mdnsTimer = New-Object System.Windows.Threading.DispatcherTimer
-    $mdnsTimer.Interval = [TimeSpan]::FromSeconds(5)
+    $mdnsTimer.Interval = [TimeSpan]::FromSeconds(2)
     $mdnsTimer.Add_Tick({
+        # 1. Check Transfer Server Job
+        if ($null -ne $script:transferJob) {
+            $trans = Receive-Job -Job $script:transferJob -Keep
+            if ($trans) {
+                foreach ($t in $trans) {
+                    if ($t.Type -eq 'TransferComplete') {
+                        Show-Toast -Title "File Received" -Message "Saved to: $($t.File)"
+                        Receive-Job -Job $script:transferJob | Out-Null
+                    }
+                }
+            }
+        }
+        
+        # 2. Check Discovery Job
         if ($null -ne $script:mdnsJob) {
             $received = Receive-Job -Job $script:mdnsJob -Keep
             if ($received) {
-                # Distinct by Type and IPPort
                 $uniqueServices = $received | Sort-Object -Property Type, IPPort -Unique
                 
-                # Check for Pairing first
+                # Check for Pairing
                 $pairingTargets = $uniqueServices | Where-Object { $_.Type -eq 'Pairing' } | Select-Object -ExpandProperty IPPort
                 foreach ($pt in $pairingTargets) {
                     Write-Trace "mDNS Poller found Pairing Target: $pt"
-                    # Prevent endless prompts for the same IP
                     if (-not $script:pairedHistory) { $script:pairedHistory = @{} }
                     if (-not $script:pairedHistory[$pt]) {
                         $pin = Show-PairingPrompt -IPPort $pt
@@ -207,7 +230,6 @@ if ($script:AutoConnectEnabled) {
                             $success = Invoke-AdbPair -Target $pt -Pin $pin
                             if ($success) { $script:pairedHistory[$pt] = $true }
                         } else {
-                            # User cancelled, don't ask again this session
                             $script:pairedHistory[$pt] = $true
                         }
                     }
@@ -222,7 +244,37 @@ if ($script:AutoConnectEnabled) {
                     }
                 }
                 
-                # Clear the job buffer so we don't re-process old ones endlessly
+                # Check for OmniMesh
+                $omniTargets = $uniqueServices | Where-Object { $_.Type -eq 'OmniMesh' }
+                foreach ($omni in $omniTargets) {
+                    $ip = $omni.IPPort -replace ':[0-9]+$',''
+                    $script:omniPeers[$ip] = @{ Name = $omni.Name; LastSeen = Get-Date; Type = $omni.DeviceType }
+                }
+                
+                # Update UI slots
+                $slot = 1
+                foreach ($ip in $script:omniPeers.Keys) {
+                    if ($slot -gt 3) { break }
+                    $peer = $script:omniPeers[$ip]
+                    if ((Get-Date) - $peer.LastSeen -lt [timespan]::FromSeconds(15)) {
+                        $btnName2 = "btnUser$slot"
+                        $btn = $script:wpfWindow.FindName($btnName2)
+                        if ($btn -and $btn.Content -and $btn.Content.Children.Count -ge 2) {
+                            $stack = $btn.Content.Children[1]
+                            $stack.Children[0].Text = $peer.Name
+                            $stack.Children[1].Text = "OmniMesh ($ip)"
+                            $btn.Visibility = 'Visible'
+                        }
+                        $slot++
+                    }
+                }
+                # Hide unused slots
+                for ($i = $slot; $i -le 3; $i++) {
+                    $btnName3 = "btnUser$i"
+                    $btn = $script:wpfWindow.FindName($btnName3)
+                    if ($btn) { $btn.Visibility = 'Collapsed' }
+                }
+                
                 Receive-Job -Job $script:mdnsJob | Out-Null
             }
         }
