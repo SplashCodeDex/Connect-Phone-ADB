@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.1.1.1] - 2026-07-28
+### Hotfix: System Tray Icon Unresponsiveness
+- **[fix]** Restored the missing `Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle)` wrapper for the System Tray `MouseUp` event handler in `TrayUIBindings.ps1`. This fixes a critical UI regression (race condition) that caused tray icon clicks to instantly deactivate and swallow the main window.
+- **[fix]** Removed redundant, corrupted duplicate block of `MouseUp` and `KeyDown` bindings left over from the v2.0.0.0 architecture decoupling refactor.
 ## [2.1.0.0] - 2026-07-28
 ### Features & UX Overhaul
 - **[minor] Intelligent Pairing & mDNS Overhaul**: 
