@@ -594,16 +594,26 @@ $xaml = @"
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
-            <Border Grid.Row="0" Margin="0,0,0,15" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="12" Padding="8,4">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Button Name="btnUpDir" Grid.Column="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Content="&#xE74A;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,8,0" Padding="4" />
-                    <TextBox Name="txtCurrentDir" Grid.Column="1" Text="/sdcard/" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="4" Margin="0" />
-                </Grid>
-            </Border>
+            <Grid Grid.Row="0" Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <Button Name="btnUpDir" Grid.Column="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Content="&#xE89C;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="8">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="16">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                
+                <Border Grid.Column="1" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="20" Padding="12,8">
+                    <TextBox Name="txtCurrentDir" Text="/sdcard/" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
+                </Border>
+            </Grid>
             
             <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
                 <ListBox.ItemsPanel>
@@ -670,8 +680,9 @@ $xaml = @"
                 </StackPanel>
                 
                 <!-- Main content fills remaining space -->
-                <StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Top">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />
                     </Button>
@@ -713,9 +724,12 @@ $xaml = @"
                     </Button>
                 </StackPanel>
                 <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,0" />
+                    </StackPanel>
                 
-                <!-- Nearby Users Section -->
-                <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
+                    <!-- Nearby Users Section -->
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly">
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
 
                 <!-- User Joe (always visible when contracted) -->
                 <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
@@ -858,8 +872,9 @@ $xaml = @"
                         </Grid>
                     </Button>
                 </StackPanel>
-                
-                </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
                 
                 </DockPanel>
         </Border>
@@ -941,9 +956,12 @@ function Load-Directory($dirPath) {
                 $idx = $script:lbFiles.Items.Count
                 
                 $item = New-Object System.Windows.Controls.ListBoxItem
-                $item.Content = @{ Name = $name; FullPath = $full; IsDir = $isDir }
+                $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
                 $item.ContentTemplate = $template
                 $item.Tag = $full
+                
+                # Ensure it's visible even if animation skips
+                $item.Opacity = 1
                 
                 # Staggered Entrance Animation Setup
                 $trans = New-Object System.Windows.Media.TranslateTransform

@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.8.2.3]
+- **[fix]** Fixed silent WPF data-binding failure by changing the File Explorer data items from `Hashtable` to `PSCustomObject`, resolving an issue where the file list rendered completely blank.
+- **[minor]** Re-arranged the Top Bar UI so the Up/Back arrow is outside the rounded search bar, using a modern fluent icon.
+
 ## [v1.8.2.2]
 - **[fix]** Fixed a long-standing bug where the File Explorer would fail to load files when the app was launched via the MSIX Start Menu shortcut due to a hardcoded relative path to `adb.exe`.
 - **[minor]** Updated the File Explorer top bar to an editable `TextBox` (Search/Path bar) and changed the navigation icon to an Up Arrow to match typical folder navigation.
