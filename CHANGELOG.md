@@ -1,5 +1,7 @@
 # Changelog
 
+## [v1.8.3.3]
+- **[fix]** Made the "Nearby Users" list scrollable by replacing the static `StackPanel` container with a `DockPanel` and a `ScrollViewer` (with hidden scrollbars) to prevent the user list from overflowing on smaller screens.
 ## [v1.8.2.3]
 - **[fix]** Fixed silent WPF data-binding failure by changing the File Explorer data items from `Hashtable` to `PSCustomObject`, resolving an issue where the file list rendered completely blank.
 - **[minor]** Re-arranged the Top Bar UI so the Up/Back arrow is outside the rounded search bar, using a modern fluent icon.
