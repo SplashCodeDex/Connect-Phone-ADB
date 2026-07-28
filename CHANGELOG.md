@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.8.2.1]
+- **[fix]** Fixed a critical layout bug where the custom ScrollBar template was missing orientation triggers and repeat buttons, causing the `ScrollViewer` layout engine to silently fail and the `ListBox` to render completely blank.
+
 ## [v1.8.2.0]
 - **[minor]** Redesigned the File Explorer UI to be sleek and premium.
 - **[minor]** Added a custom, slim, rounded ScrollBar style to match the modern spatial UI.
