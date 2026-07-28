@@ -213,18 +213,16 @@ $xaml = @"
         x:Name="winSpatial"
         WindowStyle="None" Background="Transparent" AllowsTransparency="True"
         Topmost="True" ShowInTaskbar="False"
-        Width="290" Height="460"
-        ResizeMode="CanResize">
+        Width="1420" Height="760"
+        ResizeMode="NoResize">
     <Window.Resources>
         <BackEase x:Key="HoverEase" Amplitude="1.22" EasingMode="EaseOut" />
         <BackEase x:Key="PopInEase" Amplitude="3.53" EasingMode="EaseOut" />
         <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
         <Storyboard x:Key="ExpandMenu">
             <!-- Window Size Expansion with ElasticEase (Overshoot + Reverse Subtle Overshoot) -->
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Left" By="-1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Height" By="300" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Top" By="-300" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="300" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <!-- Parallax on File Explorer: Slide from Right to Left while fading -->
             <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
@@ -477,7 +475,7 @@ $xaml = @"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border x:Name="mainBorder" CornerRadius="34" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" Background="{DynamicResource MenuBackgroundGradient}" RenderTransformOrigin="0.5,1">
+    <Border x:Name="mainBorder" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="34" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" Background="{DynamicResource MenuBackgroundGradient}" RenderTransformOrigin="0.5,1">
         <Border.RenderTransform>
             <TransformGroup>
                 <ScaleTransform ScaleX="1" ScaleY="1" x:Name="winScale" />
@@ -905,6 +903,10 @@ $actionPull = {
         return
     }
     
+    $mainBorder = $script:wpfWindow.FindName("mainBorder")
+    if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
+    if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
+    
     $sb = $script:wpfWindow.Resources["ExpandMenu"]
     $sb.Begin($script:wpfWindow)
     
@@ -1011,8 +1013,8 @@ $script:wpfWindow.Add_Deactivated({
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
             $script:wpfWindow.Hide()
             $script:lastDeactivated = $now
-            $script:wpfWindow.Width = 290
-            $script:wpfWindow.Height = 460
+            $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
+            $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
             $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
             $script:wpfWindow.FindName("FileExplorer").Opacity = 0
             $script:wpfWindow.FindName("fileTrans").X = 150
@@ -1035,8 +1037,8 @@ $script:notifyIcon.Add_MouseUp({
         } catch {}
         
         $workArea = [System.Windows.SystemParameters]::WorkArea
-        $script:wpfWindow.Left = $workArea.Right  - $script:wpfWindow.Width  - 12
-        $script:wpfWindow.Top  = $workArea.Bottom - $script:wpfWindow.Height - 12
+        $script:wpfWindow.Left = $workArea.Right  - 1420 - 12
+        $script:wpfWindow.Top  = $workArea.Bottom - 760 - 12
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
