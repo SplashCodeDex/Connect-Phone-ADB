@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.9.3.5]
+- **[fix]** Replaced hardcoded status indicator dot colors (`#1D1226` and `#4CAF50`) in Nearby Users list with dynamic `{DynamicResource SecondaryBrush}` and `{DynamicResource SecondaryBackgroundBrush}` tokens for 100% theme compliance.
+- **[minor]** Upgraded floating download dock entrance animation to a springy `BackEase` overshoot effect and exit to a 0.35s `CubicEase` slide-down.
+
 ## [v1.9.3.0]
 - **[minor]** Added springy `BackEase` overshoot pop-in entrance animation and smooth scale/translate slide-down exit animation to floating download dock (`dockDownloadToast`).
 - **[fix]** Added root directory detection to `btnUpDir`: automatically dims `btnUpDir` (Opacity 0.4, Arrow cursor) when at `/sdcard/` root and activates (Opacity 1.0, Hand cursor) in subdirectories.
