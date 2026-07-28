@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.9.8.0]
+- **[fix]** Resolved `Cannot index into a null array` runtime crash in `Invoke-AdbConnect` and `Update-WpfUI` caused by PowerShell array `-match` behavior when evaluating `adb devices -l` output, ensuring tray clicks and connection status updates execute without crashing the WinForms engine loop.
+
 ## [v1.9.7.5]
 - **[fix]** Resolved Taskbar notification focus flicker bug on system tray icon click by introducing a 500ms `$script:ignoreDeactivateUntil` grace period in `wpfWindow.Add_Deactivated`, guaranteeing tray clicks immediately open the window without instant focus-loss re-hiding.
 

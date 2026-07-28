@@ -61,11 +61,11 @@ function Invoke-AdbConnect {
     $target = "${GatewayIP}:5555"
     
     # Smart Polling: Check if already connected to prevent UI freezing
-    $devices = adb devices -l 2>&1
-    if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
-        $devName = $Matches[1] -replace '_', ' '
+    $devicesOutput = (adb devices -l 2>&1) -join "`n"
+    if ($devicesOutput -match ([regex]::Escape($target) + '\s+device.*?model:([^\s]+)')) {
+        $devName = if ($Matches -and $Matches.Count -gt 1) { $Matches[1] -replace '_', ' ' } else { $target }
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
-    } elseif ($devices -match ([regex]::Escape($target) + "\s+device")) {
+    } elseif ($devicesOutput -match ([regex]::Escape($target) + '\s+device')) {
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $target }
     }
 
@@ -73,11 +73,13 @@ function Invoke-AdbConnect {
     $null = adb start-server 2>&1
     $result = adb connect $target 2>&1
     
-    $devices = adb devices -l 2>&1
-    if ($result -like "*connected to*" -or $devices -match ([regex]::Escape($target) + "\s+device")) {
+    $devicesOutput = (adb devices -l 2>&1) -join "`n"
+    if ($result -like "*connected to*" -or $devicesOutput -match ([regex]::Escape($target) + '\s+device')) {
         $devName = $target
-        if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
-            $devName = $Matches[1] -replace '_', ' '
+        if ($devicesOutput -match ([regex]::Escape($target) + '\s+device.*?model:([^\s]+)')) {
+            if ($Matches -and $Matches.Count -gt 1) {
+                $devName = $Matches[1] -replace '_', ' '
+            }
         }
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
     } else {
@@ -1715,10 +1717,13 @@ function Update-WpfUI {
     $connectedDevice = $connectedDevice | Select-Object -First 1
 
     if ($connectedDevice) {
-        $target = $connectedDevice.Split()[0].Trim()
+        $target = $connectedDevice.ToString().Split()[0].Trim()
         $devName = $target
-        if ($connectedDevice -match 'model:([^\s]+)') {
-            $devName = $Matches[1] -replace '_', ' '
+        $devStr = $connectedDevice.ToString()
+        if ($devStr -match 'model:([^\s]+)') {
+            if ($Matches -and $Matches.Count -gt 1) {
+                $devName = $Matches[1] -replace '_', ' '
+            }
         }
         $script:currentTarget = $target
         $script:notifyIcon.Icon = $iconGreen
@@ -1742,10 +1747,8 @@ $script:ignoreDeactivateUntil = [DateTime]::MinValue
 
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({
-    # Ignore Deactivated during initial 500ms show window grace period
     if ([DateTime]::Now -lt $script:ignoreDeactivateUntil) { return }
     if ($script:wpfWindow.IsVisible) {
-        # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
         $script:wpfWindow.Hide()
         $script:lastDeactivated = [DateTime]::Now
