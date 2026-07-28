@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.9.0.6]
+- **[minor]** Added 150ms search debouncing using `DispatcherTimer` to ensure 60 FPS ultra-smooth real-time filtering in large directories without CPU spikes.
+- **[minor]** Added Escape key quick-clear logic to reset active search query before unfocusing or contracting the menu.
+
 ## [v1.9.0.5]
 - **[fix]** Fixed searchbar text input and accidental disconnection bug: WPF `TextBox.IsFocused` evaluated to false when keyboard focus was active in `txtSearch`, causing top-level hotkeys ('D' for disconnect, 'C' for connect, 'P' for pull, 'M' for mirror, 'Q' for quit) to hijack typing and swallow characters.
 - **[fix]** Implemented multi-layered focus and `OriginalSource` detection (`IsKeyboardFocused`, `IsKeyboardFocusWithin`, `OriginalSource -match "TextBox"`) so search terms like 'DCIM', 'Downloads', 'Documents', 'Pictures', 'Movies' type smoothly without triggering shortcuts or disconnecting.

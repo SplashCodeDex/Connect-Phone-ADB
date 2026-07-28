@@ -981,7 +981,10 @@ $script:txtSearch.Add_LostFocus({
         $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
     }
 })
-$script:txtSearch.Add_TextChanged({
+$script:searchTimer = New-Object System.Windows.Threading.DispatcherTimer
+$script:searchTimer.Interval = [TimeSpan]::FromMilliseconds(150)
+$script:searchTimer.Add_Tick({
+    $script:searchTimer.Stop()
     $query = $script:txtSearch.Text.ToLower()
     if ($query -eq "search files...") { $query = "" }
     foreach ($item in $script:lbFiles.Items) {
@@ -991,6 +994,13 @@ $script:txtSearch.Add_TextChanged({
         } else {
             $item.Visibility = 'Collapsed'
         }
+    }
+})
+
+$script:txtSearch.Add_TextChanged({
+    if ($null -ne $script:searchTimer) {
+        $script:searchTimer.Stop()
+        $script:searchTimer.Start()
     }
 })
 
