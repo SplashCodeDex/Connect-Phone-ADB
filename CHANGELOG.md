@@ -1,7 +1,7 @@
 # Changelog
 
 ## [v1.7.4.6]
-- **[minor]** Replaced global `ElasticEase` with `BackEase (Amplitude=2.5, EaseOut)` for all bouncy UI transitions. This creates a dramatically punchier overshoot/undershoot "pop" effect on hover, hover-exit, and spatial menu pop-in, exactly matching the desired physics curve (shrinking to ~0.9 before snapping back to 1.0).
+- **[minor]** Split global UI physics into two distinct resources: `HoverEase (Amplitude=1.22)` and `PopInEase (Amplitude=3.53)`. This forces the hover-exit to shrink exactly to `0.96` (from `1.08`) before snapping back to `1.0`, and the spatial menu pop-in to start from `0.90` and explode outward to `1.18` before settling to `1.0`, matching the desired bespoke physics curves perfectly.
 
 ## [v1.7.3.1]
 - **[fix]** Critical app startup failure where the tray icon would load but the WPF window would fail to parse entirely (making all menu items null) because the `JoeAvatar.jpg` image path incorrectly referenced `bin/Assets` instead of `Assets/`. 
