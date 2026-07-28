@@ -5,19 +5,19 @@
     <!-- Backgrounds -->
     <SolidColorBrush x:Key="AppBackgroundBrush" Color="Transparent" />
     <LinearGradientBrush x:Key="PrimaryBackgroundGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#FFFFFF" Offset="0.0" />
-        <GradientStop Color="#F0F0F0" Offset="1.0" />
+        <GradientStop Color="#F9F9ED" Offset="0.0" />
+        <GradientStop Color="#F9F9ED" Offset="1.0" />
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#F2F2F7" />
-    <SolidColorBrush x:Key="TertiaryBackgroundBrush" Color="#E5E5EA" />
-    <SolidColorBrush x:Key="BorderBrush" Color="#D1D1D6" />
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#D9DBF1" />
+    <SolidColorBrush x:Key="TertiaryBackgroundBrush" Color="#8E9DCC" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#8E9DCC" />
     
     <!-- Text -->
-    <SolidColorBrush x:Key="PrimaryTextBrush" Color="Black" />
-    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#3A3A3C" />
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#7D84B2" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#8E9DCC" />
     
     <!-- Core Palette (Primary, Secondary, Accent) -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="#5E5CE6" />   <!-- Brand, active states -->
-    <SolidColorBrush x:Key="SecondaryBrush" Color="#34C759" /> <!-- Success, Folder icons -->
-    <SolidColorBrush x:Key="AccentBrush" Color="#FF3B30" />    <!-- Danger, Warnings, Exits -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#7D84B2" />   <!-- Brand, active states -->
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#8E9DCC" /> <!-- Success, Folder icons -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#7D84B2" />    <!-- Danger, Warnings, Exits -->
 </ResourceDictionary>
