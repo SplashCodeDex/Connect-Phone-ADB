@@ -653,7 +653,7 @@ $xaml = @"
                 </Button>
             </Grid>
             
-            <ListBox Name="lbFiles" Grid.Row="1" SelectionMode="Extended" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.IsContainerVirtualizable="True" ScrollViewer.CanContentScroll="True" TextOptions.TextFormattingMode="Display" RenderOptions.ClearTypeHint="Enabled" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+            <ListBox Name="lbFiles" Grid.Row="1" SelectionMode="Extended" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Background" Value="Transparent"/>
@@ -692,7 +692,7 @@ $xaml = @"
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsItemsHost="True" Orientation="Vertical" />
+                        <WrapPanel IsItemsHost="True" Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
@@ -1401,13 +1401,13 @@ $script:wpfWindow.FindName("btnCopyIP").Add_Click({
             if ($null -ne $btnCopyIP) {
                 $tb = $btnCopyIP.Content
                 if ($tb -is [System.Windows.Controls.TextBlock]) {
-                    $tb.Text = "✓"
+                    $tb.Text = [char]0x2713
                     $tb.Foreground = $script:wpfWindow.FindResource("SecondaryBrush")
                     
                     $timer = New-Object System.Windows.Threading.DispatcherTimer
                     $timer.Interval = [TimeSpan]::FromSeconds(1.5)
                     $timer.Add_Tick({
-                        $tb.Text = "&#xE8C8;"
+                        $tb.Text = [char]0xE8C8
                         $tb.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "SecondaryTextBrush")
                         $timer.Stop()
                     })
@@ -1717,7 +1717,7 @@ function Update-WpfUI {
     if ($connectedDevice) {
         $target = $connectedDevice.Split()[0].Trim()
         $devName = $target
-        if ($connectedDevice -match "model:([^\s]+)") {
+        if ($connectedDevice -match 'model:([^\s]+)') {
             $devName = $Matches[1] -replace '_', ' '
         }
         $script:currentTarget = $target
