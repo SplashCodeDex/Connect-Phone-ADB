@@ -1,4 +1,4 @@
-﻿$script:txtStatus = $script:wpfWindow.FindName("txtStatus")
+$script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
 $script:lbFiles = $script:wpfWindow.FindName("lbFiles")
@@ -518,7 +518,287 @@ $script:notifyIcon.Add_MouseUp({
         $script:lastDeactivated = [DateTime]::Now
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
+    param($sender, $e)
+    if ($e.Key -eq [System.Windows.Input.Key]::A -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Control)) {
+        foreach ($item in $script:lbFiles.Items) {
+            if ($item.Visibility -eq 'Visible') {
+                $item.IsSelected = $true
+            } else {
+                $item.IsSelected = $false
+            }
+        }
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::Escape) {
+        $script:lbFiles.UnselectAll()
+        $e.Handled = $true
+    }
+})
+
+$script:wpfWindow.FindName("btnExit").Add_Click({
+    $txtExitBtn = $script:wpfWindow.FindName("txtExitBtn")
+    $btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
+    $isShift = [System.Windows.Input.Keyboard]::Modifiers -match 'Shift'
+    
+    if ($isShift) {
+        # Proceed to exit immediately
+    } elseif ($txtExitBtn.Text -eq "Exit Engine") {
+        $txtExitBtn.Text = "Click to Cancel / Shift+Click to Exit"
+        $btnProfileBottom.Visibility = 'Collapsed'
+        
+        $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
+        $script:exitTimer.Interval = [TimeSpan]::FromSeconds(3)
+        $script:exitTimer.Add_Tick({
+            $txtExitBtn.Text = "Exit Engine"
+            $btnProfileBottom.Visibility = 'Visible'
+            $script:exitTimer.Stop()
+        })
+        $script:exitTimer.Start()
+        return
+    } else {
+        # Cancel the exit state
+        $txtExitBtn.Text = "Exit Engine"
+        $btnProfileBottom.Visibility = 'Visible'
+        if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
+        return
+    }
+    
+    if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
+    
+    # Edge Case 20: Job and process cleanup on exit
+    Get-Job | ForEach-Object { try { Stop-Job $_; Remove-Job $_ } catch {} }
+    if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
+        try { $script:adbLsProc.Kill() } catch {}
+    }
+    
+    $script:wpfWindow.Hide()
+    $script:notifyIcon.Visible = $false
+    $script:notifyIcon.Dispose()
+    Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
+    [System.Windows.Forms.Application]::Exit()
+})
+
+$script:wpfWindow.Add_KeyDown({
+    param($sender, $e)
+    # Don't intercept keys when typing in the search bar or any text box
+    $isInputFocused = ($null -ne $script:txtSearch) -and (
+        $script:txtSearch.IsKeyboardFocused -or 
+        $script:txtSearch.IsKeyboardFocusWithin -or 
+        $script:txtSearch.IsFocused -or 
+        ($null -ne $e.OriginalSource -and $e.OriginalSource.GetType().FullName -match "TextBox")
+    )
+    if ($isInputFocused) {
+        if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
+            if ($script:txtSearch.Text -and $script:txtSearch.Text -ne "Search files...") {
+                $script:txtSearch.Text = ""
+            } else {
+                [System.Windows.Input.Keyboard]::ClearFocus()
+            }
+            $e.Handled = $true
+        }
+        return
+    }
+    if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
+        $script:wpfWindow.Hide()
+        $script:lastDeactivated = [DateTime]::Now
+        $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
+        $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
+        $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+        $script:wpfWindow.FindName("fileTrans").X = 150
+        $script:wpfWindow.FindName("menuTrans").X = 0
+        $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
+        $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+        $e.Handled = $true
+    } elseif (($e.Key -eq [System.Windows.Input.Key]::Up -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Alt)) -or ($e.Key -eq [System.Windows.Input.Key]::Back)) {
+        # Edge Case 25: Alt + Up Arrow / Backspace navigates Up Directory
+        if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible' -and $null -ne $script:btnUpDir) {
+            $script:btnUpDir.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Primitives.ButtonBase]::ClickEvent)))
+            $e.Handled = $true
+        }
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::C) {
+        if ($script:wpfWindow.FindName("btnQAConnect").Visibility -eq 'Visible') {
+            Invoke-MenuAction $actionConnect
+        }
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::D) {
+        if ($script:wpfWindow.FindName("btnQADisconnect").Visibility -eq 'Visible') {
+            Invoke-MenuAction $actionDisconnect
+        }
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::M) {
+        Invoke-MenuAction $actionMirror
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::P) {
+        Invoke-MenuAction $actionPull
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::Q) {
+        $script:wpfWindow.Hide()
+        $script:notifyIcon.Visible = $false
+        $script:notifyIcon.Dispose()
+        Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
+        [System.Windows.Forms.Application]::Exit()
+        $e.Handled = $true
+    }
+})
+
+
+$script:lastDeactivated = [DateTime]::MinValue
+
+
+# Click-outside closes menu ONLY when contracted (not expanded)
+$script:wpfWindow.Add_Deactivated({
+    Write-Trace "Deactivated fired! IsVisible: $($script:wpfWindow.IsVisible)"
+    if ($script:wpfWindow.IsVisible) {
+        # If menu is expanded, do NOT close on click-outside (use Close button instead)
+        if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
+        $now = [DateTime]::Now
+        Write-Trace "Deactivated - Ms since last: $(($now - $script:lastDeactivated).TotalMilliseconds)"
+        if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
+            Write-Trace "Deactivated: Hiding window"
+            $script:wpfWindow.Hide()
+            $script:lastDeactivated = $now
+        }
+    }
+})
+
+# Close button handler (only visible when expanded)
+$script:wpfWindow.FindName("btnCloseMenu").Add_Click({
+    $script:wpfWindow.Hide()
+    $script:lastDeactivated = [DateTime]::Now
+    $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
+    $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
+    $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+    $script:wpfWindow.FindName("fileTrans").X = 150
+    $script:wpfWindow.FindName("menuTrans").X = 0
+    $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
+    $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+})
+
+$script:notifyIcon.Add_MouseUp({
+    param($sender, $e)
+    Write-Trace "MouseUp fired! Button: $($e.Button)"
+    if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
+        $now = [DateTime]::Now
+        Write-Trace "IsVisible: $($script:wpfWindow.IsVisible) | Ms since lastDeactivated: $(($now - $script:lastDeactivated).TotalMilliseconds)"
+        if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
+            Write-Trace "MouseUp: Hiding window (debounce or visible)"
+            $script:wpfWindow.Hide()
+            return
+        }
+        
+        try {
+            Update-WpfUI
+        } catch { Write-Trace "Update-WpfUI error: $_" }
+        
+        # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
+        $workArea = [System.Windows.SystemParameters]::WorkArea
+        $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
+        $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
+        
+        $left = $workArea.Right - $winWidth - 12
+        $top = $workArea.Bottom - $winHeight - 12
+        
+        if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
+        if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
+        
+        $script:wpfWindow.Left = $left
+        $script:wpfWindow.Top = $top
+        $script:wpfWindow.Topmost = $true
+        
+        $script:lastDeactivated = [DateTime]::Now
+        $script:wpfWindow.Show()
+        $script:wpfWindow.Activate()
         $script:wpfWindow.Focus()
         $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
     }
 })
+
+function Show-PairingPrompt {
+    param([string]$IPPort)
+    
+    $xaml = @"
+    <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            Title="Pair Device" Width="400" Height="220" WindowStartupLocation="CenterScreen"
+            Background="{DynamicResource PrimaryBackgroundGradient}" Foreground="{DynamicResource PrimaryTextBrush}" 
+            WindowStyle="None" Topmost="True" ResizeMode="NoResize"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" AllowsTransparency="True">
+        <Window.Resources>
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="6" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Window.Resources>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Pair New Device (mDNS)" FontWeight="Bold" FontSize="18" Foreground="{DynamicResource PrimaryBrush}" Grid.Row="0" Margin="0,0,0,5"/>
+            <TextBlock Text="IP: $IPPort" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="1" Margin="0,0,0,15"/>
+            <StackPanel Grid.Row="2">
+                <TextBlock Text="Enter 6-digit Wi-Fi pairing code:" FontSize="13" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                <TextBox x:Name="txtPin" Height="34" FontSize="18" Background="{DynamicResource SecondaryBackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" 
+                         BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}" Padding="5,4,0,0" VerticalContentAlignment="Center" MaxLength="6"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="3" Margin="0,20,0,0">
+                <Button x:Name="btnCancel" Content="Cancel" Width="90" Height="32" Margin="0,0,10,0"/>
+                <Button x:Name="btnPair" Content="Pair" Width="90" Height="32" Background="{DynamicResource PrimaryBrush}" Foreground="White" BorderThickness="0"/>
+            </StackPanel>
+        </Grid>
+    </Window>
+"@
+    
+    $reader = New-Object System.Xml.XmlNodeReader ([xml]$xaml)
+    $win = [System.Windows.Markup.XamlReader]::Load($reader)
+    
+    # Inherit theme dictionaries from main window
+    foreach ($dict in $script:wpfWindow.Resources.MergedDictionaries) {
+        $win.Resources.MergedDictionaries.Add($dict)
+    }
+    
+    $txtPin = $win.FindName("txtPin")
+    $btnCancel = $win.FindName("btnCancel")
+    $btnPair = $win.FindName("btnPair")
+    
+    $resultPin = $null
+    
+    $btnCancel.Add_Click({
+        $win.DialogResult = $false
+        $win.Close()
+    })
+    
+    $btnPair.Add_Click({
+        $script:resultPin = $txtPin.Text.Trim()
+        $win.DialogResult = $true
+        $win.Close()
+    })
+    
+    # Handle Drag to move
+    $win.Add_MouseLeftButtonDown({ $win.DragMove() })
+    
+    $null = $win.ShowDialog()
+    return $script:resultPin
+}

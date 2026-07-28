@@ -1,4 +1,4 @@
-﻿
+
 function adb { & $global:AdbExePath @args }
 Export-ModuleMember -Function adb
 
@@ -59,18 +59,15 @@ function Start-MdnsDiscovery {
         param($adbPath)
         while ($true) {
             $output = & $adbPath mdns services 2>&1
-            # Sample output: 
-            # List of discovered mdns services
-            # host-192-168-1-100._adb-tls-connect._tcp.  192.168.1.100:34567
             
             if ($null -ne $output) {
-                $lines = $output -split '?
-'
+                $lines = $output -split '`r?`n'
                 foreach ($line in $lines) {
                     if ($line -match '_adb-tls-connect\._tcp\.\s+([0-9\.]+:[0-9]+)') {
-                        $ipPort = $matches[1]
-                        # Discovered!
-                        Write-Output $ipPort
+                        Write-Output @{ Type = 'Connect'; IPPort = $matches[1] }
+                    }
+                    if ($line -match '_adb-tls-pairing\._tcp\.\s+([0-9\.]+:[0-9]+)') {
+                        Write-Output @{ Type = 'Pairing'; IPPort = $matches[1] }
                     }
                 }
             }
@@ -89,3 +86,21 @@ function Start-MdnsDiscovery {
 }
 
 Export-ModuleMember -Function Start-MdnsDiscovery
+
+function Invoke-AdbPair {
+    param(
+        [Parameter(Mandatory=$true)][string]$Target,
+        [Parameter(Mandatory=$true)][string]$Pin
+    )
+    
+    $null = adb start-server 2>&1
+    $result = adb pair $Target $Pin 2>&1
+    
+    if ($result -match 'Successfully paired to') {
+        return $true
+    } else {
+        Write-Trace "Pairing failed: $result"
+        return $false
+    }
+}
+Export-ModuleMember -Function Invoke-AdbPair

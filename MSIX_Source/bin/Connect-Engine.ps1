@@ -192,14 +192,36 @@ if ($script:AutoConnectEnabled) {
         if ($null -ne $script:mdnsJob) {
             $received = Receive-Job -Job $script:mdnsJob -Keep
             if ($received) {
-                # Get the latest unique IPs
-                $ips = $received | Select-Object -Unique
-                foreach ($ip in $ips) {
-                    Write-Trace "mDNS Poller found IP: $ip"
-                    if ($script:currentTarget -ne $ip) {
-                        Invoke-AdbConnect -Target $ip
+                # Distinct by Type and IPPort
+                $uniqueServices = $received | Sort-Object -Property Type, IPPort -Unique
+                
+                # Check for Pairing first
+                $pairingTargets = $uniqueServices | Where-Object { $_.Type -eq 'Pairing' } | Select-Object -ExpandProperty IPPort
+                foreach ($pt in $pairingTargets) {
+                    Write-Trace "mDNS Poller found Pairing Target: $pt"
+                    # Prevent endless prompts for the same IP
+                    if (-not $script:pairedHistory) { $script:pairedHistory = @{} }
+                    if (-not $script:pairedHistory[$pt]) {
+                        $pin = Show-PairingPrompt -IPPort $pt
+                        if ($pin) {
+                            $success = Invoke-AdbPair -Target $pt -Pin $pin
+                            if ($success) { $script:pairedHistory[$pt] = $true }
+                        } else {
+                            # User cancelled, don't ask again this session
+                            $script:pairedHistory[$pt] = $true
+                        }
                     }
                 }
+
+                # Check for Connect
+                $connectTargets = $uniqueServices | Where-Object { $_.Type -eq 'Connect' } | Select-Object -ExpandProperty IPPort
+                foreach ($ct in $connectTargets) {
+                    Write-Trace "mDNS Poller found Connect Target: $ct"
+                    if ($script:currentTarget -ne $ct) {
+                        Invoke-AdbConnect -Target $ct
+                    }
+                }
+                
                 # Clear the job buffer so we don't re-process old ones endlessly
                 Receive-Job -Job $script:mdnsJob | Out-Null
             }

@@ -15,63 +15,60 @@ namespace ConnectPhoneShareTarget
     {
         private List<string> files;
         private TextBlock txtStatus;
-        private ProgressBar progressBar;
+        private Border progressIndicator;
         private TextBlock txtSpeed;
 
         public TransferWindow(List<string> filePaths)
         {
             files = filePaths;
-            Title = "Connect Phone ADB";
-            Width = 400;
-            Height = 150;
+            Title = "Connect Phone ADB - Share";
+            Width = 420;
+            Height = 160;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            Background = new SolidColorBrush(Color.FromRgb(30, 30, 30));
-            Foreground = Brushes.White;
-            WindowStyle = WindowStyle.ToolWindow;
+            Background = Brushes.Transparent;
+            WindowStyle = WindowStyle.None;
             ResizeMode = ResizeMode.NoResize;
             Topmost = true;
+            AllowsTransparency = true;
 
-            var grid = new Grid { Margin = new Thickness(15) };
-            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            string xaml = @"
+            <Border xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+                    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+                    Background=""#1E1E1E"" CornerRadius=""12"" BorderBrush=""#333333"" BorderThickness=""1"" Margin=""10"">
+                <Border.Effect>
+                    <DropShadowEffect Color=""Black"" BlurRadius=""15"" ShadowDepth=""0"" Opacity=""0.5""/>
+                </Border.Effect>
+                <Grid Margin=""20,15,20,15"">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height=""Auto""/>
+                        <RowDefinition Height=""*"" />
+                        <RowDefinition Height=""Auto""/>
+                        <RowDefinition Height=""Auto""/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text=""Sending to Android Device"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Grid.Row=""0"" Margin=""0,0,0,5""/>
+                    
+                    <TextBlock x:Name=""txtStatus"" Text=""Initializing transfer..."" FontSize=""12"" Foreground=""#A0A0A0"" Grid.Row=""1"" Margin=""0,0,0,15"" TextTrimming=""CharacterEllipsis""/>
+                    
+                    <Border Grid.Row=""2"" Height=""8"" Background=""#2C2C2E"" CornerRadius=""4"" Margin=""0,0,0,5"" ClipToBounds=""True"">
+                        <Border x:Name=""progressIndicator"" Background=""#00E676"" CornerRadius=""4"" Width=""0"" HorizontalAlignment=""Left""/>
+                    </Border>
+                    
+                    <TextBlock x:Name=""txtSpeed"" Text=""0 MB/s"" FontSize=""11"" Foreground=""#A0A0A0"" HorizontalAlignment=""Right"" Grid.Row=""3""/>
+                </Grid>
+            </Border>";
 
-            txtStatus = new TextBlock
-            {
-                Text = "Initializing transfer...",
-                FontSize = 14,
-                FontWeight = FontWeights.SemiBold,
-                Margin = new Thickness(0, 0, 0, 10),
-                TextTrimming = TextTrimming.CharacterEllipsis
-            };
-            Grid.SetRow(txtStatus, 0);
+            var rootBorder = (Border)System.Windows.Markup.XamlReader.Parse(xaml);
+            txtStatus = (TextBlock)rootBorder.FindName("txtStatus");
+            progressIndicator = (Border)rootBorder.FindName("progressIndicator");
+            txtSpeed = (TextBlock)rootBorder.FindName("txtSpeed");
 
-            progressBar = new ProgressBar
-            {
-                Height = 20,
-                Minimum = 0,
-                Maximum = 100,
-                Value = 0,
-                Foreground = new SolidColorBrush(Color.FromRgb(0, 120, 215))
-            };
-            Grid.SetRow(progressBar, 1);
-
-            txtSpeed = new TextBlock
-            {
-                Text = "0 MB/s",
-                FontSize = 12,
-                Foreground = Brushes.LightGray,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 10, 0, 0)
-            };
-            Grid.SetRow(txtSpeed, 2);
-
-            grid.Children.Add(txtStatus);
-            grid.Children.Add(progressBar);
-            grid.Children.Add(txtSpeed);
-            Content = grid;
+            Content = rootBorder;
             
             TaskbarItemInfo = new TaskbarItemInfo { ProgressState = TaskbarItemProgressState.Normal };
+            
+            // Allow drag to move
+            this.MouseLeftButtonDown += (s, e) => this.DragMove();
         }
 
         private string RunAdbCommand(string arguments)
@@ -199,7 +196,19 @@ namespace ConnectPhoneShareTarget
                                 double speedMb = (recentBytes / 1048576.0) / (speedSw.ElapsedMilliseconds / 1000.0);
                                 txtSpeed.Text = $"{speedMb:F1} MB/s";
                                 double pct = (double)totalSent / totalBytes * 100;
-                                progressBar.Value = pct;
+                                
+                                // Smooth animation for progress bar width
+                                var parentBorder = (Border)progressIndicator.Parent;
+                                double targetWidth = parentBorder.ActualWidth * (pct / 100.0);
+                                if (targetWidth > 0 && !double.IsNaN(targetWidth)) {
+                                    var anim = new System.Windows.Media.Animation.DoubleAnimation {
+                                        To = targetWidth,
+                                        Duration = TimeSpan.FromMilliseconds(250),
+                                        EasingFunction = new System.Windows.Media.Animation.QuadraticEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
+                                    };
+                                    progressIndicator.BeginAnimation(Border.WidthProperty, anim);
+                                }
+                                
                                 TaskbarItemInfo.ProgressValue = pct / 100.0;
                                 
                                 recentBytes = 0;
@@ -217,7 +226,15 @@ namespace ConnectPhoneShareTarget
                 globalSw.Stop();
                 txtStatus.Text = "Transfer Complete!";
                 txtSpeed.Text = $"{totalBytes / 1048576.0:F1} MB in {globalSw.Elapsed.TotalSeconds:F1}s";
-                progressBar.Value = 100;
+                
+                var parentFinal = (Border)progressIndicator.Parent;
+                var animFinal = new System.Windows.Media.Animation.DoubleAnimation {
+                    To = parentFinal.ActualWidth,
+                    Duration = TimeSpan.FromMilliseconds(250),
+                    EasingFunction = new System.Windows.Media.Animation.QuadraticEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
+                };
+                progressIndicator.BeginAnimation(Border.WidthProperty, animFinal);
+                
                 TaskbarItemInfo.ProgressValue = 1.0;
                 await Task.Delay(3000);
             }

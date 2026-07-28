@@ -130,10 +130,10 @@ if ($script:Win) {
     [regex]::Matches($xaml, 'x:Name="([^"]+)"')          | ForEach-Object { $nameSet[$_.Groups[1].Value] = $true }
     
     $findNames = @()
-    $findNames += [regex]::Matches($engineRaw, 'FindName\(\s*"([^"]+)"\s*\)') | ForEach-Object { $_.Groups[1].Value }
+    $findNames += [regex]::Matches($engineRaw, 'wpfWindow\.FindName\(\s*"([^"]+)"\s*\)') | ForEach-Object { $_.Groups[1].Value }
     $bindings = Join-Path $root 'MSIX_Source\bin\TrayUIBindings.ps1'
     if (Test-Path $bindings) {
-        $findNames += [regex]::Matches([System.IO.File]::ReadAllText($bindings), 'FindName\([`"''\s]*([a-zA-Z0-9_]+)[`"''\s]*\)') | ForEach-Object { $_.Groups[1].Value }
+        $findNames += [regex]::Matches([System.IO.File]::ReadAllText($bindings), 'wpfWindow\.FindName\([`"''\s]*([a-zA-Z0-9_]+)[`"''\s]*\)') | ForEach-Object { $_.Groups[1].Value }
     }
     $findNames = $findNames | Where-Object { $_ } | Sort-Object -Unique
     
@@ -183,6 +183,14 @@ Gate "AppxManifest.xml is well-formed XML" ($null -ne $manifestXml) $(if ($manif
 if ($manifestXml) {
     $ver = $manifestXml.Package.Identity.Version
     Gate "Identity Version present ($ver)" ([bool]$ver -and $ver -match '^\d+\.\d+\.\d+\.\d+$')
+}
+
+Write-Host "`n=== 9. Pester Unit Tests ===" -ForegroundColor Cyan
+if (Get-Command Invoke-Pester -ErrorAction SilentlyContinue) {
+    $pesterResult = Invoke-Pester -Path (Join-Path $root 'Tests') -PassThru -ErrorAction SilentlyContinue
+    Gate "Pester Unit Tests Passed" ($pesterResult.FailedCount -eq 0) "Failed tests: $($pesterResult.FailedCount)"
+} else {
+    Gate "Pester Unit Tests Passed" $false "Pester module not found on this system."
 }
 
 Write-Host "`n==================================================" -ForegroundColor Cyan
