@@ -1523,6 +1523,21 @@ $actionAuto = {
     Update-WpfUI
 }
 $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
+
+$script:wpfWindow.FindName("btnUserJoe").Add_Click({
+    $btn = $script:wpfWindow.FindName("btnUserJoe")
+    $btn.ContextMenu.PlacementTarget = $btn
+    $btn.ContextMenu.IsOpen = $true
+})
+
+$script:wpfWindow.FindName("menuItemTheme").Add_Click({
+    if ($global:CurrentTheme -eq "DarkTheme") {
+        Set-AppTheme "LightTheme"
+    } else {
+        Set-AppTheme "DarkTheme"
+    }
+})
+
 $btnTopProfile = $script:wpfWindow.FindName("btnProfileTop")
 if ($null -ne $btnTopProfile) {
     $btnTopProfile.Add_Click({

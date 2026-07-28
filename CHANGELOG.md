@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.9.5.0]
+- **[minor]** Added `Ctrl+A` Select All (visible items only) and `Escape` deselect support to `lbFiles`.
+- **[minor]** Added 400ms double-click speed thresholding guard (`$script:lastDoubleClickTime`) to prevent rapid accidental triple-click job duplication.
+- **[minor]** Added floating dock auto-hide pause on mouse hover (`MouseEnter`/`MouseLeave`).
+- **[fix]** Wired `btnProfileTop` click handler to open profile ContextMenu directly when expanded.
+- **[fix]** Added application exit job & process cleanup (`Stop-Job`, `Remove-Job`, `adbLsProc.Kill()`).
+
 ## [v1.9.2.8]
 - **[minor]** Changed the background fill color of the 'Windows' and 'Galaxy S21' device avatars from `PrimaryBrush` (Purple) to `SecondaryBrush` (Light-Green) for a more unified status indicator aesthetic.
 
