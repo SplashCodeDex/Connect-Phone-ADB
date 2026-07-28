@@ -1010,7 +1010,8 @@ $script:wpfWindow.Add_Deactivated({
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
             $script:wpfWindow.Hide()
             $script:lastDeactivated = $now
-            $script:wpfWindow.SizeToContent = 'WidthAndHeight'
+            $script:wpfWindow.Width = 290
+            $script:wpfWindow.Height = 460
             $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
             $script:wpfWindow.FindName("FileExplorer").Opacity = 0
             $script:wpfWindow.FindName("fileTrans").X = 150

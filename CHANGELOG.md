@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.5.3]
+- **[fix]** Fixed the root cause of the "disappearing to the left" bug. PowerShell was dynamically injecting `SizeToContent = 'WidthAndHeight'` when the window was dismissed, instantly breaking the previous `CanResize` fix for the next launch. Replaced the runtime `SizeToContent` injection with explicit `Width=290` and `Height=460` resets to preserve OS animation support.
+
 ## [v1.7.5.2]
 - **[fix]** Fixed the "disappearing to the left" animation glitch. Changed WPF `ResizeMode` to `CanResize`, allowing the OS to actually process the `DoubleAnimation` on the Window's `Width` and `Height` dimensions, instead of silently dropping them while still animating `Left` and `Top`.
 
