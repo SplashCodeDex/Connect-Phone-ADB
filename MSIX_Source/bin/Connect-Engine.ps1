@@ -216,7 +216,7 @@ $xaml = @"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize">
     <Window.Resources>
-        <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
+        <BackEase x:Key="BouncyEase" Amplitude="2.5" EasingMode="EaseOut" />
         <Storyboard x:Key="ExpandMenu">
             <!-- Window Size Expansion with ElasticEase (Overshoot + Reverse Subtle Overshoot) -->
             <DoubleAnimation Storyboard.TargetName="winSpatial" Storyboard.TargetProperty="Width" By="1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
