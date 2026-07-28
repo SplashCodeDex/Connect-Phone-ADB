@@ -954,16 +954,29 @@ Set-AppTheme (Get-SystemTheme)
 
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
-
 $script:lbFiles = $script:wpfWindow.FindName("lbFiles")
-$script:txtCurrentDir = $script:wpfWindow.FindName("txtCurrentDir")
+$script:txtSearch = $script:wpfWindow.FindName("txtSearch")
 $script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")
 $script:currentTarget = ""
+$script:currentDirPath = "/sdcard/"
 $script:adbOutputSub = $null
 $script:adbLsProc = $null
 
+$script:txtSearch.Add_TextChanged({
+    $query = $script:txtSearch.Text.ToLower()
+    foreach ($item in $script:lbFiles.Items) {
+        $name = $item.Content.Name.ToLower()
+        if ([string]::IsNullOrWhiteSpace($query) -or $name.Contains($query)) {
+            $item.Visibility = 'Visible'
+        } else {
+            $item.Visibility = 'Collapsed'
+        }
+    }
+})
+
 function Load-Directory($dirPath) {
-    $script:txtCurrentDir.Text = $dirPath
+    $script:currentDirPath = $dirPath
+    $script:txtSearch.Text = ""
     $script:lbFiles.Items.Clear()
     
     if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
@@ -1011,7 +1024,7 @@ function Load-Directory($dirPath) {
 }
 
 $script:btnUpDir.Add_Click({
-    $curr = $script:txtCurrentDir.Text
+    $curr = $script:currentDirPath
     if ($curr -ne "/sdcard/" -and $curr.Length -gt 1) {
         $trimmed = $curr.TrimEnd('/')
         $lastSlash = $trimmed.LastIndexOf('/')
