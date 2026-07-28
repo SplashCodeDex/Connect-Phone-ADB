@@ -795,10 +795,6 @@ $xaml = @"
                     </Button>
                     <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#xE895;" />
-                    </Button>
-                    <Button Name="btnQATheme" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Toggle Theme">
-                        <TextBlock Text="&#xE793;" />
-                    </Button>
                 </StackPanel>
                 
                 <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,0" />
@@ -831,6 +827,11 @@ $xaml = @"
 
                 <!-- User Joe (always visible when contracted) -->
                 <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                    <Button.ContextMenu>
+                        <ContextMenu x:Name="menuUserJoe" Background="{DynamicResource SecondaryBackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" HasDropShadow="True">
+                            <MenuItem x:Name="menuItemTheme" Header="Toggle Theme" />
+                        </ContextMenu>
+                    </Button.ContextMenu>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -1439,7 +1440,13 @@ $actionAuto = {
     Update-WpfUI
 }
 $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
-$script:wpfWindow.FindName("btnQATheme").Add_Click({
+$script:wpfWindow.FindName("btnUserJoe").Add_Click({
+    $btn = $script:wpfWindow.FindName("btnUserJoe")
+    $btn.ContextMenu.PlacementTarget = $btn
+    $btn.ContextMenu.IsOpen = $true
+})
+
+$script:wpfWindow.FindName("menuItemTheme").Add_Click({
     if ($global:CurrentTheme -eq "DarkTheme") {
         Set-AppTheme "LightTheme"
     } else {

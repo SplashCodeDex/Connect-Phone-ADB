@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.9.2.7]
+- **[minor]** Moved the 'Toggle Theme' action from the top quick-actions row into a native WPF `ContextMenu` attached to the user avatar (`btnUserJoe`), clearing up visual space.
+
 ## [v1.9.3.5]
 - **[fix]** Replaced hardcoded status indicator dot colors (`#1D1226` and `#4CAF50`) in Nearby Users list with dynamic `{DynamicResource SecondaryBrush}` and `{DynamicResource SecondaryBackgroundBrush}` tokens for 100% theme compliance.
 - **[minor]** Upgraded floating download dock entrance animation to a springy `BackEase` overshoot effect and exit to a 0.35s `CubicEase` slide-down.
