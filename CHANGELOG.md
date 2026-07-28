@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.4.7]
+- **[minor]** Split global UI physics into two distinct resources (`HoverEase` Amplitude 1.22 and `PopInEase` Amplitude 3.53) to exactly target scale curves.
+
 ## [v1.7.4.6]
 - **[minor]** Split global UI physics into two distinct resources: `HoverEase (Amplitude=1.22)` and `PopInEase (Amplitude=3.53)`. This forces the hover-exit to shrink exactly to `0.96` (from `1.08`) before snapping back to `1.0`, and the spatial menu pop-in to start from `0.90` and explode outward to `1.18` before settling to `1.0`, matching the desired bespoke physics curves perfectly.
 
