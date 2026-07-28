@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.9.7.5]
+- **[fix]** Resolved Taskbar notification focus flicker bug on system tray icon click by introducing a 500ms `$script:ignoreDeactivateUntil` grace period in `wpfWindow.Add_Deactivated`, guaranteeing tray clicks immediately open the window without instant focus-loss re-hiding.
+
 ## [v1.9.7.0]
 - **[fix]** Resolved tray icon click swallowing bug by tracking `$script:wasVisibleBeforeDeactivate` flag, ensuring left and right clicks on system tray icon reliably toggle window visibility regardless of WPF focus deactivation timing.
 

@@ -1738,14 +1738,15 @@ function Update-WpfUI {
 }
 
 $script:lastDeactivated = [DateTime]::MinValue
-$script:wasVisibleBeforeDeactivate = $false
+$script:ignoreDeactivateUntil = [DateTime]::MinValue
 
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({
+    # Ignore Deactivated during initial 500ms show window grace period
+    if ([DateTime]::Now -lt $script:ignoreDeactivateUntil) { return }
     if ($script:wpfWindow.IsVisible) {
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
-        $script:wasVisibleBeforeDeactivate = $true
         $script:wpfWindow.Hide()
         $script:lastDeactivated = [DateTime]::Now
     }
@@ -1755,7 +1756,6 @@ $script:wpfWindow.Add_Deactivated({
 $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.Hide()
     $script:lastDeactivated = [DateTime]::Now
-    $script:wasVisibleBeforeDeactivate = $false
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
     $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
     $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
@@ -1773,22 +1773,17 @@ $script:notifyIcon.Add_MouseUp({
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
         $now = [DateTime]::Now
         
-        # If window is currently visible, hide it cleanly
+        # Toggle: If window is currently visible, hide it cleanly
         if ($script:wpfWindow.IsVisible) {
             $script:wpfWindow.Hide()
             $script:lastDeactivated = $now
-            $script:wasVisibleBeforeDeactivate = $false
             return
         }
         
-        # If window was just closed by Deactivated within 120ms specifically because the user clicked on the tray icon while open:
-        # treat that click as closing the window, not re-opening it immediately.
-        if (($now - $script:lastDeactivated).TotalMilliseconds -lt 120 -and $script:wasVisibleBeforeDeactivate) {
-            $script:wasVisibleBeforeDeactivate = $false
+        # Debounce rapid double-clicks (within 200ms of last close)
+        if (($now - $script:lastDeactivated).TotalMilliseconds -lt 200) {
             return
         }
-        
-        $script:wasVisibleBeforeDeactivate = $false
         
         try { Update-WpfUI } catch {}
         
@@ -1805,6 +1800,9 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Left = $left
         $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
+        
+        # Protect against OS Taskbar focus flicker on open
+        $script:ignoreDeactivateUntil = $now.AddMilliseconds(500)
         
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
