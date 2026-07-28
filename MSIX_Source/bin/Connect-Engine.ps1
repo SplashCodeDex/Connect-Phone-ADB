@@ -61,17 +61,25 @@ function Invoke-AdbConnect {
     $target = "${GatewayIP}:5555"
     
     # Smart Polling: Check if already connected to prevent UI freezing
-    $devices = adb devices 2>&1
-    if ($devices -match [regex]::Escape($target) + "\s+device") {
-        return @{ Success = $true; Target = $target; IP = $GatewayIP }
+    $devices = adb devices -l 2>&1
+    if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
+        $devName = $Matches[1] -replace '_', ' '
+        return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
+    } elseif ($devices -match ([regex]::Escape($target) + "\s+device")) {
+        return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $target }
     }
 
     # Not connected, try to connect
     $null = adb start-server 2>&1
     $result = adb connect $target 2>&1
     
-    if ($result -like "*connected to*" -or (adb devices) -match [regex]::Escape($target)) {
-        return @{ Success = $true; Target = $target; IP = $GatewayIP }
+    $devices = adb devices -l 2>&1
+    if ($result -like "*connected to*" -or $devices -match ([regex]::Escape($target) + "\s+device")) {
+        $devName = $target
+        if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
+            $devName = $Matches[1] -replace '_', ' '
+        }
+        return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
     } else {
         # Clear ghost target if unreachable
         $null = adb disconnect $target 2>&1
@@ -1096,12 +1104,7 @@ function Load-Directory($dirPath) {
             }
         }
         
-        if ([string]::IsNullOrWhiteSpace($script:currentTarget)) {
-            $statusText = $script:txtStatus.Text
-            if ($statusText -match "Connected:\s*(.+)") {
-                $script:currentTarget = $Matches[1]
-            }
-        }
+
         
         if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
             try { $script:adbLsProc.Kill() } catch {}
@@ -1389,11 +1392,10 @@ function Invoke-MenuAction([scriptblock]$Action) {
 }
 
 $script:wpfWindow.FindName("btnCopyIP").Add_Click({
-    $statusText = $script:txtStatus.Text
-    if ($statusText -match "Connected:\s*(.+)") {
+    if (-not [string]::IsNullOrWhiteSpace($script:currentTarget)) {
         try {
-            Set-Clipboard -Value $Matches[1] -ErrorAction Stop
-            Show-Toast -Title "Copied" -Message "IP Address copied to clipboard: $($Matches[1])"
+            Set-Clipboard -Value $script:currentTarget -ErrorAction Stop
+            Show-Toast -Title "Copied" -Message "IP Address copied to clipboard: $($script:currentTarget)"
             
             $btnCopyIP = $script:wpfWindow.FindName("btnCopyIP")
             if ($null -ne $btnCopyIP) {
@@ -1421,10 +1423,11 @@ $script:wpfWindow.FindName("btnCopyIP").Add_Click({
 $actionConnect = {
     $res = Invoke-AdbConnect
     if ($res.Success) {
+        $script:currentTarget = $res.Target
         $script:notifyIcon.Icon = $iconGreen
-        $script:notifyIcon.Text = "Connected: $($res.Target)"
-        $script:txtStatus.Text = "Connected: $($res.Target)"
-        Show-Toast -Title "ADB Connected" -Message "Successfully connected to $($res.Target)"
+        $script:notifyIcon.Text = "Connected: $($res.Name)"
+        $script:txtStatus.Text = "Connected: $($res.Name)"
+        Show-Toast -Title "ADB Connected" -Message "Successfully connected to $($res.Name)"
     } else {
         $script:notifyIcon.Icon = $iconRed
         $script:notifyIcon.Text = "Disconnected"
@@ -1500,10 +1503,7 @@ $actionPull = {
     
     if (-not $target) {
         & $actionConnect
-        $statusText = $script:txtStatus.Text
-        if ($statusText -match "Connected:\s*(.+)") {
-            $target = $Matches[1]
-        }
+        $target = $script:currentTarget
         
         if (-not $target) {
             return
@@ -1697,7 +1697,7 @@ function Update-WpfUI {
     param([string[]]$DevicesOutput)
     
     if (-not $DevicesOutput) {
-        $DevicesOutput = adb devices 2>&1
+        $DevicesOutput = adb devices -l 2>&1
     }
 
     $brushConverter = New-Object System.Windows.Media.BrushConverter
@@ -1716,9 +1716,14 @@ function Update-WpfUI {
 
     if ($connectedDevice) {
         $target = $connectedDevice.Split()[0].Trim()
+        $devName = $target
+        if ($connectedDevice -match "model:([^\s]+)") {
+            $devName = $Matches[1] -replace '_', ' '
+        }
+        $script:currentTarget = $target
         $script:notifyIcon.Icon = $iconGreen
-        $script:notifyIcon.Text = "Connected: $target"
-        $script:txtStatus.Text = "Connected: $target"
+        $script:notifyIcon.Text = "Connected: $devName"
+        $script:txtStatus.Text = "Connected: $devName"
         $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Visible'
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
