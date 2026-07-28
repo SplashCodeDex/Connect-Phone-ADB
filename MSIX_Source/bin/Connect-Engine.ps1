@@ -997,7 +997,6 @@ $script:txtSearch.Add_TextChanged({
 $script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")
 $script:currentTarget = ""
 $script:currentDirPath = "/sdcard/"
-$script:adbOutputSub = $null
 $script:adbLsProc = $null
 
 function Load-Directory($dirPath) {
@@ -1015,65 +1014,55 @@ function Load-Directory($dirPath) {
     $proc.StartInfo.RedirectStandardOutput = $true
     $proc.StartInfo.CreateNoWindow = $true
     
-    $action = {
-        $e = $Event.SourceEventArgs
-        if ($e.Data) {
-            $line = $e.Data.Trim()
-            if ($line -eq "./" -or $line -eq "../") { return }
-            
-            $isDir = $line.EndsWith("/")
-            $name = $line.TrimEnd('/', '*', '@', '=')
-            if ($isDir) {
-                $full = $dirPath + $name + "/"
-                $template = $script:wpfWindow.Resources["FolderGridTemplate"]
-            } else {
-                $full = $dirPath + $name
-                $template = $script:wpfWindow.Resources["FileGridTemplate"]
-            }
-            
-            $script:wpfWindow.Dispatcher.Invoke([Action]{
-                $idx = $script:lbFiles.Items.Count
-                
-                $item = New-Object System.Windows.Controls.ListBoxItem
-                $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
-                $item.ContentTemplate = $template
-                $item.Tag = $full
-                
-                # Ensure it's visible even if animation skips
-                $item.Opacity = 1
-                
-                # Staggered Entrance Animation Setup
-                $trans = New-Object System.Windows.Media.TranslateTransform
-                $trans.Y = 80
-                $item.RenderTransform = $trans
-                $item.Opacity = 0
-                
-                $delay = [TimeSpan]::FromMilliseconds($idx * 35) # 35ms stagger per item
-                
-                $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
-                $daY.To = 0
-                $daY.Duration = [TimeSpan]::FromSeconds(0.6)
-                $daY.BeginTime = $delay
-                $daY.EasingFunction = $script:wpfWindow.Resources["HoverEase"]
-                
-                $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
-                $daOp.To = 1
-                $daOp.Duration = [TimeSpan]::FromSeconds(0.4)
-                $daOp.BeginTime = $delay
-                
-                $trans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
-                $item.BeginAnimation([System.Windows.Controls.ListBoxItem]::OpacityProperty, $daOp)
-                
-                $script:lbFiles.Items.Add($item)
-            })
-        }
-    }
-    if ($script:adbOutputSub) { Unregister-Event -SourceIdentifier $script:adbOutputSub.Name -ErrorAction SilentlyContinue }
-    $script:adbOutputSub = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action $action
-    
     $proc.Start() | Out-Null
     $script:adbLsProc = $proc
-    $proc.BeginOutputReadLine()
+    $output = $proc.StandardOutput.ReadToEnd()
+    $proc.WaitForExit()
+    
+    $lines = $output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" -and $_ -ne "./" -and $_ -ne "../" }
+    
+    $idx = 0
+    foreach ($line in $lines) {
+        $isDir = $line.EndsWith("/")
+        $name = $line.TrimEnd('/', '*', '@', '=')
+        if ($isDir) {
+            $full = $dirPath + $name + "/"
+            $template = $script:wpfWindow.Resources["FolderGridTemplate"]
+        } else {
+            $full = $dirPath + $name
+            $template = $script:wpfWindow.Resources["FileGridTemplate"]
+        }
+        
+        $item = New-Object System.Windows.Controls.ListBoxItem
+        $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
+        $item.ContentTemplate = $template
+        $item.Tag = $full
+        
+        # Staggered Entrance Animation
+        $trans = New-Object System.Windows.Media.TranslateTransform
+        $trans.Y = 80
+        $item.RenderTransform = $trans
+        $item.Opacity = 0
+        
+        $delay = [TimeSpan]::FromMilliseconds($idx * 35)
+        
+        $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $daY.To = 0
+        $daY.Duration = [TimeSpan]::FromSeconds(0.6)
+        $daY.BeginTime = $delay
+        $daY.EasingFunction = $script:wpfWindow.Resources["HoverEase"]
+        
+        $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $daOp.To = 1
+        $daOp.Duration = [TimeSpan]::FromSeconds(0.4)
+        $daOp.BeginTime = $delay
+        
+        $trans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
+        $item.BeginAnimation([System.Windows.Controls.ListBoxItem]::OpacityProperty, $daOp)
+        
+        $script:lbFiles.Items.Add($item)
+        $idx++
+    }
 }
 
 $script:btnUpDir.Add_Click({
@@ -1288,6 +1277,8 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
 
 $script:wpfWindow.Add_KeyDown({
     param($sender, $e)
+    # Don't intercept keys when typing in the search bar
+    if ($script:txtSearch.IsFocused) { return }
     if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
         $script:wpfWindow.Hide()
         $script:lastDeactivated = [DateTime]::Now
