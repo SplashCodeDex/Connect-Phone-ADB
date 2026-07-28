@@ -521,7 +521,7 @@ $xaml = @"
                 <TranslateTransform x:Name="menuTrans" X="0" />
             </Border.RenderTransform>
             <Border Background="Transparent" CornerRadius="34">
-                <StackPanel Margin="0,12">
+                <StackPanel Margin="8,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />

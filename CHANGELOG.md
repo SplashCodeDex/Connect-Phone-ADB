@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.7.4.4]
+- **[minor]** Added 8px horizontal padding to the Spatial Menu window.
+- **[patch]** Tweaked hover and click animation durations from 0.5s to 0.35s for a snappier feel.
+
 ## [v1.7.4.3]
 - **[patch]** Exact "6.1 Spatial Context Menu" Match: Aligned Quick Action button proportions and border radii perfectly with the DeXStudio UI catalog specifications (44px height, 20px radius, 12px list item radius, 6px spacing).
 
