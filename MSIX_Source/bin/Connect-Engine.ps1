@@ -13,8 +13,8 @@ param(
 )
 
 $mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
-$mutex = New-Object System.Threading.Mutex($false, $mutexName)
-if (-not $mutex.WaitOne(0, $false)) {
+$script:engineMutex = New-Object System.Threading.Mutex($false, $mutexName)
+if (-not $script:engineMutex.WaitOne(0, $false)) {
     # Another instance is already running
     exit
 }
@@ -62,7 +62,7 @@ function Invoke-AdbConnect {
     $target = "${GatewayIP}:5555"
     
     # Smart Polling: Check if already connected to prevent UI freezing
-    $devices = adb devices -l 2>&1
+    $devices = (adb devices -l 2>&1) | Out-String
     if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
         $devName = $Matches[1] -replace '_', ' '
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
@@ -74,7 +74,7 @@ function Invoke-AdbConnect {
     $null = adb start-server 2>&1
     $result = adb connect $target 2>&1
     
-    $devices = adb devices -l 2>&1
+    $devices = (adb devices -l 2>&1) | Out-String
     if ($result -like "*connected to*" -or $devices -match ([regex]::Escape($target) + "\s+device")) {
         $devName = $target
         if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
@@ -96,7 +96,7 @@ if ($ConnectOnly) {
 
 # Prevent multiple tray instances
 $createdNew = $false
-$mutex = New-Object System.Threading.Mutex($true, "ConnectPhoneADBTrayMutex", [ref]$createdNew)
+$script:trayMutex = New-Object System.Threading.Mutex($true, "ConnectPhoneADBTrayMutex", [ref]$createdNew)
 if (-not $createdNew) {
     # If already running, trigger immediate connection check
     $res = Invoke-AdbConnect
