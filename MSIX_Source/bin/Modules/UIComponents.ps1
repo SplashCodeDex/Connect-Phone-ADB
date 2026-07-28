@@ -1,4 +1,4 @@
-﻿
+
 function Create-StatusIcon([System.Drawing.Color]$Color) {
     $iconPath = Join-Path $PSScriptRoot "app-icon.ico"
     if (Test-Path $iconPath) {
@@ -34,7 +34,7 @@ function Create-StatusIcon([System.Drawing.Color]$Color) {
         return $icon
     }
 }
-Export-ModuleMember -Function Create-StatusIcon
+#Export-ModuleMember -Function Create-StatusIcon
 
 function Show-Toast {
     param([string]$Title, [string]$Message)
@@ -61,7 +61,7 @@ function Show-Toast {
         $notifier.Show($toast)
     } catch {}
 }
-Export-ModuleMember -Function Show-Toast
+#Export-ModuleMember -Function Show-Toast
 
 function Set-AppTheme {
     param([string]$ThemeName)
@@ -75,7 +75,7 @@ function Set-AppTheme {
         $global:CurrentTheme = $ThemeName
     }
 }
-Export-ModuleMember -Function Set-AppTheme
+#Export-ModuleMember -Function Set-AppTheme
 
 function Get-SystemTheme {
     try {
@@ -85,7 +85,7 @@ function Get-SystemTheme {
     } catch {}
     return "DarkTheme"
 }
-Export-ModuleMember -Function Get-SystemTheme
+#Export-ModuleMember -Function Get-SystemTheme
 
 function Show-DownloadDockToast([string]$pathText) {
     $dock = $script:wpfWindow.FindName("dockDownloadToast")
@@ -183,12 +183,12 @@ function Show-DownloadDockToast([string]$pathText) {
         $script:dockTimer.Start()
     }
 }
-Export-ModuleMember -Function Show-DownloadDockToast
+#Export-ModuleMember -Function Show-DownloadDockToast
 
 function Invoke-MenuAction([scriptblock]$Action) {
     & $Action
 }
-Export-ModuleMember -Function Invoke-MenuAction
+#Export-ModuleMember -Function Invoke-MenuAction
 
 function Update-WpfUI {
     param([string[]]$DevicesOutput)
@@ -238,5 +238,5 @@ function Update-WpfUI {
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
     }
 }
-Export-ModuleMember -Function Update-WpfUI
+#Export-ModuleMember -Function Update-WpfUI
 

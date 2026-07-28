@@ -1,9 +1,9 @@
-﻿
+
 function Get-AutoConnectStatus {
     $task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
     return ($task -ne $null -and $task.State -ne "Disabled")
 }
-Export-ModuleMember -Function Get-AutoConnectStatus
+#Export-ModuleMember -Function Get-AutoConnectStatus
 
 function Set-AutoConnectStatus([bool]$Enable) {
     $service = New-Object -ComObject Schedule.Service
@@ -37,5 +37,5 @@ function Set-AutoConnectStatus([bool]$Enable) {
         } catch {}
     }
 }
-Export-ModuleMember -Function Set-AutoConnectStatus
+#Export-ModuleMember -Function Set-AutoConnectStatus
 

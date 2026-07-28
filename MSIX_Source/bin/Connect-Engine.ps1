@@ -14,8 +14,8 @@ param(
 
 Import-Module "$PSScriptRoot\Modules\EngineUtils.psm1" -Force
 Import-Module "$PSScriptRoot\Modules\AdbManager.psm1" -Force
-Import-Module "$PSScriptRoot\Modules\TaskScheduler.psm1" -Force
-Import-Module "$PSScriptRoot\Modules\UIComponents.psm1" -Force
+. "$PSScriptRoot\Modules\TaskScheduler.ps1"
+. "$PSScriptRoot\Modules\UIComponents.ps1"
 $mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
 $script:engineMutex = New-Object System.Threading.Mutex($false, $mutexName)
 if (-not $script:engineMutex.WaitOne(0, $false)) {
