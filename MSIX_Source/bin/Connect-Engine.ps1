@@ -213,7 +213,7 @@ $xaml = @"
         x:Name="winSpatial"
         WindowStyle="None" Background="Transparent" AllowsTransparency="True"
         Topmost="True" ShowInTaskbar="False"
-        Width="290" Height="460"
+        Width="290" Height="418"
         ResizeMode="NoResize">
     <Window.Resources>
         <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
@@ -989,8 +989,9 @@ $script:wpfWindow.Add_Deactivated({
         $now = [DateTime]::Now
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
             $script:wpfWindow.Hide()
+            $script:lastDeactivated = $now
             $script:wpfWindow.Width = 290
-            $script:wpfWindow.Height = 460
+            $script:wpfWindow.Height = 418
             $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
             $script:wpfWindow.FindName("FileExplorer").Opacity = 0
             $script:wpfWindow.FindName("fileTrans").X = 150
@@ -1002,7 +1003,8 @@ $script:wpfWindow.Add_Deactivated({
 $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
-        if ($script:wpfWindow.IsVisible) {
+        $now = [DateTime]::Now
+        if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
             $script:wpfWindow.Hide()
             return
         }

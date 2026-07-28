@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.7.4.1]
+- **[patch]** Fixed massive empty space under the "Exit Engine" button by reducing the hardcoded WPF window height from 460 to 418.
+- **[fix]** Resolved tray icon toggle race condition where clicking the tray icon while the menu was open would trigger the `Deactivated` hide event just before the `MouseUp` show event, causing the menu to pop back up instead of hiding. 
+
 ## [v1.7.4.0]
 - **[fix]** Resolved critical data corruption bug during ADB file transfers. Replaced fragile `cat >>` resume logic with a robust `.part` temporary file mechanism. Incomplete transfers now write to `<filename>.part` and atomically rename upon completion, guaranteeing data integrity.
 - **[minor]** Added silent, non-blocking error logging (via `2>>`) to the hidden `Connect-Engine.ps1` background task to improve debuggability without introducing UI overhead.
