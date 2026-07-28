@@ -219,7 +219,7 @@ $xaml = @"
             <!-- Minimal Spatial ScrollBar Style -->
             <Style TargetType="ScrollBar">
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Width" Value="4"/>
+                <Setter Property="Width" Value="2"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ScrollBar">
@@ -235,7 +235,7 @@ $xaml = @"
                                         <Thumb>
                                             <Thumb.Template>
                                                 <ControlTemplate TargetType="Thumb">
-                                                    <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="2" Margin="0,20" />
+                                                    <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="1" Margin="0,40" />
                                                 </ControlTemplate>
                                             </Thumb.Template>
                                         </Thumb>
@@ -248,7 +248,7 @@ $xaml = @"
                 <Style.Triggers>
                     <Trigger Property="Orientation" Value="Horizontal">
                         <Setter Property="Width" Value="Auto"/>
-                        <Setter Property="Height" Value="4"/>
+                        <Setter Property="Height" Value="2"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ScrollBar">
@@ -258,13 +258,13 @@ $xaml = @"
                                                 <RepeatButton Command="ScrollBar.PageLeftCommand" Opacity="0" Focusable="False"/>
                                             </Track.DecreaseRepeatButton>
                                             <Track.IncreaseRepeatButton>
-                                                <RepeatButton Command="ScrollBar.PageRightCommand" Opacity="0" Focusable="False"/>
+                                                <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
                                             </Track.IncreaseRepeatButton>
                                             <Track.Thumb>
                                                 <Thumb>
                                                     <Thumb.Template>
                                                         <ControlTemplate TargetType="Thumb">
-                                                            <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="2" Margin="20,0" />
+                                                            <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="1" Margin="40,0" />
                                                         </ControlTemplate>
                                                     </Thumb.Template>
                                                 </Thumb>
@@ -293,11 +293,19 @@ $xaml = @"
                 <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
             
-            <!-- Show Close Button when expanded -->
+            <!-- Show Close Button and Top Profile when expanded, hide Bottom Profile -->
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
             <DoubleAnimation Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.3" />
+            
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileBottom" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileTop" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="btnProfileTop" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.3" />
             
             <!-- Show Nearby Expand Users when expanded -->
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Visibility">
@@ -318,10 +326,18 @@ $xaml = @"
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.8" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
             
-            <!-- Hide Close Button when contracting -->
+            <!-- Hide Close Button and Top Profile when contracting, show Bottom Profile -->
             <DoubleAnimation Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            
+            <DoubleAnimation Storyboard.TargetName="btnProfileTop" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileTop" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileBottom" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
             
             <!-- Hide Nearby Expand Users when contracting -->
@@ -622,7 +638,7 @@ $xaml = @"
                     </Grid>
                 </Border>
                 
-                <Button Name="btnProfile" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,0,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
+                <Button Name="btnProfileTop" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,0,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
                     <Grid>
                         <Ellipse Width="34" Height="34">
                             <Ellipse.Fill>
@@ -686,15 +702,32 @@ $xaml = @"
                     </Button.Template>
                 </Button>
                 
-                <!-- Exit Engine: docked at bottom so it never moves -->
+                <!-- Exit Engine & Profile: docked at bottom so it never moves -->
                 <StackPanel DockPanel.Dock="Bottom">
                     <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,8" />
-                    <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
-                        <Grid>
-                            <TextBlock Name="txtExitBtn" Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas" VerticalAlignment="Center"/>
-                        </Grid>
-                    </Button>
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Button Name="btnProfileBottom" Grid.Column="0" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="0,0,4,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
+                            <Grid>
+                                <Ellipse Width="34" Height="34">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                            </Grid>
+                        </Button>
+                        
+                        <Button Name="btnExit" Grid.Column="1" Style="{StaticResource SpatialListItem}">
+                            <Grid>
+                                <TextBlock Name="txtExitBtn" Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <TextBlock Text="&#x2318;Q" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+                    </Grid>
                 </StackPanel>
                 
                 <!-- Main content fills remaining space -->

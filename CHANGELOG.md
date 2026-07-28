@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.9.0.1]
+- **[fix]** Restored the Profile Avatar to the bottom-left 'Exit Engine' area when the menu is contracted, and animated it to instantly jump to the top right of the File Explorer search bar only when the menu is expanded.
+- **[minor]** Replaced the Exit button's 'bin' icon with the avatar and tightened the spacing.
+- **[minor]** Made the ScrollViewer scrollbar even slimmer and shorter.
+
 ## [v1.8.9.3]
 - **[minor]** Replaced the MessageBox exit dialog with an inline double-click state on the Exit Engine button itself to match the application aesthetic minimally.
 
