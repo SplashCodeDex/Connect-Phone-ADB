@@ -253,8 +253,8 @@ $xaml = @"
                     </TransformGroup>
                 </Border.RenderTransform>
                 <StackPanel Width="100" Height="100">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="#FFD700" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding Name}" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource FolderIconBrush}" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -305,8 +305,8 @@ $xaml = @"
                     </TransformGroup>
                 </Border.RenderTransform>
                 <StackPanel Width="100" Height="100">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="#A0A0A0" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding Name}" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -350,7 +350,7 @@ $xaml = @"
         </DataTemplate>
         <Style x:Key="SpatialListItem" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="16,10"/>
             <Setter Property="Template">
@@ -367,10 +367,10 @@ $xaml = @"
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#2C2C2E"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource MenuBackgroundBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#3A3A3C"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
                             </Trigger>
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
@@ -412,8 +412,8 @@ $xaml = @"
             </Setter>
         </Style>
         <Style x:Key="QuickActionBtn" TargetType="Button">
-            <Setter Property="Background" Value="#2C2C2E"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Width" Value="56"/>
             <Setter Property="Height" Value="44"/>
@@ -433,7 +433,7 @@ $xaml = @"
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#3A3A3C"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
                             </Trigger>
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
@@ -477,7 +477,7 @@ $xaml = @"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border x:Name="mainBorder" CornerRadius="34" BorderBrush="#333333" BorderThickness="1" RenderTransformOrigin="0.5,1">
+    <Border x:Name="mainBorder" CornerRadius="34" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" RenderTransformOrigin="0.5,1">
         <Border.RenderTransform>
             <TransformGroup>
                 <ScaleTransform ScaleX="1" ScaleY="1" x:Name="winScale" />
@@ -505,8 +505,8 @@ $xaml = @"
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="5,0,0,15">
-                <Button Name="btnUpDir" Background="Transparent" BorderThickness="0" Foreground="White" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="20" Content="&#xE72B;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,15,0" />
-                <TextBlock Name="txtCurrentDir" Text="/sdcard/" FontSize="18" Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <Button Name="btnUpDir" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="20" Content="&#xE72B;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,15,0" />
+                <TextBlock Name="txtCurrentDir" Text="/sdcard/" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
             </StackPanel>
             
             <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -540,12 +540,15 @@ $xaml = @"
                     <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#xE895;" />
                     </Button>
+                    <Button Name="btnQATheme" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Toggle Theme">
+                        <TextBlock Text="&#xE793;" />
+                    </Button>
                 </StackPanel>
                 
-                <Separator Background="#2C2C2E" Height="1" Margin="16,0" />
+                <Separator Background="{DynamicResource MenuBackgroundBrush}" Height="1" Margin="16,0" />
                 <StackPanel Orientation="Horizontal" Margin="24,10,24,10">
-                    <TextBlock Name="txtStatus" Text="Status: Initializing..." Foreground="#A0A0A0" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
-                    <Button Name="btnCopyIP" Background="Transparent" BorderThickness="0" Foreground="#A0A0A0" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Copy IP:Port" Cursor="Hand" Visibility="Collapsed" VerticalAlignment="Center" Margin="6,0,0,0">
+                    <TextBlock Name="txtStatus" Text="Status: Initializing..." Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
+                    <Button Name="btnCopyIP" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Copy IP:Port" Cursor="Hand" Visibility="Collapsed" VerticalAlignment="Center" Margin="6,0,0,0">
                         <TextBlock Text="&#xE8C8;" />
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
@@ -554,18 +557,18 @@ $xaml = @"
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="border" Property="Background" Value="#3A3A3C"/>
-                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
                 </StackPanel>
-                <Separator Background="#2C2C2E" Height="1" Margin="16,0" />
+                <Separator Background="{DynamicResource MenuBackgroundBrush}" Height="1" Margin="16,0" />
                 
                 <!-- TODO: File sharing user list integration -->
-                <TextBlock Text="Nearby Users" FontSize="13" Foreground="#A0A0A0" FontWeight="SemiBold" Margin="12,12,0,4" />
+                <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
 
                 <!-- User Joe -->
                 <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
@@ -582,12 +585,12 @@ $xaml = @"
                                     <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/JoeAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
                                 </Ellipse.Fill>
                             </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="#00E676" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
-                            <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="#A0A0A0" />
+                            <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                     </Grid>
                 </Button>
@@ -602,15 +605,15 @@ $xaml = @"
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="#6200EE" />
-                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Ellipse Fill="{DynamicResource BrandBrush}" />
+                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Galaxy S21" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
+                            <TextBlock Text="Galaxy S21" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         </StackPanel>
                         
-                        <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="#555555" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource MutedTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
                     </Grid>
                 </Button>
 
@@ -623,22 +626,22 @@ $xaml = @"
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="#6200EE" />
-                            <TextBlock Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Ellipse Fill="{DynamicResource BrandBrush}" />
+                            <TextBlock Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Windows" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="White"/>
+                            <TextBlock Text="Windows" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         </StackPanel>
                     </Grid>
                 </Button>
                 
-                <Separator Background="#2C2C2E" Height="1" Margin="16,8" />
+                <Separator Background="{DynamicResource MenuBackgroundBrush}" Height="1" Margin="16,8" />
                 
                 <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
                     <Grid>
-                        <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="#FF453A" HorizontalAlignment="Left"/>
-                        <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="#FF453A" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                        <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource DangerBrush}" HorizontalAlignment="Left"/>
+                        <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource DangerBrush}" HorizontalAlignment="Right" FontFamily="Consolas"/>
                     </Grid>
                 </Button>
             </StackPanel>
@@ -652,7 +655,20 @@ $xaml = @"
 $reader = (New-Object System.Xml.XmlNodeReader ([xml]$xaml))
 $script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
 
-
+$global:CurrentTheme = "DarkTheme"
+function Set-AppTheme {
+    param([string]$ThemeName)
+    $themePath = Join-Path $PSScriptRoot "..\Themes\$ThemeName.xaml"
+    if (Test-Path $themePath) {
+        $xmlReader = [System.Xml.XmlReader]::Create($themePath)
+        $resourceDict = [System.Windows.Markup.XamlReader]::Load($xmlReader)
+        $script:wpfWindow.Resources.MergedDictionaries.Clear()
+        $script:wpfWindow.Resources.MergedDictionaries.Add($resourceDict)
+        $xmlReader.Close()
+        $global:CurrentTheme = $ThemeName
+    }
+}
+Set-AppTheme "DarkTheme"
 
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
@@ -905,6 +921,13 @@ $actionAuto = {
     Update-WpfUI
 }
 $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
+$script:wpfWindow.FindName("btnQATheme").Add_Click({
+    if ($global:CurrentTheme -eq "DarkTheme") {
+        Set-AppTheme "LightTheme"
+    } else {
+        Set-AppTheme "DarkTheme"
+    }
+})
 
 $script:wpfWindow.FindName("btnExit").Add_Click({
     $script:wpfWindow.Hide()

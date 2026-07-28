@@ -1,0 +1,24 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Dark Theme (Default) -->
+    
+    <!-- Backgrounds -->
+    <SolidColorBrush x:Key="AppBackgroundBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#2C2C2E" />
+    <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#3A3A3C" />
+    <SolidColorBrush x:Key="MenuBorderBrush" Color="#333333" />
+    
+    <!-- Text -->
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="White" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#A0A0A0" />
+    <SolidColorBrush x:Key="MutedTextBrush" Color="#555555" />
+    
+    <!-- Icons / Accents -->
+    <SolidColorBrush x:Key="FolderIconBrush" Color="#FFD700" />
+    <SolidColorBrush x:Key="FileIconBrush" Color="#A0A0A0" />
+    
+    <!-- Functional / Status -->
+    <SolidColorBrush x:Key="BrandBrush" Color="#6200EE" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="#00E676" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#FF453A" />
+</ResourceDictionary>

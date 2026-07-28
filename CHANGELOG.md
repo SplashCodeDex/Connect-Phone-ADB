@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.4.9]
+- **[fix]** Declared `<desktop2:FirewallRules>` in `AppxManifest.xml` to automatically provision Windows Defender Firewall rules for `adb.exe` during MSIX installation. This permanently prevents the UAC/Firewall prompt that was appearing after every update due to path changes and mDNS UDP listeners.
+
 ## [v1.7.4.8]
 - **[minor]** Reverted the menu opening (`PopIn` and `ExpandMenu`) to use the original `ElasticEase` ("BouncyEase") with a starting scale of `0.85`, preserving the new dramatic `BackEase` overshoot/undershoot exclusively for the hover/leave interactions.
 

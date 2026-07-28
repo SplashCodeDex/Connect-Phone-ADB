@@ -5,12 +5,13 @@
   xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
-  IgnorableNamespaces="uap uap3 rescap desktop">
+  xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2"
+  IgnorableNamespaces="uap uap3 rescap desktop desktop2">
 
   <Identity
     Name="CodeDeX.ConnectPhoneADB"
     Publisher="CN=CodeDeX"
-    Version="1.7.4.8"
+    Version="1.7.4.9"
     ProcessorArchitecture="x64" />
 
   <Properties>
@@ -78,6 +79,17 @@
       </Extensions>
     </Application>
   </Applications>
+
+  <Extensions>
+    <desktop2:Extension Category="windows.firewallRules">
+      <desktop2:FirewallRules Executable="bin\adb.exe">
+        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all"/>
+        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all"/>
+        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all"/>
+        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all"/>
+      </desktop2:FirewallRules>
+    </desktop2:Extension>
+  </Extensions>
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
