@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.7.5.0]
+- **[major]** Architectural refactor of the WPF rendering engine to support dynamic theming.
+- Decoupled all hardcoded hex values in `Connect-Engine.ps1` into semantic `DynamicResource` tokens.
+- Introduced `Themes/DarkTheme.xaml` and `Themes/LightTheme.xaml` as standalone dictionaries.
+- Built a seamless runtime theme swapper (`Set-AppTheme`) utilizing XAML merged dictionary replacement.
+- Added a "Toggle Theme" quick action button to the spatial menu UI to switch between Light and Dark mode instantly.
+
 ## [v1.7.4.9]
 - **[fix]** Declared `<desktop2:FirewallRules>` in `AppxManifest.xml` to automatically provision Windows Defender Firewall rules for `adb.exe` during MSIX installation. This permanently prevents the UAC/Firewall prompt that was appearing after every update due to path changes and mDNS UDP listeners.
 

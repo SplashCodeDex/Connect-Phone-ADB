@@ -979,9 +979,9 @@ function Update-WpfUI {
     $qaAutoText = $script:wpfWindow.FindName("txtQAAuto")
     if ($null -ne $qaAutoText) {
         if ($script:AutoConnectEnabled) { 
-            $qaAutoText.Foreground = $brushConverter.ConvertFromString("#00E676")
+            $qaAutoText.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "SuccessBrush")
         } else { 
-            $qaAutoText.Foreground = [System.Windows.Media.Brushes]::White
+            $qaAutoText.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "PrimaryTextBrush")
         }
     }
     
