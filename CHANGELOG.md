@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.7.3.1]
+- **[fix]** Critical app startup failure where the tray icon would load but the WPF window would fail to parse entirely (making all menu items null) because the `JoeAvatar.jpg` image path incorrectly referenced `bin/Assets` instead of `Assets/`. 
+
+## [v1.7.3] - 2026-07-28
+
 ## [v1.7.2] - 2026-07-28
 
 ### [fix] Spatial Menu Tray Click — Duplicate Deactivated Handler (v1.7.2)

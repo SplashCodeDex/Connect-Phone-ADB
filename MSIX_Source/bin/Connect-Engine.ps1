@@ -577,7 +577,7 @@ $xaml = @"
                             <Ellipse>
                                 <Ellipse.Fill>
                                     <!-- Placeholder path for the uploaded picture -->
-                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/Assets/JoeAvatar.jpg" Stretch="UniformToFill" />
+                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/JoeAvatar.jpg" Stretch="UniformToFill" />
                                 </Ellipse.Fill>
                             </Ellipse>
                             <Ellipse Width="12" Height="12" Fill="#00E676" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
