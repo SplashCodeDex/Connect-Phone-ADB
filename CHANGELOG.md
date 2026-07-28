@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.4.8]
+- **[minor]** Reverted the menu opening (`PopIn` and `ExpandMenu`) to use the original `ElasticEase` ("BouncyEase") with a starting scale of `0.85`, preserving the new dramatic `BackEase` overshoot/undershoot exclusively for the hover/leave interactions.
+
 ## [v1.7.4.7]
 - **[minor]** Split global UI physics into two distinct resources (`HoverEase` Amplitude 1.22 and `PopInEase` Amplitude 3.53) to exactly target scale curves.
 
