@@ -1,3 +1,4 @@
+ $PSScriptRoot = "W:\CodeDeX\Connect-Phone-ADB\MSIX_Source\bin" 
 <#
 .SYNOPSIS
     Connect Phone ADB - Core Engine & Tray Application
@@ -11,7 +12,7 @@ param(
     [switch]$ConnectOnly
 )
 
-$mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
+$mutexName = "Global\TEST1"
 $mutex = New-Object System.Threading.Mutex($false, $mutexName)
 if (-not $mutex.WaitOne(0, $false)) {
     # Another instance is already running
@@ -87,7 +88,7 @@ if ($ConnectOnly) {
 
 # Prevent multiple tray instances
 $createdNew = $false
-$mutex = New-Object System.Threading.Mutex($true, "ConnectPhoneADBTrayMutex", [ref]$createdNew)
+$mutex = New-Object System.Threading.Mutex($true, "TEST2", [ref]$createdNew)
 if (-not $createdNew) {
     # If already running, trigger immediate connection check
     $res = Invoke-AdbConnect
@@ -624,8 +625,11 @@ $xaml = @"
                 
                 <Button Name="btnProfile" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,0,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
                     <Grid>
-                        <Ellipse Width="34" Height="34" Fill="{DynamicResource SecondaryBackgroundBrush}" />
-                        <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Ellipse Width="34" Height="34">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                            </Ellipse.Fill>
+                        </Ellipse>
                     </Grid>
                 </Button>
             </Grid>
@@ -1410,4 +1414,5 @@ if ($script:AutoConnectEnabled) {
 
 Show-Toast -Title "Connect ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
 
-[System.Windows.Forms.Application]::Run()
+$e = New-Object System.Windows.Forms.MouseEventArgs([System.Windows.Forms.MouseButtons]::Left, 1, 0, 0, 0); $script:notifyIcon.GetType().GetMethod("OnMouseUp", [System.Reflection.BindingFlags]"NonPublic, Instance").Invoke($script:notifyIcon, @( [object]$null, $e )); Write-Output "IsVisible: $($script:wpfWindow.IsVisible)"
+

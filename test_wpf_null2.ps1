@@ -7,11 +7,12 @@
 #>
 
 param(
+
     [switch]$Background,
     [switch]$ConnectOnly
 )
 
-$mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
+$mutexName = "Global\TEST1"
 $mutex = New-Object System.Threading.Mutex($false, $mutexName)
 if (-not $mutex.WaitOne(0, $false)) {
     # Another instance is already running
@@ -87,7 +88,7 @@ if ($ConnectOnly) {
 
 # Prevent multiple tray instances
 $createdNew = $false
-$mutex = New-Object System.Threading.Mutex($true, "ConnectPhoneADBTrayMutex", [ref]$createdNew)
+$mutex = New-Object System.Threading.Mutex($true, "TEST2", [ref]$createdNew)
 if (-not $createdNew) {
     # If already running, trigger immediate connection check
     $res = Invoke-AdbConnect
@@ -181,7 +182,8 @@ $script:notifyIcon.Icon = $iconYellow
 $script:notifyIcon.Visible = $true
 
 function Show-Toast {
-    param([string]$Title, [string]$Message)
+    param(
+[string]$Title, [string]$Message)
     try {
         [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
         [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom, ContentType = WindowsRuntime] | Out-Null
@@ -624,8 +626,11 @@ $xaml = @"
                 
                 <Button Name="btnProfile" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,0,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
                     <Grid>
-                        <Ellipse Width="34" Height="34" Fill="{DynamicResource SecondaryBackgroundBrush}" />
-                        <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Ellipse Width="34" Height="34">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                            </Ellipse.Fill>
+                        </Ellipse>
                     </Grid>
                 </Button>
             </Grid>
@@ -904,7 +909,8 @@ $script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
 
 $global:CurrentTheme = "DarkTheme"
 function Set-AppTheme {
-    param([string]$ThemeName)
+    param(
+[string]$ThemeName)
     $themePath = Join-Path $PSScriptRoot "..\Themes\$ThemeName.xaml"
     if (Test-Path $themePath) {
         $xmlReader = [System.Xml.XmlReader]::Create($themePath)
@@ -1077,7 +1083,8 @@ $script:lbFiles.Add_MouseDoubleClick({
             if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir }
             
             $actionBg = {
-                param($exePath, $tgt, $rem, $out)
+                param(
+$exePath, $tgt, $rem, $out)
                 Start-Process $exePath -ArgumentList "-s $tgt pull `"$rem`" `"$out`"" -Wait -NoNewWindow
                 Start-Process "explorer.exe" -ArgumentList "`"$out`""
             }
@@ -1264,7 +1271,8 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
 })
 
 $script:wpfWindow.Add_KeyDown({
-    param($sender, $e)
+    param(
+$sender, $e)
     if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
         $script:wpfWindow.Hide()
         $script:lastDeactivated = [DateTime]::Now
@@ -1306,7 +1314,8 @@ $script:wpfWindow.Add_KeyDown({
 })
 
 function Update-WpfUI {
-    param([string[]]$DevicesOutput)
+    param(
+[string[]]$DevicesOutput)
     
     if (-not $DevicesOutput) {
         $DevicesOutput = adb devices 2>&1
@@ -1376,7 +1385,8 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
 })
 
 $script:notifyIcon.Add_MouseUp({
-    param($sender, $e)
+    param(
+$sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
         $now = [DateTime]::Now
         if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
@@ -1410,4 +1420,5 @@ if ($script:AutoConnectEnabled) {
 
 Show-Toast -Title "Connect ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
 
-[System.Windows.Forms.Application]::Run()
+Write-Output `"WPF WINDOW IS NULL: `$(`$null -eq `$script:wpfWindow)`"
+
