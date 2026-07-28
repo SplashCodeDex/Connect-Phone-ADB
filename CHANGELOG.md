@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.8.2.2]
+- **[fix]** Fixed a long-standing bug where the File Explorer would fail to load files when the app was launched via the MSIX Start Menu shortcut due to a hardcoded relative path to `adb.exe`.
+- **[minor]** Updated the File Explorer top bar to an editable `TextBox` (Search/Path bar) and changed the navigation icon to an Up Arrow to match typical folder navigation.
+
 ## [v1.8.2.1]
 - **[fix]** Fixed a critical layout bug where the custom ScrollBar template was missing orientation triggers and repeat buttons, causing the `ScrollViewer` layout engine to silently fail and the `ListBox` to render completely blank.
 

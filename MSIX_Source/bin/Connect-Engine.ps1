@@ -594,16 +594,14 @@ $xaml = @"
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
-            <Border Grid.Row="0" Margin="0,0,0,15" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="12" Padding="8,6">
+            <Border Grid.Row="0" Margin="0,0,0,15" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="12" Padding="8,4">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Button Name="btnUpDir" Grid.Column="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Content="&#xE72B;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" Padding="4" />
-                    <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center">
-                        <TextBlock Name="txtCurrentDir" Text="/sdcard/" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" />
-                    </ScrollViewer>
+                    <Button Name="btnUpDir" Grid.Column="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Content="&#xE74A;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,8,0" Padding="4" />
+                    <TextBox Name="txtCurrentDir" Grid.Column="1" Text="/sdcard/" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="4" Margin="0" />
                 </Grid>
             </Border>
             
@@ -917,7 +915,7 @@ function Load-Directory($dirPath) {
     }
     
     $proc = New-Object System.Diagnostics.Process
-    $proc.StartInfo.FileName = "adb.exe"
+    $proc.StartInfo.FileName = $global:AdbExePath
     $proc.StartInfo.Arguments = "-s $($script:currentTarget) shell ls -1aF `"$dirPath`""
     $proc.StartInfo.UseShellExecute = $false
     $proc.StartInfo.RedirectStandardOutput = $true
