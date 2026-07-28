@@ -653,7 +653,7 @@ $xaml = @"
                 </Button>
             </Grid>
             
-            <ListBox Name="lbFiles" Grid.Row="1" SelectionMode="Extended" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+            <ListBox Name="lbFiles" Grid.Row="1" SelectionMode="Extended" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" Padding="0,0,10,0">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Background" Value="Transparent"/>
@@ -835,7 +835,7 @@ $xaml = @"
                     </StackPanel>
                 
                     <!-- Nearby Users Section -->
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly">
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
 
