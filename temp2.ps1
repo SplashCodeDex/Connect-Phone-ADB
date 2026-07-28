@@ -219,7 +219,7 @@ $xaml = @"
             <!-- Minimal Spatial ScrollBar Style -->
             <Style TargetType="ScrollBar">
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Width" Value="4"/>
+                <Setter Property="Width" Value="8"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ScrollBar">
@@ -235,7 +235,7 @@ $xaml = @"
                                         <Thumb>
                                             <Thumb.Template>
                                                 <ControlTemplate TargetType="Thumb">
-                                                    <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="2" Margin="0,20" />
+                                                    <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="4" Margin="2,0" />
                                                 </ControlTemplate>
                                             </Thumb.Template>
                                         </Thumb>
@@ -248,7 +248,7 @@ $xaml = @"
                 <Style.Triggers>
                     <Trigger Property="Orientation" Value="Horizontal">
                         <Setter Property="Width" Value="Auto"/>
-                        <Setter Property="Height" Value="4"/>
+                        <Setter Property="Height" Value="8"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ScrollBar">
@@ -264,7 +264,7 @@ $xaml = @"
                                                 <Thumb>
                                                     <Thumb.Template>
                                                         <ControlTemplate TargetType="Thumb">
-                                                            <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="2" Margin="20,0" />
+                                                            <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="4" Margin="0,2" />
                                                         </ControlTemplate>
                                                     </Thumb.Template>
                                                 </Thumb>
@@ -339,7 +339,7 @@ $xaml = @"
         </Storyboard>
         
         <DataTemplate x:Key="FolderGridTemplate">
-            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding [Name]}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
@@ -348,7 +348,7 @@ $xaml = @"
                 </Border.RenderTransform>
                 <StackPanel Width="85" Height="90">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding [Name]}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
+                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -391,7 +391,7 @@ $xaml = @"
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="FileGridTemplate">
-            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding [Name]}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
@@ -400,7 +400,7 @@ $xaml = @"
                 </Border.RenderTransform>
                 <StackPanel Width="85" Height="90">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding [Name]}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" Opacity="0.85"/>
+                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" Opacity="0.85"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -598,39 +598,21 @@ $xaml = @"
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 
-                <Button Name="btnUpDir" Grid.Column="0" Background="{DynamicResource TertiaryBackgroundBrush}" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Content="&#xE898;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="12">
+                <Button Name="btnUpDir" Grid.Column="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Content="&#xE89C;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="8">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="18">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="16">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
                 
-                <Border Grid.Column="1" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="20" Padding="14,8">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                        <TextBox Name="txtSearch" Grid.Column="1" Text="Search files..." FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
-                    </Grid>
+                <Border Grid.Column="1" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="20" Padding="12,8">
+                    <TextBox Name="txtCurrentDir" Text="/sdcard/" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
                 </Border>
-                
-                <Button Name="btnProfile" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,0,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
-                    <Grid>
-                        <Ellipse Width="34" Height="34">
-                            <Ellipse.Fill>
-                                <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
-                            </Ellipse.Fill>
-                        </Ellipse>
-                    </Grid>
-                </Button>
             </Grid>
             
             <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
@@ -691,8 +673,8 @@ $xaml = @"
                     <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,8" />
                     <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
                         <Grid>
-                            <TextBlock Name="txtExitBtn" Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas" VerticalAlignment="Center"/>
+                            <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left"/>
+                            <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas"/>
                         </Grid>
                     </Button>
                 </StackPanel>
@@ -745,7 +727,7 @@ $xaml = @"
                     </StackPanel>
                 
                     <!-- Nearby Users Section -->
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly">
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
 
@@ -933,34 +915,7 @@ $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
 $script:lbFiles = $script:wpfWindow.FindName("lbFiles")
-
-
-$script:txtSearch = $script:wpfWindow.FindName("txtSearch")
-$script:txtSearch.Add_GotFocus({
-    if ($script:txtSearch.Text -eq "Search files...") {
-        $script:txtSearch.Text = ""
-        $script:txtSearch.Foreground = $script:wpfWindow.FindResource("PrimaryTextBrush")
-    }
-})
-$script:txtSearch.Add_LostFocus({
-    if ([string]::IsNullOrWhiteSpace($script:txtSearch.Text)) {
-        $script:txtSearch.Text = "Search files..."
-        $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
-    }
-})
-$script:txtSearch.Add_TextChanged({
-    $query = $script:txtSearch.Text.ToLower()
-    if ($query -eq "search files...") { $query = "" }
-    foreach ($item in $script:lbFiles.Items) {
-        $name = $item.Content.Name.ToLower()
-        if ([string]::IsNullOrWhiteSpace($query) -or $name.Contains($query)) {
-            $item.Visibility = 'Visible'
-        } else {
-            $item.Visibility = 'Collapsed'
-        }
-    }
-})
-
+$script:txtCurrentDir = $script:wpfWindow.FindName("txtCurrentDir")
 $script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")
 $script:currentTarget = ""
 $script:adbOutputSub = $null
@@ -975,8 +930,8 @@ function Load-Directory($dirPath) {
     }
     
     $proc = New-Object System.Diagnostics.Process
-    $proc.StartInfo.FileName = "cmd.exe"
-    $proc.StartInfo.Arguments = "/c `"`"$global:AdbExePath`" -s $($script:currentTarget) shell ls -1aF `"$dirPath`"`""
+    $proc.StartInfo.FileName = $global:AdbExePath
+    $proc.StartInfo.Arguments = "-s $($script:currentTarget) shell ls -1aF `"$dirPath`""
     $proc.StartInfo.UseShellExecute = $false
     $proc.StartInfo.RedirectStandardOutput = $true
     $proc.StartInfo.CreateNoWindow = $true
@@ -1001,7 +956,7 @@ function Load-Directory($dirPath) {
                 $idx = $script:lbFiles.Items.Count
                 
                 $item = New-Object System.Windows.Controls.ListBoxItem
-                $item.Content = @{ Name = $name; FullPath = $full; IsDir = $isDir }
+                $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
                 $item.ContentTemplate = $template
                 $item.Tag = $full
                 
@@ -1036,21 +991,6 @@ function Load-Directory($dirPath) {
     }
     if ($script:adbOutputSub) { Unregister-Event -SourceIdentifier $script:adbOutputSub.Name -ErrorAction SilentlyContinue }
     $script:adbOutputSub = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action $action
-    
-    # Add exit event for debugging
-    $exitAction = {
-        $script:wpfWindow.Dispatcher.Invoke([Action]{
-            $count = $script:lbFiles.Items.Count
-            if ($count -eq 0) {
-                Show-Toast -Title "Debug: Load-Directory" -Message "ADB ls returned 0 files for $dirPath. Target: $($script:currentTarget)"
-            } else {
-                Show-Toast -Title "Debug: Load-Directory" -Message "ADB ls successfully loaded $count files into the UI for $dirPath."
-            }
-        })
-    }
-    $proc.EnableRaisingEvents = $true
-    Register-ObjectEvent -InputObject $proc -EventName Exited -Action $exitAction | Out-Null
-    
     $proc.Start() | Out-Null
     $script:adbLsProc = $proc
     $proc.BeginOutputReadLine()
@@ -1241,24 +1181,6 @@ $script:wpfWindow.FindName("btnQATheme").Add_Click({
 
 
 $script:wpfWindow.FindName("btnExit").Add_Click({
-    $txtExitBtn = $script:wpfWindow.FindName("txtExitBtn")
-    if ($txtExitBtn.Text -eq "Exit Engine") {
-        $txtExitBtn.Text = "Confirm Exit?"
-        $txtExitBtn.Foreground = [System.Windows.Media.SolidColorBrush]::new([System.Windows.Media.ColorConverter]::ConvertFromString("#E81123"))
-        
-        $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
-        $script:exitTimer.Interval = [TimeSpan]::FromSeconds(3)
-        $script:exitTimer.Add_Tick({
-            $txtExitBtn.Text = "Exit Engine"
-            $txtExitBtn.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "AccentBrush")
-            $script:exitTimer.Stop()
-        })
-        $script:exitTimer.Start()
-        return
-    }
-    
-    if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
-    
     $script:wpfWindow.Hide()
     $script:notifyIcon.Visible = $false
     $script:notifyIcon.Dispose()
