@@ -208,7 +208,7 @@ function Update-WpfUI {
     $qaAutoText = $script:wpfWindow.FindName("txtQAAuto")
     if ($null -ne $qaAutoText) {
         if ($script:AutoConnectEnabled) { 
-            $qaAutoText.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "SecondaryBrush")
+            $qaAutoText.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "SuccessBrush")
         } else { 
             $qaAutoText.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "PrimaryTextBrush")
         }

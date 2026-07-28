@@ -5,45 +5,42 @@ import android.content.Context
 import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.IBinder
-import android.util.Log
 
 class DexService : Service() {
+    private val restServerEngine = RestServerEngine()
+    private val discoveryEngine = DiscoveryEngine()
     private var multicastLock: WifiManager.MulticastLock? = null
 
     override fun onCreate() {
         super.onCreate()
         
-        // Android requires an explicit MulticastLock, otherwise the OS drops UDP broadcasts to save battery!
-        val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        multicastLock = wifiManager.createMulticastLock("DexLock")
+        // Acquire Multicast lock to ensure UDP broadcasts are received
+        val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+        multicastLock = wifiManager?.createMulticastLock("DexMulticastLock")
         multicastLock?.setReferenceCounted(true)
         multicastLock?.acquire()
-        
-        Log.i("DeX", "Service Started, Multicast Lock Acquired")
-        
-        // Start listening to the network using the device model as the ID
-        UdpEngine.startListening(android.os.Build.MODEL) { name, ip ->
-            Log.i("DeX", "Discovered: $name at $ip")
-            // TODO: Expose this list to Jetpack Compose UI via StateFlow
-        }
-        
-        // Start broadcasting our existence every 5 seconds
-        Thread {
-            while (multicastLock?.isHeld == true) {
-                UdpEngine.broadcastBeacon(android.os.Build.MODEL)
-                Thread.sleep(5000)
-            }
-        }.start()
+
+        restServerEngine.startServer()
+        discoveryEngine.startDiscovery()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        UdpEngine.stopListening()
-        if (multicastLock?.isHeld == true) {
-            multicastLock?.release()
+        restServerEngine.stopServer()
+        discoveryEngine.stopDiscovery()
+        
+        multicastLock?.let {
+            if (it.isHeld) {
+                it.release()
+            }
         }
-        Log.i("DeX", "Service Stopped, Multicast Lock Released")
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
 }

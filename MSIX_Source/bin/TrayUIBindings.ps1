@@ -157,7 +157,7 @@ $script:wpfWindow.FindName("btnCopyIP").Add_Click({
                 $tb = $btnCopyIP.Content
                 if ($tb -is [System.Windows.Controls.TextBlock]) {
                     $tb.Text = [char]0x2713
-                    $tb.Foreground = $script:wpfWindow.FindResource("SecondaryBrush")
+                    $tb.Foreground = $script:wpfWindow.FindResource("SuccessBrush")
                     
                     $timer = New-Object System.Windows.Threading.DispatcherTimer
                     $timer.Interval = [TimeSpan]::FromSeconds(1.5)
@@ -525,14 +525,14 @@ function Show-PairingPrompt {
     <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             Title="Pair Device" Width="400" Height="220" WindowStartupLocation="CenterScreen"
-            Background="{DynamicResource PrimaryBackgroundGradient}" Foreground="{DynamicResource PrimaryTextBrush}" 
+            Background="{DynamicResource MenuBackgroundGradient}" Foreground="{DynamicResource PrimaryTextBrush}" 
             WindowStyle="None" Topmost="True" ResizeMode="NoResize"
-            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" AllowsTransparency="True">
+            BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" AllowsTransparency="True">
         <Window.Resources>
             <Style TargetType="Button">
-                <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}"/>
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MenuBorderBrush}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
@@ -544,7 +544,7 @@ function Show-PairingPrompt {
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
+                        <Setter Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -556,16 +556,16 @@ function Show-PairingPrompt {
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="Pair New Device (mDNS)" FontWeight="Bold" FontSize="18" Foreground="{DynamicResource PrimaryBrush}" Grid.Row="0" Margin="0,0,0,5"/>
+            <TextBlock Text="Pair New Device (mDNS)" FontWeight="Bold" FontSize="18" Foreground="{DynamicResource BrandBrush}" Grid.Row="0" Margin="0,0,0,5"/>
             <TextBlock Text="IP: $IPPort" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="1" Margin="0,0,0,15"/>
             <StackPanel Grid.Row="2">
                 <TextBlock Text="Enter 6-digit Wi-Fi pairing code:" FontSize="13" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                <TextBox x:Name="txtPin" Height="34" FontSize="18" Background="{DynamicResource SecondaryBackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" 
-                         BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}" Padding="5,4,0,0" VerticalContentAlignment="Center" MaxLength="6"/>
+                <TextBox x:Name="txtPin" Height="34" FontSize="18" Background="{DynamicResource MenuBackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" 
+                         BorderThickness="1" BorderBrush="{DynamicResource MenuBorderBrush}" Padding="5,4,0,0" VerticalContentAlignment="Center" MaxLength="6"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="3" Margin="0,20,0,0">
                 <Button x:Name="btnCancel" Content="Cancel" Width="90" Height="32" Margin="0,0,10,0"/>
-                <Button x:Name="btnPair" Content="Pair" Width="90" Height="32" Background="{DynamicResource PrimaryBrush}" Foreground="White" BorderThickness="0"/>
+                <Button x:Name="btnPair" Content="Pair" Width="90" Height="32" Background="{DynamicResource BrandBrush}" Foreground="White" BorderThickness="0"/>
             </StackPanel>
         </Grid>
     </Window>
