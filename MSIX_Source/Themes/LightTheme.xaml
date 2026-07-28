@@ -4,10 +4,10 @@
     
     <!-- Backgrounds -->
     <SolidColorBrush x:Key="AppBackgroundBrush" Color="Transparent" />
-    <LinearGradientBrush x:Key="PrimaryBackgroundGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#FFFFFF" Offset="0.0" />
-        <GradientStop Color="#F0F0F0" Offset="1.0" />
-    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="PrimaryBackgroundGradient" Center="0.5,0.5" RadiusX="1.0" RadiusY="1.0">
+        <GradientStop Color="#F5E3F7" Offset="0.0" />
+        <GradientStop Color="#FFFFFF" Offset="1.0" />
+    </RadialGradientBrush>
     <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#F2F2F7" />
     <SolidColorBrush x:Key="TertiaryBackgroundBrush" Color="#E5E5EA" />
     <SolidColorBrush x:Key="BorderBrush" Color="#D1D1D6" />
