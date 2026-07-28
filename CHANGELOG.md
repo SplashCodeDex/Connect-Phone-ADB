@@ -1,15 +1,10 @@
 # Changelog
 
-## [v1.8.4.0]
-- **[minor]** Virtualized the "Nearby Users" list by replacing static UI elements with dynamic `ListBox`es and `VirtualizingStackPanel`s bound to a PowerShell `ObservableCollection`. This ensures zero UI stutter when discovering large numbers of devices.
-- **[minor]** Re-introduced a sleek, minimal scrollbar for the "Nearby Users" list using the custom spatial scrollbar template.
+## [v1.8.4.3]
+- **[minor]** Re-introduced a sleek, slim scrollbar to the Nearby Users list and fully virtualized the user data structure using a dynamically populated `ListBox` and `VirtualizingStackPanel` for robust rendering performance.
+
 ## [v1.8.3.3]
 - **[fix]** Made the "Nearby Users" list scrollable by replacing the static `StackPanel` container with a `DockPanel` and a `ScrollViewer` (with hidden scrollbars) to prevent the user list from overflowing on smaller screens.
-## [v1.8.2.4]
-- **[fix]** Fixed File Explorer failing to load files due to `System.Diagnostics.Process` not resolving the `adb.exe` AppExecutionAlias (MSIX context) properly without `UseShellExecute`. Rewrote execution via `cmd.exe /c` to leverage native path resolution.
-- **[fix]** Disabled buggy dynamic PowerShell WPF animations on incoming `ListBoxItem`s which left items stuck at `Opacity=0`. 
-- **[minor]** Reworked the Top Bar into a fully functional filter/search bar as requested, with placeholder text and dynamic case-insensitive ListBox filtering.
-
 ## [v1.8.2.3]
 - **[fix]** Fixed silent WPF data-binding failure by changing the File Explorer data items from `Hashtable` to `PSCustomObject`, resolving an issue where the file list rendered completely blank.
 - **[minor]** Re-arranged the Top Bar UI so the Up/Back arrow is outside the rounded search bar, using a modern fluent icon.
