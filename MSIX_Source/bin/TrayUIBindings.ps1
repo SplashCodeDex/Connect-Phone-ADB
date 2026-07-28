@@ -191,8 +191,6 @@ $actionConnect = {
     }
     Update-WpfUI
 }
-$script:wpfWindow.FindName("btnQAConnect").Add_Click({ Invoke-MenuAction $actionConnect })
-
 $actionDisconnect = {
     $null = adb disconnect 2>&1
     $script:notifyIcon.Icon = $iconRed
@@ -201,7 +199,13 @@ $actionDisconnect = {
     Show-Toast -Title "ADB Disconnected" -Message "Severed all wireless connections."
     Update-WpfUI
 }
-$script:wpfWindow.FindName("btnQADisconnect").Add_Click({ Invoke-MenuAction $actionDisconnect })
+$script:wpfWindow.FindName("btnQAConnect").Add_Click({
+    if ($this.IsChecked) {
+        Invoke-MenuAction $actionConnect
+    } else {
+        Invoke-MenuAction $actionDisconnect
+    }
+})
 
 $actionMirror = {
     $statusText = $script:txtStatus.Text
@@ -415,14 +419,10 @@ $script:wpfWindow.Add_KeyDown({
             $e.Handled = $true
         }
     } elseif ($e.Key -eq [System.Windows.Input.Key]::C) {
-        if ($script:wpfWindow.FindName("btnQAConnect").Visibility -eq 'Visible') {
-            Invoke-MenuAction $actionConnect
-        }
+        Invoke-MenuAction $actionConnect
         $e.Handled = $true
     } elseif ($e.Key -eq [System.Windows.Input.Key]::D) {
-        if ($script:wpfWindow.FindName("btnQADisconnect").Visibility -eq 'Visible') {
-            Invoke-MenuAction $actionDisconnect
-        }
+        Invoke-MenuAction $actionDisconnect
         $e.Handled = $true
     } elseif ($e.Key -eq [System.Windows.Input.Key]::M) {
         Invoke-MenuAction $actionMirror

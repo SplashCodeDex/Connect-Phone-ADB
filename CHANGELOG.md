@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.2.3.0] - 2026-07-28
+### Added
+- **[minor]** Updated the Connect Quick Action into a seamless ToggleButton that persists the active state (highlighted in accent color) when connected. Consolidated Connect and Disconnect into a single intuitive toggle.
+- **[minor]** Added a new Clipboard Quick Action icon (currently un-wired).
+- **[minor]** Updated the Close menu (X) button to utilize a new Danger style for destructive action signaling.
+
 ## [2.2.2.0] - 2026-07-28
 ### Added
 - **[minor]** Reassigned the power-switch icon to the Exit Engine button and updated the Disconnect button icon. Added an active/pressed light-green accent state to all Quick Action icons.

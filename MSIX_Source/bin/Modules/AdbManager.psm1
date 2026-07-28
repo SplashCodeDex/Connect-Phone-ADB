@@ -170,7 +170,7 @@ Export-ModuleMember -Function Invoke-AdbPair
 
 function Start-OmniTransferServer {
     param(
-        [string]$DownloadPath = "$env:USERPROFILE\Downloads"
+        [string]$DownloadPath = "$env:USERPROFILE\Downloads\dex"
     )
     
     Write-Trace "Starting Omni-Mesh Transfer Server on port 53318..."

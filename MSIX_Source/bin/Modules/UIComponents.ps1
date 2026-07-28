@@ -228,15 +228,15 @@ function Update-WpfUI {
         $script:notifyIcon.Icon = $iconGreen
         $script:notifyIcon.Text = "Connected: $devName"
         $script:txtStatus.Text = "Connected: $devName"
-        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Visible'
+        $btnQAConnect = $script:wpfWindow.FindName("btnQAConnect")
+        if ($null -ne $btnQAConnect) { $btnQAConnect.IsChecked = $true }
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
     } else {
         $script:notifyIcon.Icon = $iconRed
         $script:notifyIcon.Text = "Disconnected"
         $script:txtStatus.Text = "Status: Disconnected"
-        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Visible'
-        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Collapsed'
+        $btnQAConnect = $script:wpfWindow.FindName("btnQAConnect")
+        if ($null -ne $btnQAConnect) { $btnQAConnect.IsChecked = $false }
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
     }
 }

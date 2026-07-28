@@ -307,7 +307,77 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="QuickActionBtn" TargetType="Button">
+        <Style x:Key="QuickActionBtn" TargetType="ToggleButton">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="20" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
+                                    <TranslateTransform X="0" Y="0" x:Name="btnTrans" />
+                                </TransformGroup>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="PreviewMouseDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="0.85" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="0.85" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="3" Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="PreviewMouseUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="-3" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DangerQuickActionBtn" TargetType="Button">
             <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -329,10 +399,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="#CCFF453A"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                             <EventTrigger RoutedEvent="MouseEnter">
@@ -548,19 +619,19 @@
                 <DockPanel LastChildFill="True">
                     <StackPanel DockPanel.Dock="Top">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
-                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
+                    <ToggleButton Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />
-                    </Button>
-                    <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Disconnect">
-                        <TextBlock Text="&#xE71A;" />
-                    </Button>
-                    <Button Name="btnQAMirror" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Mirror Phone">
+                    </ToggleButton>
+                    <ToggleButton Name="btnQAMirror" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Mirror Phone">
                         <TextBlock Text="&#xE8EA;" />
-                    </Button>
-                    <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Phone Files">
+                    </ToggleButton>
+                    <ToggleButton Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Phone Files">
                         <TextBlock Text="&#xE8B7;" />
-                    </Button>
-                    <Button Name="btnCloseMenu" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Close" Visibility="Collapsed" Opacity="0">
+                    </ToggleButton>
+                    <ToggleButton Name="btnQAClipboard" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Clipboard">
+                        <TextBlock Text="&#xE77F;" />
+                    </ToggleButton>
+                    <Button Name="btnCloseMenu" Style="{StaticResource DangerQuickActionBtn}" Margin="3,0" ToolTip="Close" Visibility="Collapsed" Opacity="0">
                         <TextBlock Text="&#xE711;" />
                     </Button>
                 </StackPanel>
