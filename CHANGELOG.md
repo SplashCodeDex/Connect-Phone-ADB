@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.9.0.5]
+- **[minor]** Replaced the Exit confirmation state with an inline instructions label and Shift-Click instant exit logic. Collapsing the adjacent avatar natively allowed the label to left-expand smoothly without using WPF animation timelines.
+
 ## [v1.9.0.6]
 - **[minor]** Added 150ms search debouncing using `DispatcherTimer` to ensure 60 FPS ultra-smooth real-time filtering in large directories without CPU spikes.
 - **[minor]** Added Escape key quick-clear logic to reset active search query before unfocusing or contracting the menu.

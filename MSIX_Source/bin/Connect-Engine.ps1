@@ -1261,18 +1261,32 @@ $script:wpfWindow.FindName("btnQATheme").Add_Click({
 
 $script:wpfWindow.FindName("btnExit").Add_Click({
     $txtExitBtn = $script:wpfWindow.FindName("txtExitBtn")
-    if ($txtExitBtn.Text -eq "Exit Engine") {
-        $txtExitBtn.Text = "Confirm Exit?"
+    $btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
+    $isShift = [System.Windows.Input.Keyboard]::Modifiers -match 'Shift'
+    
+    if ($isShift) {
+        # Proceed to exit immediately
+    } elseif ($txtExitBtn.Text -eq "Exit Engine") {
+        $txtExitBtn.Text = "Click to Cancel / Shift+Click to Exit"
         $txtExitBtn.Foreground = [System.Windows.Media.SolidColorBrush]::new([System.Windows.Media.ColorConverter]::ConvertFromString("#E81123"))
+        $btnProfileBottom.Visibility = 'Collapsed'
         
         $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
         $script:exitTimer.Interval = [TimeSpan]::FromSeconds(3)
         $script:exitTimer.Add_Tick({
             $txtExitBtn.Text = "Exit Engine"
             $txtExitBtn.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "AccentBrush")
+            $btnProfileBottom.Visibility = 'Visible'
             $script:exitTimer.Stop()
         })
         $script:exitTimer.Start()
+        return
+    } else {
+        # Cancel the exit state
+        $txtExitBtn.Text = "Exit Engine"
+        $txtExitBtn.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "AccentBrush")
+        $btnProfileBottom.Visibility = 'Visible'
+        if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
         return
     }
     
