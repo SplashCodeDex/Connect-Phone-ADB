@@ -14,3 +14,9 @@ jobs:
       - name: Pre-flight validation (PS syntax, engine XAML load, themes, FindName/resources, assets, manifest)
         shell: powershell
         run: .\Validate-Build.ps1
+
+      - name: Engine self-test (proves tray click -> window shows, end to end)
+        shell: powershell
+        run: |
+          & "$PWD\MSIX_Source\bin\Connect-Engine.ps1" -SelfTest
+          if ($LASTEXITCODE -ne 0) { exit 1 }

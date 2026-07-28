@@ -1,0 +1,10 @@
+#!/bin/sh
+# Pre-commit gate: run the build validator; block the commit on failure.
+# Enabled via: git config core.hooksPath .githooks
+ROOT="$(git rev-parse --show-toplevel)"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -STA -File "$ROOT/Validate-Build.ps1"
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "[pre-commit] Validate-Build failed. Commit blocked."
+fi
+exit $RESULT

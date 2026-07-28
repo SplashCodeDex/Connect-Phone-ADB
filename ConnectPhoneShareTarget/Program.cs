@@ -73,6 +73,17 @@ namespace ConnectPhoneShareTarget
                 string ps1Path = Path.Combine(exeDir, "bin", "Connect-Engine.ps1");
                 string logPath = Path.Combine(Path.GetTempPath(), "ConnectPhoneEngine_Errors.txt");
                 
+                // Rotate the stderr log so it stays forensically useful (keep last 500 lines when > 512 KB)
+                try
+                {
+                    if (File.Exists(logPath) && new FileInfo(logPath).Length > 512 * 1024)
+                    {
+                        var lines = File.ReadAllLines(logPath);
+                        File.WriteAllLines(logPath, lines.Skip(Math.Max(0, lines.Length - 500)));
+                    }
+                }
+                catch { }
+                
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "powershell.exe",

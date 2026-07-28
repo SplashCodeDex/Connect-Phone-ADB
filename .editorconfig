@@ -1,0 +1,19 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# PowerShell 5.1 requires a BOM to read non-ASCII correctly (audit finding B9)
+[*.ps1]
+charset = utf-8-bom
+
+[*.{psm1,psd1,xaml,cs,xml,json}]
+charset = utf-8
+
+[*.{yml,yaml}]
+indent_size = 2
+end_of_line = lf

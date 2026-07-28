@@ -8,7 +8,8 @@
 
 param(
     [switch]$Background,
-    [switch]$ConnectOnly
+    [switch]$ConnectOnly,
+    [switch]$SelfTest
 )
 
 $mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
@@ -1006,10 +1007,57 @@ try {
     if ($null -eq $script:wpfWindow) { throw "XamlReader returned a null window." }
     $reader.Close()
 } catch {
-    [System.Windows.MessageBox]::Show("Connect Phone ADB failed to initialize its interface.`n`n$($_.Exception.Message)", "Connect Phone ADB - Startup Error", 'OK', 'Error') | Out-Null
-    $script:notifyIcon.Visible = $false
-    $script:notifyIcon.Dispose()
-    exit 1
+    $script:wpfWindow = $null
+    $script:WindowLoadError = $_.Exception.Message
+}
+
+# Never-dead tray: if the spatial UI fails to load, degrade to a minimal WinForms
+# fallback menu so core ADB features keep working instead of a silent zombie icon.
+if ($null -eq $script:wpfWindow) {
+    if ($SelfTest) {
+        Write-Output "SELFTEST FATAL: $script:WindowLoadError"
+        $script:notifyIcon.Visible = $false
+        $script:notifyIcon.Dispose()
+        exit 1
+    }
+    [System.Windows.MessageBox]::Show("Connect Phone ADB could not load its spatial interface and is running in fallback mode.`n`n$script:WindowLoadError", "Connect Phone ADB - Fallback Mode", 'OK', 'Warning') | Out-Null
+
+    $script:notifyIcon.Text = "Connect ADB (Fallback Mode)"
+    $fallbackMenu = New-Object System.Windows.Forms.ContextMenuStrip
+
+    $miConnect = $fallbackMenu.Items.Add("Connect ADB Now")
+    $miConnect.Add_Click({
+        $res = Invoke-AdbConnect
+        if ($res.Success) {
+            $script:notifyIcon.Icon = $iconGreen
+            $script:notifyIcon.Text = "Connected: $($res.Name)"
+            Show-Toast -Title "ADB Connected" -Message "Successfully connected to $($res.Name)"
+        } else {
+            $script:notifyIcon.Icon = $iconRed
+            $script:notifyIcon.Text = "Disconnected"
+            Show-Toast -Title "Connection Failed" -Message $res.Message
+        }
+    })
+
+    $miAuto = $fallbackMenu.Items.Add("Auto-Connect on Hotspot")
+    $miAuto.Checked = Get-AutoConnectStatus
+    $miAuto.CheckOnClick = $true
+    $miAuto.Add_Click({
+        Set-AutoConnectStatus -Enable (-not (Get-AutoConnectStatus))
+        $miAuto.Checked = Get-AutoConnectStatus
+        Show-Toast -Title "Auto-Connect" -Message $(if ($miAuto.Checked) { "Enabled - will connect when PC joins phone hotspot." } else { "Disabled." })
+    })
+
+    $miExit = $fallbackMenu.Items.Add("Exit Engine")
+    $miExit.Add_Click({
+        $script:notifyIcon.Visible = $false
+        $script:notifyIcon.Dispose()
+        [System.Windows.Forms.Application]::Exit()
+    })
+
+    $script:notifyIcon.ContextMenuStrip = $fallbackMenu
+    [System.Windows.Forms.Application]::Run()
+    exit
 }
 
 $global:CurrentTheme = "DarkTheme"
@@ -1757,7 +1805,14 @@ function Update-WpfUI {
 $script:lastDeactivated = [DateTime]::MinValue
 
 function Write-Trace($msg) {
-    Out-File -FilePath "$env:TEMP\connect-adb-trace.txt" -InputObject "[$(Get-Date -Format 'HH:mm:ss.fff')] $msg" -Append
+    # Rotate: keep the log forensically useful by capping it at ~200KB (retains last 500 lines)
+    $tracePath = "$env:TEMP\connect-adb-trace.txt"
+    try {
+        if ((Test-Path $tracePath) -and ((Get-Item $tracePath).Length -gt 200KB)) {
+            Get-Content $tracePath -Tail 500 | Set-Content $tracePath
+        }
+    } catch {}
+    Out-File -FilePath $tracePath -InputObject "[$(Get-Date -Format 'HH:mm:ss.fff')] $msg" -Append
 }
 
 # Click-outside closes menu ONLY when contracted (not expanded)
@@ -1833,6 +1888,29 @@ $script:notifyIcon.Add_MouseUp({
 # Passive sync initial state on startup
 $script:AutoConnectEnabled = Get-AutoConnectStatus
 Update-WpfUI
+
+if ($SelfTest) {
+    # Headless self-diagnostics: prove the full tray-click -> window-show pipeline works end to end.
+    # Used by CI (Validate Build workflow) and can be run locally: Connect-Engine.ps1 -SelfTest
+    $stWindowCreated = ($null -ne $script:wpfWindow)
+    $stTrayVisible = [bool]$script:notifyIcon.Visible
+    $stShown = $false
+    try {
+        $eArgs = New-Object System.Windows.Forms.MouseEventArgs([System.Windows.Forms.MouseButtons]::Left, 1, 0, 0, 0)
+        $invokeArgs = [Array]::CreateInstance([object], 1)
+        $invokeArgs.SetValue($eArgs, 0)
+        $script:notifyIcon.GetType().GetMethod('OnMouseUp', [System.Reflection.BindingFlags]'NonPublic,Instance').Invoke($script:notifyIcon, $invokeArgs)
+        $stShown = [bool]$script:wpfWindow.IsVisible
+    } catch {
+        Write-Output "SELFTEST EXCEPTION: $($_.Exception.Message)"
+    }
+    $stOk = $stWindowCreated -and $stTrayVisible -and $stShown
+    Write-Output ("SELFTEST WindowCreated={0} TrayVisible={1} WindowShownAfterTrayClick={2}" -f $stWindowCreated, $stTrayVisible, $stShown)
+    if ($script:wpfWindow.IsVisible) { $script:wpfWindow.Hide() }
+    $script:notifyIcon.Visible = $false
+    $script:notifyIcon.Dispose()
+    exit $(if ($stOk) { 0 } else { 1 })
+}
 
 # Fix MSIX Version Path Drift: Re-register the task if already enabled so the path points to the new updated folder
 if ($script:AutoConnectEnabled) {

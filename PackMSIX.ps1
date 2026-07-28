@@ -40,3 +40,28 @@ $makeappx = (Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\mak
 if (-not $makeappx) { throw "makeappx.exe not found. Please install the Windows 10/11 SDK." }
 
 & $makeappx pack /d (Join-Path $PSScriptRoot "MSIX_Source") /p (Join-Path $PSScriptRoot "ConnectPhoneADB.msix") /o
+if ($LASTEXITCODE -ne 0) { throw "makeappx pack failed (exit code $LASTEXITCODE)." }
+
+# ── Post-pack verification: packaged engine must match the validated source byte-for-byte ──
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$msixPath = Join-Path $PSScriptRoot "ConnectPhoneADB.msix"
+$zip = [System.IO.Compression.ZipFile]::OpenRead($msixPath)
+try {
+    $engineEntry = $zip.Entries | Where-Object { $_.FullName -eq 'bin/Connect-Engine.ps1' } | Select-Object -First 1
+    if (-not $engineEntry) { throw "bin\Connect-Engine.ps1 is missing from the package." }
+    $tmpEngine = Join-Path $env:TEMP "packaged-engine-verify.ps1"
+    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($engineEntry, $tmpEngine, $true)
+
+    $manifestEntry = $zip.Entries | Where-Object { $_.FullName -eq 'AppxManifest.xml' } | Select-Object -First 1
+    if (-not $manifestEntry) { throw "AppxManifest.xml is missing from the package." }
+    $tmpManifest = Join-Path $env:TEMP "packaged-manifest-verify.xml"
+    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($manifestEntry, $tmpManifest, $true)
+} finally {
+    $zip.Dispose()
+}
+$srcHash = (Get-FileHash (Join-Path $PSScriptRoot "MSIX_Source\bin\Connect-Engine.ps1") -Algorithm SHA256).Hash
+$pkgHash = (Get-FileHash $tmpEngine -Algorithm SHA256).Hash
+if ($srcHash -ne $pkgHash) { throw "POST-PACK VERIFY FAILED: packaged Connect-Engine.ps1 differs from MSIX_Source (packaging corruption)." }
+try { $null = [xml](Get-Content $tmpManifest -Raw) } catch { throw "POST-PACK VERIFY FAILED: packaged AppxManifest.xml is not well-formed." }
+Remove-Item $tmpEngine, $tmpManifest -Force -ErrorAction SilentlyContinue
+Write-Host "Post-pack verification passed (packaged engine matches source, manifest well-formed)." -ForegroundColor Green

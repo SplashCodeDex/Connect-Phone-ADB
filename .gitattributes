@@ -1,0 +1,22 @@
+# Encoding normalization — kills the BOM/mojibake bug class at rest (audit finding B9)
+* text=auto
+
+*.ps1   text working-tree-encoding=UTF-8 eol=crlf
+*.psm1  text working-tree-encoding=UTF-8 eol=crlf
+*.psd1  text working-tree-encoding=UTF-8 eol=crlf
+*.xaml  text working-tree-encoding=UTF-8 eol=crlf
+*.cs    text working-tree-encoding=UTF-8 eol=crlf
+*.xml   text working-tree-encoding=UTF-8 eol=crlf
+*.yml   text working-tree-encoding=UTF-8 eol=lf
+*.md    text working-tree-encoding=UTF-8 eol=crlf
+
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.ico   binary
+*.pfx   binary
+*.cer   binary
+*.dll   binary
+*.exe   binary
+*.pdb   binary
+*.msix  binary

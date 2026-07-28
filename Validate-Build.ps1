@@ -95,15 +95,33 @@ $($PSScriptRoot -replace '\\', '/')
 
 Write-Host "`n=== 4. Theme dictionaries ===" -ForegroundColor Cyan
 $themeKeys = @{}
+$themeKeySets = @{}
 Get-ChildItem (Join-Path $themesDir '*.xaml') -ErrorAction SilentlyContinue | ForEach-Object {
-    $themeErr = $null
     try {
         $xr = [System.Xml.XmlReader]::Create($_.FullName)
         $dict = [System.Windows.Markup.XamlReader]::Load($xr)
         $xr.Close()
         foreach ($k in $dict.Keys) { $themeKeys[$k] = $true }
+        $themeKeySets[$_.BaseName] = @($dict.Keys)
         Gate "Theme loads: $($_.Name) ($($dict.Keys.Count) keys)" ($dict -is [System.Windows.ResourceDictionary])
     } catch { Gate "Theme loads: $($_.Name)" $false $_.Exception.Message }
+}
+
+# Theme parity: every theme must expose the identical key set, or switching themes crashes at runtime
+$themeNames = @($themeKeySets.Keys)
+if ($themeNames.Count -ge 2) {
+    $refName = $themeNames[0]
+    $refKeys = @($themeKeySets[$refName])
+    foreach ($other in ($themeNames | Select-Object -Skip 1)) {
+        $otherKeys = @($themeKeySets[$other])
+        $onlyRef   = @($refKeys   | Where-Object { $otherKeys -notcontains $_ })
+        $onlyOther = @($otherKeys | Where-Object { $refKeys   -notcontains $_ })
+        $parityOk = ($onlyRef.Count -eq 0 -and $onlyOther.Count -eq 0)
+        $detail = ""
+        if ($onlyRef.Count -gt 0)   { $detail += "Only in ${refName}: $($onlyRef -join ', '). " }
+        if ($onlyOther.Count -gt 0) { $detail += "Only in ${other}: $($onlyOther -join ', ')." }
+        Gate "Theme parity: $refName vs $other" $parityOk $detail
+    }
 }
 
 Write-Host "`n=== 5. FindName targets exist in XAML ===" -ForegroundColor Cyan
