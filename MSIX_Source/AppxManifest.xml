@@ -11,7 +11,7 @@
   <Identity
     Name="CodeDeX.ConnectPhoneADB"
     Publisher="CN=CodeDeX"
-    Version="1.9.2.9"
+    Version="1.9.6.5"
     ProcessorArchitecture="x64" />
 
   <Properties>

@@ -1,9 +1,11 @@
 # Changelog
 
-## [v1.9.2.9]
-- **[minor]** Decoupled internal state from UI text parsing by introducing a strict `$script:currentTarget` variable. The UI status now displays the actual device name (e.g., `Connected: Galaxy S21`) instead of `IP:Port`, while the copy button perfectly retains its functionality to copy the raw `IP:Port`.
+## [v1.9.6.5]
+- **[minor]** Upgraded `lbFiles` ListBox from `WrapPanel` to `VirtualizingStackPanel` with `VirtualizingPanel.ScrollUnit="Pixel"` and `VirtualizingPanel.VirtualizationMode="Recycling"` for 60fps smooth pixel-based scrolling and UI container recycling.
+- **[fix]** Added `TextOptions.TextFormattingMode="Display"` and `RenderOptions.ClearTypeHint="Enabled"` for crisp subpixel text rendering during scrolling.
 
 ## [v1.9.6.0]
+- **[minor]** Decoupled internal state from UI text parsing by introducing a strict `$script:currentTarget` variable. The UI status now displays the actual device name (e.g., `Connected: Galaxy S21`) instead of `IP:Port`, while the copy button perfectly retains its functionality to copy the raw `IP:Port`.
 - **[fix]** Added 5-second process execution timeout guard to `Load-Directory` to prevent hanging ADB processes on unreachable phone daemons.
 - **[minor]** Added middle-ellipsis path truncation to floating download dock text when path length exceeds 35 characters while preserving full path in ToolTip.
 - **[minor]** Added `Alt + Up Arrow` and `Backspace` keyboard navigation shortcuts for parent directory navigation (`btnUpDir`).
