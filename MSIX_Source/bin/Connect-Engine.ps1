@@ -951,10 +951,13 @@ function Update-WpfUI {
     }
 
     $brushConverter = New-Object System.Windows.Media.BrushConverter
-    if ($script:AutoConnectEnabled) { 
-        $script:txtQAAuto.Foreground = $brushConverter.ConvertFromString("#00E676")
-    } else { 
-        $script:txtQAAuto.Foreground = [System.Windows.Media.Brushes]::White
+    $qaAutoText = $script:wpfWindow.FindName("txtQAAuto")
+    if ($null -ne $qaAutoText) {
+        if ($script:AutoConnectEnabled) { 
+            $qaAutoText.Foreground = $brushConverter.ConvertFromString("#00E676")
+        } else { 
+            $qaAutoText.Foreground = [System.Windows.Media.Brushes]::White
+        }
     }
     
     $connectedDevice = ($DevicesOutput | Where-Object { $_ -match ':5555\s+device' })
@@ -1004,7 +1007,9 @@ $script:notifyIcon.Add_MouseUp({
             return
         }
         
-        Update-WpfUI
+        try {
+            Update-WpfUI
+        } catch {}
         
         $workArea = [System.Windows.SystemParameters]::WorkArea
         $script:wpfWindow.Left = $workArea.Right  - $script:wpfWindow.Width  - 12
