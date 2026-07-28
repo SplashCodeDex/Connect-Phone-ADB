@@ -1,7 +1,11 @@
 # Changelog
 
-## [v1.9.2.7]
-- **[minor]** Moved the 'Toggle Theme' action from the top quick-actions row into a native WPF `ContextMenu` attached to the user avatar (`btnUserJoe`), clearing up visual space.
+## [v1.9.4.0]
+- **[minor]** Enabled `SelectionMode="Extended"` on `lbFiles` to support Shift+Click range selection and Ctrl+Click multi-selection with persistent green highlight across all selected items.
+- **[minor]** Upgraded `MouseDoubleClick` to support batch multi-file pulling into `Downloads\dex` (or custom directory) with dynamic notification count ("Saved X files to Downloads\dex").
+- **[fix]** Added `emptyFolderState` overlay to display clean visual feedback when a directory contains zero files/folders.
+- **[fix]** Implemented in-flight lock guard (`$script:isLoadingDir`) on `Load-Directory` to prevent rapid re-click process collisions.
+- **[minor]** Added visual checkmark confirmation on `btnCopyIP` button icon upon copying IP address to clipboard.
 
 ## [v1.9.3.5]
 - **[fix]** Replaced hardcoded status indicator dot colors (`#1D1226` and `#4CAF50`) in Nearby Users list with dynamic `{DynamicResource SecondaryBrush}` and `{DynamicResource SecondaryBackgroundBrush}` tokens for 100% theme compliance.

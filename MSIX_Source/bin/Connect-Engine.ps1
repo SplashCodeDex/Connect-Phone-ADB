@@ -645,7 +645,7 @@ $xaml = @"
                 </Button>
             </Grid>
             
-            <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+            <ListBox Name="lbFiles" Grid.Row="1" SelectionMode="Extended" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Background" Value="Transparent"/>
@@ -688,6 +688,12 @@ $xaml = @"
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
+            
+            <!-- Empty Folder State Overlay -->
+            <StackPanel Name="emptyFolderState" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" Opacity="0">
+                <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="48" HorizontalAlignment="Center" Opacity="0.4" Margin="0,0,0,10"/>
+                <TextBlock Text="This folder is empty" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" HorizontalAlignment="Center" Opacity="0.6"/>
+            </StackPanel>
             
             <!-- Subtle Floating Dock for Download Status & Location Change -->
             <Border Name="dockDownloadToast" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,15" Background="{DynamicResource SecondaryBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="20" Padding="14,8" Visibility="Collapsed" Opacity="0" RenderTransformOrigin="0.5,1">
@@ -1057,99 +1063,120 @@ $script:currentTarget = ""
 $script:currentDirPath = "/sdcard/"
 $script:adbLsProc = $null
 
+$script:isLoadingDir = $false
+
 function Load-Directory($dirPath) {
-    if ($null -ne $script:searchTimer) { $script:searchTimer.Stop() }
+    if ($script:isLoadingDir) { return }
+    $script:isLoadingDir = $true
     
-    # Auto-reset search bar text so the new directory displays all items cleanly
-    if ($null -ne $script:txtSearch) {
-        $script:txtSearch.Text = "Search files..."
-        $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
-    }
-    
-    $script:currentDirPath = $dirPath
-    $script:lbFiles.Items.Clear()
-    
-    if ($null -ne $script:btnUpDir) {
-        if ($dirPath -eq "/sdcard/" -or $dirPath -eq "/sdcard") {
-            $script:btnUpDir.Opacity = 0.4
-            $script:btnUpDir.Cursor = [System.Windows.Input.Cursors]::Arrow
-        } else {
-            $script:btnUpDir.Opacity = 1.0
-            $script:btnUpDir.Cursor = [System.Windows.Input.Cursors]::Hand
-        }
-    }
-    
-    if ([string]::IsNullOrWhiteSpace($script:currentTarget)) {
-        $statusText = $script:txtStatus.Text
-        if ($statusText -match "Connected:\s*(.+)") {
-            $script:currentTarget = $Matches[1]
-        }
-    }
-    
-    if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
-        try { $script:adbLsProc.Kill() } catch {}
-    }
-    
-    $proc = New-Object System.Diagnostics.Process
-    $proc.StartInfo.FileName = "cmd.exe"
-    $proc.StartInfo.Arguments = "/c `"`"$global:AdbExePath`" -s $($script:currentTarget) shell ls -1aF `"$dirPath`"`""
-    $proc.StartInfo.UseShellExecute = $false
-    $proc.StartInfo.RedirectStandardOutput = $true
-    $proc.StartInfo.CreateNoWindow = $true
-    
-    $proc.Start() | Out-Null
-    $script:adbLsProc = $proc
-    $output = $proc.StandardOutput.ReadToEnd()
-    $proc.WaitForExit()
-    
-    $lines = $output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { 
-        $_ -ne "" -and 
-        $_ -ne "./" -and 
-        $_ -ne "../" -and 
-        $_ -notmatch "^(ls:|error:|adb:|failed|Permission denied|\* daemon)"
-    }
-    
-    $idx = 0
-    foreach ($line in $lines) {
-        $isDir = $line.EndsWith("/")
-        $name = $line.TrimEnd('/', '*', '@', '=')
-        if ($isDir) {
-            $full = $dirPath + $name + "/"
-            $template = $script:wpfWindow.Resources["FolderGridTemplate"]
-        } else {
-            $full = $dirPath + $name
-            $template = $script:wpfWindow.Resources["FileGridTemplate"]
+    try {
+        if ($null -ne $script:searchTimer) { $script:searchTimer.Stop() }
+        
+        # Auto-reset search bar text so the new directory displays all items cleanly
+        if ($null -ne $script:txtSearch) {
+            $script:txtSearch.Text = "Search files..."
+            $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
         }
         
-        $item = New-Object System.Windows.Controls.ListBoxItem
-        $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
-        $item.ContentTemplate = $template
-        $item.Tag = $full
+        $script:currentDirPath = $dirPath
+        $script:lbFiles.Items.Clear()
         
-        # Staggered Entrance Animation
-        $trans = New-Object System.Windows.Media.TranslateTransform
-        $trans.Y = 80
-        $item.RenderTransform = $trans
-        $item.Opacity = 0
+        if ($null -ne $script:btnUpDir) {
+            if ($dirPath -eq "/sdcard/" -or $dirPath -eq "/sdcard") {
+                $script:btnUpDir.Opacity = 0.4
+                $script:btnUpDir.Cursor = [System.Windows.Input.Cursors]::Arrow
+            } else {
+                $script:btnUpDir.Opacity = 1.0
+                $script:btnUpDir.Cursor = [System.Windows.Input.Cursors]::Hand
+            }
+        }
         
-        $delay = [TimeSpan]::FromMilliseconds($idx * 35)
+        if ([string]::IsNullOrWhiteSpace($script:currentTarget)) {
+            $statusText = $script:txtStatus.Text
+            if ($statusText -match "Connected:\s*(.+)") {
+                $script:currentTarget = $Matches[1]
+            }
+        }
         
-        $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
-        $daY.To = 0
-        $daY.Duration = [TimeSpan]::FromSeconds(0.6)
-        $daY.BeginTime = $delay
-        $daY.EasingFunction = $script:wpfWindow.Resources["HoverEase"]
+        if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
+            try { $script:adbLsProc.Kill() } catch {}
+        }
         
-        $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
-        $daOp.To = 1
-        $daOp.Duration = [TimeSpan]::FromSeconds(0.4)
-        $daOp.BeginTime = $delay
+        $proc = New-Object System.Diagnostics.Process
+        $proc.StartInfo.FileName = "cmd.exe"
+        $proc.StartInfo.Arguments = "/c `"`"$global:AdbExePath`" -s $($script:currentTarget) shell ls -1aF `"$dirPath`"`""
+        $proc.StartInfo.UseShellExecute = $false
+        $proc.StartInfo.RedirectStandardOutput = $true
+        $proc.StartInfo.CreateNoWindow = $true
         
-        $trans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
-        $item.BeginAnimation([System.Windows.Controls.ListBoxItem]::OpacityProperty, $daOp)
+        $proc.Start() | Out-Null
+        $script:adbLsProc = $proc
+        $output = $proc.StandardOutput.ReadToEnd()
+        $proc.WaitForExit()
         
-        $script:lbFiles.Items.Add($item)
-        $idx++
+        $lines = $output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { 
+            $_ -ne "" -and 
+            $_ -ne "./" -and 
+            $_ -ne "../" -and 
+            $_ -notmatch "^(ls:|error:|adb:|failed|Permission denied|\* daemon)"
+        }
+        
+        # Edge Case 5: Empty Folder State Toggle
+        $emptyOverlay = $script:wpfWindow.FindName("emptyFolderState")
+        if ($null -ne $emptyOverlay) {
+            if (-not $lines -or $lines.Count -eq 0) {
+                $emptyOverlay.Visibility = 'Visible'
+                $emptyOverlay.Opacity = 1.0
+            } else {
+                $emptyOverlay.Visibility = 'Collapsed'
+                $emptyOverlay.Opacity = 0.0
+            }
+        }
+        
+        $idx = 0
+        foreach ($line in $lines) {
+            $isDir = $line.EndsWith("/")
+            $name = $line.TrimEnd('/', '*', '@', '=')
+            if ($isDir) {
+                $full = $dirPath + $name + "/"
+                $template = $script:wpfWindow.Resources["FolderGridTemplate"]
+            } else {
+                $full = $dirPath + $name
+                $template = $script:wpfWindow.Resources["FileGridTemplate"]
+            }
+            
+            $item = New-Object System.Windows.Controls.ListBoxItem
+            $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
+            $item.ContentTemplate = $template
+            $item.Tag = $full
+            
+            # Staggered Entrance Animation
+            $trans = New-Object System.Windows.Media.TranslateTransform
+            $trans.Y = 80
+            $item.RenderTransform = $trans
+            $item.Opacity = 0
+            
+            $delay = [TimeSpan]::FromMilliseconds($idx * 35)
+            
+            $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $daY.To = 0
+            $daY.Duration = [TimeSpan]::FromSeconds(0.6)
+            $daY.BeginTime = $delay
+            $daY.EasingFunction = $script:wpfWindow.Resources["HoverEase"]
+            
+            $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $daOp.To = 1
+            $daOp.Duration = [TimeSpan]::FromSeconds(0.4)
+            $daOp.BeginTime = $delay
+            
+            $trans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
+            $item.BeginAnimation([System.Windows.Controls.ListBoxItem]::OpacityProperty, $daOp)
+            
+            $script:lbFiles.Items.Add($item)
+            $idx++
+        }
+    } finally {
+        $script:isLoadingDir = $false
     }
 }
 
@@ -1263,39 +1290,58 @@ if ($null -ne $btnChange) {
 }
 
 $script:lbFiles.Add_MouseDoubleClick({
-    $sel = $script:lbFiles.SelectedItem
-    if ($null -ne $sel -and $null -ne $sel.Content) {
-        $data = $sel.Content
-        if ($data.IsDir) {
-            Load-Directory $data.FullPath
-        } else {
-            $remotePath = $data.FullPath
-            $outDir = if ($script:customDownloadPath) { 
-                $script:customDownloadPath 
-            } else { 
-                Join-Path $env:USERPROFILE "Downloads\dex" 
+    $selectedItems = $script:lbFiles.SelectedItems
+    if ($null -ne $selectedItems -and $selectedItems.Count -gt 0) {
+        # Check if a single folder is double clicked
+        if ($selectedItems.Count -eq 1) {
+            $sel = $selectedItems[0]
+            if ($null -ne $sel -and $null -ne $sel.Content) {
+                $data = $sel.Content
+                if ($data.IsDir) {
+                    Load-Directory $data.FullPath
+                    return
+                }
             }
-            
-            try {
-                if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
-            } catch {
-                $outDir = Join-Path $env:TEMP "dex"
-                if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
-            }
-            
-            $actionBg = {
-                param($exePath, $tgt, $rem, $out)
+        }
+        
+        # Batch pull all selected file items
+        $fileItems = @($selectedItems | Where-Object { $null -ne $_.Content -and -not $_.Content.IsDir })
+        if ($fileItems.Count -eq 0) { return }
+        
+        $outDir = if ($script:customDownloadPath) { 
+            $script:customDownloadPath 
+        } else { 
+            Join-Path $env:USERPROFILE "Downloads\dex" 
+        }
+        
+        try {
+            if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
+        } catch {
+            $outDir = Join-Path $env:TEMP "dex"
+            if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
+        }
+        
+        $remotePaths = $fileItems | ForEach-Object { $_.Content.FullPath }
+        
+        $actionBatchBg = {
+            param($exePath, $tgt, $remPaths, $out)
+            foreach ($rem in $remPaths) {
                 Start-Process $exePath -ArgumentList "-s $tgt pull `"$rem`" `"$out`"" -Wait -NoNewWindow
-                Start-Process "explorer.exe" -ArgumentList "`"$out`""
             }
-            
-            Start-Job -ScriptBlock $actionBg -ArgumentList $global:AdbExePath, $script:currentTarget, $remotePath, $outDir
-            
-            $dispName = if ($script:customDownloadPath) { 
-                [System.IO.Path]::GetFileName($script:customDownloadPath) 
-            } else { 
-                "Downloads\dex" 
-            }
+            Start-Process "explorer.exe" -ArgumentList "`"$out`""
+        }
+        
+        Start-Job -ScriptBlock $actionBatchBg -ArgumentList $global:AdbExePath, $script:currentTarget, $remotePaths, $outDir
+        
+        $dispName = if ($script:customDownloadPath) { 
+            [System.IO.Path]::GetFileName($script:customDownloadPath) 
+        } else { 
+            "Downloads\dex" 
+        }
+        
+        if ($fileItems.Count -gt 1) {
+            Show-DownloadDockToast "$($fileItems.Count) files to $dispName"
+        } else {
             Show-DownloadDockToast $dispName
         }
     }
@@ -1312,6 +1358,24 @@ $script:wpfWindow.FindName("btnCopyIP").Add_Click({
         try {
             Set-Clipboard -Value $Matches[1] -ErrorAction Stop
             Show-Toast -Title "Copied" -Message "IP Address copied to clipboard: $($Matches[1])"
+            
+            $btnCopyIP = $script:wpfWindow.FindName("btnCopyIP")
+            if ($null -ne $btnCopyIP) {
+                $tb = $btnCopyIP.Content
+                if ($tb -is [System.Windows.Controls.TextBlock]) {
+                    $tb.Text = "✓"
+                    $tb.Foreground = $script:wpfWindow.FindResource("SecondaryBrush")
+                    
+                    $timer = New-Object System.Windows.Threading.DispatcherTimer
+                    $timer.Interval = [TimeSpan]::FromSeconds(1.5)
+                    $timer.Add_Tick({
+                        $tb.Text = "&#xE8C8;"
+                        $tb.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "SecondaryTextBrush")
+                        $timer.Stop()
+                    })
+                    $timer.Start()
+                }
+            }
         } catch {
             Show-Toast -Title "Clipboard Error" -Message "Could not copy IP. Your clipboard is locked by another app."
         }
