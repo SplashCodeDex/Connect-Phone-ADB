@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.2.4.0] - 2026-07-28
+### Added
+- **[patch]** Constrained the spatial menu's contracted layout to a minimum width of 335px.
+- **[patch]** Implemented a dynamic layout animation engine in `Update-WpfUI` that provides a fluid overshoot (bouncy) transition when the menu expands to accommodate new elements (like the IP copy button), eliminating abrupt snapping.
+
 ## [2.2.3.0] - 2026-07-28
 ### Added
 - **[minor]** Updated the Connect Quick Action into a seamless ToggleButton that persists the active state (highlighted in accent color) when connected. Consolidated Connect and Disconnect into a single intuitive toggle.

@@ -8,8 +8,8 @@
         <GradientStop Color="#000000" Offset="0.0" />
         <GradientStop Color="#000000" Offset="1.0" />
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#2C2C2E" />
-    <SolidColorBrush x:Key="TertiaryBackgroundBrush" Color="#3A3A3C" />
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#a1a1e7ff" />
+    <SolidColorBrush x:Key="TertiaryBackgroundBrush" Color="#2c2c3fff" />
     <SolidColorBrush x:Key="BorderBrush" Color="#333333" />
     
     <!-- Text -->

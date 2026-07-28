@@ -218,6 +218,13 @@ function Update-WpfUI {
     if (-not $connectedDevice) { $connectedDevice = ($DevicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
     $connectedDevice = $connectedDevice | Select-Object -First 1
 
+    $mainBorder = $script:wpfWindow.FindName("mainBorder")
+    $oldWidth = 0; $oldHeight = 0
+    if ($null -ne $mainBorder) {
+        $oldWidth = $mainBorder.ActualWidth
+        $oldHeight = $mainBorder.ActualHeight
+    }
+    
     if ($connectedDevice) {
         $target = $connectedDevice.Split()[0].Trim()
         $devName = $target
@@ -238,6 +245,46 @@ function Update-WpfUI {
         $btnQAConnect = $script:wpfWindow.FindName("btnQAConnect")
         if ($null -ne $btnQAConnect) { $btnQAConnect.IsChecked = $false }
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
+    }
+
+    $mainBorder.UpdateLayout()
+    $newWidth = $mainBorder.ActualWidth
+    $newHeight = $mainBorder.ActualHeight
+    
+    if (($oldWidth -gt 0 -and [Math]::Abs($newWidth - $oldWidth) -gt 1) -or ($oldHeight -gt 0 -and [Math]::Abs($newHeight - $oldHeight) -gt 1)) {
+        $mainBorder.BeginAnimation([System.Windows.FrameworkElement]::WidthProperty, $null)
+        $mainBorder.BeginAnimation([System.Windows.FrameworkElement]::HeightProperty, $null)
+        
+        $mainBorder.Width = $oldWidth
+        $mainBorder.Height = $oldHeight
+        
+        $ease = New-Object System.Windows.Media.Animation.BackEase
+        $ease.Amplitude = 0.5
+        $ease.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseOut
+        
+        $animW = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $animW.To = $newWidth
+        $animW.Duration = [TimeSpan]::FromSeconds(0.4)
+        $animW.EasingFunction = $ease
+        
+        $animH = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $animH.To = $newHeight
+        $animH.Duration = [TimeSpan]::FromSeconds(0.4)
+        $animH.EasingFunction = $ease
+        
+        $mainBorder.BeginAnimation([System.Windows.FrameworkElement]::WidthProperty, $animW)
+        $mainBorder.BeginAnimation([System.Windows.FrameworkElement]::HeightProperty, $animH)
+        
+        $timer = New-Object System.Windows.Threading.DispatcherTimer
+        $timer.Interval = [TimeSpan]::FromSeconds(0.45)
+        $timer.Add_Tick({
+            $mainBorder.BeginAnimation([System.Windows.FrameworkElement]::WidthProperty, $null)
+            $mainBorder.BeginAnimation([System.Windows.FrameworkElement]::HeightProperty, $null)
+            $mainBorder.Width = [double]::NaN
+            $mainBorder.Height = [double]::NaN
+            $timer.Stop()
+        })
+        $timer.Start()
     }
 }
 #Export-ModuleMember -Function Update-WpfUI

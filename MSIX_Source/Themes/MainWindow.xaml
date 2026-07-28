@@ -576,7 +576,7 @@
             </Border>
         </Grid>
         
-        <Border Grid.Column="1" Background="Transparent" Padding="0">
+        <Border Grid.Column="1" Background="Transparent" Padding="0" MinWidth="335">
             <Border.RenderTransform>
                 <TranslateTransform x:Name="menuTrans" X="0" />
             </Border.RenderTransform>
