@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.1.1.3] - 2026-07-28
+### Hotfix: Major Event Registration Duplication
+- **[fix]** Surgically removed a massive 163-line duplicated event block in `TrayUIBindings.ps1` that was incorrectly pasted during the v2.0.0.0 monolithic script decoupling. This bug caused `Add_KeyDown`, `btnExit.Add_Click`, `wpfWindow.Add_KeyDown`, and `Add_Deactivated` to register and fire twice, creating ghost timers, doubling UI operations, and causing massive application state race conditions.
 ## [2.1.1.2] - 2026-07-28
 ### Hotfix: System Tray Icon Image Loss (Colored Dot Bug)
 - **[fix]** Resolved a relative pathing issue where `$PSScriptRoot` was resolving to `MSIX_Source\bin\Modules` instead of `MSIX_Source\bin` due to the recent architectural decoupling. This caused `app-icon.ico` to fail to load, resulting in the System Tray falling back to generating a blank 16x16 image with just a colored status dot.
