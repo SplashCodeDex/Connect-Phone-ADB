@@ -367,10 +367,10 @@ $xaml = @"
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource MenuBackgroundBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource MenuBorderBrush}"/>
                             </Trigger>
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
@@ -477,19 +477,14 @@ $xaml = @"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border x:Name="mainBorder" CornerRadius="34" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" RenderTransformOrigin="0.5,1">
+    <Border x:Name="mainBorder" CornerRadius="34" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" Background="{DynamicResource MenuBackgroundGradient}" RenderTransformOrigin="0.5,1">
         <Border.RenderTransform>
             <TransformGroup>
                 <ScaleTransform ScaleX="1" ScaleY="1" x:Name="winScale" />
                 <TranslateTransform Y="0" x:Name="winTrans" />
             </TransformGroup>
         </Border.RenderTransform>
-        <Border.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#1D1226" Offset="0.0" />
-                <GradientStop Color="#09090D" Offset="1.0" />
-            </LinearGradientBrush>
-        </Border.Background>
+
         <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />

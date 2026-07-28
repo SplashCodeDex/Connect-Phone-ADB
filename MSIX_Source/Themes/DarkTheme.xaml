@@ -4,6 +4,10 @@
     
     <!-- Backgrounds -->
     <SolidColorBrush x:Key="AppBackgroundBrush" Color="Transparent" />
+    <LinearGradientBrush x:Key="MenuBackgroundGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#1D1226" Offset="0.0" />
+        <GradientStop Color="#09090D" Offset="1.0" />
+    </LinearGradientBrush>
     <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#2C2C2E" />
     <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#3A3A3C" />
     <SolidColorBrush x:Key="MenuBorderBrush" Color="#333333" />
