@@ -624,8 +624,11 @@ $xaml = @"
                 
                 <Button Name="btnProfile" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,0,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
                     <Grid>
-                        <Ellipse Width="34" Height="34" Fill="{DynamicResource SecondaryBackgroundBrush}" />
-                        <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Ellipse Width="34" Height="34">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                            </Ellipse.Fill>
+                        </Ellipse>
                     </Grid>
                 </Button>
             </Grid>
