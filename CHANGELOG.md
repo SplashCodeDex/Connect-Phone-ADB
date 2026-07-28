@@ -1,7 +1,7 @@
 # Changelog
 
-## [v1.9.3.0]
-- **[minor]** Hid bulky vertical WPF scrollbars in both the Nearby Users panel and File Explorer list (`VerticalScrollBarVisibility="Hidden"`) for a cleaner, modern aesthetic while fully retaining mouse-wheel scrolling capability.
+## [v1.9.7.0]
+- **[fix]** Resolved tray icon click swallowing bug by tracking `$script:wasVisibleBeforeDeactivate` flag, ensuring left and right clicks on system tray icon reliably toggle window visibility regardless of WPF focus deactivation timing.
 
 ## [v1.9.6.5]
 - **[fix]** Resolved application launch failure caused by string encoding corruption (`"✓"`) and ampersand entity parsing in PowerShell by using safe character literals `[char]0x2713` and `[char]0xE8C8`. Verified AST parse with 0 syntax errors.

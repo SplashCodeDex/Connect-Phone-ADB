@@ -1738,17 +1738,16 @@ function Update-WpfUI {
 }
 
 $script:lastDeactivated = [DateTime]::MinValue
+$script:wasVisibleBeforeDeactivate = $false
 
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({
     if ($script:wpfWindow.IsVisible) {
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
-        $now = [DateTime]::Now
-        if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
-            $script:wpfWindow.Hide()
-            $script:lastDeactivated = $now
-        }
+        $script:wasVisibleBeforeDeactivate = $true
+        $script:wpfWindow.Hide()
+        $script:lastDeactivated = [DateTime]::Now
     }
 })
 
@@ -1756,6 +1755,7 @@ $script:wpfWindow.Add_Deactivated({
 $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.Hide()
     $script:lastDeactivated = [DateTime]::Now
+    $script:wasVisibleBeforeDeactivate = $false
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
     $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
     $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
@@ -1772,16 +1772,26 @@ $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
         $now = [DateTime]::Now
-        if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
+        
+        # If window is currently visible, hide it cleanly
+        if ($script:wpfWindow.IsVisible) {
             $script:wpfWindow.Hide()
+            $script:lastDeactivated = $now
+            $script:wasVisibleBeforeDeactivate = $false
             return
         }
         
-        try {
-            Update-WpfUI
-        } catch {}
+        # If window was just closed by Deactivated within 120ms specifically because the user clicked on the tray icon while open:
+        # treat that click as closing the window, not re-opening it immediately.
+        if (($now - $script:lastDeactivated).TotalMilliseconds -lt 120 -and $script:wasVisibleBeforeDeactivate) {
+            $script:wasVisibleBeforeDeactivate = $false
+            return
+        }
         
-        # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
+        $script:wasVisibleBeforeDeactivate = $false
+        
+        try { Update-WpfUI } catch {}
+        
         $workArea = [System.Windows.SystemParameters]::WorkArea
         $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
         $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
@@ -1796,7 +1806,6 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
         
-        $script:lastDeactivated = [DateTime]::Now
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
         $script:wpfWindow.Focus()
