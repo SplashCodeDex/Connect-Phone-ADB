@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.2.0] - 2026-07-28
+### Added
+- **[minor]** Reassigned the power-switch icon to the Exit Engine button and updated the Disconnect button icon. Added an active/pressed light-green accent state to all Quick Action icons.
+
 ## [2.2.1.0] - 2026-07-28
 ### Added
 - **[minor]** Repositioned the menu Close (X) button directly into the Quick Actions strip when expanded to visually streamline the interface and fill the layout gap.

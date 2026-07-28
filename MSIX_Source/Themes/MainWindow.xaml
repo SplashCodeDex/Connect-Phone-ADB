@@ -331,6 +331,10 @@
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
                             </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource SecondaryBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -530,7 +534,10 @@
                         
                         <Button Name="btnExit" Grid.Column="1" Style="{StaticResource SpatialListItem}">
                             <Grid>
-                                <TextBlock Name="txtExitBtn" Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBlock Text="&#xE7E8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <TextBlock Name="txtExitBtn" Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
                                 <TextBlock Text="&#x2318;Q" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas" VerticalAlignment="Center"/>
                             </Grid>
                         </Button>
@@ -545,7 +552,7 @@
                         <TextBlock Text="&#xE71B;" />
                     </Button>
                     <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Disconnect">
-                        <TextBlock Text="&#xE7E8;" />
+                        <TextBlock Text="&#xE71A;" />
                     </Button>
                     <Button Name="btnQAMirror" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Mirror Phone">
                         <TextBlock Text="&#xE8EA;" />

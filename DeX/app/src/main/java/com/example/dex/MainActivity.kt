@@ -1,0 +1,26 @@
+package com.example.dex
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import com.example.dex.theme.DeXTheme
+
+class MainActivity : ComponentActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    
+    // Start the DeX networking service
+    val serviceIntent = android.content.Intent(this, com.example.dex.network.DexService::class.java)
+    startService(serviceIntent)
+
+    enableEdgeToEdge()
+    setContent {
+      DeXTheme { Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { MainNavigation() } }
+    }
+  }
+}
