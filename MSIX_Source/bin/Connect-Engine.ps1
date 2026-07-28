@@ -213,7 +213,7 @@ $xaml = @"
         x:Name="winSpatial"
         WindowStyle="None" Background="Transparent" AllowsTransparency="True"
         Topmost="True" ShowInTaskbar="False"
-        Width="290" Height="418"
+        SizeToContent="WidthAndHeight"
         ResizeMode="NoResize">
     <Window.Resources>
         <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
@@ -413,14 +413,14 @@ $xaml = @"
             <Setter Property="Background" Value="#2C2C2E"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Width" Value="52"/>
-            <Setter Property="Height" Value="52"/>
+            <Setter Property="Width" Value="72"/>
+            <Setter Property="Height" Value="58"/>
             <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets"/>
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="20" RenderTransformOrigin="0.5,0.5">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="29" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
@@ -491,7 +491,7 @@ $xaml = @"
         <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="290" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         
         <Grid Name="FileExplorer" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="15,25,15,15">
@@ -521,7 +521,7 @@ $xaml = @"
                 <TranslateTransform x:Name="menuTrans" X="0" />
             </Border.RenderTransform>
             <Border Background="Transparent" CornerRadius="34">
-                <StackPanel Width="270" Margin="0,12">
+                <StackPanel Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />
@@ -990,8 +990,7 @@ $script:wpfWindow.Add_Deactivated({
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
             $script:wpfWindow.Hide()
             $script:lastDeactivated = $now
-            $script:wpfWindow.Width = 290
-            $script:wpfWindow.Height = 418
+            $script:wpfWindow.SizeToContent = 'WidthAndHeight'
             $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
             $script:wpfWindow.FindName("FileExplorer").Opacity = 0
             $script:wpfWindow.FindName("fileTrans").X = 150
