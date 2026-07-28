@@ -741,67 +741,153 @@ $xaml = @"
                     </StackPanel>
                 
                     <!-- Nearby Users Section -->
-                    <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
-                        
-                        <!-- Dummy panel to prevent Storyboard animation crash -->
-                        <StackPanel x:Name="NearbyExpandPanel" DockPanel.Dock="Bottom" Visibility="Collapsed" Opacity="0" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
 
-                        <ListBox x:Name="lbNearbyUsers" Background="Transparent" BorderThickness="0" 
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 Margin="0,0,0,8" Padding="0,0,10,0">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem">
-                                    <Setter Property="Padding" Value="0"/>
-                                    <Setter Property="Margin" Value="0"/>
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="ListBoxItem">
-                                                <ContentPresenter />
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            
-                                            <Grid Width="38" Height="38" Margin="0,0,12,0">
-                                                <Ellipse Visibility="{Binding AvatarVisibility}">
-                                                    <Ellipse.Fill>
-                                                        <ImageBrush ImageSource="{Binding AvatarSource}" Stretch="UniformToFill" AlignmentY="Top" />
-                                                    </Ellipse.Fill>
-                                                </Ellipse>
-                                                
-                                                <Ellipse Fill="{DynamicResource PrimaryBrush}" Visibility="{Binding DeviceVisibility}" />
-                                                <TextBlock Text="{Binding DeviceIcon}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding DeviceVisibility}" />
-                                                
-                                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="{Binding StatusSecondaryVisibility}" />
-                                                <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="{Binding StatusGreenVisibility}" />
-                                            </Grid>
-                                            
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Name}" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                                <TextBlock Text="{Binding Subtitle}" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" Visibility="{Binding SubtitleVisibility}" />
-                                            </StackPanel>
-                                            
-                                            <TextBlock Grid.Column="2" Text="{Binding RightIcon}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" Visibility="{Binding RightIconVisibility}" />
-                                        </Grid>
-                                    </Button>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </DockPanel>
+                <!-- User Joe (always visible when contracted) -->
+                <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse>
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/JoeAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <!-- Device: Galaxy S21 (unhidden, original phone icon avatar) -->
+                <Button x:Name="btnDeviceGalaxy" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse Fill="{DynamicResource PrimaryBrush}" />
+                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Galaxy S21" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        </StackPanel>
+                        
+                        <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    </Grid>
+                </Button>
+
+                <!-- Device: Windows (always visible when contracted) -->
+                <Button x:Name="btnDeviceWindows" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse Fill="{DynamicResource PrimaryBrush}" />
+                            <TextBlock Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Windows" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <!-- Nearby Expand Panel: hidden when contracted, staggers in when expanded -->
+                <StackPanel x:Name="NearbyExpandPanel" Visibility="Collapsed" Opacity="0">
+                    <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,6" />
+
+                    <!-- User 1 -->
+                    <Button x:Name="btnUser1" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Grid Width="38" Height="38" Margin="0,0,12,0">
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User1Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            </Grid>
+                            
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Ama Serwaa" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                    <!-- User 2 -->
+                    <Button x:Name="btnUser2" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Grid Width="38" Height="38" Margin="0,0,12,0">
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User2Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            </Grid>
+                            
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Akua Donkor" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                    <!-- User 3 -->
+                    <Button x:Name="btnUser3" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Grid Width="38" Height="38" Margin="0,0,12,0">
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User3Avatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            </Grid>
+                            
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Kwame Asante" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="Global · via Hotspot" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
                 </DockPanel>
                 
                 </DockPanel>
@@ -844,88 +930,6 @@ $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
 $script:lbFiles = $script:wpfWindow.FindName("lbFiles")
 
-$script:lbNearbyUsers = $script:wpfWindow.FindName("lbNearbyUsers")
-$script:NearbyUsersList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new()
-$script:lbNearbyUsers.ItemsSource = $script:NearbyUsersList
-
-$script:NearbyUsersList.Add([PSCustomObject]@{
-    Name = "Joe Belfiore"
-    Subtitle = "joe.belfiore@gmail.com"
-    SubtitleVisibility = "Visible"
-    AvatarVisibility = "Visible"
-    AvatarSource = "file:///$($PSScriptRoot -replace '\\', '/')/../Assets/JoeAvatar.jpg"
-    DeviceVisibility = "Collapsed"
-    DeviceIcon = ""
-    RightIconVisibility = "Collapsed"
-    RightIcon = ""
-    StatusSecondaryVisibility = "Visible"
-    StatusGreenVisibility = "Collapsed"
-})
-$script:NearbyUsersList.Add([PSCustomObject]@{
-    Name = "Galaxy S21"
-    Subtitle = ""
-    SubtitleVisibility = "Collapsed"
-    AvatarVisibility = "Collapsed"
-    AvatarSource = ""
-    DeviceVisibility = "Visible"
-    DeviceIcon = [char]0xE8EA
-    RightIconVisibility = "Visible"
-    RightIcon = [char]0xE8EA
-    StatusSecondaryVisibility = "Collapsed"
-    StatusGreenVisibility = "Collapsed"
-})
-$script:NearbyUsersList.Add([PSCustomObject]@{
-    Name = "Windows"
-    Subtitle = ""
-    SubtitleVisibility = "Collapsed"
-    AvatarVisibility = "Collapsed"
-    AvatarSource = ""
-    DeviceVisibility = "Visible"
-    DeviceIcon = [char]0xE7F8
-    RightIconVisibility = "Collapsed"
-    RightIcon = ""
-    StatusSecondaryVisibility = "Collapsed"
-    StatusGreenVisibility = "Collapsed"
-})
-$script:NearbyUsersList.Add([PSCustomObject]@{
-    Name = "Ama Serwaa"
-    Subtitle = "Local Network"
-    SubtitleVisibility = "Visible"
-    AvatarVisibility = "Visible"
-    AvatarSource = "file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User1Avatar.png"
-    DeviceVisibility = "Collapsed"
-    DeviceIcon = ""
-    RightIconVisibility = "Collapsed"
-    RightIcon = ""
-    StatusSecondaryVisibility = "Visible"
-    StatusGreenVisibility = "Collapsed"
-})
-$script:NearbyUsersList.Add([PSCustomObject]@{
-    Name = "Akua Donkor"
-    Subtitle = "Local Network"
-    SubtitleVisibility = "Visible"
-    AvatarVisibility = "Visible"
-    AvatarSource = "file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User2Avatar.png"
-    DeviceVisibility = "Collapsed"
-    DeviceIcon = ""
-    RightIconVisibility = "Collapsed"
-    RightIcon = ""
-    StatusSecondaryVisibility = "Collapsed"
-    StatusGreenVisibility = "Visible"
-})
-$script:NearbyUsersList.Add([PSCustomObject]@{
-    Name = "Kwame Asante"
-    Subtitle = "Global · via Hotspot"
-    SubtitleVisibility = "Visible"
-    AvatarVisibility = "Visible"
-    AvatarSource = "file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User3Avatar.jpg"
-    DeviceVisibility = "Collapsed"
-    DeviceIcon = ""
-    RightIconVisibility = "Collapsed"
-    RightIcon = ""
-    StatusSecondaryVisibility = "Collapsed"
-    StatusGreenVisibility = "Visible"
-})
 
 $script:txtCurrentDir = $script:wpfWindow.FindName("txtCurrentDir")
 $script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")

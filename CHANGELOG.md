@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.8.7.3]
+- **[fix]** Reverted Nearby Users list from a virtualized ListBox back to a hardcoded StackPanel wrapped in a single auto-scrollbar per user preference.
+
 ## [v1.8.6.3]
 - **[minor]** Added a confirmation dialog prompt to the 'Exit Engine' button to prevent accidental exits.
 
