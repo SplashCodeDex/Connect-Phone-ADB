@@ -213,7 +213,7 @@ $xaml = @"
         x:Name="winSpatial"
         WindowStyle="None" Background="Transparent" AllowsTransparency="True"
         Topmost="True" ShowInTaskbar="False"
-        SizeToContent="WidthAndHeight"
+        Width="290" Height="460"
         ResizeMode="NoResize">
     <Window.Resources>
         <BackEase x:Key="HoverEase" Amplitude="1.22" EasingMode="EaseOut" />

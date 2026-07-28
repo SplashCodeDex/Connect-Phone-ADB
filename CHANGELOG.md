@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.5.1]
+- **[fix]** Fixed a bug where clicking 'Phone Files' caused the spatial menu to fly off-screen instead of expanding. Removed the conflicting `SizeToContent="WidthAndHeight"` property from the WPF Window and restored explicit `Width` and `Height` boundaries, allowing the `ExpandMenu` DoubleAnimations to properly scale the window bounds.
+
 ## [v1.7.5.0]
 - **[major]** Architectural refactor of the WPF rendering engine to support dynamic theming.
 - Decoupled all hardcoded hex values in `Connect-Engine.ps1` into semantic `DynamicResource` tokens.
