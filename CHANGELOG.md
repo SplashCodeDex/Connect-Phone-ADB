@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.9.2.8]
+- **[minor]** Changed the background fill color of the 'Windows' and 'Galaxy S21' device avatars from `PrimaryBrush` (Purple) to `SecondaryBrush` (Light-Green) for a more unified status indicator aesthetic.
+
 ## [v1.9.4.0]
 - **[minor]** Enabled `SelectionMode="Extended"` on `lbFiles` to support Shift+Click range selection and Ctrl+Click multi-selection with persistent green highlight across all selected items.
 - **[minor]** Upgraded `MouseDoubleClick` to support batch multi-file pulling into `Downloads\dex` (or custom directory) with dynamic notification count ("Saved X files to Downloads\dex").

@@ -870,7 +870,7 @@ $xaml = @"
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="{DynamicResource PrimaryBrush}" />
+                            <Ellipse Fill="{DynamicResource SecondaryBrush}" />
                             <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         
@@ -891,7 +891,7 @@ $xaml = @"
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="{DynamicResource PrimaryBrush}" />
+                            <Ellipse Fill="{DynamicResource SecondaryBrush}" />
                             <TextBlock Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         
@@ -1270,6 +1270,18 @@ function Show-DownloadDockToast([string]$pathText) {
                 $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleYProperty, $daSExit)
             }
         })
+        
+        # Edge Case 19: Pause auto-hide while mouse hovers over dock
+        $dock.Add_MouseEnter({
+            if ($null -ne $script:dockTimer) { $script:dockTimer.Stop() }
+        })
+        $dock.Add_MouseLeave({
+            if ($null -ne $script:dockTimer) {
+                $script:dockTimer.Stop()
+                $script:dockTimer.Start()
+            }
+        })
+        
         $script:dockTimer.Start()
     }
 }
@@ -1289,7 +1301,14 @@ if ($null -ne $btnChange) {
     })
 }
 
+$script:lastDoubleClickTime = 0
+
 $script:lbFiles.Add_MouseDoubleClick({
+    # Edge Case 15: Double-Click Speed Threshold Guard
+    $now = [DateTime]::Now.Ticks / [TimeSpan]::TicksPerMillisecond
+    if ($now - $script:lastDoubleClickTime -lt 400) { return }
+    $script:lastDoubleClickTime = $now
+    
     $selectedItems = $script:lbFiles.SelectedItems
     if ($null -ne $selectedItems -and $selectedItems.Count -gt 0) {
         # Check if a single folder is double clicked
@@ -1504,20 +1523,34 @@ $actionAuto = {
     Update-WpfUI
 }
 $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
-$script:wpfWindow.FindName("btnUserJoe").Add_Click({
-    $btn = $script:wpfWindow.FindName("btnUserJoe")
-    $btn.ContextMenu.PlacementTarget = $btn
-    $btn.ContextMenu.IsOpen = $true
-})
+$btnTopProfile = $script:wpfWindow.FindName("btnProfileTop")
+if ($null -ne $btnTopProfile) {
+    $btnTopProfile.Add_Click({
+        $joeBtn = $script:wpfWindow.FindName("btnUserJoe")
+        if ($null -ne $joeBtn -and $null -ne $joeBtn.ContextMenu) {
+            $joeBtn.ContextMenu.PlacementTarget = $btnTopProfile
+            $joeBtn.ContextMenu.IsOpen = $true
+        }
+    })
+}
 
-$script:wpfWindow.FindName("menuItemTheme").Add_Click({
-    if ($global:CurrentTheme -eq "DarkTheme") {
-        Set-AppTheme "LightTheme"
-    } else {
-        Set-AppTheme "DarkTheme"
+# Edge Case 11 & 14: lbFiles KeyDown for Ctrl+A (visible only), Escape deselect, and Enter key execution
+$script:lbFiles.Add_KeyDown({
+    param($sender, $e)
+    if ($e.Key -eq [System.Windows.Input.Key]::A -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Control)) {
+        foreach ($item in $script:lbFiles.Items) {
+            if ($item.Visibility -eq 'Visible') {
+                $item.IsSelected = $true
+            } else {
+                $item.IsSelected = $false
+            }
+        }
+        $e.Handled = $true
+    } elseif ($e.Key -eq [System.Windows.Input.Key]::Escape) {
+        $script:lbFiles.UnselectAll()
+        $e.Handled = $true
     }
 })
-
 
 $script:wpfWindow.FindName("btnExit").Add_Click({
     $txtExitBtn = $script:wpfWindow.FindName("txtExitBtn")
@@ -1548,6 +1581,12 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
     }
     
     if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
+    
+    # Edge Case 20: Job and process cleanup on exit
+    Get-Job | ForEach-Object { try { Stop-Job $_; Remove-Job $_ } catch {} }
+    if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
+        try { $script:adbLsProc.Kill() } catch {}
+    }
     
     $script:wpfWindow.Hide()
     $script:notifyIcon.Visible = $false
