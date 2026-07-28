@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.8.2.0]
+- **[minor]** Redesigned the File Explorer UI to be sleek and premium.
+- **[minor]** Added a custom, slim, rounded ScrollBar style to match the modern spatial UI.
+- **[minor]** Rebuilt the top navigation bar into a modern padded capsule with the current path and Up button.
+- **[minor]** Enhanced `FileGridTemplate` and `FolderGridTemplate` with soft CornerRadius, updated fonts, adjusted opacity, and responsive hover/press backgrounds that automatically adapt to light/dark themes.
+- **[fix]** Increased inner margins of the File Explorer grid to completely prevent contents from clipping over the rounded corners of the main menu border.
+
 ## [v1.8.1.0]
 - **[fix]** Close button now only appears when menu is expanded (hidden when contracted).
 - **[fix]** Restored click-outside-to-close for the contracted menu state; only blocked when expanded.

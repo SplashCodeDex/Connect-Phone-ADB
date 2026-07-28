@@ -216,6 +216,31 @@ $xaml = @"
         Width="1420" Height="760"
         ResizeMode="NoResize">
     <Window.Resources>
+        <!-- Sleek ScrollBar Style -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="3" Margin="0" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
         <BackEase x:Key="HoverEase" Amplitude="1.22" EasingMode="EaseOut" />
         <BackEase x:Key="PopInEase" Amplitude="3.53" EasingMode="EaseOut" />
         <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
@@ -277,51 +302,51 @@ $xaml = @"
         </Storyboard>
         
         <DataTemplate x:Key="FolderGridTemplate">
-            <Border Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}" Margin="10" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
                         <TranslateTransform X="0" Y="0" x:Name="itemTrans" />
                     </TransformGroup>
                 </Border.RenderTransform>
-                <StackPanel Width="100" Height="100">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryBrush}" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
+                <StackPanel Width="85" Height="90">
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                <ColorAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#1AFFFFFF" Duration="0:0:0.2" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                <ColorAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="PreviewMouseDown">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="0.92" Duration="0:0:0.1" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="0.92" Duration="0:0:0.1" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="5" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="0.94" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="0.94" Duration="0:0:0.1" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="PreviewMouseUp">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -329,51 +354,51 @@ $xaml = @"
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="FileGridTemplate">
-            <Border Background="Transparent" Cursor="Hand" ToolTip="{Binding Name}" Margin="10" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
                         <TranslateTransform X="0" Y="0" x:Name="itemTrans" />
                     </TransformGroup>
                 </Border.RenderTransform>
-                <StackPanel Width="100" Height="100">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,5,0,0"/>
+                <StackPanel Width="85" Height="90">
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" Opacity="0.85"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                <ColorAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#1AFFFFFF" Duration="0:0:0.2" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                <ColorAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="PreviewMouseDown">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="0.92" Duration="0:0:0.1" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="0.92" Duration="0:0:0.1" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="5" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="0.94" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="0.94" Duration="0:0:0.1" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="PreviewMouseUp">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-5" Duration="0:0:0.5" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -523,7 +548,7 @@ $xaml = @"
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         
-        <Grid Name="FileExplorer" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="15,25,15,15">
+        <Grid Name="FileExplorer" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="24,24,15,15">
             <Grid.RenderTransform>
                 <TranslateTransform x:Name="fileTrans" X="150" />
             </Grid.RenderTransform>
@@ -531,12 +556,21 @@ $xaml = @"
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" Margin="5,0,0,15">
-                <Button Name="btnUpDir" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="20" Content="&#xE72B;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,15,0" />
-                <TextBlock Name="txtCurrentDir" Text="/sdcard/" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
-            </StackPanel>
             
-            <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <Border Grid.Row="0" Margin="0,0,0,15" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="12" Padding="8,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Name="btnUpDir" Grid.Column="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Content="&#xE72B;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" Padding="4" />
+                    <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center">
+                        <TextBlock Name="txtCurrentDir" Text="/sdcard/" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" />
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+            
+            <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel IsItemsHost="True" Orientation="Horizontal" />
