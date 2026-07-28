@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.1.1.4] - 2026-07-28
+### Hotfix: Silent Failure on mDNS Discovered Devices
+- **[fix]** Fixed a major logic regression where clicking on a discovered device via the mDNS 'Nearby' menu would silently fail. The `Invoke-AdbConnect` function was never updated to accept the `-Target` parameter passed to it by the mDNS menu, causing it to ignore the selected device and default back to calculating the local Hotspot Gateway IP. The function signature has been fixed to fully accept and prioritize targeted connections.
 ## [2.1.1.3] - 2026-07-28
 ### Hotfix: Major Event Registration Duplication
 - **[fix]** Surgically removed a massive 163-line duplicated event block in `TrayUIBindings.ps1` that was incorrectly pasted during the v2.0.0.0 monolithic script decoupling. This bug caused `Add_KeyDown`, `btnExit.Add_Click`, `wpfWindow.Add_KeyDown`, and `Add_Deactivated` to register and fire twice, creating ghost timers, doubling UI operations, and causing massive application state race conditions.

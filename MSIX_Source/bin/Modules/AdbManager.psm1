@@ -3,25 +3,38 @@ function adb { & $global:AdbExePath @args }
 Export-ModuleMember -Function adb
 
 function Invoke-AdbConnect {
-    $GatewayIP = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | 
-                  Where-Object { $_.NextHop -ne '0.0.0.0' -and $_.NextHop -ne '::' } | 
-                  Select-Object -First 1 -ExpandProperty NextHop)
-    
-    if (-not $GatewayIP) {
-        if ($ConnectOnly) {
-            $null = adb disconnect 2>&1
-            return @{ Success = $false; Message = "No IP provided." }
+    [CmdletBinding()]
+    param(
+        [string]$Target,
+        [switch]$ConnectOnly
+    )
+
+    $GatewayIP = $null
+    if ([string]::IsNullOrWhiteSpace($Target)) {
+        $GatewayIP = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | 
+                      Where-Object { $_.NextHop -ne '0.0.0.0' -and $_.NextHop -ne '::' } | 
+                      Select-Object -First 1 -ExpandProperty NextHop)
+        
+        if (-not $GatewayIP) {
+            if ($ConnectOnly) {
+                $null = adb disconnect 2>&1
+                return @{ Success = $false; Message = "No IP provided." }
+            }
+            
+            Add-Type -AssemblyName Microsoft.VisualBasic
+            $GatewayIP = [Microsoft.VisualBasic.Interaction]::InputBox("Not on Phone Hotspot. Enter Phone IP manually (e.g. 192.168.1.15):", "Connect ADB")
+            if (-not $GatewayIP) {
+                $null = adb disconnect 2>&1
+                return @{ Success = $false; Message = "No IP provided." }
+            }
         }
         
-        Add-Type -AssemblyName Microsoft.VisualBasic
-        $GatewayIP = [Microsoft.VisualBasic.Interaction]::InputBox("Not on Phone Hotspot. Enter Phone IP manually (e.g. 192.168.1.15):", "Connect ADB")
-        if (-not $GatewayIP) {
-            $null = adb disconnect 2>&1
-            return @{ Success = $false; Message = "No IP provided." }
+        $Target = "${GatewayIP}:5555"
+    } else {
+        if ($Target -match '^([0-9\.]+):') {
+            $GatewayIP = $Matches[1]
         }
     }
-    
-    $target = "${GatewayIP}:5555"
     
     # Smart Polling: Check if already connected to prevent UI freezing
     $devices = (adb devices -l 2>&1) | Out-String
