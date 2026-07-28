@@ -61,11 +61,11 @@ function Invoke-AdbConnect {
     $target = "${GatewayIP}:5555"
     
     # Smart Polling: Check if already connected to prevent UI freezing
-    $devicesOutput = (adb devices -l 2>&1) -join "`n"
-    if ($devicesOutput -match ([regex]::Escape($target) + '\s+device.*?model:([^\s]+)')) {
-        $devName = if ($Matches -and $Matches.Count -gt 1) { $Matches[1] -replace '_', ' ' } else { $target }
+    $devices = adb devices -l 2>&1
+    if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
+        $devName = $Matches[1] -replace '_', ' '
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
-    } elseif ($devicesOutput -match ([regex]::Escape($target) + '\s+device')) {
+    } elseif ($devices -match ([regex]::Escape($target) + "\s+device")) {
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $target }
     }
 
@@ -73,13 +73,11 @@ function Invoke-AdbConnect {
     $null = adb start-server 2>&1
     $result = adb connect $target 2>&1
     
-    $devicesOutput = (adb devices -l 2>&1) -join "`n"
-    if ($result -like "*connected to*" -or $devicesOutput -match ([regex]::Escape($target) + '\s+device')) {
+    $devices = adb devices -l 2>&1
+    if ($result -like "*connected to*" -or $devices -match ([regex]::Escape($target) + "\s+device")) {
         $devName = $target
-        if ($devicesOutput -match ([regex]::Escape($target) + '\s+device.*?model:([^\s]+)')) {
-            if ($Matches -and $Matches.Count -gt 1) {
-                $devName = $Matches[1] -replace '_', ' '
-            }
+        if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
+            $devName = $Matches[1] -replace '_', ' '
         }
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
     } else {
@@ -1717,13 +1715,10 @@ function Update-WpfUI {
     $connectedDevice = $connectedDevice | Select-Object -First 1
 
     if ($connectedDevice) {
-        $target = $connectedDevice.ToString().Split()[0].Trim()
+        $target = $connectedDevice.Split()[0].Trim()
         $devName = $target
-        $devStr = $connectedDevice.ToString()
-        if ($devStr -match 'model:([^\s]+)') {
-            if ($Matches -and $Matches.Count -gt 1) {
-                $devName = $Matches[1] -replace '_', ' '
-            }
+        if ($connectedDevice -match 'model:([^\s]+)') {
+            $devName = $Matches[1] -replace '_', ' '
         }
         $script:currentTarget = $target
         $script:notifyIcon.Icon = $iconGreen
@@ -1742,18 +1737,25 @@ function Update-WpfUI {
     }
 }
 
+$script:lastDeactivated = [DateTime]::MinValue
+
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({
     if ($script:wpfWindow.IsVisible) {
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
-        $script:wpfWindow.Hide()
+        $now = [DateTime]::Now
+        if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
+            $script:wpfWindow.Hide()
+            $script:lastDeactivated = $now
+        }
     }
 })
 
 # Close button handler (only visible when expanded)
 $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.Hide()
+    $script:lastDeactivated = [DateTime]::Now
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
     $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
     $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
@@ -1766,16 +1768,20 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
 })
 
-$script:notifyIcon.Add_MouseUp({
+$script:notifyIcon.Add_MouseClick({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
-        if ($script:wpfWindow.IsVisible) {
+        $now = [DateTime]::Now
+        if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
             $script:wpfWindow.Hide()
             return
         }
         
-        try { Update-WpfUI } catch {}
+        try {
+            Update-WpfUI
+        } catch {}
         
+        # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
         $workArea = [System.Windows.SystemParameters]::WorkArea
         $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
         $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
@@ -1790,6 +1796,7 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
         
+        $script:lastDeactivated = [DateTime]::Now
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
         $script:wpfWindow.Focus()

@@ -1,16 +1,10 @@
 # Changelog
 
-## [v1.9.9.0]
-- **[fix]** Performed Stale Knowledge Research Protocol overhaul on tray click toggle handlers: eliminated all over-engineered timer guards (`lastDeactivated`, `ignoreDeactivateUntil`), restoring a clean, direct `Show()`/`Hide()` activation pipeline.
+## [v1.9.4.0]
+- **[fix]** Replaced system tray `NotifyIcon.MouseUp` event with `MouseClick` to fix Windows 11 behavior where tray clicks were swallowed and failed to toggle the UI.
 
-## [v1.9.8.0]
-- **[fix]** Resolved `Cannot index into a null array` runtime crash in `Invoke-AdbConnect` and `Update-WpfUI` caused by PowerShell array `-match` behavior when evaluating `adb devices -l` output, ensuring tray clicks and connection status updates execute without crashing the WinForms engine loop.
-
-## [v1.9.7.5]
-- **[fix]** Resolved Taskbar notification focus flicker bug on system tray icon click by introducing a 500ms `$script:ignoreDeactivateUntil` grace period in `wpfWindow.Add_Deactivated`, guaranteeing tray clicks immediately open the window without instant focus-loss re-hiding.
-
-## [v1.9.7.0]
-- **[fix]** Resolved tray icon click swallowing bug by tracking `$script:wasVisibleBeforeDeactivate` flag, ensuring left and right clicks on system tray icon reliably toggle window visibility regardless of WPF focus deactivation timing.
+## [v1.9.3.0]
+- **[minor]** Hid bulky vertical WPF scrollbars in both the Nearby Users panel and File Explorer list (`VerticalScrollBarVisibility="Hidden"`) for a cleaner, modern aesthetic while fully retaining mouse-wheel scrolling capability.
 
 ## [v1.9.6.5]
 - **[fix]** Resolved application launch failure caused by string encoding corruption (`"✓"`) and ampersand entity parsing in PowerShell by using safe character literals `[char]0x2713` and `[char]0xE8C8`. Verified AST parse with 0 syntax errors.
