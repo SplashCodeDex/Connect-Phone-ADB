@@ -12,6 +12,10 @@ param(
     [switch]$SelfTest
 )
 
+Import-Module "$PSScriptRoot\Modules\EngineUtils.psm1" -Force
+Import-Module "$PSScriptRoot\Modules\AdbManager.psm1" -Force
+Import-Module "$PSScriptRoot\Modules\TaskScheduler.psm1" -Force
+Import-Module "$PSScriptRoot\Modules\UIComponents.psm1" -Force
 $mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
 $script:engineMutex = New-Object System.Threading.Mutex($false, $mutexName)
 if (-not $script:engineMutex.WaitOne(0, $false)) {
@@ -24,7 +28,6 @@ if ($PSScriptRoot -match "WindowsApps") {
 } else {
     $global:AdbExePath = "$PSScriptRoot\adb.exe"
 }
-function adb { & $global:AdbExePath @args }
 
 # Force STA Mode Threading for Windows Forms & Tray Icons
 Add-Type -AssemblyName System.Windows.Forms
@@ -40,53 +43,6 @@ $TaskName = "AutoConnectADB_Hotspot"
 $ScriptPath = $PSCommandPath
 
 # Function: Connect ADB to Gateway
-function Invoke-AdbConnect {
-    $GatewayIP = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | 
-                  Where-Object { $_.NextHop -ne '0.0.0.0' -and $_.NextHop -ne '::' } | 
-                  Select-Object -First 1 -ExpandProperty NextHop)
-    
-    if (-not $GatewayIP) {
-        if ($ConnectOnly) {
-            $null = adb disconnect 2>&1
-            return @{ Success = $false; Message = "No IP provided." }
-        }
-        
-        Add-Type -AssemblyName Microsoft.VisualBasic
-        $GatewayIP = [Microsoft.VisualBasic.Interaction]::InputBox("Not on Phone Hotspot. Enter Phone IP manually (e.g. 192.168.1.15):", "Connect ADB")
-        if (-not $GatewayIP) {
-            $null = adb disconnect 2>&1
-            return @{ Success = $false; Message = "No IP provided." }
-        }
-    }
-    
-    $target = "${GatewayIP}:5555"
-    
-    # Smart Polling: Check if already connected to prevent UI freezing
-    $devices = (adb devices -l 2>&1) | Out-String
-    if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
-        $devName = $Matches[1] -replace '_', ' '
-        return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
-    } elseif ($devices -match ([regex]::Escape($target) + "\s+device")) {
-        return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $target }
-    }
-
-    # Not connected, try to connect
-    $null = adb start-server 2>&1
-    $result = adb connect $target 2>&1
-    
-    $devices = (adb devices -l 2>&1) | Out-String
-    if ($result -like "*connected to*" -or $devices -match ([regex]::Escape($target) + "\s+device")) {
-        $devName = $target
-        if ($devices -match ([regex]::Escape($target) + "\s+device.*?model:([^\s]+)")) {
-            $devName = $Matches[1] -replace '_', ' '
-        }
-        return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
-    } else {
-        # Clear ghost target if unreachable
-        $null = adb disconnect $target 2>&1
-        return @{ Success = $false; Message = "Could not reach ADB daemon on $target" }
-    }
-}
 
 # If called for ConnectOnly (e.g. from background Task Scheduler trigger)
 if ($ConnectOnly) {
@@ -104,83 +60,12 @@ if (-not $createdNew) {
 }
 
 # Check Task Scheduler Auto-Connect status
-function Get-AutoConnectStatus {
-    $task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-    return ($task -ne $null -and $task.State -ne "Disabled")
-}
 
-function Set-AutoConnectStatus([bool]$Enable) {
-    $service = New-Object -ComObject Schedule.Service
-    $service.Connect()
-    $folder = $service.GetFolder("\")
-    
-    if ($Enable) {
-        $Query = @"
-<QueryList>
-  <Query Id="0" Path="Microsoft-Windows-WLAN-AutoConfig/Operational">
-    <Select Path="Microsoft-Windows-WLAN-AutoConfig/Operational">*[System[(EventID=8001)]]</Select>
-  </Query>
-</QueryList>
-"@
-        $taskDef = $service.NewTask(0)
-        $trigger = $taskDef.Triggers.Create(0)
-        $trigger.Subscription = $Query
-        
-        $action = $taskDef.Actions.Create(0)
-        $action.Path = "powershell.exe"
-        $action.Arguments = "-ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -File `"$ScriptPath`" -ConnectOnly"
-        
-        $taskDef.Settings.ExecutionTimeLimit = "PT0S"
-        $taskDef.Settings.DisallowStartIfOnBatteries = $false
-        $taskDef.Settings.StopIfGoingOnBatteries = $false
-        
-        $folder.RegisterTaskDefinition($TaskName, $taskDef, 6, $null, $null, 3) | Out-Null
-    } else {
-        try {
-            $folder.DeleteTask($TaskName, 0)
-        } catch {}
-    }
-}
 
 # Create System Tray Icon
 $script:notifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $script:notifyIcon.Text = "Connect ADB: Initializing..."
 
-function Create-StatusIcon([System.Drawing.Color]$Color) {
-    $iconPath = Join-Path $PSScriptRoot "app-icon.ico"
-    if (Test-Path $iconPath) {
-        $baseIcon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
-        $bmp = $baseIcon.ToBitmap()
-        $g = [System.Drawing.Graphics]::FromImage($bmp)
-        $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
-        
-        # Overlay a colored status indicator dot in the bottom right corner
-        $brushBorder = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::Black)
-        $g.FillEllipse($brushBorder, 18, 18, 12, 12)
-        $brushStatus = New-Object System.Drawing.SolidBrush($Color)
-        $g.FillEllipse($brushStatus, 20, 20, 8, 8)
-        
-        $hIcon = $bmp.GetHicon()
-        $icon = [System.Drawing.Icon]::FromHandle($hIcon)
-        $g.Dispose()
-        $bmp.Dispose()
-        $baseIcon.Dispose()
-        return $icon
-    } else {
-        $bmp = New-Object System.Drawing.Bitmap(16, 16)
-        $g = [System.Drawing.Graphics]::FromImage($bmp)
-        $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
-        $brushBg = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(25, 25, 35))
-        $g.FillEllipse($brushBg, 0, 0, 15, 15)
-        $brushStatus = New-Object System.Drawing.SolidBrush($Color)
-        $g.FillEllipse($brushStatus, 3, 3, 10, 10)
-        $hIcon = $bmp.GetHicon()
-        $icon = [System.Drawing.Icon]::FromHandle($hIcon)
-        $g.Dispose()
-        $bmp.Dispose()
-        return $icon
-    }
-}
 
 $iconGreen = Create-StatusIcon ([System.Drawing.Color]::FromArgb(0, 230, 118))
 $iconYellow = Create-StatusIcon ([System.Drawing.Color]::FromArgb(255, 214, 0))
@@ -189,31 +74,6 @@ $iconRed = Create-StatusIcon ([System.Drawing.Color]::FromArgb(255, 23, 68))
 $script:notifyIcon.Icon = $iconYellow
 $script:notifyIcon.Visible = $true
 
-function Show-Toast {
-    param([string]$Title, [string]$Message)
-    try {
-        [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
-        [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom, ContentType = WindowsRuntime] | Out-Null
-        $escTitle = [System.Security.SecurityElement]::Escape($Title)
-        $escMsg = [System.Security.SecurityElement]::Escape($Message)
-        $xmlString = @"
-<toast>
-  <visual>
-    <binding template="ToastGeneric">
-      <text>$escTitle</text>
-      <text>$escMsg</text>
-      <image placement="appLogoOverride" hint-crop="none" src="file:///$($PSScriptRoot -replace '\\', '/')/app-icon.ico"/>
-    </binding>
-  </visual>
-</toast>
-"@
-        $xml = New-Object Windows.Data.Xml.Dom.XmlDocument
-        $xml.LoadXml($xmlString)
-        $toast = [Windows.UI.Notifications.ToastNotification]::new($xml)
-        $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Connect ADB")
-        $notifier.Show($toast)
-    } catch {}
-}
 
 # Spatial UI WPF Overlay
 $xaml = @"
@@ -1061,26 +921,6 @@ if ($null -eq $script:wpfWindow) {
 }
 
 $global:CurrentTheme = "DarkTheme"
-function Set-AppTheme {
-    param([string]$ThemeName)
-    $themePath = Join-Path $PSScriptRoot "..\Themes\$ThemeName.xaml"
-    if (Test-Path $themePath) {
-        $xmlReader = [System.Xml.XmlReader]::Create($themePath)
-        $resourceDict = [System.Windows.Markup.XamlReader]::Load($xmlReader)
-        $script:wpfWindow.Resources.MergedDictionaries.Clear()
-        $script:wpfWindow.Resources.MergedDictionaries.Add($resourceDict)
-        $xmlReader.Close()
-        $global:CurrentTheme = $ThemeName
-    }
-}
-function Get-SystemTheme {
-    try {
-        $regKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        $val = Get-ItemPropertyValue -Path $regKey -Name "AppsUseLightTheme" -ErrorAction SilentlyContinue
-        if ($val -eq 1) { return "LightTheme" }
-    } catch {}
-    return "DarkTheme"
-}
 
 Set-AppTheme (Get-SystemTheme)
 
@@ -1133,126 +973,6 @@ $script:adbLsProc = $null
 
 $script:isLoadingDir = $false
 
-function Load-Directory($dirPath) {
-    if ($script:isLoadingDir) { return }
-    $script:isLoadingDir = $true
-    
-    try {
-        if ($null -ne $script:searchTimer) { $script:searchTimer.Stop() }
-        
-        # Auto-reset search bar text so the new directory displays all items cleanly
-        if ($null -ne $script:txtSearch) {
-            $script:txtSearch.Text = "Search files..."
-            $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
-        }
-        
-        # Edge Case 27: Normalize and sanitize directory path
-        $dirPath = ($dirPath -replace '(?<!:)/+', '/').Trim()
-        if (-not $dirPath.StartsWith("/")) { $dirPath = "/" + $dirPath }
-        if (-not $dirPath.EndsWith("/")) { $dirPath = $dirPath + "/" }
-        
-        $script:currentDirPath = $dirPath
-        $script:lbFiles.Items.Clear()
-        
-        if ($null -ne $script:btnUpDir) {
-            if ($dirPath -eq "/sdcard/" -or $dirPath -eq "/sdcard") {
-                $script:btnUpDir.Opacity = 0.4
-                $script:btnUpDir.Cursor = [System.Windows.Input.Cursors]::Arrow
-            } else {
-                $script:btnUpDir.Opacity = 1.0
-                $script:btnUpDir.Cursor = [System.Windows.Input.Cursors]::Hand
-            }
-        }
-        
-
-        
-        if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
-            try { $script:adbLsProc.Kill() } catch {}
-        }
-        
-        $proc = New-Object System.Diagnostics.Process
-        $proc.StartInfo.FileName = "cmd.exe"
-        $proc.StartInfo.Arguments = "/c `"`"$global:AdbExePath`" -s $($script:currentTarget) shell ls -1aF `"$dirPath`"`""
-        $proc.StartInfo.UseShellExecute = $false
-        $proc.StartInfo.RedirectStandardOutput = $true
-        $proc.StartInfo.CreateNoWindow = $true
-        
-        $proc.Start() | Out-Null
-        $script:adbLsProc = $proc
-        
-        # Edge Case 22: 5-second timeout guard to prevent hanging ADB processes
-        if (-not $proc.WaitForExit(5000)) {
-            try { $proc.Kill() } catch {}
-            Show-Toast -Title "ADB Timeout" -Message "Device did not respond within 5 seconds."
-            return
-        }
-        $output = $proc.StandardOutput.ReadToEnd()
-        
-        $lines = $output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { 
-            $_ -ne "" -and 
-            $_ -ne "./" -and 
-            $_ -ne "../" -and 
-            $_ -notmatch "^(ls:|error:|adb:|failed|Permission denied|\* daemon)"
-        }
-        
-        # Edge Case 5: Empty Folder State Toggle
-        $emptyOverlay = $script:wpfWindow.FindName("emptyFolderState")
-        if ($null -ne $emptyOverlay) {
-            if (-not $lines -or $lines.Count -eq 0) {
-                $emptyOverlay.Visibility = 'Visible'
-                $emptyOverlay.Opacity = 1.0
-            } else {
-                $emptyOverlay.Visibility = 'Collapsed'
-                $emptyOverlay.Opacity = 0.0
-            }
-        }
-        
-        $idx = 0
-        foreach ($line in $lines) {
-            $isDir = $line.EndsWith("/")
-            $name = $line.TrimEnd('/', '*', '@', '=')
-            if ($isDir) {
-                $full = $dirPath + $name + "/"
-                $template = $script:wpfWindow.Resources["FolderGridTemplate"]
-            } else {
-                $full = $dirPath + $name
-                $template = $script:wpfWindow.Resources["FileGridTemplate"]
-            }
-            
-            $item = New-Object System.Windows.Controls.ListBoxItem
-            $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
-            $item.ContentTemplate = $template
-            $item.Tag = $full
-            
-            # Staggered Entrance Animation
-            $trans = New-Object System.Windows.Media.TranslateTransform
-            $trans.Y = 80
-            $item.RenderTransform = $trans
-            $item.Opacity = 0
-            
-            $delay = [TimeSpan]::FromMilliseconds($idx * 35)
-            
-            $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
-            $daY.To = 0
-            $daY.Duration = [TimeSpan]::FromSeconds(0.6)
-            $daY.BeginTime = $delay
-            $daY.EasingFunction = $script:wpfWindow.Resources["HoverEase"]
-            
-            $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
-            $daOp.To = 1
-            $daOp.Duration = [TimeSpan]::FromSeconds(0.4)
-            $daOp.BeginTime = $delay
-            
-            $trans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
-            $item.BeginAnimation([System.Windows.Controls.ListBoxItem]::OpacityProperty, $daOp)
-            
-            $script:lbFiles.Items.Add($item)
-            $idx++
-        }
-    } finally {
-        $script:isLoadingDir = $false
-    }
-}
 
 $script:btnUpDir.Add_Click({
     $curr = $script:currentDirPath
@@ -1269,102 +989,6 @@ $script:btnUpDir.Add_Click({
 $script:customDownloadPath = ""
 $script:dockTimer = $null
 
-function Show-DownloadDockToast([string]$pathText) {
-    $dock = $script:wpfWindow.FindName("dockDownloadToast")
-    $txt = $script:wpfWindow.FindName("txtDownloadToast")
-    if ($null -ne $dock -and $null -ne $txt) {
-        # Edge Case 23: Truncate long path text with middle ellipsis while preserving full path in ToolTip
-        $dispText = $pathText
-        if ($dispText.Length -gt 35) {
-            $dispText = $dispText.Substring(0, 15) + "..." + $dispText.Substring($dispText.Length - 15)
-        }
-        $txt.Text = "Saved to $dispText"
-        $txt.ToolTip = $pathText
-        $dock.Visibility = 'Visible'
-        
-        $tg = $dock.RenderTransform
-        $dockScale = $null
-        $dockTrans = $null
-        if ($tg -is [System.Windows.Media.TransformGroup]) {
-            $dockScale = $tg.Children[0]
-            $dockTrans = $tg.Children[1]
-        }
-        
-        # Bouncy BackEase overshoot for dynamic spring entrance
-        $bouncyEase = New-Object System.Windows.Media.Animation.BackEase
-        $bouncyEase.Amplitude = 0.6
-        $bouncyEase.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseOut
-        
-        $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
-        $daOp.To = 1.0
-        $daOp.Duration = [TimeSpan]::FromSeconds(0.25)
-        $dock.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $daOp)
-        
-        if ($null -ne $dockTrans) {
-            $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
-            $daY.To = 0.0
-            $daY.Duration = [TimeSpan]::FromSeconds(0.45)
-            $daY.EasingFunction = $bouncyEase
-            $dockTrans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
-        }
-        if ($null -ne $dockScale) {
-            $daS = New-Object System.Windows.Media.Animation.DoubleAnimation
-            $daS.To = 1.0
-            $daS.Duration = [TimeSpan]::FromSeconds(0.45)
-            $daS.EasingFunction = $bouncyEase
-            $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleXProperty, $daS)
-            $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleYProperty, $daS)
-        }
-        
-        if ($null -ne $script:dockTimer) { $script:dockTimer.Stop() }
-        $script:dockTimer = New-Object System.Windows.Threading.DispatcherTimer
-        $script:dockTimer.Interval = [TimeSpan]::FromSeconds(4)
-        $script:dockTimer.Add_Tick({
-            $script:dockTimer.Stop()
-            
-            $easeIn = New-Object System.Windows.Media.Animation.CubicEase
-            $easeIn.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseIn
-            
-            $fadeOut = New-Object System.Windows.Media.Animation.DoubleAnimation
-            $fadeOut.To = 0.0
-            $fadeOut.Duration = [TimeSpan]::FromSeconds(0.35)
-            $fadeOut.EasingFunction = $easeIn
-            $fadeOut.Add_Completed({
-                $dock.Visibility = 'Collapsed'
-            })
-            
-            $dock.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeOut)
-            if ($null -ne $dockTrans) {
-                $daYExit = New-Object System.Windows.Media.Animation.DoubleAnimation
-                $daYExit.To = 25.0
-                $daYExit.Duration = [TimeSpan]::FromSeconds(0.35)
-                $daYExit.EasingFunction = $easeIn
-                $dockTrans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daYExit)
-            }
-            if ($null -ne $dockScale) {
-                $daSExit = New-Object System.Windows.Media.Animation.DoubleAnimation
-                $daSExit.To = 0.8
-                $daSExit.Duration = [TimeSpan]::FromSeconds(0.35)
-                $daSExit.EasingFunction = $easeIn
-                $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleXProperty, $daSExit)
-                $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleYProperty, $daSExit)
-            }
-        })
-        
-        # Edge Case 19: Pause auto-hide while mouse hovers over dock
-        $dock.Add_MouseEnter({
-            if ($null -ne $script:dockTimer) { $script:dockTimer.Stop() }
-        })
-        $dock.Add_MouseLeave({
-            if ($null -ne $script:dockTimer) {
-                $script:dockTimer.Stop()
-                $script:dockTimer.Start()
-            }
-        })
-        
-        $script:dockTimer.Start()
-    }
-}
 
 $btnChange = $script:wpfWindow.FindName("btnChangeDownloadPath")
 if ($null -ne $btnChange) {
@@ -1447,9 +1071,6 @@ $script:lbFiles.Add_MouseDoubleClick({
 })
 
 
-function Invoke-MenuAction([scriptblock]$Action) {
-    & $Action
-}
 
 $script:wpfWindow.FindName("btnCopyIP").Add_Click({
     if (-not [string]::IsNullOrWhiteSpace($script:currentTarget)) {
@@ -1753,67 +1374,9 @@ $script:wpfWindow.Add_KeyDown({
     }
 })
 
-function Update-WpfUI {
-    param([string[]]$DevicesOutput)
-    
-    trap {
-        Write-Trace "Update-WpfUI Trap: $($_.Exception.Message) at line $($_.InvocationInfo.ScriptLineNumber)"
-        continue
-    }
-    
-    if (-not $DevicesOutput) {
-        $DevicesOutput = adb devices -l 2>&1
-    }
-
-    $brushConverter = New-Object System.Windows.Media.BrushConverter
-    $qaAutoText = $script:wpfWindow.FindName("txtQAAuto")
-    if ($null -ne $qaAutoText) {
-        if ($script:AutoConnectEnabled) { 
-            $qaAutoText.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "SecondaryBrush")
-        } else { 
-            $qaAutoText.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "PrimaryTextBrush")
-        }
-    }
-    
-    $connectedDevice = ($DevicesOutput | Where-Object { $_ -match ':5555\s+device' })
-    if (-not $connectedDevice) { $connectedDevice = ($DevicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
-    $connectedDevice = $connectedDevice | Select-Object -First 1
-
-    if ($connectedDevice) {
-        $target = $connectedDevice.Split()[0].Trim()
-        $devName = $target
-        if ($connectedDevice -match 'model:([^\s]+)') {
-            $devName = $Matches[1] -replace '_', ' '
-        }
-        $script:currentTarget = $target
-        $script:notifyIcon.Icon = $iconGreen
-        $script:notifyIcon.Text = "Connected: $devName"
-        $script:txtStatus.Text = "Connected: $devName"
-        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Visible'
-        $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
-    } else {
-        $script:notifyIcon.Icon = $iconRed
-        $script:notifyIcon.Text = "Disconnected"
-        $script:txtStatus.Text = "Status: Disconnected"
-        $script:wpfWindow.FindName("btnQAConnect").Visibility = 'Visible'
-        $script:wpfWindow.FindName("btnQADisconnect").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
-    }
-}
 
 $script:lastDeactivated = [DateTime]::MinValue
 
-function Write-Trace($msg) {
-    # Rotate: keep the log forensically useful by capping it at ~200KB (retains last 500 lines)
-    $tracePath = "$env:TEMP\connect-adb-trace.txt"
-    try {
-        if ((Test-Path $tracePath) -and ((Get-Item $tracePath).Length -gt 200KB)) {
-            Get-Content $tracePath -Tail 500 | Set-Content $tracePath
-        }
-    } catch {}
-    Out-File -FilePath $tracePath -InputObject "[$(Get-Date -Format 'HH:mm:ss.fff')] $msg" -Append
-}
 
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({

@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.0.0.0]
+- **[major]** Architecture Overhaul: Refactored the monolithic `Connect-Engine.ps1` (~1,900 lines) into modern PowerShell modules (`.psm1`).
+- Extracted ADB logic into `AdbManager.psm1`.
+- Extracted UI/WPF generation functions into `UIComponents.psm1`.
+- Extracted Task Scheduler bindings into `TaskScheduler.psm1`.
+- Extracted common utilities into `EngineUtils.psm1`.
+- Rebuilt and signed MSIX package. Removed old 70KB temporary scripts (`temp.ps1`, `temp2.ps1`).
 ## [v1.9.4.1]
 - **[fix]** Restored true fix for swallowed tray clicks (previously documented in v1.7.0 but reverted): wrapped `Show()`, `Activate()`, and `PopIn` inside `$wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle)` to prevent `Deactivated` race condition. Reverted `MouseClick` back to `MouseUp`.
 
