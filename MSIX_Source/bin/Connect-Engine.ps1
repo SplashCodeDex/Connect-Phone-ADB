@@ -339,7 +339,7 @@ $xaml = @"
         </Storyboard>
         
         <DataTemplate x:Key="FolderGridTemplate">
-            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding [Name]}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
@@ -348,7 +348,7 @@ $xaml = @"
                 </Border.RenderTransform>
                 <StackPanel Width="85" Height="90">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
+                    <TextBlock Text="{Binding [Name]}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -391,7 +391,7 @@ $xaml = @"
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="FileGridTemplate">
-            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding [Name]}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
@@ -400,7 +400,7 @@ $xaml = @"
                 </Border.RenderTransform>
                 <StackPanel Width="85" Height="90">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" Opacity="0.85"/>
+                    <TextBlock Text="{Binding [Name]}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" Opacity="0.85"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -684,7 +684,7 @@ $xaml = @"
                     <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,8" />
                     <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
                         <Grid>
-                            <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Name="txtExitBtn" Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas" VerticalAlignment="Center"/>
                         </Grid>
                     </Button>
@@ -969,7 +969,7 @@ function Load-Directory($dirPath) {
                 $idx = $script:lbFiles.Items.Count
                 
                 $item = New-Object System.Windows.Controls.ListBoxItem
-                $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
+                $item.Content = @{ Name = $name; FullPath = $full; IsDir = $isDir }
                 $item.ContentTemplate = $template
                 $item.Tag = $full
                 
@@ -1004,6 +1004,21 @@ function Load-Directory($dirPath) {
     }
     if ($script:adbOutputSub) { Unregister-Event -SourceIdentifier $script:adbOutputSub.Name -ErrorAction SilentlyContinue }
     $script:adbOutputSub = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action $action
+    
+    # Add exit event for debugging
+    $exitAction = {
+        $script:wpfWindow.Dispatcher.Invoke([Action]{
+            $count = $script:lbFiles.Items.Count
+            if ($count -eq 0) {
+                Show-Toast -Title "Debug: Load-Directory" -Message "ADB ls returned 0 files for $dirPath. Target: $($script:currentTarget)"
+            } else {
+                Show-Toast -Title "Debug: Load-Directory" -Message "ADB ls successfully loaded $count files into the UI for $dirPath."
+            }
+        })
+    }
+    $proc.EnableRaisingEvents = $true
+    Register-ObjectEvent -InputObject $proc -EventName Exited -Action $exitAction | Out-Null
+    
     $proc.Start() | Out-Null
     $script:adbLsProc = $proc
     $proc.BeginOutputReadLine()
@@ -1194,19 +1209,29 @@ $script:wpfWindow.FindName("btnQATheme").Add_Click({
 
 
 $script:wpfWindow.FindName("btnExit").Add_Click({
-    $result = [System.Windows.MessageBox]::Show(
-        "Are you sure you want to exit Connect Phone ADB?", 
-        "Exit Confirmation", 
-        [System.Windows.MessageBoxButton]::YesNo, 
-        [System.Windows.MessageBoxImage]::Question
-    )
-    if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
-        $script:wpfWindow.Hide()
-        $script:notifyIcon.Visible = $false
-        $script:notifyIcon.Dispose()
-        Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
-        [System.Windows.Forms.Application]::Exit()
+    $txtExitBtn = $script:wpfWindow.FindName("txtExitBtn")
+    if ($txtExitBtn.Text -eq "Exit Engine") {
+        $txtExitBtn.Text = "Confirm Exit?"
+        $txtExitBtn.Foreground = [System.Windows.Media.SolidColorBrush]::new([System.Windows.Media.ColorConverter]::ConvertFromString("#E81123"))
+        
+        $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
+        $script:exitTimer.Interval = [TimeSpan]::FromSeconds(3)
+        $script:exitTimer.Add_Tick({
+            $txtExitBtn.Text = "Exit Engine"
+            $txtExitBtn.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "AccentBrush")
+            $script:exitTimer.Stop()
+        })
+        $script:exitTimer.Start()
+        return
     }
+    
+    if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
+    
+    $script:wpfWindow.Hide()
+    $script:notifyIcon.Visible = $false
+    $script:notifyIcon.Dispose()
+    Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
+    [System.Windows.Forms.Application]::Exit()
 })
 
 $script:wpfWindow.Add_KeyDown({

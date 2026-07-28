@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.8.9.3]
+- **[minor]** Replaced the MessageBox exit dialog with an inline double-click state on the Exit Engine button itself to match the application aesthetic minimally.
+
 ## [v1.8.8.3]
 - **[minor]** Made the ScrollViewer scrollbar significantly thinner and shorter for a cleaner look.
 - **[minor]** Relocated the Profile Avatar button to sit directly to the right of the File Explorer searchbar when the spatial menu is expanded.
