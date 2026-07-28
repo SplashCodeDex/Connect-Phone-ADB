@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Connect Phone ADB - Core Engine & Tray Application
 .DESCRIPTION

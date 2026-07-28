@@ -1,5 +1,16 @@
 param([string]$Configuration = "Release")
 
+# ── Build Gate: refuse to pack broken sources (XAML/syntax/resource/asset checks) ──
+$validator = Join-Path $PSScriptRoot "Validate-Build.ps1"
+if (Test-Path $validator) {
+    & $validator
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "`n[PACK ABORTED] Validate-Build failed. Fix the errors above first." -ForegroundColor Red
+        exit 1
+    }
+    Write-Host ""
+}
+
 $ProjDir = Join-Path $PSScriptRoot "ConnectPhoneShareTarget"
 Write-Host "Building C# Project ($Configuration)..."
 Set-Location $ProjDir
