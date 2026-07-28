@@ -690,7 +690,13 @@ $xaml = @"
             </ListBox>
             
             <!-- Subtle Floating Dock for Download Status & Location Change -->
-            <Border Name="dockDownloadToast" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,15" Background="{DynamicResource SecondaryBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="20" Padding="14,8" Visibility="Collapsed" Opacity="0">
+            <Border Name="dockDownloadToast" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,15" Background="{DynamicResource SecondaryBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="20" Padding="14,8" Visibility="Collapsed" Opacity="0" RenderTransformOrigin="0.5,1">
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform x:Name="dockScale" ScaleX="0.8" ScaleY="0.8" />
+                        <TranslateTransform x:Name="dockTrans" Y="25" />
+                    </TransformGroup>
+                </Border.RenderTransform>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8F4;" Foreground="{DynamicResource SecondaryBrush}" FontSize="14" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <TextBlock Name="txtDownloadToast" Text="Saved to Downloads\dex" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center" Margin="0,0,12,0" />
@@ -1062,6 +1068,16 @@ function Load-Directory($dirPath) {
     $script:currentDirPath = $dirPath
     $script:lbFiles.Items.Clear()
     
+    if ($null -ne $script:btnUpDir) {
+        if ($dirPath -eq "/sdcard/" -or $dirPath -eq "/sdcard") {
+            $script:btnUpDir.Opacity = 0.4
+            $script:btnUpDir.Cursor = [System.Windows.Input.Cursors]::Arrow
+        } else {
+            $script:btnUpDir.Opacity = 1.0
+            $script:btnUpDir.Cursor = [System.Windows.Input.Cursors]::Hand
+        }
+    }
+    
     if ([string]::IsNullOrWhiteSpace($script:currentTarget)) {
         $statusText = $script:txtStatus.Text
         if ($statusText -match "Connected:\s*(.+)") {
@@ -1158,23 +1174,73 @@ function Show-DownloadDockToast([string]$pathText) {
         $txt.Text = "Saved to $pathText"
         $dock.Visibility = 'Visible'
         
-        $fadeIn = New-Object System.Windows.Media.Animation.DoubleAnimation
-        $fadeIn.To = 1.0
-        $fadeIn.Duration = [TimeSpan]::FromSeconds(0.2)
-        $dock.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeIn)
+        $tg = $dock.RenderTransform
+        $dockScale = $null
+        $dockTrans = $null
+        if ($tg -is [System.Windows.Media.TransformGroup]) {
+            $dockScale = $tg.Children[0]
+            $dockTrans = $tg.Children[1]
+        }
+        
+        # Bouncy BackEase overshoot for dynamic spring entrance
+        $bouncyEase = New-Object System.Windows.Media.Animation.BackEase
+        $bouncyEase.Amplitude = 0.6
+        $bouncyEase.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseOut
+        
+        $daOp = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $daOp.To = 1.0
+        $daOp.Duration = [TimeSpan]::FromSeconds(0.25)
+        $dock.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $daOp)
+        
+        if ($null -ne $dockTrans) {
+            $daY = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $daY.To = 0.0
+            $daY.Duration = [TimeSpan]::FromSeconds(0.45)
+            $daY.EasingFunction = $bouncyEase
+            $dockTrans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daY)
+        }
+        if ($null -ne $dockScale) {
+            $daS = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $daS.To = 1.0
+            $daS.Duration = [TimeSpan]::FromSeconds(0.45)
+            $daS.EasingFunction = $bouncyEase
+            $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleXProperty, $daS)
+            $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleYProperty, $daS)
+        }
         
         if ($null -ne $script:dockTimer) { $script:dockTimer.Stop() }
         $script:dockTimer = New-Object System.Windows.Threading.DispatcherTimer
         $script:dockTimer.Interval = [TimeSpan]::FromSeconds(4)
         $script:dockTimer.Add_Tick({
             $script:dockTimer.Stop()
+            
+            $easeIn = New-Object System.Windows.Media.Animation.CubicEase
+            $easeIn.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseIn
+            
             $fadeOut = New-Object System.Windows.Media.Animation.DoubleAnimation
             $fadeOut.To = 0.0
-            $fadeOut.Duration = [TimeSpan]::FromSeconds(0.4)
+            $fadeOut.Duration = [TimeSpan]::FromSeconds(0.35)
+            $fadeOut.EasingFunction = $easeIn
             $fadeOut.Add_Completed({
                 $dock.Visibility = 'Collapsed'
             })
+            
             $dock.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeOut)
+            if ($null -ne $dockTrans) {
+                $daYExit = New-Object System.Windows.Media.Animation.DoubleAnimation
+                $daYExit.To = 25.0
+                $daYExit.Duration = [TimeSpan]::FromSeconds(0.35)
+                $daYExit.EasingFunction = $easeIn
+                $dockTrans.BeginAnimation([System.Windows.Media.TranslateTransform]::YProperty, $daYExit)
+            }
+            if ($null -ne $dockScale) {
+                $daSExit = New-Object System.Windows.Media.Animation.DoubleAnimation
+                $daSExit.To = 0.8
+                $daSExit.Duration = [TimeSpan]::FromSeconds(0.35)
+                $daSExit.EasingFunction = $easeIn
+                $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleXProperty, $daSExit)
+                $dockScale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleYProperty, $daSExit)
+            }
         })
         $script:dockTimer.Start()
     }
@@ -1188,14 +1254,16 @@ if ($null -ne $btnChange) {
         $dialog.Description = "Select Download Destination Directory"
         if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
             $script:customDownloadPath = $dialog.SelectedPath
-            Show-DownloadDockToast $script:customDownloadPath
+            $dispName = [System.IO.Path]::GetFileName($script:customDownloadPath)
+            if ([string]::IsNullOrWhiteSpace($dispName)) { $dispName = $script:customDownloadPath }
+            Show-DownloadDockToast $dispName
         }
     })
 }
 
 $script:lbFiles.Add_MouseDoubleClick({
     $sel = $script:lbFiles.SelectedItem
-    if ($sel) {
+    if ($null -ne $sel -and $null -ne $sel.Content) {
         $data = $sel.Content
         if ($data.IsDir) {
             Load-Directory $data.FullPath
@@ -1206,7 +1274,13 @@ $script:lbFiles.Add_MouseDoubleClick({
             } else { 
                 Join-Path $env:USERPROFILE "Downloads\dex" 
             }
-            if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir }
+            
+            try {
+                if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
+            } catch {
+                $outDir = Join-Path $env:TEMP "dex"
+                if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
+            }
             
             $actionBg = {
                 param($exePath, $tgt, $rem, $out)
@@ -1216,7 +1290,11 @@ $script:lbFiles.Add_MouseDoubleClick({
             
             Start-Job -ScriptBlock $actionBg -ArgumentList $global:AdbExePath, $script:currentTarget, $remotePath, $outDir
             
-            $dispName = if ($script:customDownloadPath) { $script:customDownloadPath } else { "Downloads\dex" }
+            $dispName = if ($script:customDownloadPath) { 
+                [System.IO.Path]::GetFileName($script:customDownloadPath) 
+            } else { 
+                "Downloads\dex" 
+            }
             Show-DownloadDockToast $dispName
         }
     }

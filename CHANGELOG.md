@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.9.3.0]
+- **[minor]** Added springy `BackEase` overshoot pop-in entrance animation and smooth scale/translate slide-down exit animation to floating download dock (`dockDownloadToast`).
+- **[fix]** Added root directory detection to `btnUpDir`: automatically dims `btnUpDir` (Opacity 0.4, Arrow cursor) when at `/sdcard/` root and activates (Opacity 1.0, Hand cursor) in subdirectories.
+- **[fix]** Added directory creation fallback logic to `Downloads\dex` pulling so restricted/locked paths fall back to `$env:TEMP\dex` without failing.
+
 ## [v1.9.2.6]
 - **[fix]** Removed redundant hardcoded color logic for the 'Exit Engine' confirmation state to ensure it exclusively pulls from the dynamic `AccentBrush` theme resource.
 
