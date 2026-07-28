@@ -1,6 +1,7 @@
 
 function Create-StatusIcon([System.Drawing.Color]$Color) {
-    $iconPath = Join-Path $PSScriptRoot "app-icon.ico"
+    $binRoot = Split-Path $PSScriptRoot -Parent
+    $iconPath = Join-Path $binRoot "app-icon.ico"
     if (Test-Path $iconPath) {
         $baseIcon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
         $bmp = $baseIcon.ToBitmap()
@@ -49,7 +50,7 @@ function Show-Toast {
     <binding template="ToastGeneric">
       <text>$escTitle</text>
       <text>$escMsg</text>
-      <image placement="appLogoOverride" hint-crop="none" src="file:///$($PSScriptRoot -replace '\\', '/')/app-icon.ico"/>
+      <image placement="appLogoOverride" hint-crop="none" src="file:///$((Split-Path $PSScriptRoot -Parent) -replace '\\', '/')/app-icon.ico"/>
     </binding>
   </visual>
 </toast>
@@ -65,7 +66,8 @@ function Show-Toast {
 
 function Set-AppTheme {
     param([string]$ThemeName)
-    $themePath = Join-Path $PSScriptRoot "..\Themes\$ThemeName.xaml"
+    $binRoot = Split-Path $PSScriptRoot -Parent
+    $themePath = Join-Path $binRoot "..\Themes\$ThemeName.xaml"
     if (Test-Path $themePath) {
         $xmlReader = [System.Xml.XmlReader]::Create($themePath)
         $resourceDict = [System.Windows.Markup.XamlReader]::Load($xmlReader)

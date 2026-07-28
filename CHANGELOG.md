@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.1.1.2] - 2026-07-28
+### Hotfix: System Tray Icon Image Loss (Colored Dot Bug)
+- **[fix]** Resolved a relative pathing issue where `$PSScriptRoot` was resolving to `MSIX_Source\bin\Modules` instead of `MSIX_Source\bin` due to the recent architectural decoupling. This caused `app-icon.ico` to fail to load, resulting in the System Tray falling back to generating a blank 16x16 image with just a colored status dot.
+- **[fix]** Fixed broken `ToastNotification` icon paths and `Themes` directory paths in `UIComponents.ps1` caused by the same `$PSScriptRoot` module context shift.
 ## [2.1.1.1] - 2026-07-28
 ### Hotfix: System Tray Icon Unresponsiveness
 - **[fix]** Restored the missing `Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle)` wrapper for the System Tray `MouseUp` event handler in `TrayUIBindings.ps1`. This fixes a critical UI regression (race condition) that caused tray icon clicks to instantly deactivate and swallow the main window.
