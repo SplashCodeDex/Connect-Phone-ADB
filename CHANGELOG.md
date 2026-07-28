@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.5.2]
+- **[fix]** Fixed the "disappearing to the left" animation glitch. Changed WPF `ResizeMode` to `CanResize`, allowing the OS to actually process the `DoubleAnimation` on the Window's `Width` and `Height` dimensions, instead of silently dropping them while still animating `Left` and `Top`.
+
 ## [v1.7.5.1]
 - **[fix]** Fixed a bug where clicking 'Phone Files' caused the spatial menu to fly off-screen instead of expanding. Removed the conflicting `SizeToContent="WidthAndHeight"` property from the WPF Window and restored explicit `Width` and `Height` boundaries, allowing the `ExpandMenu` DoubleAnimations to properly scale the window bounds.
 

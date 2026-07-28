@@ -214,7 +214,7 @@ $xaml = @"
         WindowStyle="None" Background="Transparent" AllowsTransparency="True"
         Topmost="True" ShowInTaskbar="False"
         Width="290" Height="460"
-        ResizeMode="NoResize">
+        ResizeMode="CanResize">
     <Window.Resources>
         <BackEase x:Key="HoverEase" Amplitude="1.22" EasingMode="EaseOut" />
         <BackEase x:Key="PopInEase" Amplitude="3.53" EasingMode="EaseOut" />
