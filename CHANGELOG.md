@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.7.4.0]
+- **[fix]** Resolved critical data corruption bug during ADB file transfers. Replaced fragile `cat >>` resume logic with a robust `.part` temporary file mechanism. Incomplete transfers now write to `<filename>.part` and atomically rename upon completion, guaranteeing data integrity.
+- **[minor]** Added silent, non-blocking error logging (via `2>>`) to the hidden `Connect-Engine.ps1` background task to improve debuggability without introducing UI overhead.
+
 ## [v1.7.3.2]
 - **[patch]** Minor UI polish: Hid 'Galaxy S21' device entry for future implementation, adjusted JoeAvatar image alignment to properly center the face, and significantly increased menu button hover/click animation speed (from 0.5s to 0.15s) to feel much more responsive and snappy.
 

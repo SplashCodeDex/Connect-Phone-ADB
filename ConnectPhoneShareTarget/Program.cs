@@ -71,11 +71,12 @@ namespace ConnectPhoneShareTarget
             {
                 string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                 string ps1Path = Path.Combine(exeDir, "bin", "Connect-Engine.ps1");
+                string logPath = Path.Combine(Path.GetTempPath(), "ConnectPhoneEngine_Errors.txt");
                 
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "powershell.exe",
-                    Arguments = $"-ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -File \"{ps1Path}\"",
+                    Arguments = $"-ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -Command \"& '{ps1Path}' 2>> '{logPath}'\"",
                     CreateNoWindow = true,
                     UseShellExecute = false
                 };
@@ -199,22 +200,33 @@ namespace ConnectPhoneShareTarget
                     if (new[] { ".mp4", ".mkv", ".mov", ".avi" }.Contains(ext)) destPath = $"/sdcard/Movies/{fileName}";
                     if (new[] { ".jpg", ".jpeg", ".png", ".gif" }.Contains(ext)) destPath = $"/sdcard/Pictures/{fileName}";
 
+                    string partDestPath = destPath + ".part";
+                    string safePartPath = partDestPath.Replace("'", "'\\''");
                     string safeDestPath = destPath.Replace("'", "'\\''");
 
                     txtStatus.Text = $"Transferring {fileName}...";
 
+                    FileInfo fi = new FileInfo(file);
+                    
+                    // Check if final file already exists and is fully transferred
+                    string finalStatOut = await Task.Run(() => RunAdbCommand($"-s {targetDevice} shell \"stat -c %s '{safeDestPath}' 2>/dev/null\""));
+                    if (long.TryParse(finalStatOut, out long finalSz) && finalSz == fi.Length)
+                    {
+                        totalSent += fi.Length;
+                        continue;
+                    }
+
                     long existingSize = 0;
-                    string statOut = await Task.Run(() => RunAdbCommand($"-s {targetDevice} shell \"stat -c %s '{safeDestPath}' 2>/dev/null\""));
+                    string statOut = await Task.Run(() => RunAdbCommand($"-s {targetDevice} shell \"stat -c %s '{safePartPath}' 2>/dev/null\""));
                     if (long.TryParse(statOut, out long sz))
                     {
                         existingSize = sz;
                     }
 
-                    FileInfo fi = new FileInfo(file);
-                    if (existingSize >= fi.Length)
+                    if (existingSize > fi.Length)
                     {
-                        totalSent += fi.Length;
-                        continue;
+                        await Task.Run(() => RunAdbCommand($"-s {targetDevice} shell \"rm '{safePartPath}' 2>/dev/null\""));
+                        existingSize = 0;
                     }
 
                     string exeDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -230,7 +242,7 @@ namespace ConnectPhoneShareTarget
                         StartInfo = new ProcessStartInfo
                         {
                             FileName = adbPath,
-                            Arguments = $"-s {targetDevice} shell \"cat >> '{safeDestPath}'\"",
+                            Arguments = $"-s {targetDevice} shell \"cat >> '{safePartPath}'\"",
                             UseShellExecute = false,
                             RedirectStandardInput = true,
                             CreateNoWindow = true
@@ -274,6 +286,9 @@ namespace ConnectPhoneShareTarget
                     
                     pushProc.StandardInput.Close();
                     await Task.Run(() => pushProc.WaitForExit());
+                    
+                    // Rename the part file to its final destination upon completion
+                    await Task.Run(() => RunAdbCommand($"-s {targetDevice} shell \"mv '{safePartPath}' '{safeDestPath}'\""));
                 }
 
                 globalSw.Stop();
