@@ -231,6 +231,18 @@ $xaml = @"
                 <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
             
+            <!-- Show Close Button when expanded -->
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.3" />
+            
+            <!-- Show Nearby Expand Users when expanded -->
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5" BeginTime="0:0:0.3" />
+            
             <!-- Subtle Parallax on Main Menu: Slide Right slightly -->
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
@@ -242,6 +254,18 @@ $xaml = @"
             <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.4" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.8" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            
+            <!-- Hide Close Button when contracting -->
+            <DoubleAnimation Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            
+            <!-- Hide Nearby Expand Users when contracting -->
+            <DoubleAnimation Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>    
         
@@ -528,8 +552,8 @@ $xaml = @"
             <Border Background="Transparent" CornerRadius="34">
                 <DockPanel Margin="8,12" LastChildFill="True">
                 
-                <!-- Close Button: docked at top-right -->
-                <Button Name="btnCloseMenu" DockPanel.Dock="Top" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Close" Cursor="Hand" Margin="0,0,8,0">
+                <!-- Close Button: docked at top-right, hidden when contracted -->
+                <Button Name="btnCloseMenu" DockPanel.Dock="Top" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Close" Cursor="Hand" Margin="0,0,8,0" Visibility="Collapsed" Opacity="0">
                     <TextBlock Text="&#xE711;" />
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
@@ -624,79 +648,7 @@ $xaml = @"
                 <!-- Nearby Users Section -->
                 <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
 
-                <!-- User 1 -->
-                <Button x:Name="btnUser1" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse>
-                                <Ellipse.Fill>
-                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User1Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
-                                </Ellipse.Fill>
-                            </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-                        </Grid>
-                        
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Ama Serwaa" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-
-                <!-- User 2 -->
-                <Button x:Name="btnUser2" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse>
-                                <Ellipse.Fill>
-                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User2Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
-                                </Ellipse.Fill>
-                            </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-                        </Grid>
-                        
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Akua Donkor" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-
-                <!-- User 3 -->
-                <Button x:Name="btnUser3" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse>
-                                <Ellipse.Fill>
-                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User3Avatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
-                                </Ellipse.Fill>
-                            </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-                        </Grid>
-                        
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Kwame Asante" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="Global · via Hotspot" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-
-                <!-- User Joe -->
+                <!-- User Joe (always visible when contracted) -->
                 <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -720,7 +672,7 @@ $xaml = @"
                     </Grid>
                 </Button>
 
-                <!-- Device: Galaxy S21 (now visible with avatar) -->
+                <!-- Device: Galaxy S21 (unhidden, original phone icon avatar) -->
                 <Button x:Name="btnDeviceGalaxy" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -730,24 +682,19 @@ $xaml = @"
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse>
-                                <Ellipse.Fill>
-                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/GalaxyS21Avatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
-                                </Ellipse.Fill>
-                            </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            <Ellipse Fill="{DynamicResource PrimaryBrush}" />
+                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Galaxy S21" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="CodeDeX · This device" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                         
                         <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
                     </Grid>
                 </Button>
 
-                <!-- Device: Windows -->
+                <!-- Device: Windows (always visible when contracted) -->
                 <Button x:Name="btnDeviceWindows" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -765,6 +712,83 @@ $xaml = @"
                         </StackPanel>
                     </Grid>
                 </Button>
+
+                <!-- Nearby Expand Panel: hidden when contracted, staggers in when expanded -->
+                <StackPanel x:Name="NearbyExpandPanel" Visibility="Collapsed" Opacity="0">
+                    <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,6" />
+
+                    <!-- User 1 -->
+                    <Button x:Name="btnUser1" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Grid Width="38" Height="38" Margin="0,0,12,0">
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User1Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            </Grid>
+                            
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Ama Serwaa" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                    <!-- User 2 -->
+                    <Button x:Name="btnUser2" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Grid Width="38" Height="38" Margin="0,0,12,0">
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User2Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            </Grid>
+                            
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Akua Donkor" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                    <!-- User 3 -->
+                    <Button x:Name="btnUser3" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Grid Width="38" Height="38" Margin="0,0,12,0">
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User3Avatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            </Grid>
+                            
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Kwame Asante" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="Global · via Hotspot" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+                </StackPanel>
                 
                 </StackPanel>
                 
@@ -1088,6 +1112,10 @@ $script:wpfWindow.Add_KeyDown({
         $script:wpfWindow.FindName("FileExplorer").Opacity = 0
         $script:wpfWindow.FindName("fileTrans").X = 150
         $script:wpfWindow.FindName("menuTrans").X = 0
+        $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
+        $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
         $e.Handled = $true
     } elseif ($e.Key -eq [System.Windows.Input.Key]::C) {
         if ($script:wpfWindow.FindName("btnQAConnect").Visibility -eq 'Visible') {
@@ -1156,7 +1184,20 @@ function Update-WpfUI {
 
 $script:lastDeactivated = [DateTime]::MinValue
 
-# Close button handler (replaces click-outside-to-close behavior)
+# Click-outside closes menu ONLY when contracted (not expanded)
+$script:wpfWindow.Add_Deactivated({
+    if ($script:wpfWindow.IsVisible) {
+        # If menu is expanded, do NOT close on click-outside (use Close button instead)
+        if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
+        $now = [DateTime]::Now
+        if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
+            $script:wpfWindow.Hide()
+            $script:lastDeactivated = $now
+        }
+    }
+})
+
+# Close button handler (only visible when expanded)
 $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.Hide()
     $script:lastDeactivated = [DateTime]::Now
@@ -1166,6 +1207,10 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.FindName("FileExplorer").Opacity = 0
     $script:wpfWindow.FindName("fileTrans").X = 150
     $script:wpfWindow.FindName("menuTrans").X = 0
+    $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
+    $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
 })
 
 $script:notifyIcon.Add_MouseUp({

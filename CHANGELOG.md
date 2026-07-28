@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.8.1.0]
+- **[fix]** Close button now only appears when menu is expanded (hidden when contracted).
+- **[fix]** Restored click-outside-to-close for the contracted menu state; only blocked when expanded.
+- **[fix]** Galaxy S21 reverted to original phone-icon avatar instead of photo replacement — only `Visibility="Collapsed"` was removed to unhide it.
+- **[fix]** 3 nearby users (Ama, Akua, Kwame) now wrapped in `NearbyExpandPanel` — hidden when contracted, stagger-in with fade animation when expanded into the gap between existing users and Exit Engine.
+- **[fix]** ExpandMenu/ContractMenu storyboards now animate `btnCloseMenu` and `NearbyExpandPanel` visibility/opacity in sync.
+
 ## [v1.8.0.0]
 - **[minor]** Menu UX overhaul: clicking outside the menu no longer closes it — added an animated close button (✕) at the top-right corner instead.
 - **[minor]** Reduced the expanded menu size by 35% (width 1160→754px, height 300→195px) for a tighter footprint.
