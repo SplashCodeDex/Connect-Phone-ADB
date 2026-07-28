@@ -535,9 +535,7 @@ $xaml = @"
                     <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#xE895;" />
                     </Button>
-                    <Button Name="btnQATheme" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Toggle Theme">
-                        <TextBlock Text="&#xE793;" />
-                    </Button>
+
                 </StackPanel>
                 
                 <Separator Background="{DynamicResource MenuBackgroundBrush}" Height="1" Margin="16,0" />
@@ -663,7 +661,16 @@ function Set-AppTheme {
         $global:CurrentTheme = $ThemeName
     }
 }
-Set-AppTheme "DarkTheme"
+function Get-SystemTheme {
+    try {
+        $regKey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        $val = Get-ItemPropertyValue -Path $regKey -Name "AppsUseLightTheme" -ErrorAction SilentlyContinue
+        if ($val -eq 1) { return "LightTheme" }
+    } catch {}
+    return "DarkTheme"
+}
+
+Set-AppTheme (Get-SystemTheme)
 
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
@@ -916,13 +923,7 @@ $actionAuto = {
     Update-WpfUI
 }
 $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
-$script:wpfWindow.FindName("btnQATheme").Add_Click({
-    if ($global:CurrentTheme -eq "DarkTheme") {
-        Set-AppTheme "LightTheme"
-    } else {
-        Set-AppTheme "DarkTheme"
-    }
-})
+
 
 $script:wpfWindow.FindName("btnExit").Add_Click({
     $script:wpfWindow.Hide()
