@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.3.2]
+- **[patch]** Minor UI polish: Hid 'Galaxy S21' device entry for future implementation, adjusted JoeAvatar image alignment to properly center the face, and significantly increased menu button hover/click animation speed (from 0.5s to 0.15s) to feel much more responsive and snappy.
+
 ## [v1.7.3.1]
 - **[fix]** Critical app startup failure where the tray icon would load but the WPF window would fail to parse entirely (making all menu items null) because the `JoeAvatar.jpg` image path incorrectly referenced `bin/Assets` instead of `Assets/`. 
 
