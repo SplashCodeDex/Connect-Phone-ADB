@@ -668,15 +668,29 @@ $xaml = @"
                     </Button.Template>
                 </Button>
                 
-                <!-- Exit Engine: docked at bottom so it never moves -->
+                <!-- Exit Engine & Profile: docked at bottom so it never moves -->
                 <StackPanel DockPanel.Dock="Bottom">
                     <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,8" />
-                    <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
-                        <Grid>
-                            <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left"/>
-                            <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas"/>
-                        </Grid>
-                    </Button>
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Button Name="btnProfile" Style="{StaticResource SpatialListItem}" Width="44" Height="44" Margin="0,0,4,0" ToolTip="Sign in with Google (Premium)">
+                            <Grid>
+                                <Ellipse Width="32" Height="32" Fill="{DynamicResource SecondaryBackgroundBrush}" />
+                                <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+
+                        <Button Grid.Column="1" Name="btnExit" Style="{StaticResource SpatialListItem}">
+                            <Grid>
+                                <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+                    </Grid>
                 </StackPanel>
                 
                 <!-- Main content fills remaining space -->
@@ -928,8 +942,8 @@ function Load-Directory($dirPath) {
     }
     
     $proc = New-Object System.Diagnostics.Process
-    $proc.StartInfo.FileName = $global:AdbExePath
-    $proc.StartInfo.Arguments = "-s $($script:currentTarget) shell ls -1aF `"$dirPath`""
+    $proc.StartInfo.FileName = "cmd.exe"
+    $proc.StartInfo.Arguments = "/c `"`"$global:AdbExePath`" -s $($script:currentTarget) shell ls -1aF `"$dirPath`"`""
     $proc.StartInfo.UseShellExecute = $false
     $proc.StartInfo.RedirectStandardOutput = $true
     $proc.StartInfo.CreateNoWindow = $true
@@ -1179,11 +1193,19 @@ $script:wpfWindow.FindName("btnQATheme").Add_Click({
 
 
 $script:wpfWindow.FindName("btnExit").Add_Click({
-    $script:wpfWindow.Hide()
-    $script:notifyIcon.Visible = $false
-    $script:notifyIcon.Dispose()
-    Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
-    [System.Windows.Forms.Application]::Exit()
+    $result = [System.Windows.MessageBox]::Show(
+        "Are you sure you want to exit Connect Phone ADB?", 
+        "Exit Confirmation", 
+        [System.Windows.MessageBoxButton]::YesNo, 
+        [System.Windows.MessageBoxImage]::Question
+    )
+    if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
+        $script:wpfWindow.Hide()
+        $script:notifyIcon.Visible = $false
+        $script:notifyIcon.Dispose()
+        Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
+        [System.Windows.Forms.Application]::Exit()
+    }
 })
 
 $script:wpfWindow.Add_KeyDown({

@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.8.6.3]
+- **[minor]** Added a confirmation dialog prompt to the 'Exit Engine' button to prevent accidental exits.
+
+## [v1.8.5.3]
+- **[minor]** Added a generic profile avatar button to the left of the Exit Engine button to prepare for Google Sign-in and premium gating.
+
 ## [v1.8.4.3]
 - **[minor]** Re-introduced a sleek, slim scrollbar to the Nearby Users list and fully virtualized the user data structure using a dynamically populated `ListBox` and `VirtualizingStackPanel` for robust rendering performance.
 
