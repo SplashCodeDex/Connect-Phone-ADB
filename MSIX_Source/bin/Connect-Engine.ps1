@@ -650,12 +650,37 @@ $xaml = @"
             </Grid>
             
             <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel IsItemsHost="True" Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
+            
+            <!-- Subtle Floating Dock for Download Status & Location Change -->
+            <Border Name="dockDownloadToast" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,15" Background="{DynamicResource SecondaryBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="20" Padding="14,8" Visibility="Collapsed" Opacity="0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8F4;" Foreground="{DynamicResource SecondaryBrush}" FontSize="14" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Name="txtDownloadToast" Text="Saved to Downloads\dex" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center" Margin="0,0,12,0" />
+                    <Button Name="btnChangeDownloadPath" Content="Change" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryBrush}" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
         </Grid>
         
         <Border Grid.Column="1" Background="Transparent" Padding="0">
@@ -1087,6 +1112,42 @@ $script:btnUpDir.Add_Click({
     }
 })
 
+$script:customDownloadPath = ""
+$script:dockTimer = $null
+
+function Show-DownloadDockToast([string]$pathText) {
+    $dock = $script:wpfWindow.FindName("dockDownloadToast")
+    $txt = $script:wpfWindow.FindName("txtDownloadToast")
+    if ($null -ne $dock -and $null -ne $txt) {
+        $txt.Text = "Saved to $pathText"
+        $dock.Visibility = 'Visible'
+        $dock.Opacity = 1
+        
+        if ($null -ne $script:dockTimer) { $script:dockTimer.Stop() }
+        $script:dockTimer = New-Object System.Windows.Threading.DispatcherTimer
+        $script:dockTimer.Interval = [TimeSpan]::FromSeconds(5)
+        $script:dockTimer.Add_Tick({
+            $dock.Visibility = 'Collapsed'
+            $dock.Opacity = 0
+            $script:dockTimer.Stop()
+        })
+        $script:dockTimer.Start()
+    }
+}
+
+$btnChange = $script:wpfWindow.FindName("btnChangeDownloadPath")
+if ($null -ne $btnChange) {
+    $btnChange.Add_Click({
+        Add-Type -AssemblyName System.Windows.Forms
+        $dialog = New-Object System.Windows.Forms.FolderBrowserDialog
+        $dialog.Description = "Select Download Destination Directory"
+        if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+            $script:customDownloadPath = $dialog.SelectedPath
+            Show-DownloadDockToast $script:customDownloadPath
+        }
+    })
+}
+
 $script:lbFiles.Add_MouseDoubleClick({
     $sel = $script:lbFiles.SelectedItem
     if ($sel) {
@@ -1095,7 +1156,11 @@ $script:lbFiles.Add_MouseDoubleClick({
             Load-Directory $data.FullPath
         } else {
             $remotePath = $data.FullPath
-            $outDir = Join-Path $env:USERPROFILE "Downloads\Phone_ADB"
+            $outDir = if ($script:customDownloadPath) { 
+                $script:customDownloadPath 
+            } else { 
+                Join-Path $env:USERPROFILE "Downloads\dex" 
+            }
             if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir }
             
             $actionBg = {
@@ -1106,7 +1171,8 @@ $script:lbFiles.Add_MouseDoubleClick({
             
             Start-Job -ScriptBlock $actionBg -ArgumentList $global:AdbExePath, $script:currentTarget, $remotePath, $outDir
             
-            $script:wpfWindow.Hide()
+            $dispName = if ($script:customDownloadPath) { $script:customDownloadPath } else { "Downloads\dex" }
+            Show-DownloadDockToast $dispName
         }
     }
 })

@@ -1,7 +1,9 @@
 # Changelog
 
-## [v1.9.0.5]
-- **[minor]** Replaced the Exit confirmation state with an inline instructions label and Shift-Click instant exit logic. Collapsing the adjacent avatar natively allowed the label to left-expand smoothly without using WPF animation timelines.
+## [v1.9.1.0]
+- **[minor]** Updated File Explorer download destination path to `Downloads\dex`.
+- **[minor]** Added a subtle floating dock notification banner ("Saved to Downloads\dex") with an interactive `Change` button to choose a custom save directory.
+- **[fix]** Removed WPF's default blueish highlighter border/background when hovering over or selecting files and folders in the ListBox.
 
 ## [v1.9.0.6]
 - **[minor]** Added 150ms search debouncing using `DispatcherTimer` to ensure 60 FPS ultra-smooth real-time filtering in large directories without CPU spikes.
