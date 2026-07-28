@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.2.0.0] - 2026-07-28
+### Added
+- **[minor]** Added a native WPF popup flyout card attached to the Gmail profile avatar. Clicking the avatar now displays a floating card showing user details.
+- **[minor]** Moved the Theme Toggler out of a standard context menu and integrated it into the new profile flyout card to match the project's spatial aesthetics.
+- **[minor]** Relocated the "Auto connect ADB" quick action button into the profile flyout card to de-clutter the main quick actions strip.
+
 ## [2.1.1.5] - 2026-07-28
 ### Hotfix: File Explorer UI Scope Isolation
 - **[fix]** Fixed the File Explorer logic (double-clicking to load directories) which was silently failing. This was caused because `EngineUtils.psm1` was still loaded as an isolated module, preventing its `Load-Directory` function from accessing the UI elements in `Connect-Engine.ps1`. Converted `EngineUtils` to a dot-sourced script to perfectly unify the UI scope.

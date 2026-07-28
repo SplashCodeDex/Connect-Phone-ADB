@@ -66,35 +66,85 @@ Export-ModuleMember -Function Invoke-AdbConnect
 
 
 function Start-MdnsDiscovery {
-    Write-Trace "Starting mDNS Discovery Job..."
+    Write-Trace "Starting Omni-Mesh Discovery Job (mDNS + UDP Multicast)..."
     
     $job = Start-Job -ScriptBlock {
-        param($adbPath)
+        param($adbPath, $computerName)
+        
+        # 1. Setup UDP Multicast Listener
+        $udpClient = New-Object System.Net.Sockets.UdpClient
+        $udpClient.Client.SetSocketOption([System.Net.Sockets.SocketOptionLevel]::Socket, [System.Net.Sockets.SocketOptionName]::ReuseAddress, $true)
+        $udpClient.Client.Bind([System.Net.IPEndPoint]::new([System.Net.IPAddress]::Any, 53317))
+        $mcastIp = [System.Net.IPAddress]::Parse("224.0.0.167")
+        $udpClient.JoinMulticastGroup($mcastIp)
+        
+        # 2. Setup UDP Sender
+        $targetEp = [System.Net.IPEndPoint]::new($mcastIp, 53317)
+        $sendUdp = New-Object System.Net.Sockets.UdpClient
+        $payloadString = "{ `"id`": `"$computerName`", `"type`": `"pc`" }"
+        $payload = [System.Text.Encoding]::UTF8.GetBytes($payloadString)
+        
+        $lastMdns = [datetime]::MinValue
+        $lastBroadcast = [datetime]::MinValue
+
         while ($true) {
-            $output = & $adbPath mdns services 2>&1
-            
-            if ($null -ne $output) {
-                $lines = $output -split '`r?`n'
-                foreach ($line in $lines) {
-                    if ($line -match '_adb-tls-connect\._tcp\.\s+([0-9\.]+:[0-9]+)') {
-                        Write-Output @{ Type = 'Connect'; IPPort = $matches[1] }
-                    }
-                    if ($line -match '_adb-tls-pairing\._tcp\.\s+([0-9\.]+:[0-9]+)') {
-                        Write-Output @{ Type = 'Pairing'; IPPort = $matches[1] }
-                    }
+            $now = Get-Date
+
+            # A. Listen for incoming Omni-Mesh packets (non-blocking)
+            while ($udpClient.Available -gt 0) {
+                $remoteEp = $null
+                $bytes = $udpClient.Receive([ref]$remoteEp)
+                $msg = [System.Text.Encoding]::UTF8.GetString($bytes)
+                
+                if ($msg -match '"type"\s*:\s*"(pc|phone)"') {
+                    $devType = $matches[1]
+                    $devId = "Unknown"
+                    if ($msg -match '"id"\s*:\s*"([^"]+)"') { $devId = $matches[1] }
+                    
+                    Write-Output @{ Type = 'OmniMesh'; IPPort = "$($remoteEp.Address):53317"; DeviceType = $devType; Name = $devId }
                 }
             }
-            Start-Sleep -Seconds 15
+
+            # B. Broadcast Omni-Mesh beacon (every 5 seconds)
+            if ($now - $lastBroadcast -gt [timespan]::FromSeconds(5)) {
+                # Multicast LAN
+                $null = $sendUdp.Send($payload, $payload.Length, $targetEp)
+                
+                # Hotspot Piercer: Direct Unicast to Gateway
+                $gw = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Where-Object NextHop -match '^[0-9\.]+$' | Select-Object -First 1).NextHop
+                if ($gw -and $gw -ne '0.0.0.0') {
+                    $gwEp = [System.Net.IPEndPoint]::new([System.Net.IPAddress]::Parse($gw), 53317)
+                    $null = $sendUdp.Send($payload, $payload.Length, $gwEp)
+                }
+                
+                $lastBroadcast = $now
+            }
+            
+            # C. ADB mDNS Services polling (every 15 seconds)
+            if ($now - $lastMdns -gt [timespan]::FromSeconds(15)) {
+                $output = & $adbPath mdns services 2>&1
+                if ($null -ne $output) {
+                    $lines = $output -split '`r?`n'
+                    foreach ($line in $lines) {
+                        if ($line -match '_adb-tls-connect\._tcp\.\s+([0-9\.]+:[0-9]+)') {
+                            Write-Output @{ Type = 'Connect'; IPPort = $matches[1] }
+                        }
+                        if ($line -match '_adb-tls-pairing\._tcp\.\s+([0-9\.]+:[0-9]+)') {
+                            Write-Output @{ Type = 'Pairing'; IPPort = $matches[1] }
+                        }
+                    }
+                }
+                $lastMdns = $now
+            }
+            
+            Start-Sleep -Milliseconds 500
         }
-    } -ArgumentList $global:AdbExePath
+    } -ArgumentList $global:AdbExePath, $env:COMPUTERNAME
     
     Register-ObjectEvent -InputObject $job -EventName StateChanged -Action {
-        Write-Trace "mDNS Job state changed: $( $sender.State )"
+        Write-Trace "Omni-Mesh Job state changed: $( $sender.State )"
     } | Out-Null
     
-    # We will poll the job in the main runspace or WPF timer if needed, or let the job trigger connects
-    # Actually, the job can't easily trigger the UI runspace directly without IPC.
-    # We can just have a runspace timer poll the job's receive output.
     return $job
 }
 
@@ -117,3 +167,64 @@ function Invoke-AdbPair {
     }
 }
 Export-ModuleMember -Function Invoke-AdbPair
+
+function Start-OmniTransferServer {
+    param(
+        [string]$DownloadPath = "$env:USERPROFILE\Downloads"
+    )
+    
+    Write-Trace "Starting Omni-Mesh Transfer Server on port 53318..."
+    
+    $job = Start-Job -ScriptBlock {
+        param($dlPath)
+        
+        $port = 53318
+        $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, $port)
+        $listener.Start()
+        
+        while ($true) {
+            if ($listener.Pending()) {
+                $client = $listener.AcceptTcpClient()
+                $stream = $client.GetStream()
+                
+                try {
+                    # BinaryReader prevents buffer read-ahead corruption
+                    $br = [System.IO.BinaryReader]::new($stream)
+                    
+                    # 1. Read Int32 (Header Length)
+                    $headerLen = $br.ReadInt32()
+                    if ($headerLen -gt 0 -and $headerLen -lt 1048576) {
+                        # 2. Read JSON Header
+                        $headerBytes = $br.ReadBytes($headerLen)
+                        $headerJson = [System.Text.Encoding]::UTF8.GetString($headerBytes)
+                        $header = $headerJson | ConvertFrom-Json
+                        
+                        if ($header.filename) {
+                            $safeName = [System.IO.Path]::GetFileName($header.filename)
+                            $outPath = Join-Path $dlPath $safeName
+                            
+                            # 3. Stream raw file bytes to disk
+                            $fs = [System.IO.File]::Create($outPath)
+                            $stream.CopyTo($fs)
+                            $fs.Close()
+                            
+                            Write-Output @{ Type = 'TransferComplete'; File = $outPath; From = $client.Client.RemoteEndPoint.ToString() }
+                        }
+                    }
+                } catch {
+                    Write-Error "Omni-Mesh Transfer failed: $_"
+                } finally {
+                    $client.Close()
+                }
+            }
+            Start-Sleep -Milliseconds 200
+        }
+    } -ArgumentList $DownloadPath
+    
+    Register-ObjectEvent -InputObject $job -EventName StateChanged -Action {
+        Write-Trace "Omni-Mesh Transfer Job state changed: $( $sender.State )"
+    } | Out-Null
+    
+    return $job
+}
+Export-ModuleMember -Function Start-OmniTransferServer

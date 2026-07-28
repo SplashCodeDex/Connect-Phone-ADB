@@ -296,13 +296,8 @@ $actionAuto = {
 }
 $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
 
-$script:wpfWindow.FindName("btnUserJoe").Add_Click({
-    $btn = $script:wpfWindow.FindName("btnUserJoe")
-    $btn.ContextMenu.PlacementTarget = $btn
-    $btn.ContextMenu.IsOpen = $true
-})
 
-$script:wpfWindow.FindName("menuItemTheme").Add_Click({
+$script:wpfWindow.FindName("btnPopTheme").Add_Click({
     if ($global:CurrentTheme -eq "DarkTheme") {
         Set-AppTheme "LightTheme"
     } else {
@@ -310,16 +305,13 @@ $script:wpfWindow.FindName("menuItemTheme").Add_Click({
     }
 })
 
+$popAvatar = $script:wpfWindow.FindName("popAvatar")
 $btnTopProfile = $script:wpfWindow.FindName("btnProfileTop")
-if ($null -ne $btnTopProfile) {
-    $btnTopProfile.Add_Click({
-        $joeBtn = $script:wpfWindow.FindName("btnUserJoe")
-        if ($null -ne $joeBtn -and $null -ne $joeBtn.ContextMenu) {
-            $joeBtn.ContextMenu.PlacementTarget = $btnTopProfile
-            $joeBtn.ContextMenu.IsOpen = $true
-        }
-    })
-}
+$btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
+if ($btnTopProfile) { $btnTopProfile.Add_Click({ $popAvatar.IsOpen = $true }) }
+if ($btnProfileBottom) { $btnProfileBottom.Add_Click({ $popAvatar.IsOpen = $true }) }
+
+
 
 # Edge Case 11 & 14: lbFiles KeyDown for Ctrl+A (visible only), Escape deselect, and Enter key execution
 $script:lbFiles.Add_KeyDown({
