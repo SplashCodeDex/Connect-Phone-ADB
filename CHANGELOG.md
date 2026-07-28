@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.0.0] - 2026-07-28
+### Features & UX Overhaul
+- **[minor] Intelligent Pairing & mDNS Overhaul**: 
+  - Upgraded mDNS parsing regex to cleanly extract IP, Port, Type, and GUID.
+  - Added robust Wi-Fi pairing natively using a custom decoupled WPF prompt (`Show-PairingPrompt`) that dynamically merges the active app themes (`DarkTheme.xaml` / `LightTheme.xaml`) for 100% aesthetic parity.
+  - Built a CI Pester testing suite (`AdbManager.Tests.ps1`) to strictly validate connect and pairing flows via `Validate-Build.ps1`.
+- **[minor] Share Target UX Modernization**: 
+  - Overhauled the C# Share Target (`TransferWindow.cs`) to drop rigid C# grid construction in favor of an injected, deeply styled XAML layout.
+  - Added Fluent Windows 11 aesthetics: `CornerRadius=12`, native DropShadows, Acrylic transparency illusions, and seamless `DoubleAnimation` for smooth progress bar gliding instead of abrupt snapping.
+  - Fully mapped to the Vibrant Green (`#00E676`) success accent.
 ## [2.0.0.0] - 2026-07-28
 ### Major Architecture Overhaul (Part 2)
 - **UI Decoupling**: Completely extracted the raw XAML overlay from `Connect-Engine.ps1` into `MSIX_Source\Themes\MainWindow.xaml`.
