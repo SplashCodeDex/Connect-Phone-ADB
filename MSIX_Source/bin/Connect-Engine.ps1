@@ -355,7 +355,7 @@ $xaml = @"
         </Storyboard>
         
         <DataTemplate x:Key="FolderGridTemplate">
-            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding [Name]}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
@@ -364,7 +364,7 @@ $xaml = @"
                 </Border.RenderTransform>
                 <StackPanel Width="85" Height="90">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding [Name]}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
+                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -407,7 +407,7 @@ $xaml = @"
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="FileGridTemplate">
-            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding [Name]}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
@@ -416,7 +416,7 @@ $xaml = @"
                 </Border.RenderTransform>
                 <StackPanel Width="85" Height="90">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding [Name]}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" Opacity="0.85"/>
+                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" Opacity="0.85"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -996,11 +996,12 @@ $script:txtSearch.Add_TextChanged({
 
 $script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")
 $script:currentTarget = ""
+$script:currentDirPath = "/sdcard/"
 $script:adbOutputSub = $null
 $script:adbLsProc = $null
 
 function Load-Directory($dirPath) {
-    $script:txtCurrentDir.Text = $dirPath
+    $script:currentDirPath = $dirPath
     $script:lbFiles.Items.Clear()
     
     if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
@@ -1034,7 +1035,7 @@ function Load-Directory($dirPath) {
                 $idx = $script:lbFiles.Items.Count
                 
                 $item = New-Object System.Windows.Controls.ListBoxItem
-                $item.Content = @{ Name = $name; FullPath = $full; IsDir = $isDir }
+                $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
                 $item.ContentTemplate = $template
                 $item.Tag = $full
                 
@@ -1070,27 +1071,13 @@ function Load-Directory($dirPath) {
     if ($script:adbOutputSub) { Unregister-Event -SourceIdentifier $script:adbOutputSub.Name -ErrorAction SilentlyContinue }
     $script:adbOutputSub = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action $action
     
-    # Add exit event for debugging
-    $exitAction = {
-        $script:wpfWindow.Dispatcher.Invoke([Action]{
-            $count = $script:lbFiles.Items.Count
-            if ($count -eq 0) {
-                Show-Toast -Title "Debug: Load-Directory" -Message "ADB ls returned 0 files for $dirPath. Target: $($script:currentTarget)"
-            } else {
-                Show-Toast -Title "Debug: Load-Directory" -Message "ADB ls successfully loaded $count files into the UI for $dirPath."
-            }
-        })
-    }
-    $proc.EnableRaisingEvents = $true
-    Register-ObjectEvent -InputObject $proc -EventName Exited -Action $exitAction | Out-Null
-    
     $proc.Start() | Out-Null
     $script:adbLsProc = $proc
     $proc.BeginOutputReadLine()
 }
 
 $script:btnUpDir.Add_Click({
-    $curr = $script:txtCurrentDir.Text
+    $curr = $script:currentDirPath
     if ($curr -ne "/sdcard/" -and $curr.Length -gt 1) {
         $trimmed = $curr.TrimEnd('/')
         $lastSlash = $trimmed.LastIndexOf('/')
