@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.4.5]
+- **[patch]** Reverted hover animations (MouseEnter, MouseLeave, PreviewMouseUp) across list items and quick action buttons back to a relaxed 0.5s duration.
+
 ## [v1.7.4.4]
 - **[minor]** Added 8px horizontal padding to the Spatial Menu window.
 - **[patch]** Tweaked hover and click animation durations from 0.5s to 0.35s for a snappier feel.
