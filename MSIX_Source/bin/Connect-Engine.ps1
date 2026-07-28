@@ -354,7 +354,7 @@ $xaml = @"
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}" Margin="8,1" RenderTransformOrigin="0.5,0.5">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="12" Padding="{TemplateBinding Padding}" Margin="8,1" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
@@ -413,14 +413,14 @@ $xaml = @"
             <Setter Property="Background" Value="#2C2C2E"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Width" Value="72"/>
-            <Setter Property="Height" Value="58"/>
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="Height" Value="44"/>
             <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets"/>
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="29" RenderTransformOrigin="0.5,0.5">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="20" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
@@ -523,19 +523,19 @@ $xaml = @"
             <Border Background="Transparent" CornerRadius="34">
                 <StackPanel Margin="0,12">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
-                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Connect ADB">
+                    <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />
                     </Button>
-                    <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Disconnect">
+                    <Button Name="btnQADisconnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Disconnect">
                         <TextBlock Text="&#xE7E8;" />
                     </Button>
-                    <Button Name="btnQAMirror" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Mirror Phone">
+                    <Button Name="btnQAMirror" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Mirror Phone">
                         <TextBlock Text="&#xE8EA;" />
                     </Button>
-                    <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Phone Files">
+                    <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Phone Files">
                         <TextBlock Text="&#xE8B7;" />
                     </Button>
-                    <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="4,0" ToolTip="Toggle Auto-Connect">
+                    <Button Name="btnQAAuto" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Toggle Auto-Connect">
                         <TextBlock Name="txtQAAuto" Text="&#xE895;" />
                     </Button>
                 </StackPanel>

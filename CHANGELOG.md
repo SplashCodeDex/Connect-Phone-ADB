@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.4.3]
+- **[patch]** Exact "6.1 Spatial Context Menu" Match: Aligned Quick Action button proportions and border radii perfectly with the DeXStudio UI catalog specifications (44px height, 20px radius, 12px list item radius, 6px spacing).
+
 ## [v1.7.4.2]
 - **[patch]** Curvy UI Overhaul: Quick Action buttons redesigned into pill shapes (72x58 with perfect 29px corner radius). Removed hardcoded Width/Height sizing across the WPF window and internal stack panels, enabling fluid `SizeToContent="WidthAndHeight"` scaling so the menu now perfectly shrink-wraps its contents dynamically.
 
