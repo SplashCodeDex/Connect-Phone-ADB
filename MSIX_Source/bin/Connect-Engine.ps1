@@ -1742,23 +1742,18 @@ function Update-WpfUI {
     }
 }
 
-$script:lastDeactivated = [DateTime]::MinValue
-$script:ignoreDeactivateUntil = [DateTime]::MinValue
-
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({
-    if ([DateTime]::Now -lt $script:ignoreDeactivateUntil) { return }
     if ($script:wpfWindow.IsVisible) {
+        # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
         $script:wpfWindow.Hide()
-        $script:lastDeactivated = [DateTime]::Now
     }
 })
 
 # Close button handler (only visible when expanded)
 $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.Hide()
-    $script:lastDeactivated = [DateTime]::Now
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
     $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
     $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
@@ -1774,17 +1769,8 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
 $script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
-        $now = [DateTime]::Now
-        
-        # Toggle: If window is currently visible, hide it cleanly
         if ($script:wpfWindow.IsVisible) {
             $script:wpfWindow.Hide()
-            $script:lastDeactivated = $now
-            return
-        }
-        
-        # Debounce rapid double-clicks (within 200ms of last close)
-        if (($now - $script:lastDeactivated).TotalMilliseconds -lt 200) {
             return
         }
         
@@ -1803,9 +1789,6 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Left = $left
         $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
-        
-        # Protect against OS Taskbar focus flicker on open
-        $script:ignoreDeactivateUntil = $now.AddMilliseconds(500)
         
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()

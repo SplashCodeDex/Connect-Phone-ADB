@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.9.9.0]
+- **[fix]** Performed Stale Knowledge Research Protocol overhaul on tray click toggle handlers: eliminated all over-engineered timer guards (`lastDeactivated`, `ignoreDeactivateUntil`), restoring a clean, direct `Show()`/`Hide()` activation pipeline.
+
 ## [v1.9.8.0]
 - **[fix]** Resolved `Cannot index into a null array` runtime crash in `Invoke-AdbConnect` and `Update-WpfUI` caused by PowerShell array `-match` behavior when evaluating `adb devices -l` output, ensuring tray clicks and connection status updates execute without crashing the WinForms engine loop.
 
