@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.8.8.3]
+- **[minor]** Made the ScrollViewer scrollbar significantly thinner and shorter for a cleaner look.
+- **[minor]** Relocated the Profile Avatar button to sit directly to the right of the File Explorer searchbar when the spatial menu is expanded.
+
 ## [v1.8.7.3]
 - **[fix]** Reverted Nearby Users list from a virtualized ListBox back to a hardcoded StackPanel wrapped in a single auto-scrollbar per user preference.
 

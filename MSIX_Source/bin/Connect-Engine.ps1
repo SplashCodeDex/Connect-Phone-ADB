@@ -219,7 +219,7 @@ $xaml = @"
             <!-- Minimal Spatial ScrollBar Style -->
             <Style TargetType="ScrollBar">
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Width" Value="8"/>
+                <Setter Property="Width" Value="4"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ScrollBar">
@@ -235,7 +235,7 @@ $xaml = @"
                                         <Thumb>
                                             <Thumb.Template>
                                                 <ControlTemplate TargetType="Thumb">
-                                                    <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="4" Margin="2,0" />
+                                                    <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="2" Margin="0,20" />
                                                 </ControlTemplate>
                                             </Thumb.Template>
                                         </Thumb>
@@ -248,7 +248,7 @@ $xaml = @"
                 <Style.Triggers>
                     <Trigger Property="Orientation" Value="Horizontal">
                         <Setter Property="Width" Value="Auto"/>
-                        <Setter Property="Height" Value="8"/>
+                        <Setter Property="Height" Value="4"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ScrollBar">
@@ -264,7 +264,7 @@ $xaml = @"
                                                 <Thumb>
                                                     <Thumb.Template>
                                                         <ControlTemplate TargetType="Thumb">
-                                                            <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="4" Margin="0,2" />
+                                                            <Border Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="2" Margin="20,0" />
                                                         </ControlTemplate>
                                                     </Thumb.Template>
                                                 </Thumb>
@@ -598,6 +598,7 @@ $xaml = @"
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 
                 <Button Name="btnUpDir" Grid.Column="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Content="&#xE89C;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="8">
@@ -613,6 +614,16 @@ $xaml = @"
                 <Border Grid.Column="1" Background="{DynamicResource TertiaryBackgroundBrush}" CornerRadius="20" Padding="12,8">
                     <TextBox Name="txtCurrentDir" Text="/sdcard/" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
                 </Border>
+                
+                <Button Name="btnProfile" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,0,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
+                    <Grid>
+                        <Ellipse Width="34" Height="34">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </Grid>
+                </Button>
             </Grid>
             
             <ListBox Name="lbFiles" Grid.Row="1" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
@@ -668,29 +679,15 @@ $xaml = @"
                     </Button.Template>
                 </Button>
                 
-                <!-- Exit Engine & Profile: docked at bottom so it never moves -->
+                <!-- Exit Engine: docked at bottom so it never moves -->
                 <StackPanel DockPanel.Dock="Bottom">
                     <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,8" />
-                    <Grid Margin="0,0,0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <Button Name="btnProfile" Style="{StaticResource SpatialListItem}" Width="44" Height="44" Margin="0,0,4,0" ToolTip="Sign in with Google (Premium)">
-                            <Grid>
-                                <Ellipse Width="32" Height="32" Fill="{DynamicResource SecondaryBackgroundBrush}" />
-                                <TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Grid>
-                        </Button>
-
-                        <Button Grid.Column="1" Name="btnExit" Style="{StaticResource SpatialListItem}">
-                            <Grid>
-                                <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas" VerticalAlignment="Center"/>
-                            </Grid>
-                        </Button>
-                    </Grid>
+                    <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
+                        <Grid>
+                            <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
                 </StackPanel>
                 
                 <!-- Main content fills remaining space -->
