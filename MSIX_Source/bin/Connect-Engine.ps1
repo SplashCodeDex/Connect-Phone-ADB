@@ -638,7 +638,7 @@ $xaml = @"
                     </Grid>
                 </Border>
                 
-                <Button Name="btnProfileTop" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,0,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
+                <Button Name="btnProfileTop" Grid.Column="2" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="12,0,12,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
                     <Grid>
                         <Ellipse Width="34" Height="34">
                             <Ellipse.Fill>
@@ -711,7 +711,7 @@ $xaml = @"
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         
-                        <Button Name="btnProfileBottom" Grid.Column="0" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="0,0,4,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
+                        <Button Name="btnProfileBottom" Grid.Column="0" Style="{StaticResource SpatialListItem}" Width="38" Height="38" Margin="16,0,4,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
                             <Grid>
                                 <Ellipse Width="34" Height="34">
                                     <Ellipse.Fill>

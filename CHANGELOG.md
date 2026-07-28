@@ -1,6 +1,9 @@
 # Changelog
 
-## [v1.9.0.1]
+## [v1.9.0.3]
+- **[fix]** Adjusted the margins of the Profile Avatars to prevent them from being clipped by the main window's rounded corners or overlapping with the spatial menu borders.
+
+## [v1.9.0.2]
 - **[fix]** Restored the Profile Avatar to the bottom-left 'Exit Engine' area when the menu is contracted, and animated it to instantly jump to the top right of the File Explorer search bar only when the menu is expanded.
 - **[minor]** Replaced the Exit button's 'bin' icon with the avatar and tightened the spacing.
 - **[minor]** Made the ScrollViewer scrollbar even slimmer and shorter.
