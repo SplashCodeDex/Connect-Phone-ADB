@@ -1,29 +1,5 @@
 # Changelog
 
-## [v1.7.4.5]
-- **[patch]** Reverted hover animations (MouseEnter, MouseLeave, PreviewMouseUp) across list items and quick action buttons back to a relaxed 0.5s duration.
-
-## [v1.7.4.4]
-- **[minor]** Added 8px horizontal padding to the Spatial Menu window.
-- **[patch]** Tweaked hover and click animation durations from 0.5s to 0.35s for a snappier feel.
-
-## [v1.7.4.3]
-- **[patch]** Exact "6.1 Spatial Context Menu" Match: Aligned Quick Action button proportions and border radii perfectly with the DeXStudio UI catalog specifications (44px height, 20px radius, 12px list item radius, 6px spacing).
-
-## [v1.7.4.2]
-- **[patch]** Curvy UI Overhaul: Quick Action buttons redesigned into pill shapes (72x58 with perfect 29px corner radius). Removed hardcoded Width/Height sizing across the WPF window and internal stack panels, enabling fluid `SizeToContent="WidthAndHeight"` scaling so the menu now perfectly shrink-wraps its contents dynamically.
-
-## [v1.7.4.1]
-- **[patch]** Fixed massive empty space under the "Exit Engine" button by reducing the hardcoded WPF window height from 460 to 418.
-- **[fix]** Resolved tray icon toggle race condition where clicking the tray icon while the menu was open would trigger the `Deactivated` hide event just before the `MouseUp` show event, causing the menu to pop back up instead of hiding. 
-
-## [v1.7.4.0]
-- **[fix]** Resolved critical data corruption bug during ADB file transfers. Replaced fragile `cat >>` resume logic with a robust `.part` temporary file mechanism. Incomplete transfers now write to `<filename>.part` and atomically rename upon completion, guaranteeing data integrity.
-- **[minor]** Added silent, non-blocking error logging (via `2>>`) to the hidden `Connect-Engine.ps1` background task to improve debuggability without introducing UI overhead.
-
-## [v1.7.3.2]
-- **[patch]** Minor UI polish: Hid 'Galaxy S21' device entry for future implementation, adjusted JoeAvatar image alignment to properly center the face, and significantly increased menu button hover/click animation speed (from 0.5s to 0.15s) to feel much more responsive and snappy.
-
 ## [v1.7.3.1]
 - **[fix]** Critical app startup failure where the tray icon would load but the WPF window would fail to parse entirely (making all menu items null) because the `JoeAvatar.jpg` image path incorrectly referenced `bin/Assets` instead of `Assets/`. 
 
