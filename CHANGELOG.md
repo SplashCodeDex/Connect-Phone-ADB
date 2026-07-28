@@ -1,7 +1,8 @@
 # Changelog
 
-## [v1.9.4.0]
-- **[fix]** Replaced system tray `NotifyIcon.MouseUp` event with `MouseClick` to fix Windows 11 behavior where tray clicks were swallowed and failed to toggle the UI.
+## [v1.9.4.1]
+- **[fix]** Restored true fix for swallowed tray clicks (previously documented in v1.7.0 but reverted): wrapped `Show()`, `Activate()`, and `PopIn` inside `$wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle)` to prevent `Deactivated` race condition. Reverted `MouseClick` back to `MouseUp`.
+
 
 ## [v1.9.3.0]
 - **[minor]** Hid bulky vertical WPF scrollbars in both the Nearby Users panel and File Explorer list (`VerticalScrollBarVisibility="Hidden"`) for a cleaner, modern aesthetic while fully retaining mouse-wheel scrolling capability.

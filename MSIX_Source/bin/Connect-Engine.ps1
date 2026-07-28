@@ -1768,7 +1768,7 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
 })
 
-$script:notifyIcon.Add_MouseClick({
+$script:notifyIcon.Add_MouseUp({
     param($sender, $e)
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
         $now = [DateTime]::Now
@@ -1797,10 +1797,13 @@ $script:notifyIcon.Add_MouseClick({
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
-        $script:wpfWindow.Show()
-        $script:wpfWindow.Activate()
-        $script:wpfWindow.Focus()
-        $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
+        $action = [System.Action]{
+            $script:wpfWindow.Show()
+            $script:wpfWindow.Activate()
+            $script:wpfWindow.Focus()
+            $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
+        }
+        $script:wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle, $action) | Out-Null
     }
 })
 # Passive sync initial state on startup
