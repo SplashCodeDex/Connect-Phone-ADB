@@ -508,43 +508,7 @@
             <Border Background="Transparent" CornerRadius="34">
                 <DockPanel Margin="8,12" LastChildFill="True">
                 
-                <!-- Close Button: docked at top-right, hidden when contracted -->
-                <Button Name="btnCloseMenu" DockPanel.Dock="Top" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Close" Cursor="Hand" Margin="0,0,8,0" Visibility="Collapsed" Opacity="0">
-                    <TextBlock Text="&#xE711;" />
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="Transparent" CornerRadius="12" Padding="6,4" RenderTransformOrigin="0.5,0.5">
-                                <Border.RenderTransform>
-                                    <ScaleTransform ScaleX="1" ScaleY="1" x:Name="closeScale" />
-                                </Border.RenderTransform>
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
-                                </Trigger>
-                                <EventTrigger RoutedEvent="MouseEnter">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="closeScale" Storyboard.TargetProperty="ScaleX" To="1.15" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                            <DoubleAnimation Storyboard.TargetName="closeScale" Storyboard.TargetProperty="ScaleY" To="1.15" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                                <EventTrigger RoutedEvent="MouseLeave">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="closeScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                            <DoubleAnimation Storyboard.TargetName="closeScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-                
+
                 <!-- Exit Engine & Profile: docked at bottom so it never moves -->
                 <StackPanel DockPanel.Dock="Bottom">
                     <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,8" />
@@ -588,6 +552,9 @@
                     </Button>
                     <Button Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Phone Files">
                         <TextBlock Text="&#xE8B7;" />
+                    </Button>
+                    <Button Name="btnCloseMenu" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Close" Visibility="Collapsed" Opacity="0">
+                        <TextBlock Text="&#xE711;" />
                     </Button>
                 </StackPanel>
                 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.1.0] - 2026-07-28
+### Added
+- **[minor]** Repositioned the menu Close (X) button directly into the Quick Actions strip when expanded to visually streamline the interface and fill the layout gap.
+
 ## [2.2.0.0] - 2026-07-28
 ### Added
 - **[minor]** Added a native WPF popup flyout card attached to the Gmail profile avatar. Clicking the avatar now displays a floating card showing user details.
