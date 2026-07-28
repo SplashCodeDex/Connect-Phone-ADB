@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.1.1.5] - 2026-07-28
+### Hotfix: File Explorer UI Scope Isolation
+- **[fix]** Fixed the File Explorer logic (double-clicking to load directories) which was silently failing. This was caused because `EngineUtils.psm1` was still loaded as an isolated module, preventing its `Load-Directory` function from accessing the UI elements in `Connect-Engine.ps1`. Converted `EngineUtils` to a dot-sourced script to perfectly unify the UI scope.
 ## [2.1.1.4] - 2026-07-28
 ### Hotfix: Silent Failure on mDNS Discovered Devices
 - **[fix]** Fixed a major logic regression where clicking on a discovered device via the mDNS 'Nearby' menu would silently fail. The `Invoke-AdbConnect` function was never updated to accept the `-Target` parameter passed to it by the mDNS menu, causing it to ignore the selected device and default back to calculating the local Hotspot Gateway IP. The function signature has been fixed to fully accept and prioritize targeted connections.

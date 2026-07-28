@@ -45,7 +45,7 @@ foreach ($func in $functions) {
 Set-Content -Path (Join-Path $ModulesDir "AdbManager.psm1") -Value $AdbContent -Encoding UTF8
 Set-Content -Path (Join-Path $ModulesDir "TaskScheduler.psm1") -Value $TaskContent -Encoding UTF8
 Set-Content -Path (Join-Path $ModulesDir "UIComponents.psm1") -Value $UIContent -Encoding UTF8
-Set-Content -Path (Join-Path $ModulesDir "EngineUtils.psm1") -Value $UtilsContent -Encoding UTF8
+Set-Content -Path (Join-Path $ModulesDir "EngineUtils.ps1") -Value $UtilsContent -Encoding UTF8
 
 # Rewrite main script without functions
 $originalLines = Get-Content $SourceFile
@@ -69,7 +69,7 @@ for ($i = 0; $i -lt $newLines.Count; $i++) {
 }
 
 $imports = @(
-    "Import-Module `"`$PSScriptRoot\Modules\EngineUtils.psm1`" -Force",
+    ". `"`$PSScriptRoot\Modules\EngineUtils.ps1`"",
     "Import-Module `"`$PSScriptRoot\Modules\AdbManager.psm1`" -Force",
     "Import-Module `"`$PSScriptRoot\Modules\TaskScheduler.psm1`" -Force",
     "Import-Module `"`$PSScriptRoot\Modules\UIComponents.psm1`" -Force"

@@ -1,4 +1,4 @@
-﻿
+
 function Load-Directory($dirPath) {
     if ($script:isLoadingDir) { return }
     $script:isLoadingDir = $true
@@ -119,9 +119,8 @@ function Load-Directory($dirPath) {
         $script:isLoadingDir = $false
     }
 }
-Export-ModuleMember -Function Load-Directory
 
-function Write-Trace($msg) {
+function global:Write-Trace($msg) {
     # Rotate: keep the log forensically useful by capping it at ~200KB (retains last 500 lines)
     $tracePath = "$env:TEMP\connect-adb-trace.txt"
     try {
@@ -131,5 +130,4 @@ function Write-Trace($msg) {
     } catch {}
     Out-File -FilePath $tracePath -InputObject "[$(Get-Date -Format 'HH:mm:ss.fff')] $msg" -Append
 }
-Export-ModuleMember -Function Write-Trace
 

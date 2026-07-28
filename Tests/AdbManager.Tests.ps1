@@ -1,6 +1,6 @@
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$utilsPath = Join-Path $here "..\MSIX_Source\bin\Modules\EngineUtils.psm1"
-Import-Module $utilsPath -Force
+$utilsPath = Join-Path $here "..\MSIX_Source\bin\Modules\EngineUtils.ps1"
+. $utilsPath
 $modulePath = Join-Path $here "..\MSIX_Source\bin\Modules\AdbManager.psm1"
 Import-Module $modulePath -Force
 

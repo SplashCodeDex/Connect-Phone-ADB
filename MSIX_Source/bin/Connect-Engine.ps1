@@ -12,7 +12,7 @@ param(
     [switch]$SelfTest
 )
 
-Import-Module "$PSScriptRoot\Modules\EngineUtils.psm1" -Force
+. "$PSScriptRoot\Modules\EngineUtils.ps1"
 Import-Module "$PSScriptRoot\Modules\AdbManager.psm1" -Force
 . "$PSScriptRoot\Modules\TaskScheduler.ps1"
 . "$PSScriptRoot\Modules\UIComponents.ps1"
