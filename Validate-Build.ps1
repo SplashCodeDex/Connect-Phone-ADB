@@ -72,11 +72,10 @@ Gate "Engine has BOM (or is pure ASCII)" ($hasUtf8Bom -or $hasUtf16Bom -or -not 
 Write-Host "`n=== 3. Engine XAML full load (the 'dead tray' detector) ===" -ForegroundColor Cyan
 $script:Win = $null
 $xaml = $null
-$xStart = $engineRaw.IndexOf('<Window xmlns=')
-$xEnd = $engineRaw.IndexOf('</Window>') + 9
-Gate "Engine XAML block located" ($xStart -ge 0 -and $xEnd -gt $xStart)
-if ($xStart -ge 0 -and $xEnd -gt $xStart) {
-    $xaml = $engineRaw.Substring($xStart, $xEnd - $xStart)
+$xamlPath = Join-Path $root 'MSIX_Source\Themes\MainWindow.xaml'
+Gate "Engine XAML block located" (Test-Path $xamlPath)
+if (Test-Path $xamlPath) {
+    $xaml = [System.IO.File]::ReadAllText($xamlPath)
     # Substitute the here-string interpolation exactly like the engine does at runtime
     $needle = @'
 $($PSScriptRoot -replace '\\', '/')
@@ -96,7 +95,7 @@ $($PSScriptRoot -replace '\\', '/')
 Write-Host "`n=== 4. Theme dictionaries ===" -ForegroundColor Cyan
 $themeKeys = @{}
 $themeKeySets = @{}
-Get-ChildItem (Join-Path $themesDir '*.xaml') -ErrorAction SilentlyContinue | ForEach-Object {
+Get-ChildItem (Join-Path $themesDir '*.xaml') -ErrorAction SilentlyContinue | Where-Object { $_.Name -ne 'MainWindow.xaml' } | ForEach-Object {
     try {
         $xr = [System.Xml.XmlReader]::Create($_.FullName)
         $dict = [System.Windows.Markup.XamlReader]::Load($xr)
@@ -119,18 +118,25 @@ if ($themeNames.Count -ge 2) {
         $parityOk = ($onlyRef.Count -eq 0 -and $onlyOther.Count -eq 0)
         $detail = ""
         if ($onlyRef.Count -gt 0)   { $detail += "Only in ${refName}: $($onlyRef -join ', '). " }
-        if ($onlyOther.Count -gt 0) { $detail += "Only in ${other}: $($onlyOther -join ', ')." }
+        if ($onlyOther.Count -gt 0) { $detail += "Only in ${other}: $($otherKeys -join ', ')." }
         Gate "Theme parity: $refName vs $other" $parityOk $detail
     }
 }
 
 Write-Host "`n=== 5. FindName targets exist in XAML ===" -ForegroundColor Cyan
-if ($null -ne $script:Win) {
+if ($script:Win) {
     $nameSet = @{}
     [regex]::Matches($xaml, '(?<![\w:.])Name="([^"]+)"') | ForEach-Object { $nameSet[$_.Groups[1].Value] = $true }
     [regex]::Matches($xaml, 'x:Name="([^"]+)"')          | ForEach-Object { $nameSet[$_.Groups[1].Value] = $true }
-    $findNames = [regex]::Matches($engineRaw, 'FindName\(\s*"([^"]+)"\s*\)') |
-        ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique
+    
+    $findNames = @()
+    $findNames += [regex]::Matches($engineRaw, 'FindName\(\s*"([^"]+)"\s*\)') | ForEach-Object { $_.Groups[1].Value }
+    $bindings = Join-Path $root 'MSIX_Source\bin\TrayUIBindings.ps1'
+    if (Test-Path $bindings) {
+        $findNames += [regex]::Matches([System.IO.File]::ReadAllText($bindings), 'FindName\([`"''\s]*([a-zA-Z0-9_]+)[`"''\s]*\)') | ForEach-Object { $_.Groups[1].Value }
+    }
+    $findNames = $findNames | Where-Object { $_ } | Sort-Object -Unique
+    
     $missingNames = @($findNames | Where-Object { -not $nameSet.ContainsKey($_) })
     Gate "All $($findNames.Count) FindName(`"X`") references exist in XAML" ($missingNames.Count -eq 0) `
         ("Missing: " + ($missingNames -join ', '))

@@ -51,3 +51,41 @@ function Invoke-AdbConnect {
 }
 Export-ModuleMember -Function Invoke-AdbConnect
 
+
+function Start-MdnsDiscovery {
+    Write-Trace "Starting mDNS Discovery Job..."
+    
+    $job = Start-Job -ScriptBlock {
+        param($adbPath)
+        while ($true) {
+            $output = & $adbPath mdns services 2>&1
+            # Sample output: 
+            # List of discovered mdns services
+            # host-192-168-1-100._adb-tls-connect._tcp.  192.168.1.100:34567
+            
+            if ($null -ne $output) {
+                $lines = $output -split '?
+'
+                foreach ($line in $lines) {
+                    if ($line -match '_adb-tls-connect\._tcp\.\s+([0-9\.]+:[0-9]+)') {
+                        $ipPort = $matches[1]
+                        # Discovered!
+                        Write-Output $ipPort
+                    }
+                }
+            }
+            Start-Sleep -Seconds 15
+        }
+    } -ArgumentList $global:AdbExePath
+    
+    Register-ObjectEvent -InputObject $job -EventName StateChanged -Action {
+        Write-Trace "mDNS Job state changed: $( $sender.State )"
+    } | Out-Null
+    
+    # We will poll the job in the main runspace or WPF timer if needed, or let the job trigger connects
+    # Actually, the job can't easily trigger the UI runspace directly without IPC.
+    # We can just have a runspace timer poll the job's receive output.
+    return $job
+}
+
+Export-ModuleMember -Function Start-MdnsDiscovery

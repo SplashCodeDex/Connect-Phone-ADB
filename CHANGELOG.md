@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0.0] - 2026-07-28
+### Major Architecture Overhaul (Part 2)
+- **UI Decoupling**: Completely extracted the raw XAML overlay from `Connect-Engine.ps1` into `MSIX_Source\Themes\MainWindow.xaml`.
+- **UI Bindings**: Moved ~600 lines of WPF UI events into `MSIX_Source\bin\TrayUIBindings.ps1`. `Connect-Engine.ps1` is now purely an orchestrator script under 250 lines.
+- **C# Refactoring**: Decoupled `TransferWindow.cs` from `Program.cs` within the Share Target, keeping all files lean (<1,000 lines).
+- **Intelligent Connectivity**: Added `Start-MdnsDiscovery` to `AdbManager.psm1`. Android 11+ devices broadcasting `_adb-tls-connect._tcp` are now automatically discovered and connected in the background.
+
 ## [v2.0.0.0]
 - **[major]** Architecture Overhaul: Refactored the monolithic `Connect-Engine.ps1` (~1,900 lines) into modern PowerShell modules (`.psm1`).
 - Extracted ADB logic into `AdbManager.psm1`.
