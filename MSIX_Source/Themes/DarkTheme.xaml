@@ -20,4 +20,10 @@
     <SolidColorBrush x:Key="PrimaryBrush" Color="#6200EE" />   <!-- Brand, active states -->
     <SolidColorBrush x:Key="SecondaryBrush" Color="#00E676" /> <!-- Success, Folder icons -->
     <SolidColorBrush x:Key="AccentBrush" Color="#FF453A" />    <!-- Danger, Warnings, Exits -->
+    
+    <!-- Item Highlights (Selected & Hover) -->
+    <SolidColorBrush x:Key="ItemHoverBrush" Color="#1F00E676" />
+    <SolidColorBrush x:Key="ItemSelectedBrush" Color="#3D00E676" />
+    <SolidColorBrush x:Key="ItemSelectedHoverBrush" Color="#5400E676" />
+    <SolidColorBrush x:Key="ItemSelectedBorderBrush" Color="#8000E676" />
 </ResourceDictionary>

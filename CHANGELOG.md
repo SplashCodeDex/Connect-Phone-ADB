@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.9.2.0]
+- **[minor]** Implemented dual highlighters for File Explorer items: persistent greenish highlight for single-clicked `IsSelected` items and a separate active hover highlight for `IsMouseOver` items.
+- **[minor]** Calibrated Light Mode highlight brushes (`ItemHoverBrush`, `ItemSelectedBrush`, `ItemSelectedHoverBrush`, `ItemSelectedBorderBrush`) with deeper green shades (`#34C759`) for crisp visibility against light backgrounds.
+- **[minor]** Enhanced floating download dock with smooth 0.2s `FadeIn` and 4-second auto-hide `FadeOut` animations.
+- **[fix]** Ensured zero hardcoded colors in floating dock layout; fully compliant with dynamic theme tokens (`{DynamicResource}`).
+
 ## [v1.9.1.0]
 - **[minor]** Updated File Explorer download destination path to `Downloads\dex`.
 - **[minor]** Added a subtle floating dock notification banner ("Saved to Downloads\dex") with an interactive `Change` button to choose a custom save directory.

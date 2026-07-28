@@ -370,36 +370,34 @@ $xaml = @"
                     <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#1AFFFFFF" Duration="0:0:0.2" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)" To="-2" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.3" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="PreviewMouseDown">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="0.94" Duration="0:0:0.1" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="0.94" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" To="0.94" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" To="0.94" Duration="0:0:0.1" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="PreviewMouseUp">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="folderBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -422,36 +420,34 @@ $xaml = @"
                     <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#1AFFFFFF" Duration="0:0:0.2" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="-2" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)" To="-2" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.3" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="PreviewMouseDown">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="0.94" Duration="0:0:0.1" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="0.94" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" To="0.94" Duration="0:0:0.1" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" To="0.94" Duration="0:0:0.1" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                     <EventTrigger RoutedEvent="PreviewMouseUp">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
-                                <DoubleAnimation Storyboard.TargetName="itemScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                <DoubleAnimation Storyboard.TargetName="fileBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -653,14 +649,34 @@ $xaml = @"
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Padding" Value="0"/>
-                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="Padding" Value="2"/>
+                        <Setter Property="Margin" Value="2"/>
                         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <ContentPresenter />
+                                    <Border Name="itemBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10" SnapsToDevicePixels="True">
+                                        <ContentPresenter />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ItemHoverBrush}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ItemSelectedBrush}"/>
+                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ItemSelectedBorderBrush}"/>
+                                        </Trigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsSelected" Value="True"/>
+                                                <Condition Property="IsMouseOver" Value="True"/>
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ItemSelectedHoverBrush}"/>
+                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ItemSelectedBorderBrush}"/>
+                                        </MultiTrigger>
+                                    </ControlTemplate.Triggers>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
@@ -1121,15 +1137,24 @@ function Show-DownloadDockToast([string]$pathText) {
     if ($null -ne $dock -and $null -ne $txt) {
         $txt.Text = "Saved to $pathText"
         $dock.Visibility = 'Visible'
-        $dock.Opacity = 1
+        
+        $fadeIn = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $fadeIn.To = 1.0
+        $fadeIn.Duration = [TimeSpan]::FromSeconds(0.2)
+        $dock.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeIn)
         
         if ($null -ne $script:dockTimer) { $script:dockTimer.Stop() }
         $script:dockTimer = New-Object System.Windows.Threading.DispatcherTimer
-        $script:dockTimer.Interval = [TimeSpan]::FromSeconds(5)
+        $script:dockTimer.Interval = [TimeSpan]::FromSeconds(4)
         $script:dockTimer.Add_Tick({
-            $dock.Visibility = 'Collapsed'
-            $dock.Opacity = 0
             $script:dockTimer.Stop()
+            $fadeOut = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $fadeOut.To = 0.0
+            $fadeOut.Duration = [TimeSpan]::FromSeconds(0.4)
+            $fadeOut.Add_Completed({
+                $dock.Visibility = 'Collapsed'
+            })
+            $dock.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeOut)
         })
         $script:dockTimer.Start()
     }
