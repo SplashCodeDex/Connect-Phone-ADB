@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.7.5.5]
+- **[minor]** Upgraded the 'Phone Files' button into a seamless toggle! Built a brand new `ContractMenu` animation storyboard. If the menu is currently expanded, clicking 'Phone Files' will now gracefully reverse the animation, sliding the File Explorer away and shrinking the UI back to its compact state, rather than just doing nothing.
+
+## [v1.7.5.4]
+- **[major]** Completely decoupled WPF animations from Win32 Window bounds! Created a massive invisible 1420x760 static Window canvas, and shifted the expansion animations strictly to the inner WPF Grid container. This completely eliminates the Win32 transparent window resizing stutter and jitter, mathematically ensuring a flawless 60fps expansion, and instantly fixes the right-edge white space padding bug.
+
 ## [v1.7.5.3]
 - **[fix]** Fixed the root cause of the "disappearing to the left" bug. PowerShell was dynamically injecting `SizeToContent = 'WidthAndHeight'` when the window was dismissed, instantly breaking the previous `CanResize` fix for the next launch. Replaced the runtime `SizeToContent` injection with explicit `Width=290` and `Height=460` resets to preserve OS animation support.
 

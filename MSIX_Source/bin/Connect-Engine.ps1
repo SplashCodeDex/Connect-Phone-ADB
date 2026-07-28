@@ -234,6 +234,16 @@ $xaml = @"
             <!-- Subtle Parallax on Main Menu: Slide Right slightly -->
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
+        <Storyboard x:Key="ContractMenu">
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="-1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="-300" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            
+            <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" To="150" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.4" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.8" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>    
         
         <Storyboard x:Key="PopIn">
             <DoubleAnimation Storyboard.TargetName="winScale" Storyboard.TargetProperty="ScaleX" From="0.85" To="1.0" Duration="0:0:0.5" EasingFunction="{StaticResource BouncyEase}" />
@@ -902,6 +912,8 @@ $actionPull = {
     $script:currentTarget = $target
     
     if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') {
+        $sb = $script:wpfWindow.Resources["ContractMenu"]
+        $sb.Begin($script:wpfWindow)
         return
     }
     
