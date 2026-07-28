@@ -220,9 +220,9 @@ $xaml = @"
         <BackEase x:Key="PopInEase" Amplitude="3.53" EasingMode="EaseOut" />
         <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
         <Storyboard x:Key="ExpandMenu">
-            <!-- Window Size Expansion with ElasticEase (Overshoot + Reverse Subtle Overshoot) -->
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="300" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <!-- Window Size Expansion with ElasticEase (reduced 35% from original) -->
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <!-- Parallax on File Explorer: Slide from Right to Left while fading -->
             <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
@@ -235,8 +235,8 @@ $xaml = @"
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
         <Storyboard x:Key="ContractMenu">
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="-1160" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="-300" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="-754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="-195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" To="150" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.4" />
@@ -526,7 +526,58 @@ $xaml = @"
                 <TranslateTransform x:Name="menuTrans" X="0" />
             </Border.RenderTransform>
             <Border Background="Transparent" CornerRadius="34">
-                <StackPanel Margin="8,12">
+                <DockPanel Margin="8,12" LastChildFill="True">
+                
+                <!-- Close Button: docked at top-right -->
+                <Button Name="btnCloseMenu" DockPanel.Dock="Top" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Close" Cursor="Hand" Margin="0,0,8,0">
+                    <TextBlock Text="&#xE711;" />
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="Transparent" CornerRadius="12" Padding="6,4" RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" x:Name="closeScale" />
+                                </Border.RenderTransform>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                                </Trigger>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="closeScale" Storyboard.TargetProperty="ScaleX" To="1.15" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                            <DoubleAnimation Storyboard.TargetName="closeScale" Storyboard.TargetProperty="ScaleY" To="1.15" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="closeScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                            <DoubleAnimation Storyboard.TargetName="closeScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                
+                <!-- Exit Engine: docked at bottom so it never moves -->
+                <StackPanel DockPanel.Dock="Bottom">
+                    <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,8" />
+                    <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
+                        <Grid>
+                            <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left"/>
+                            <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+                
+                <!-- Main content fills remaining space -->
+                <StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <Button Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />
@@ -570,8 +621,80 @@ $xaml = @"
                 </StackPanel>
                 <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,0" />
                 
-                <!-- TODO: File sharing user list integration -->
+                <!-- Nearby Users Section -->
                 <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
+
+                <!-- User 1 -->
+                <Button x:Name="btnUser1" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse>
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User1Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Ama Serwaa" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <!-- User 2 -->
+                <Button x:Name="btnUser2" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse>
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User2Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Akua Donkor" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <!-- User 3 -->
+                <Button x:Name="btnUser3" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse>
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User3Avatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                        </Grid>
+                        
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Kwame Asante" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Global · via Hotspot" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
 
                 <!-- User Joe -->
                 <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
@@ -584,7 +707,6 @@ $xaml = @"
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
                             <Ellipse>
                                 <Ellipse.Fill>
-                                    <!-- Placeholder path for the uploaded picture -->
                                     <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/JoeAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
                                 </Ellipse.Fill>
                             </Ellipse>
@@ -598,8 +720,8 @@ $xaml = @"
                     </Grid>
                 </Button>
 
-                <!-- Device: Galaxy S21 -->
-                <Button x:Name="btnDeviceGalaxy" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2" Visibility="Collapsed">
+                <!-- Device: Galaxy S21 (now visible with avatar) -->
+                <Button x:Name="btnDeviceGalaxy" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -608,12 +730,17 @@ $xaml = @"
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
-                            <Ellipse Fill="{DynamicResource PrimaryBrush}" />
-                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Ellipse>
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/GalaxyS21Avatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <Ellipse Width="12" Height="12" Fill="#4CAF50" Stroke="#1D1226" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Galaxy S21" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="CodeDeX · This device" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                         
                         <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
@@ -639,15 +766,9 @@ $xaml = @"
                     </Grid>
                 </Button>
                 
-                <Separator Background="{DynamicResource SecondaryBackgroundBrush}" Height="1" Margin="16,8" />
+                </StackPanel>
                 
-                <Button Name="btnExit" Style="{StaticResource SpatialListItem}" Margin="0,0,0,4">
-                    <Grid>
-                        <TextBlock Text="Exit Engine" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left"/>
-                        <TextBlock Text="&#x2318;Q &#x1F5D1;" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" FontFamily="Consolas"/>
-                    </Grid>
-                </Button>
-            </StackPanel>
+                </DockPanel>
         </Border>
         </Border>
     </Grid>
@@ -960,6 +1081,13 @@ $script:wpfWindow.Add_KeyDown({
     param($sender, $e)
     if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
         $script:wpfWindow.Hide()
+        $script:lastDeactivated = [DateTime]::Now
+        $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
+        $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
+        $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+        $script:wpfWindow.FindName("fileTrans").X = 150
+        $script:wpfWindow.FindName("menuTrans").X = 0
         $e.Handled = $true
     } elseif ($e.Key -eq [System.Windows.Input.Key]::C) {
         if ($script:wpfWindow.FindName("btnQAConnect").Visibility -eq 'Visible') {
@@ -1028,20 +1156,16 @@ function Update-WpfUI {
 
 $script:lastDeactivated = [DateTime]::MinValue
 
-$script:wpfWindow.Add_Deactivated({
-    if ($script:wpfWindow.IsVisible) {
-        $now = [DateTime]::Now
-        if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
-            $script:wpfWindow.Hide()
-            $script:lastDeactivated = $now
-            $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
-            $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
-            $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
-            $script:wpfWindow.FindName("FileExplorer").Opacity = 0
-            $script:wpfWindow.FindName("fileTrans").X = 150
-            $script:wpfWindow.FindName("menuTrans").X = 0
-        }
-    }
+# Close button handler (replaces click-outside-to-close behavior)
+$script:wpfWindow.FindName("btnCloseMenu").Add_Click({
+    $script:wpfWindow.Hide()
+    $script:lastDeactivated = [DateTime]::Now
+    $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
+    $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
+    $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+    $script:wpfWindow.FindName("fileTrans").X = 150
+    $script:wpfWindow.FindName("menuTrans").X = 0
 })
 
 $script:notifyIcon.Add_MouseUp({

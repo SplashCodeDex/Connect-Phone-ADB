@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.8.0.0]
+- **[minor]** Menu UX overhaul: clicking outside the menu no longer closes it — added an animated close button (✕) at the top-right corner instead.
+- **[minor]** Reduced the expanded menu size by 35% (width 1160→754px, height 300→195px) for a tighter footprint.
+- **[minor]** Pinned 'Exit Engine' to the bottom of the menu using a DockPanel layout, so it no longer shifts upward when the menu expands.
+- **[minor]** Added 3 nearby user placeholders (Ama Serwaa, Akua Donkor, Kwame Asante) with real avatar photos and online status indicators, staggered into the gap above Exit Engine.
+- **[minor]** Enabled the previously hidden Galaxy S21 device entry with a real avatar and "CodeDeX · This device" subtitle.
+- **[fix]** Escape key now properly resets expanded menu state (border dimensions, FileExplorer visibility, transforms) instead of just hiding.
+
 ## [v1.7.5.5]
 - **[minor]** Upgraded the 'Phone Files' button into a seamless toggle! Built a brand new `ContractMenu` animation storyboard. If the menu is currently expanded, clicking 'Phone Files' will now gracefully reverse the animation, sliding the File Explorer away and shrinking the UI back to its compact state, rather than just doing nothing.
 
