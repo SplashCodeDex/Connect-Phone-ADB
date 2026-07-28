@@ -634,7 +634,7 @@ $xaml = @"
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                        <TextBox Name="txtSearch" Grid.Column="1" Text="Search files..." FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
+                        <TextBox Name="txtSearch" Grid.Column="1" Text="Search files..." FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" CaretBrush="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
                     </Grid>
                 </Border>
                 
@@ -985,7 +985,7 @@ $script:txtSearch.Add_TextChanged({
     $query = $script:txtSearch.Text.ToLower()
     if ($query -eq "search files...") { $query = "" }
     foreach ($item in $script:lbFiles.Items) {
-        $name = $item.Content.Name.ToLower()
+        $name = if ($item.Content -and $item.Content.Name) { $item.Content.Name.ToLower() } else { "" }
         if ([string]::IsNullOrWhiteSpace($query) -or $name.Contains($query)) {
             $item.Visibility = 'Visible'
         } else {
@@ -1277,8 +1277,24 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
 
 $script:wpfWindow.Add_KeyDown({
     param($sender, $e)
-    # Don't intercept keys when typing in the search bar
-    if ($script:txtSearch.IsFocused) { return }
+    # Don't intercept keys when typing in the search bar or any text box
+    $isInputFocused = ($null -ne $script:txtSearch) -and (
+        $script:txtSearch.IsKeyboardFocused -or 
+        $script:txtSearch.IsKeyboardFocusWithin -or 
+        $script:txtSearch.IsFocused -or 
+        ($null -ne $e.OriginalSource -and $e.OriginalSource.GetType().FullName -match "TextBox")
+    )
+    if ($isInputFocused) {
+        if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
+            if ($script:txtSearch.Text -and $script:txtSearch.Text -ne "Search files...") {
+                $script:txtSearch.Text = ""
+            } else {
+                [System.Windows.Input.Keyboard]::ClearFocus()
+            }
+            $e.Handled = $true
+        }
+        return
+    }
     if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
         $script:wpfWindow.Hide()
         $script:lastDeactivated = [DateTime]::Now

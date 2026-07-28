@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.9.0.5]
+- **[fix]** Fixed searchbar text input and accidental disconnection bug: WPF `TextBox.IsFocused` evaluated to false when keyboard focus was active in `txtSearch`, causing top-level hotkeys ('D' for disconnect, 'C' for connect, 'P' for pull, 'M' for mirror, 'Q' for quit) to hijack typing and swallow characters.
+- **[fix]** Implemented multi-layered focus and `OriginalSource` detection (`IsKeyboardFocused`, `IsKeyboardFocusWithin`, `OriginalSource -match "TextBox"`) so search terms like 'DCIM', 'Downloads', 'Documents', 'Pictures', 'Movies' type smoothly without triggering shortcuts or disconnecting.
+- **[fix]** Added dynamic `CaretBrush="{DynamicResource PrimaryTextBrush}"` for clean cursor visibility in both Light and Dark themes.
+
 ## [v1.9.0.4]
 - **[fix]** Removed explicit width and height constraints on profile avatars, allowing them to size naturally within the list item container margins and preventing horizontal clipping.
 
