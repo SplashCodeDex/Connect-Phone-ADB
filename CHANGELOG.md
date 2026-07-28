@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.9.2.6]
+- **[fix]** Removed redundant hardcoded color logic for the 'Exit Engine' confirmation state to ensure it exclusively pulls from the dynamic `AccentBrush` theme resource.
+
 ## [v1.9.2.5]
 - **[fix]** Filtered out ADB error outputs (`ls:`, `error:`, `Permission denied`) to prevent invalid items from being parsed into the File Explorer grid.
 - **[fix]** Auto-reset search bar filter text upon subfolder navigation so subfolder contents are never hidden by stale parent query strings.
