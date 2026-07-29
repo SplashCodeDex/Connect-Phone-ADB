@@ -1,16 +1,13 @@
 package com.example.dex.network
 
+import android.content.Context
+import android.net.nsd.NsdManager
+import android.net.nsd.NsdServiceInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
-import java.net.InetSocketAddress
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,14 +21,14 @@ data class DiscoveredDevice(
 
 class DiscoveryEngine {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private var listenJob: Job? = null
-    private var broadcastJob: Job? = null
-    private var socket: DatagramSocket? = null
+    private var cleanupJob: Job? = null
     
     private val _devices = MutableStateFlow<Map<String, DiscoveredDevice>>(emptyMap())
     val devices: StateFlow<Map<String, DiscoveredDevice>> = _devices.asStateFlow()
     
-    private val json = Json { ignoreUnknownKeys = true }
+    private var nsdManager: NsdManager? = null
+    private var registrationListener: NsdManager.RegistrationListener? = null
+    private var discoveryListener: NsdManager.DiscoveryListener? = null
 
     private val localSendInfo = RegisterDto(
         alias = "DeX",
@@ -44,52 +41,74 @@ class DiscoveryEngine {
         download = true
     )
 
-    fun startDiscovery() {
-        listenJob = scope.launch {
-            try {
-                socket = DatagramSocket(null).apply {
-                    reuseAddress = true
-                    bind(InetSocketAddress(53317))
-                    broadcast = true
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return@launch
-            }
+    fun startDiscovery(context: Context) {
+        nsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 
-            val buffer = ByteArray(1024)
-            val packet = DatagramPacket(buffer, buffer.size)
-            while (true) {
-                try {
-                    socket?.receive(packet)
-                    val data = String(packet.data, 0, packet.length)
-                    val ipStr = packet.address.hostAddress ?: continue
-                    
-                    try {
-                        val dto = json.decodeFromString<RegisterDto>(data)
-                        // Ignore self discovery
-                        if (dto.fingerprint != localSendInfo.fingerprint) {
-                            _devices.update { map ->
-                                val newMap = map.toMutableMap()
-                                newMap[dto.fingerprint] = DiscoveredDevice(
-                                    ip = ipStr,
-                                    info = dto,
-                                    lastSeenTimestamp = System.currentTimeMillis()
+        // 1. Register Service
+        val serviceInfo = NsdServiceInfo().apply {
+            serviceName = "DeX_Android"
+            serviceType = "_dex._udp"
+            port = localSendInfo.port
+            setAttribute("alias", localSendInfo.alias)
+            setAttribute("fingerprint", localSendInfo.fingerprint)
+        }
+
+        registrationListener = object : NsdManager.RegistrationListener {
+            override fun onServiceRegistered(NsdServiceInfo: NsdServiceInfo) {}
+            override fun onRegistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {}
+            override fun onServiceUnregistered(arg0: NsdServiceInfo) {}
+            override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {}
+        }
+
+        try {
+            nsdManager?.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener)
+        } catch (e: Exception) { e.printStackTrace() }
+
+        // 2. Discover Services
+        discoveryListener = object : NsdManager.DiscoveryListener {
+            override fun onDiscoveryStarted(regType: String) {}
+            override fun onServiceFound(service: NsdServiceInfo) {
+                if (service.serviceType.contains("_dex._udp")) {
+                    nsdManager?.resolveService(service, object : NsdManager.ResolveListener {
+                        override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {}
+                        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                            val fpBytes = serviceInfo.attributes["fingerprint"]
+                            val aliasBytes = serviceInfo.attributes["alias"]
+                            val fp = fpBytes?.let { String(it) }
+                            val alias = aliasBytes?.let { String(it) } ?: "Unknown"
+
+                            if (fp != null && fp != localSendInfo.fingerprint) {
+                                val dto = RegisterDto(
+                                    alias = alias,
+                                    fingerprint = fp,
+                                    port = serviceInfo.port
                                 )
-                                newMap
+                                _devices.update { map ->
+                                    val newMap = map.toMutableMap()
+                                    newMap[fp] = DiscoveredDevice(
+                                        ip = serviceInfo.host.hostAddress ?: "",
+                                        info = dto,
+                                        lastSeenTimestamp = System.currentTimeMillis()
+                                    )
+                                    newMap
+                                }
                             }
                         }
-                    } catch (e: Exception) {
-                        // Not a valid localsend packet
-                    }
-                } catch (e: Exception) {
-                    break
+                    })
                 }
             }
+            override fun onServiceLost(service: NsdServiceInfo) {}
+            override fun onDiscoveryStopped(serviceType: String) {}
+            override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {}
+            override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {}
         }
-        
+
+        try {
+            nsdManager?.discoverServices("_dex._udp", NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+        } catch (e: Exception) { e.printStackTrace() }
+
         // Cleanup stale devices
-        scope.launch {
+        cleanupJob = scope.launch {
             while (true) {
                 delay(10000)
                 val now = System.currentTimeMillis()
@@ -98,27 +117,15 @@ class DiscoveryEngine {
                 }
             }
         }
-
-        broadcastJob = scope.launch {
-            while (true) {
-                try {
-                    val payload = json.encodeToString(localSendInfo)
-                    val bytes = payload.toByteArray()
-                    val broadcastPacket = DatagramPacket(
-                        bytes, bytes.size, InetAddress.getByName("255.255.255.255"), 53317
-                    )
-                    socket?.send(broadcastPacket)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                delay(2000) // Broadcast every 2 seconds
-            }
-        }
     }
 
     fun stopDiscovery() {
-        listenJob?.cancel()
-        broadcastJob?.cancel()
-        socket?.close()
+        try {
+            registrationListener?.let { nsdManager?.unregisterService(it) }
+            discoveryListener?.let { nsdManager?.stopServiceDiscovery(it) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        cleanupJob?.cancel()
     }
 }

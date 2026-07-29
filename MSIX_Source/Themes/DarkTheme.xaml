@@ -4,21 +4,19 @@
     
     <!-- Backgrounds & Borders -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="#16121A" />
-    <SolidColorBrush x:Key="SecondaryBrush" Color="#2C2C2E" />
-    <SolidColorBrush x:Key="TertiaryBrush" Color="#3A3A3C" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#2B2631" />
     
     <!-- Text -->
     <SolidColorBrush x:Key="PrimaryTextBrush" Color="White" />
     <SolidColorBrush x:Key="SecondaryTextBrush" Color="#A0A0A0" />
     
-    <!-- Accent & Status -->
-    <SolidColorBrush x:Key="AccentBrush" Color="#6200EE" />
-    <SolidColorBrush x:Key="SuccessBrush" Color="#00E676" />
+    <!-- Secondary & Status -->
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#0AE66D" />
     <SolidColorBrush x:Key="DangerBrush" Color="#FF453A" />
     
     <!-- Item Highlights (Selected & Hover) -->
-    <SolidColorBrush x:Key="AccentHoverBrush" Color="#1F6200EE" />
-    <SolidColorBrush x:Key="AccentSelectedBrush" Color="#3D6200EE" />
-    <SolidColorBrush x:Key="AccentSelectedHoverBrush" Color="#546200EE" />
-    <SolidColorBrush x:Key="AccentSelectedBorderBrush" Color="#806200EE" />
+    <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#1F0AE66D" />
+    <SolidColorBrush x:Key="SecondarySelectedBrush" Color="#3D0AE66D" />
+    <SolidColorBrush x:Key="SecondarySelectedHoverBrush" Color="#540AE66D" />
+    <SolidColorBrush x:Key="SecondarySelectedBorderBrush" Color="#800AE66D" />
 </ResourceDictionary>

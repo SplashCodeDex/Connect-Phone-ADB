@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.4.0.0] - 2026-07-29
+### Added
+- **[minor]** Integrated an automatic Windows System Theme Listener. The UI dynamically detects the \AppsUseLightTheme\ registry key and instantly syncs its XAML theme (Light/Dark) to match the host OS without requiring restarts.
+- **[minor]** Streamlined the core UI Semantic Color Dictionary down to a strict 3-color base (\PrimaryBrush\, \SecondaryBrush\, \AccentBrush\), completely eliminating redundant tags like \SuccessBrush\ and \TertiaryBrush\ to perfectly align with the project design system.
+
 ## [2.2.4.0] - 2026-07-28
 ### Added
 - **[patch]** Constrained the spatial menu's contracted layout to a minimum width of 335px.

@@ -1,9 +1,18 @@
 {
   "version": 2,
-  "dgSpecHash": "yRARaKsIGrU=",
+  "dgSpecHash": "KygJ3YC+e48=",
   "success": true,
   "projectFilePath": "W:\\CodeDeX\\Connect-Phone-ADB\\ConnectPhoneShareTarget\\ConnectPhoneShareTarget.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\NicoDex\\.nuget\\packages\\common.logging\\3.4.1\\common.logging.3.4.1.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\common.logging.core\\3.4.1\\common.logging.core.3.4.1.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\ipnetwork2\\2.1.2\\ipnetwork2.2.1.2.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\makaretu.dns\\2.0.1\\makaretu.dns.2.0.1.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\makaretu.dns.multicast\\0.27.0\\makaretu.dns.multicast.0.27.0.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\netstandard.library\\1.6.1\\netstandard.library.1.6.1.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\simplebase\\1.3.1\\simplebase.1.3.1.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\tmds.libc\\0.2.0\\tmds.libc.0.2.0.nupkg.sha512",
     "C:\\Users\\NicoDex\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.22000.57\\microsoft.windows.sdk.net.ref.10.0.22000.57.nupkg.sha512"
   ],
   "logs": []

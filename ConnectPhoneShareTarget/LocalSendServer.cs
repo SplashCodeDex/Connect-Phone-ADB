@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 using Microsoft.AspNetCore.Builder;
@@ -67,48 +68,56 @@ namespace ConnectPhoneShareTarget
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var myInfo = new RegisterDto { Fingerprint = "dexdesktop-fingerprint" };
-            var myInfoBytes = JsonSerializer.SerializeToUtf8Bytes(myInfo);
 
-            using var udpClient = new UdpClient();
-            udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, 53317));
+            using var mdns = new Makaretu.Dns.MulticastService();
+            var service = new Makaretu.Dns.ServiceProfile("DeXDesktop", "_dex._udp", (ushort)53317);
+            service.AddProperty("alias", myInfo.Alias);
+            service.AddProperty("fingerprint", myInfo.Fingerprint);
+            
+            var sd = new Makaretu.Dns.ServiceDiscovery(mdns);
+            sd.Advertise(service);
 
-            // Broadcaster task
-            _ = Task.Run(async () =>
-            {
-                using var broadcastClient = new UdpClient();
-                broadcastClient.EnableBroadcast = true;
-                while (!stoppingToken.IsCancellationRequested)
-                {
-                    try
+            sd.ServiceDiscovered += (s, serviceName) => {
+                mdns.SendQuery(serviceName, Makaretu.Dns.DnsClass.IN, Makaretu.Dns.DnsType.ANY);
+            };
+
+            sd.ServiceInstanceDiscovered += (s, e) => {
+                try {
+                    if (e.Message.Answers.Count > 0)
                     {
-                        await broadcastClient.SendAsync(myInfoBytes, myInfoBytes.Length, new IPEndPoint(IPAddress.Broadcast, 53317));
+                        var srv = e.Message.Answers.OfType<Makaretu.Dns.SRVRecord>().FirstOrDefault();
+                        var txt = e.Message.Answers.OfType<Makaretu.Dns.TXTRecord>().FirstOrDefault();
+                        var a = e.Message.Answers.OfType<Makaretu.Dns.ARecord>().FirstOrDefault();
+                        
+                        if (srv != null && txt != null && a != null)
+                        {
+                            var fp = txt.Strings.FirstOrDefault(x => x.StartsWith("fingerprint="))?.Split('=')[1];
+                            var alias = txt.Strings.FirstOrDefault(x => x.StartsWith("alias="))?.Split('=')[1];
+                            
+                            if (!string.IsNullOrEmpty(fp) && fp != myInfo.Fingerprint)
+                            {
+                                var dto = new RegisterDto { Fingerprint = fp, Alias = alias ?? "Unknown", Port = srv.Port };
+                                Devices[fp] = new DiscoveredDevice
+                                {
+                                    Ip = a.Address.ToString(),
+                                    Info = dto,
+                                    LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                                };
+                            }
+                        }
                     }
-                    catch { }
-                    await Task.Delay(2000, stoppingToken);
-                }
-            }, stoppingToken);
+                } catch { }
+            };
 
-            // Listener task
+            mdns.Start();
+            
             while (!stoppingToken.IsCancellationRequested)
             {
-                try
-                {
-                    var result = await udpClient.ReceiveAsync(stoppingToken);
-                    var payload = Encoding.UTF8.GetString(result.Buffer);
-                    var dto = JsonSerializer.Deserialize<RegisterDto>(payload);
-                    if (dto != null && dto.Fingerprint != myInfo.Fingerprint)
-                    {
-                        Devices[dto.Fingerprint] = new DiscoveredDevice
-                        {
-                            Ip = result.RemoteEndPoint.Address.ToString(),
-                            Info = dto,
-                            LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-                        };
-                    }
-                }
-                catch { }
+                await Task.Delay(2000, stoppingToken);
             }
+            
+            sd.Unadvertise(service);
+            mdns.Stop();
         }
     }
 
@@ -129,6 +138,7 @@ namespace ConnectPhoneShareTarget
             {
                 options.ListenAnyIP(53317, listenOptions =>
                 {
+                    listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2AndHttp3;
                     listenOptions.UseHttps(cert);
                 });
                 

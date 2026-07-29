@@ -146,6 +146,13 @@ if ($null -eq $script:wpfWindow) {
 $global:CurrentTheme = "DarkTheme"
 
 Set-AppTheme (Get-SystemTheme)
+$themeTimer = New-Object System.Windows.Threading.DispatcherTimer
+$themeTimer.Interval = [TimeSpan]::FromSeconds(2)
+$themeTimer.Add_Tick({
+    $t = Get-SystemTheme
+    if ($global:CurrentTheme -ne $t) { Set-AppTheme $t }
+})
+$themeTimer.Start()
 
     # Load UI Bindings in current scope
     . "$PSScriptRoot\TrayUIBindings.ps1"
