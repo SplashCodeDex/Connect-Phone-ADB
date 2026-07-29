@@ -16,6 +16,7 @@ lifecycleViewmodelNav3 = "2.10.0"
 ktor = "3.0.1"
 bouncycastle = "1.78.1"
 serializationJson = "1.6.3"
+cronet = "18.0.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -51,6 +52,7 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationJson" }
+play-services-cronet = { module = "com.google.android.gms:play-services-cronet", version.ref = "cronet" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

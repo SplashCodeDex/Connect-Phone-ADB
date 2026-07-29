@@ -333,7 +333,7 @@
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="{DynamicResource SecondaryBrush}"/>
-                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
                             </Trigger>
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>

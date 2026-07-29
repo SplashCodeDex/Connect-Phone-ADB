@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.5.2.0] - 2026-07-29
+### Added
+- **[fix]** Set \SecondaryForegroundBrush\ to absolute black (#000000) in dark theme and updated Quick Action buttons to utilize this dynamic brush for maximum contrast when active.
+
 ## [2.5.1.0] - 2026-07-29
 ### Added
 - **[fix]** Added `SecondaryForegroundBrush` to ensure device avatars maintain high visual contrast against the dynamic `SecondaryBrush` background in both Light and Dark modes.

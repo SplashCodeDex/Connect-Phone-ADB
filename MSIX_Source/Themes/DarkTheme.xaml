@@ -12,7 +12,7 @@
     
     <!-- Secondary & Status -->
     <SolidColorBrush x:Key="SecondaryBrush" Color="#0AE66D" />
-    <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="#16121A" />
+    <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="#000000" />
     <SolidColorBrush x:Key="DangerBrush" Color="#FF453A" />
     
     <!-- Item Highlights (Selected & Hover) -->

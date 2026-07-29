@@ -75,6 +75,17 @@ class RestServerEngine {
                         
                         call.respond(io.ktor.http.HttpStatusCode.OK)
                     }
+                    post("/notify-download") {
+                        val request = call.receive<Map<String, String>>()
+                        val url = request["url"]
+                        if (url != null) {
+                            println("Received download signal: $url")
+                            // Trigger Cronet download here
+                            call.respond(io.ktor.http.HttpStatusCode.OK)
+                        } else {
+                            call.respond(io.ktor.http.HttpStatusCode.BadRequest)
+                        }
+                    }
                 }
             }.start(wait = true)
         }

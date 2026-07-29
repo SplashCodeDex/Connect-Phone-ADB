@@ -103,4 +103,7 @@ dependencies {
   // BouncyCastle
   implementation(libs.bouncycastle.bcprov)
   implementation(libs.bouncycastle.bcpkix)
+
+  // Cronet for HTTP/3
+  implementation(libs.play.services.cronet)
 }
