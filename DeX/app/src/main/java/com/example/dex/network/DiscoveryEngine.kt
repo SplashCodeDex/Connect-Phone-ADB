@@ -69,37 +69,25 @@ class DiscoveryEngine {
             override fun onDiscoveryStarted(regType: String) {}
             override fun onServiceFound(service: NsdServiceInfo) {
                 if (service.serviceType.contains("_dex._udp")) {
-                    nsdManager?.resolveService(service, object : NsdManager.ResolveListener {
-                        override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {}
-                        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                            val fpBytes = serviceInfo.attributes["fingerprint"]
-                            val aliasBytes = serviceInfo.attributes["alias"]
-                            val fp = fpBytes?.let { String(it) }
-                            val alias = aliasBytes?.let { String(it) } ?: "Unknown"
-
-                            if (fp != null && fp != localSendInfo.fingerprint) {
-                                val dto = RegisterDto(
-                                    alias = alias,
-                                    version = "2.0",
-                                    deviceModel = "Unknown",
-                                    deviceType = "unknown",
-                                    fingerprint = fp,
-                                    port = serviceInfo.port,
-                                    protocol = "https",
-                                    download = true
-                                )
-                                _devices.update { map ->
-                                    val newMap = map.toMutableMap()
-                                    newMap[fp] = DiscoveredDevice(
-                                        ip = serviceInfo.host.hostAddress ?: "",
-                                        info = dto,
-                                        lastSeenTimestamp = System.currentTimeMillis()
-                                    )
-                                    newMap
-                                }
+                    if (android.os.Build.VERSION.SDK_INT >= 34) {
+                        val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
+                        nsdManager?.registerServiceInfoCallback(service, executor, object : NsdManager.ServiceInfoCallback {
+                            override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {}
+                            override fun onServiceUpdated(serviceInfo: NsdServiceInfo) {
+                                handleResolvedService(serviceInfo)
                             }
-                        }
-                    })
+                            override fun onServiceLost() {}
+                            override fun onServiceInfoCallbackUnregistered() {}
+                        })
+                    } else {
+                        @Suppress("DEPRECATION")
+                        nsdManager?.resolveService(service, object : NsdManager.ResolveListener {
+                            override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {}
+                            override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                                handleResolvedService(serviceInfo)
+                            }
+                        })
+                    }
                 }
             }
             override fun onServiceLost(service: NsdServiceInfo) {}
@@ -123,6 +111,43 @@ class DiscoveryEngine {
             }
         }
     }
+
+    private fun handleResolvedService(serviceInfo: NsdServiceInfo) {
+        val fpBytes = serviceInfo.attributes["fingerprint"]
+        val aliasBytes = serviceInfo.attributes["alias"]
+        val fp = fpBytes?.let { String(it) }
+        val alias = aliasBytes?.let { String(it) } ?: "Unknown"
+
+        if (fp != null && fp != localSendInfo.fingerprint) {
+            val ip = if (android.os.Build.VERSION.SDK_INT >= 34) {
+                serviceInfo.hostAddresses.firstOrNull()?.hostAddress ?: ""
+            } else {
+                @Suppress("DEPRECATION")
+                serviceInfo.host?.hostAddress ?: ""
+            }
+
+            val dto = RegisterDto(
+                alias = alias,
+                version = "2.0",
+                deviceModel = "Unknown",
+                deviceType = "unknown",
+                fingerprint = fp,
+                port = serviceInfo.port,
+                protocol = "https",
+                download = true
+            )
+            _devices.update { map ->
+                val newMap = map.toMutableMap()
+                newMap[fp] = DiscoveredDevice(
+                    ip = ip,
+                    info = dto,
+                    lastSeenTimestamp = System.currentTimeMillis()
+                )
+                newMap
+            }
+        }
+    }
+
 
     fun stopDiscovery() {
         try {

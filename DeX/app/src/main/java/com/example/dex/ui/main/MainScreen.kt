@@ -45,7 +45,21 @@ fun MainScreen(
     ) { uri: Uri? ->
         uri?.let { selectedUri ->
             selectedDevice?.let { device ->
-                Toast.makeText(context, "Sending to ${device.info.alias}...", Toast.LENGTH_SHORT).show()
+                var fileName = "shared_file"
+                var fileSize = 0L
+
+                context.contentResolver.query(selectedUri, null, null, null, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                        val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
+                        if (nameIndex >= 0) fileName = cursor.getString(nameIndex) ?: fileName
+                        if (sizeIndex >= 0) fileSize = cursor.getLong(sizeIndex)
+                    }
+                }
+                
+                val fileId = java.util.UUID.randomUUID().toString()
+
+                Toast.makeText(context, "Sending $fileName to ${device.info.alias}...", Toast.LENGTH_SHORT).show()
                 // Hooking into LocalSend client engine
                 scope.launch {
                     val prepareRequest = com.example.dex.network.PrepareUploadRequestDto(
@@ -54,16 +68,16 @@ fun MainScreen(
                             deviceType = "mobile", fingerprint = "dex-fingerprint",
                             port = 53317, protocol = "https", download = true
                         ),
-                        files = mapOf("file1" to com.example.dex.network.FileDto("file1", "shared_file", 1024, "application/octet-stream"))
+                        files = mapOf(fileId to com.example.dex.network.FileDto(fileId, fileName, fileSize, "application/octet-stream"))
                     )
                     
                     val response = DexAppContainer.clientEngine.prepareUpload(device.ip, device.info.port, prepareRequest)
                     if (response != null) {
                         Log.i("DeX", "UI: Transfer Prepared! SessionId: ${response.sessionId}")
                         
-                        val token = response.files["file1"] ?: ""
+                        val token = response.files[fileId] ?: ""
                         val bytes = context.contentResolver.openInputStream(selectedUri)?.readBytes() ?: ByteArray(0)
-                        val success = DexAppContainer.clientEngine.uploadFile(device.ip, device.info.port, response.sessionId, "file1", token, bytes)
+                        val success = DexAppContainer.clientEngine.uploadFile(device.ip, device.info.port, response.sessionId, fileId, token, bytes)
                         if (success) {
                             Log.i("DeX", "UI: File uploaded successfully!")
                             Toast.makeText(context, "Upload Success!", Toast.LENGTH_SHORT).show()
@@ -198,6 +212,7 @@ fun DeviceCard(device: DiscoveredDevice, onClick: () -> Unit) {
                 Text(text = device.info.alias, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
                 Text(text = "${device.ip}:${device.info.port}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            @Suppress("DEPRECATION")
             Icon(
                 imageVector = Icons.Default.Send,
                 contentDescription = "Send File",

@@ -137,9 +137,9 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
-        <!-- Settings Expand Storyboard: same window expansion but shows SettingsPanel instead of FileExplorer -->
+        <!-- Settings Expand Storyboard: expands to 675px max (smaller than File Explorer's 754px) -->
         <Storyboard x:Key="ExpandSettings">
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="675" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <!-- Settings Panel: Slide from Right to Left while fading -->
@@ -173,7 +173,7 @@
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
         <Storyboard x:Key="ContractSettings">
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="-754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="-675" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="-195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <DoubleAnimation Storyboard.TargetName="settingsTrans" Storyboard.TargetProperty="X" To="150" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />

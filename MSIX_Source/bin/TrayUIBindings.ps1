@@ -279,7 +279,10 @@ $actionPull = {
     
     $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
     if ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible') {
-        # Quick swap from Settings to File Explorer (avoid DoubleAnimation stacking bug)
+        # Quick swap from Settings (675px) to File Explorer (754px): adjust window width
+        $mainBorder = $script:wpfWindow.FindName("mainBorder")
+        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
+        $mainBorder.Width += 79  # 754 - 675 = 79px difference
         $settingsPanel.Visibility = 'Collapsed'
         $settingsPanel.Opacity = 0
         $script:wpfWindow.FindName("FileExplorer").Visibility = 'Visible'
@@ -325,7 +328,10 @@ $actionSettings = {
     
     # If file explorer is visible, contract it first then expand settings
     if ($fileExplorer.Visibility -eq 'Visible') {
-        # Quick swap from File Explorer to Settings (avoid DoubleAnimation stacking bug)
+        # Quick swap from File Explorer (754px) to Settings (675px): adjust window width
+        $mainBorder = $script:wpfWindow.FindName("mainBorder")
+        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
+        $mainBorder.Width -= 79  # 754 - 675 = 79px difference
         $fileExplorer.Visibility = 'Collapsed'
         $fileExplorer.Opacity = 0
         $settingsPanel.Visibility = 'Visible'
@@ -442,6 +448,15 @@ if ($btnSettingsDownloadPath) {
     })
 }
 
+# About button in settings
+$btnSettingsAbout = $script:wpfWindow.FindName("btnSettingsAbout")
+if ($btnSettingsAbout) {
+    $btnSettingsAbout.Add_Click({
+        Start-Process "https://github.com/SplashCodeDex/Connect-Phone-ADB"
+        $script:wpfWindow.Hide()
+    })
+}
+
 # Edge Case 11 & 14: lbFiles KeyDown for Ctrl+A (visible only), Escape deselect, and Enter key execution
 $script:lbFiles.Add_KeyDown({
     param($sender, $e)
@@ -535,6 +550,7 @@ $script:wpfWindow.Add_KeyDown({
             return
         }
         
+        # Edge Case: Reset all expanded panels before hiding
         $script:wpfWindow.Hide()
         $script:lastDeactivated = [DateTime]::Now
         $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
@@ -550,13 +566,6 @@ $script:wpfWindow.Add_KeyDown({
         $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
         $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
-        
-        $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
-        if ($settingsPanel) {
-            $settingsPanel.Visibility = 'Collapsed'
-            $settingsPanel.Opacity = 0
-            $script:wpfWindow.FindName("settingsTrans").X = 150
-        }
         $e.Handled = $true
     } elseif (($e.Key -eq [System.Windows.Input.Key]::Up -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Alt)) -or ($e.Key -eq [System.Windows.Input.Key]::Back)) {
         # Edge Case 25: Alt + Up Arrow / Backspace navigates Up Directory
@@ -619,6 +628,14 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
         return
     }
     
+    # If FileExplorer is visible, contract it instead of hiding the whole window (consistent UX)
+    if ($fileExplorer.Visibility -eq 'Visible') {
+        $sb = $script:wpfWindow.Resources["ContractMenu"]
+        $sb.Begin($script:wpfWindow)
+        return
+    }
+    
+    # Edge Case: Reset all expanded panels before hiding
     $script:wpfWindow.Hide()
     $script:lastDeactivated = [DateTime]::Now
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
@@ -634,13 +651,6 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
     $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
-    
-    $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
-    if ($settingsPanel) {
-        $settingsPanel.Visibility = 'Collapsed'
-        $settingsPanel.Opacity = 0
-        $script:wpfWindow.FindName("settingsTrans").X = 150
-    }
 })
 
 $script:notifyIcon.Add_MouseUp({
@@ -650,8 +660,22 @@ $script:notifyIcon.Add_MouseUp({
         $now = [DateTime]::Now
         Write-Trace "IsVisible: $($script:wpfWindow.IsVisible) | Ms since lastDeactivated: $(($now - $script:lastDeactivated).TotalMilliseconds)"
         if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
+            # Edge Case: If window was visible with expanded panels, fully reset state on hide
             Write-Trace "MouseUp: Hiding window (debounce or visible)"
             $script:wpfWindow.Hide()
+            $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
+            $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
+            $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+            $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+            $script:wpfWindow.FindName("fileTrans").X = 150
+            $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
+            $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
+            $script:wpfWindow.FindName("settingsTrans").X = 150
+            $script:wpfWindow.FindName("menuTrans").X = 0
+            $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
+            $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
+            $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
+            $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
             return
         }
         
@@ -660,6 +684,19 @@ $script:notifyIcon.Add_MouseUp({
         } catch { Write-Trace "Update-WpfUI error: $_" }
         
         # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
+        # Also reset containers to contracted state so PopIn shows clean window
+        $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+        $script:wpfWindow.FindName("fileTrans").X = 150
+        $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
+        $script:wpfWindow.FindName("settingsTrans").X = 150
+        $script:wpfWindow.FindName("menuTrans").X = 0
+        $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
+        $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+        
         $workArea = [System.Windows.SystemParameters]::WorkArea
         $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
         $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
