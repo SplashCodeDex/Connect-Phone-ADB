@@ -310,11 +310,69 @@ $script:wpfWindow.FindName("btnPopTheme").Add_Click({
     }
 })
 
+# Settings Panel Toggle (avatar click expands/contracts settings)
+$actionSettings = {
+    $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
+    $fileExplorer = $script:wpfWindow.FindName("FileExplorer")
+    
+    # If settings is already visible, contract it
+    if ($settingsPanel.Visibility -eq 'Visible') {
+        $sb = $script:wpfWindow.Resources["ContractSettings"]
+        $sb.Begin($script:wpfWindow)
+        return
+    }
+    
+    # If file explorer is visible, contract it first then expand settings
+    if ($fileExplorer.Visibility -eq 'Visible') {
+        $sbContract = $script:wpfWindow.Resources["ContractMenu"]
+        $sbContract.Begin($script:wpfWindow)
+    }
+    
+    $mainBorder = $script:wpfWindow.FindName("mainBorder")
+    if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
+    if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
+    
+    $sb = $script:wpfWindow.Resources["ExpandSettings"]
+    $sb.Begin($script:wpfWindow)
+    
+    # Update theme text in settings
+    $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")
+    if ($txtTheme) {
+        $txtTheme.Text = if ($global:CurrentTheme -eq "DarkTheme") { "Dark" } else { "Light" }
+    }
+    
+    # Update auto-connect badge
+    $txtBadge = $script:wpfWindow.FindName("txtBadgeAutoConnect")
+    $badge = $script:wpfWindow.FindName("badgeAutoConnect")
+    if ($txtBadge -and $badge) {
+        $isEnabled = Get-AutoConnectStatus
+        $txtBadge.Text = if ($isEnabled) { "ON" } else { "OFF" }
+        if ($isEnabled) {
+            $badge.Background = $script:wpfWindow.FindResource("SecondaryBrush")
+            $txtBadge.Foreground = $script:wpfWindow.FindResource("SecondaryForegroundBrush")
+        } else {
+            $badge.Background = $script:wpfWindow.FindResource("DangerBrush")
+            $txtBadge.Foreground = [System.Windows.Media.Brushes]::White
+        }
+    }
+    
+    # Update download path
+    $txtDlPath = $script:wpfWindow.FindName("txtSettingsDownloadPath")
+    if ($txtDlPath) {
+        $path = if ($script:customDownloadPath) { $script:customDownloadPath } else { "Downloads\dex" }
+        $txtDlPath.Text = $path
+    }
+}
+
 $popAvatar = $script:wpfWindow.FindName("popAvatar")
 $btnTopProfile = $script:wpfWindow.FindName("btnProfileTop")
 $btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
-if ($btnTopProfile) { $btnTopProfile.Add_Click({ $popAvatar.IsOpen = $true }) }
-if ($btnProfileBottom) { $btnProfileBottom.Add_Click({ $popAvatar.IsOpen = $true }) }
+$btnProfileTopSettings = $script:wpfWindow.FindName("btnProfileTopSettings")
+
+# Avatar clicks now open the settings panel instead of the popup
+if ($btnTopProfile) { $btnTopProfile.Add_Click({ Invoke-MenuAction $actionSettings }) }
+if ($btnProfileBottom) { $btnProfileBottom.Add_Click({ Invoke-MenuAction $actionSettings }) }
+if ($btnProfileTopSettings) { $btnProfileTopSettings.Add_Click({ Invoke-MenuAction $actionSettings }) }
 
 
 

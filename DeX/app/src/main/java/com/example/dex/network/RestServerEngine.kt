@@ -81,11 +81,12 @@ class RestServerEngine {
                         val portStr = request["port"]
                         val fileId = request["fileId"]
                         val fileName = request["fileName"] ?: "downloaded_file"
+                        val fileSize = request["fileSize"]?.toLongOrNull() ?: 100L // prevent divide by zero
                         
                         if (ip != null && portStr != null && fileId != null) {
                             println("Received TCP download signal: $ip:$portStr for file $fileId")
                             val dest = java.io.File(System.getProperty("java.io.tmpdir"), fileName)
-                            TcpDownloadService.download(ip, portStr.toInt(), fileId, dest)
+                            TcpDownloadService.download(ip, portStr.toInt(), fileId, fileName, fileSize, dest)
                             call.respond(io.ktor.http.HttpStatusCode.OK)
                         } else {
                             call.respond(io.ktor.http.HttpStatusCode.BadRequest)

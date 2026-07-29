@@ -139,7 +139,8 @@ namespace ConnectPhoneShareTarget
                     { "ip", localIp },
                     { "port", "53319" },
                     { "fileId", fileId },
-                    { "fileName", fi.Name }
+                    { "fileName", fi.Name },
+                    { "fileSize", fi.Length.ToString() }
                 };
 
                 var content = new StringContent(JsonSerializer.Serialize(notifyReq), System.Text.Encoding.UTF8, "application/json");

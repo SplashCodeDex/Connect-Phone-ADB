@@ -48,7 +48,7 @@
                                                 <RepeatButton Command="ScrollBar.PageLeftCommand" Opacity="0" Focusable="False"/>
                                             </Track.DecreaseRepeatButton>
                                             <Track.IncreaseRepeatButton>
-                                                <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
+                                                <RepeatButton Command="ScrollBar.PageRightCommand" Opacity="0" Focusable="False"/>
                                             </Track.IncreaseRepeatButton>
                                             <Track.Thumb>
                                                 <Thumb>
@@ -113,6 +113,72 @@
             <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" To="150" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.4" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.8" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            
+            <!-- Hide Close Button and Top Profile when contracting, show Bottom Profile -->
+            <DoubleAnimation Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            
+            <DoubleAnimation Storyboard.TargetName="btnProfileTop" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileTop" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileBottom" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            
+            <!-- Hide Nearby Expand Users when contracting -->
+            <DoubleAnimation Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <!-- Settings Expand Storyboard: same window expansion but shows SettingsPanel instead of FileExplorer -->
+        <Storyboard x:Key="ExpandSettings">
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            
+            <!-- Settings Panel: Slide from Right to Left while fading -->
+            <DoubleAnimation Storyboard.TargetName="settingsTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="SettingsPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.6" BeginTime="0:0:0.1"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SettingsPanel" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            
+            <!-- Show Close Button and Top Profile when expanded, hide Bottom Profile -->
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="btnCloseMenu" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.3" />
+            
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileBottom" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Collapsed}" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileTop" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="btnProfileTop" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.3" />
+            
+            <!-- Show Nearby Expand Users when expanded -->
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5" BeginTime="0:0:0.3" />
+            
+            <!-- Subtle Parallax on Main Menu: Slide Right slightly -->
+            <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+        </Storyboard>
+        <Storyboard x:Key="ContractSettings">
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="-754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="-195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            
+            <DoubleAnimation Storyboard.TargetName="settingsTrans" Storyboard.TargetProperty="X" To="150" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="SettingsPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.4" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SettingsPanel" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.8" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
             
@@ -462,6 +528,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         
+        <!-- File Explorer Panel (left side, hidden by default) -->
         <Grid Name="FileExplorer" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="24,24,15,15">
             <Grid.RenderTransform>
                 <TranslateTransform x:Name="fileTrans" X="150" />
@@ -499,7 +566,7 @@
                     </Grid>
                 </Border>
                 
-                <Button Name="btnProfileTop" Grid.Column="2" Style="{StaticResource SpatialListItem}" Margin="12,0,12,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
+                <Button Name="btnProfileTop" Grid.Column="2" Style="{StaticResource SpatialListItem}" Margin="12,0,12,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
                     <Grid>
                         <Ellipse Width="34" Height="34">
                             <Ellipse.Fill>
@@ -575,6 +642,184 @@
                 </StackPanel>
             </Border>
         </Grid>
+
+        <!-- Settings Panel (left side, hidden by default, toggled by avatar click) -->
+        <Grid Name="SettingsPanel" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="24,24,15,15">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="settingsTrans" X="150" />
+            </Grid.RenderTransform>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Settings Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Border Grid.Column="0" Background="{DynamicResource AccentBrush}" CornerRadius="18" Padding="12,8" Margin="0,0,12,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE713;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBlock Text="Settings" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Column="1" Background="{DynamicResource AccentBrush}" CornerRadius="20" Padding="14,8">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBlock Name="txtSettingsSubtitle" Text="Connect Phone ADB" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+                
+                <Button Name="btnProfileTopSettings" Grid.Column="2" Style="{StaticResource SpatialListItem}" Margin="12,0,0,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
+                    <Grid>
+                        <Ellipse Width="34" Height="34">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </Grid>
+                </Button>
+            </Grid>
+            
+            <!-- Settings Content -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly" Margin="0,0,10,0">
+                <StackPanel>
+                    <!-- Profile Section -->
+                    <Border Background="{DynamicResource AccentBrush}" CornerRadius="16" Padding="20" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Ellipse Width="56" Height="56" Margin="0,0,16,0">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Joe Belfiore" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBlock Text="Premium User" FontSize="12" Foreground="{DynamicResource SecondaryBrush}" FontWeight="SemiBold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Connection Settings -->
+                    <TextBlock Text="Connection" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" Margin="4,8,0,8" />
+                    
+                    <Border Background="{DynamicResource AccentBrush}" CornerRadius="16" Padding="4" Margin="0,0,0,12">
+                        <StackPanel>
+                            <Button Name="btnSettingsAutoConnect" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="&#xE895;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Auto-Connect ADB" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                        <TextBlock Text="Auto-connect when joining phone hotspot" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    </StackPanel>
+                                    <Border Name="badgeAutoConnect" Grid.Column="2" Background="{DynamicResource SecondaryBrush}" CornerRadius="10" Padding="10,4" Margin="0,0,4,0">
+                                        <TextBlock Name="txtBadgeAutoConnect" Text="ON" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource SecondaryForegroundBrush}" />
+                                    </Border>
+                                </Grid>
+                            </Button>
+                            
+                            <Button Name="btnSettingsConnectNow" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource SecondaryBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Connect ADB Now" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                        <TextBlock Text="Manually trigger ADB connection" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Appearance -->
+                    <TextBlock Text="Appearance" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" Margin="4,8,0,8" />
+                    
+                    <Border Background="{DynamicResource AccentBrush}" CornerRadius="16" Padding="4" Margin="0,0,0,12">
+                        <StackPanel>
+                            <Button Name="btnSettingsTheme" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Theme" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                        <TextBlock Name="txtSettingsTheme" Text="Dark" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="&#xE76B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Storage -->
+                    <TextBlock Text="Storage" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" Margin="4,8,0,8" />
+                    
+                    <Border Background="{DynamicResource AccentBrush}" CornerRadius="16" Padding="4" Margin="0,0,0,12">
+                        <StackPanel>
+                            <Button Name="btnSettingsDownloadPath" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="&#xE8F4;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Download Location" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                        <TextBlock Name="txtSettingsDownloadPath" Text="Downloads\dex" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="&#xE76B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- About -->
+                    <TextBlock Text="About" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" Margin="4,8,0,8" />
+                    
+                    <Border Background="{DynamicResource AccentBrush}" CornerRadius="16" Padding="4" Margin="0,0,0,12">
+                        <StackPanel>
+                            <Button Name="btnSettingsAbout" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Connect Phone ADB" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                        <TextBlock Text="Version 1.0.0" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bottom spacer for scroll -->
+                    <Rectangle Height="20" Fill="Transparent" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
         
         <Border Grid.Column="1" Background="Transparent" Padding="0" MinWidth="300">
             <Border.RenderTransform>
@@ -593,7 +838,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         
-                        <Button Name="btnProfileBottom" Grid.Column="0" Style="{StaticResource SpatialListItem}" Margin="16,0,4,0" ToolTip="Sign in with Google (Premium)" VerticalAlignment="Center" Padding="0">
+                        <Button Name="btnProfileBottom" Grid.Column="0" Style="{StaticResource SpatialListItem}" Margin="16,0,4,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0">
                             <Grid>
                                 <Ellipse Width="34" Height="34">
                                     <Ellipse.Fill>
@@ -850,5 +1095,3 @@
     </Grid>
     </Border>
 </Window>
-
-

@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.3.0] - 2026-07-29
+### Added
+- **[minor]** Integrated native Windows 11 Accent Color syncing. The \SecondaryBrush\ now dynamically inherits the user's active DWM ColorizationColor (with our smooth 300ms fallback crossfade intact).
+
 ## [2.6.2.0] - 2026-07-29
 ### Added
 - **[fix]** Implemented \AppThemeMode\ state manager to resolve a bug where the automatic background OS theme listener would forcefully override a user's manual theme toggle selection.
