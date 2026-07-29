@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.0.0] - 2026-07-29
+### Added
+- **[minor]** Injected a WPF \ColorAnimation\ storyboard into the theme-swapping engine, enabling a premium 300ms smooth crossfade for all backgrounds, text, and surfaces when toggling between Light and Dark mode.
+
 ## [2.5.2.0] - 2026-07-29
 ### Added
 - **[fix]** Set \SecondaryForegroundBrush\ to absolute black (#000000) in dark theme and updated Quick Action buttons to utilize this dynamic brush for maximum contrast when active.

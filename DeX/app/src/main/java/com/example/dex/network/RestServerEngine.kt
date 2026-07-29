@@ -77,10 +77,14 @@ class RestServerEngine {
                     }
                     post("/notify-download") {
                         val request = call.receive<Map<String, String>>()
-                        val url = request["url"]
-                        if (url != null) {
-                            println("Received download signal: $url")
-                            // Trigger Cronet download here
+                        val ip = request["ip"]
+                        val portStr = request["port"]
+                        val fileName = request["fileName"] ?: "downloaded_file"
+                        
+                        if (ip != null && portStr != null) {
+                            println("Received TCP download signal: $ip:$portStr")
+                            val dest = java.io.File(System.getProperty("java.io.tmpdir"), fileName)
+                            TcpDownloadService.download(ip, portStr.toInt(), dest)
                             call.respond(io.ktor.http.HttpStatusCode.OK)
                         } else {
                             call.respond(io.ktor.http.HttpStatusCode.BadRequest)

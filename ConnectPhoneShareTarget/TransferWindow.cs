@@ -101,68 +101,51 @@ namespace ConnectPhoneShareTarget
         private async Task PerformLocalSendTransferAsync(DiscoveredDevice device)
         {
             long totalBytes = files.Sum(f => new FileInfo(f).Length);
-            long totalSent = 0;
-            
             Stopwatch globalSw = Stopwatch.StartNew();
 
-            // Ignore cert errors for LocalSend
+            // Ignore cert errors
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
             using var http = new HttpClient(handler);
-            http.Timeout = TimeSpan.FromHours(1);
+            http.Timeout = TimeSpan.FromSeconds(15);
 
             var baseUrl = $"https://{device.Ip}:{device.Info.Port}";
             
-            // 1. Register
-            var regRes = await http.PostAsync($"{baseUrl}/api/localsend/v2/register", new StringContent(JsonSerializer.Serialize(new RegisterDto()), System.Text.Encoding.UTF8, "application/json"));
-            
-            // 2. Prepare upload
-            var prepareReq = new PrepareUploadRequestDto
+            // Get local IP used to reach the device
+            string localIp = "127.0.0.1";
+            try
             {
-                Info = new RegisterDto()
-            };
+                using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
+                socket.Connect(device.Ip, 53317);
+                localIp = (socket.LocalEndPoint as IPEndPoint)?.Address.ToString() ?? "127.0.0.1";
+            } catch {}
+
             foreach (var f in files)
             {
                 var fi = new FileInfo(f);
-                var fDto = new FileDto { Id = Guid.NewGuid().ToString(), FileName = fi.Name, Size = fi.Length, FileType = "application/octet-stream" };
-                prepareReq.Files[fDto.Id] = fDto;
-            }
-
-            var prepRes = await http.PostAsync($"{baseUrl}/api/localsend/v2/prepare-upload", new StringContent(JsonSerializer.Serialize(prepareReq), System.Text.Encoding.UTF8, "application/json"));
-            var prepRespStr = await prepRes.Content.ReadAsStringAsync();
-            var prepData = JsonSerializer.Deserialize<PrepareUploadResponseDto>(prepRespStr, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            
-            if (prepData == null || string.IsNullOrEmpty(prepData.SessionId))
-                throw new Exception("LocalSend prepare upload failed.");
-
-            // 3. Upload files
-            foreach (var kvp in prepareReq.Files)
-            {
-                var fDto = kvp.Value;
-                var localFilePath = files.First(x => Path.GetFileName(x) == fDto.FileName);
-                if (!prepData.Files.TryGetValue(fDto.Id, out string token))
-                    continue;
-
-                txtStatus.Text = $"Wi-Fi Transferring {fDto.FileName}...";
-
-                using var fs = new FileStream(localFilePath, FileMode.Open, FileAccess.Read);
+                var fileId = Guid.NewGuid().ToString();
                 
-                var content = new ProgressableStreamContent(fs, (sent) =>
+                // 1. Host the file in Kestrel
+                LocalSendServer.HostedFiles[fileId] = f;
+
+                txtStatus.Text = $"Notifying Android to pull {fi.Name}...";
+
+                // 2. Send the notify-download signal
+                var notifyReq = new Dictionary<string, string>
                 {
-                    totalSent += sent;
-                    // Note: Update UI logic skipped in minimal implementation to avoid cross-thread UI updates issues.
-                    // Full animation can be ported from ADB method if needed.
-                });
-                
-                var uploadUrl = $"{baseUrl}/api/localsend/v2/upload?sessionId={prepData.SessionId}&fileId={fDto.Id}&token={token}";
-                await http.PostAsync(uploadUrl, content);
+                    { "url", $"https://{localIp}:53317/download/{fileId}" },
+                    { "fileName", fi.Name }
+                };
+
+                var content = new StringContent(JsonSerializer.Serialize(notifyReq), System.Text.Encoding.UTF8, "application/json");
+                await http.PostAsync($"{baseUrl}/notify-download", content);
             }
 
             globalSw.Stop();
-            txtStatus.Text = "Wi-Fi Transfer Complete!";
-            txtSpeed.Text = $"{totalBytes / 1048576.0:F1} MB in {globalSw.Elapsed.TotalSeconds:F1}s";
+            txtStatus.Text = "Transfer Signal Sent!";
+            txtSpeed.Text = $"{totalBytes / 1048576.0:F1} MB triggered in {globalSw.Elapsed.TotalSeconds:F1}s";
             
             var parentFinal = (Border)progressIndicator.Parent;
             var animFinal = new System.Windows.Media.Animation.DoubleAnimation {
@@ -174,6 +157,12 @@ namespace ConnectPhoneShareTarget
             
             TaskbarItemInfo.ProgressValue = 1.0;
             await Task.Delay(3000);
+            
+            // Clean up hosted files memory after a while so we don't leak memory (not deleting the physical file)
+            _ = Task.Run(async () => {
+                await Task.Delay(TimeSpan.FromMinutes(5));
+                LocalSendServer.HostedFiles.Clear();
+            });
         }
 
         private async Task PerformThrufluxHostAsync()

@@ -124,6 +124,7 @@ namespace ConnectPhoneShareTarget
     public static class LocalSendServer
     {
         public static WebApplication? App;
+        public static ConcurrentDictionary<string, string> HostedFiles = new();
 
         public static async Task StartAsync()
         {
@@ -158,6 +159,7 @@ namespace ConnectPhoneShareTarget
             });
 
             var activeSessions = new ConcurrentDictionary<string, PrepareUploadRequestDto>();
+            HostedFiles = new ConcurrentDictionary<string, string>();
 
             App.MapPost("/api/localsend/v2/prepare-upload", (PrepareUploadRequestDto req) =>
             {
@@ -205,6 +207,19 @@ namespace ConnectPhoneShareTarget
                 catch { }
 
                 return Results.Ok();
+            });
+
+            App.MapGet("/download/{fileId}", async (string fileId, HttpContext context) =>
+            {
+                if (HostedFiles.TryGetValue(fileId, out string path) && File.Exists(path))
+                {
+                    context.Response.ContentType = "application/octet-stream";
+                    await context.Response.SendFileAsync(path);
+                }
+                else
+                {
+                    context.Response.StatusCode = 404;
+                }
             });
 
             // Local API for PowerShell to read discovered devices
