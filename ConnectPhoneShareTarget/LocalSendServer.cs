@@ -11,6 +11,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Data.Xml.Dom;
+using Windows.UI.Notifications;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -173,6 +175,24 @@ namespace ConnectPhoneShareTarget
 
                 using var fs = new FileStream(destPath, FileMode.Create);
                 await request.Body.CopyToAsync(fs);
+
+                try
+                {
+                    string toastXmlString = 
+                    $@"<toast>
+                        <visual>
+                            <binding template='ToastGeneric'>
+                                <text>DeX File Received</text>
+                                <text>{fileMeta.FileName}</text>
+                            </binding>
+                        </visual>
+                    </toast>";
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(toastXmlString);
+                    var toastNode = new ToastNotification(xmlDoc);
+                    ToastNotificationManager.CreateToastNotifier("ConnectPhoneADB").Show(toastNode);
+                }
+                catch { }
 
                 return Results.Ok();
             });
