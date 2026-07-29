@@ -7,8 +7,8 @@ import android.net.wifi.WifiManager
 import android.os.IBinder
 
 class DexService : Service() {
-    private val restServerEngine = RestServerEngine()
-    private val discoveryEngine = DiscoveryEngine()
+    private val restServerEngine = DexAppContainer.restServerEngine
+    private val discoveryEngine = DexAppContainer.discoveryEngine
     private var multicastLock: WifiManager.MulticastLock? = null
 
     override fun onCreate() {

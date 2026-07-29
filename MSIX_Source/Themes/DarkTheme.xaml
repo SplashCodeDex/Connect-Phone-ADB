@@ -2,33 +2,23 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Dark Theme (Default) -->
     
-    <!-- Backgrounds -->
-    <SolidColorBrush x:Key="AppBackgroundBrush" Color="Transparent" />
-    <LinearGradientBrush x:Key="MenuBackgroundGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#1D1226" Offset="0.0" />
-        <GradientStop Color="#09090D" Offset="1.0" />
-    </LinearGradientBrush>
-    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#2C2C2E" />
-    <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#3A3A3C" />
-    <SolidColorBrush x:Key="MenuBorderBrush" Color="#333333" />
+    <!-- Backgrounds & Borders -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#16121A" />
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#2C2C2E" />
+    <SolidColorBrush x:Key="TertiaryBrush" Color="#3A3A3C" />
     
     <!-- Text -->
     <SolidColorBrush x:Key="PrimaryTextBrush" Color="White" />
     <SolidColorBrush x:Key="SecondaryTextBrush" Color="#A0A0A0" />
-    <SolidColorBrush x:Key="MutedTextBrush" Color="#555555" />
     
-    <!-- Icons / Accents -->
-    <SolidColorBrush x:Key="FolderIconBrush" Color="#FFD700" />
-    <SolidColorBrush x:Key="FileIconBrush" Color="#A0A0A0" />
-    
-    <!-- Functional / Status -->
-    <SolidColorBrush x:Key="BrandBrush" Color="#6200EE" />
+    <!-- Accent & Status -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#6200EE" />
     <SolidColorBrush x:Key="SuccessBrush" Color="#00E676" />
     <SolidColorBrush x:Key="DangerBrush" Color="#FF453A" />
     
     <!-- Item Highlights (Selected & Hover) -->
-    <SolidColorBrush x:Key="ItemHoverBrush" Color="#1F00E676" />
-    <SolidColorBrush x:Key="ItemSelectedBrush" Color="#3D00E676" />
-    <SolidColorBrush x:Key="ItemSelectedHoverBrush" Color="#5400E676" />
-    <SolidColorBrush x:Key="ItemSelectedBorderBrush" Color="#8000E676" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#1F6200EE" />
+    <SolidColorBrush x:Key="AccentSelectedBrush" Color="#3D6200EE" />
+    <SolidColorBrush x:Key="AccentSelectedHoverBrush" Color="#546200EE" />
+    <SolidColorBrush x:Key="AccentSelectedBorderBrush" Color="#806200EE" />
 </ResourceDictionary>

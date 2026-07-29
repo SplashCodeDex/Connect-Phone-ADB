@@ -22,40 +22,58 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation3.runtime.NavKey
-import com.example.dex.network.DexPeer
-import com.example.dex.network.TcpTransferClient
-import com.example.dex.network.UdpEngine
+import com.example.dex.network.DiscoveredDevice
+import com.example.dex.network.DexAppContainer
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    onItemClick: (NavKey) -> Unit, // Kept for Navigation3 compatibility
+    viewModel: MainScreenViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val peers by UdpEngine.discoveredPeers.collectAsStateWithLifecycle()
-    var selectedPeer by remember { mutableStateOf<DexPeer?>(null) }
+    val scope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var selectedDevice by remember { mutableStateOf<DiscoveredDevice?>(null) }
 
     // Modern Android Photo/File Picker
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let { selectedUri ->
-            selectedPeer?.let { peer ->
-                Toast.makeText(context, "Sending to ${peer.name}...", Toast.LENGTH_SHORT).show()
-                TcpTransferClient.sendUri(
-                    context = context,
-                    targetIp = peer.ip,
-                    uri = selectedUri,
-                    onComplete = {
-                        Log.i("DeX", "UI: Transfer Complete")
-                    },
-                    onError = { err ->
-                        Log.e("DeX", "UI Error: $err")
+            selectedDevice?.let { device ->
+                Toast.makeText(context, "Sending to ${device.info.alias}...", Toast.LENGTH_SHORT).show()
+                // Hooking into LocalSend client engine
+                scope.launch {
+                    val prepareRequest = com.example.dex.network.PrepareUploadRequestDto(
+                        info = com.example.dex.network.RegisterDto(
+                            alias = "DeX", version = "2.0", deviceModel = "Android",
+                            deviceType = "mobile", fingerprint = "dex-fingerprint",
+                            port = 53317, protocol = "https", download = true
+                        ),
+                        files = mapOf("file1" to com.example.dex.network.FileDto("file1", "shared_file", 1024, "application/octet-stream"))
+                    )
+                    
+                    val response = DexAppContainer.clientEngine.prepareUpload(device.ip, device.info.port, prepareRequest)
+                    if (response != null) {
+                        Log.i("DeX", "UI: Transfer Prepared! SessionId: ${response.sessionId}")
+                        
+                        val token = response.files["file1"] ?: ""
+                        val bytes = context.contentResolver.openInputStream(selectedUri)?.readBytes() ?: ByteArray(0)
+                        val success = DexAppContainer.clientEngine.uploadFile(device.ip, device.info.port, response.sessionId, "file1", token, bytes)
+                        if (success) {
+                            Log.i("DeX", "UI: File uploaded successfully!")
+                            Toast.makeText(context, "Upload Success!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Log.e("DeX", "UI Error: File upload failed.")
+                        }
+                    } else {
+                        Log.e("DeX", "UI Error: Transfer preparation failed.")
                     }
-                )
+                }
             }
         }
     }
@@ -83,15 +101,16 @@ fun MainScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            if (peers.isEmpty()) {
+            val devices = (uiState as? MainScreenUiState.Success)?.data ?: emptyList()
+            if (devices.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Scanning for DeX peers...", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(peers) { peer ->
-                        PeerCard(peer = peer, onClick = {
-                            selectedPeer = peer
+                    items(devices) { device ->
+                        DeviceCard(device = device, onClick = {
+                            selectedDevice = device
                             // Open native file picker (Filters to all files)
                             filePickerLauncher.launch("*/*") 
                         })
@@ -103,7 +122,7 @@ fun MainScreen(
 }
 
 @Composable
-fun PeerCard(peer: DexPeer, onClick: () -> Unit) {
+fun DeviceCard(device: DiscoveredDevice, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -130,8 +149,8 @@ fun PeerCard(peer: DexPeer, onClick: () -> Unit) {
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = peer.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
-                Text(text = peer.ip, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = device.info.alias, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
+                Text(text = "${device.ip}:${device.info.port}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Icon(
                 imageVector = Icons.Default.Send,

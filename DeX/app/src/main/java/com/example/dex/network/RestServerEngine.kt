@@ -13,24 +13,29 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-
+import io.ktor.util.cio.writeChannel
+import io.ktor.utils.io.copyAndClose
+import io.ktor.server.engine.EmbeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.netty.NettyApplicationEngine
 class RestServerEngine {
-    private var server: ApplicationEngine? = null
+    private var server: EmbeddedServer<*, *>? = null
 
     fun startServer() {
-        val keyStorePassword = "localsend".toCharArray()
-        val keyStore = SecurityProvider.generateKeyStore(keyStorePassword)
+        CoroutineScope(Dispatchers.IO).launch {
+            val keyStorePassword = "localsend".toCharArray()
+            val keyStore = SecurityProvider.generateKeyStore(keyStorePassword)
 
-        val environment = applicationEngineEnvironment {
-            sslConnector(
-                keyStore = keyStore,
-                keyAlias = "localsend_key",
-                keyStorePassword = { keyStorePassword },
-                privateKeyPassword = { keyStorePassword }
-            ) {
-                port = 53317
-            }
-            module {
+            server = embeddedServer(Netty, configure = {
+                sslConnector(
+                    keyStore = keyStore,
+                    keyAlias = "localsend_key",
+                    keyStorePassword = { keyStorePassword },
+                    privateKeyPassword = { keyStorePassword }
+                ) {
+                    port = 53317
+                }
+            }) {
                 install(ContentNegotiation) {
                     json()
                 }
@@ -63,15 +68,15 @@ class RestServerEngine {
                     post("/api/localsend/v2/upload") {
                         val sessionId = call.request.queryParameters["sessionId"]
                         val fileId = call.request.queryParameters["fileId"]
-                        // TODO: Save call.receiveChannel() to disk
+                        
+                        val file = java.io.File(System.getProperty("java.io.tmpdir"), fileId ?: "unknown")
+                        val channel = call.receiveChannel()
+                        channel.copyAndClose(file.writeChannel())
+                        
                         call.respond(io.ktor.http.HttpStatusCode.OK)
                     }
                 }
-            }
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            server = embeddedServer(CIO, environment).start(wait = true)
+            }.start(wait = true)
         }
     }
 

@@ -11,7 +11,7 @@
   <Identity
     Name="CodeDeX.ConnectPhoneADB"
     Publisher="CN=CodeDeX"
-    Version="2.2.4.0"
+    Version="2.3.1.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
@@ -83,6 +83,14 @@
   <Extensions>
     <desktop2:Extension Category="windows.firewallRules">
       <desktop2:FirewallRules Executable="bin\adb.exe">
+        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all"/>
+        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all"/>
+        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all"/>
+        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all"/>
+      </desktop2:FirewallRules>
+    </desktop2:Extension>
+    <desktop2:Extension Category="windows.firewallRules">
+      <desktop2:FirewallRules Executable="bin\thru.exe">
         <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all"/>
         <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all"/>
         <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all"/>

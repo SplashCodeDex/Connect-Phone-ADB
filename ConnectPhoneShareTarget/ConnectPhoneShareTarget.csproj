@@ -10,4 +10,7 @@
     <!-- We target windows TFM to get access to WinRT APIs natively -->
   </PropertyGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>

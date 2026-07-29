@@ -25,7 +25,7 @@
                                         <Thumb>
                                             <Thumb.Template>
                                                 <ControlTemplate TargetType="Thumb">
-                                                    <Border Background="{DynamicResource HoverBackgroundBrush}" CornerRadius="1" Margin="0,40" />
+                                                    <Border Background="{DynamicResource TertiaryBrush}" CornerRadius="1" Margin="0,40" />
                                                 </ControlTemplate>
                                             </Thumb.Template>
                                         </Thumb>
@@ -54,7 +54,7 @@
                                                 <Thumb>
                                                     <Thumb.Template>
                                                         <ControlTemplate TargetType="Thumb">
-                                                            <Border Background="{DynamicResource HoverBackgroundBrush}" CornerRadius="1" Margin="40,0" />
+                                                            <Border Background="{DynamicResource TertiaryBrush}" CornerRadius="1" Margin="40,0" />
                                                         </ControlTemplate>
                                                     </Thumb.Template>
                                                 </Thumb>
@@ -153,7 +153,7 @@
                     </TransformGroup>
                 </Border.RenderTransform>
                 <StackPanel Width="85" Height="90">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource FolderIconBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource AccentBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                     <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
                 </StackPanel>
                 <Border.Triggers>
@@ -263,10 +263,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource MenuBorderBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBrush}"/>
                             </Trigger>
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
@@ -308,7 +308,7 @@
             </Setter>
         </Style>
         <Style x:Key="QuickActionBtn" TargetType="ToggleButton">
-            <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Width" Value="56"/>
@@ -329,7 +329,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBrush}"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="{DynamicResource SuccessBrush}"/>
@@ -378,7 +378,7 @@
         </Style>
 
         <Style x:Key="DangerQuickActionBtn" TargetType="Button">
-            <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Width" Value="56"/>
@@ -448,7 +448,7 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Border x:Name="mainBorder" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="34" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" Background="{DynamicResource MenuBackgroundGradient}" RenderTransformOrigin="0.5,1">
+    <Border x:Name="mainBorder" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="34" BorderBrush="{DynamicResource TertiaryBrush}" BorderThickness="1" Background="{DynamicResource PrimaryBrush}" RenderTransformOrigin="0.5,1">
         <Border.RenderTransform>
             <TransformGroup>
                 <ScaleTransform ScaleX="1" ScaleY="1" x:Name="winScale" />
@@ -478,7 +478,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 
-                <Button Name="btnUpDir" Grid.Column="0" Background="{DynamicResource HoverBackgroundBrush}" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Content="&#xE898;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="12">
+                <Button Name="btnUpDir" Grid.Column="0" Background="{DynamicResource TertiaryBrush}" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Content="&#xE898;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="12">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border Background="{TemplateBinding Background}" CornerRadius="18">
@@ -488,7 +488,7 @@
                     </Button.Template>
                 </Button>
                 
-                <Border Grid.Column="1" Background="{DynamicResource HoverBackgroundBrush}" CornerRadius="20" Padding="14,8">
+                <Border Grid.Column="1" Background="{DynamicResource TertiaryBrush}" CornerRadius="20" Padding="14,8">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -527,19 +527,19 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ItemHoverBrush}"/>
+                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ItemSelectedBrush}"/>
-                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ItemSelectedBorderBrush}"/>
+                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource AccentSelectedBrush}"/>
+                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource AccentSelectedBorderBrush}"/>
                                         </Trigger>
                                         <MultiTrigger>
                                             <MultiTrigger.Conditions>
                                                 <Condition Property="IsSelected" Value="True"/>
                                                 <Condition Property="IsMouseOver" Value="True"/>
                                             </MultiTrigger.Conditions>
-                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ItemSelectedHoverBrush}"/>
-                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ItemSelectedBorderBrush}"/>
+                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource AccentSelectedHoverBrush}"/>
+                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource AccentSelectedBorderBrush}"/>
                                         </MultiTrigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -561,7 +561,7 @@
             </StackPanel>
             
             <!-- Subtle Floating Dock for Download Status & Location Change -->
-            <Border Name="dockDownloadToast" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,15" Background="{DynamicResource MenuBackgroundBrush}" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" CornerRadius="20" Padding="14,8" Visibility="Collapsed" Opacity="0" RenderTransformOrigin="0.5,1">
+            <Border Name="dockDownloadToast" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,15" Background="{DynamicResource SecondaryBrush}" BorderBrush="{DynamicResource TertiaryBrush}" BorderThickness="1" CornerRadius="20" Padding="14,8" Visibility="Collapsed" Opacity="0" RenderTransformOrigin="0.5,1">
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform x:Name="dockScale" ScaleX="0.8" ScaleY="0.8" />
@@ -571,7 +571,7 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8F4;" Foreground="{DynamicResource SuccessBrush}" FontSize="14" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <TextBlock Name="txtDownloadToast" Text="Saved to Downloads\dex" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center" Margin="0,0,12,0" />
-                    <Button Name="btnChangeDownloadPath" Content="Change" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource BrandBrush}" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center"/>
+                    <Button Name="btnChangeDownloadPath" Content="Change" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>
         </Grid>
@@ -586,7 +586,7 @@
 
                 <!-- Exit Engine & Profile: docked at bottom so it never moves -->
                 <StackPanel DockPanel.Dock="Bottom">
-                    <Separator Background="{DynamicResource MenuBackgroundBrush}" Height="1" Margin="16,8" />
+                    <Separator Background="{DynamicResource SecondaryBrush}" Height="1" Margin="16,8" />
                     <Grid Margin="0,0,0,4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -636,7 +636,7 @@
                     </Button>
                 </StackPanel>
                 
-                <Separator Background="{DynamicResource MenuBackgroundBrush}" Height="1" Margin="16,0" />
+                <Separator Background="{DynamicResource SecondaryBrush}" Height="1" Margin="16,0" />
                 <StackPanel Orientation="Horizontal" Margin="24,10,24,10">
                     <TextBlock Name="txtStatus" Text="Status: Initializing..." Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
                     <Button Name="btnCopyIP" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Copy IP:Port" Cursor="Hand" Visibility="Collapsed" VerticalAlignment="Center" Margin="6,0,0,0">
@@ -648,7 +648,7 @@
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
+                                        <Setter TargetName="border" Property="Background" Value="{DynamicResource TertiaryBrush}"/>
                                         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
@@ -656,7 +656,7 @@
                         </Button.Template>
                     </Button>
                 </StackPanel>
-                <Separator Background="{DynamicResource MenuBackgroundBrush}" Height="1" Margin="16,0" />
+                <Separator Background="{DynamicResource SecondaryBrush}" Height="1" Margin="16,0" />
                     </StackPanel>
                 
                     <!-- Nearby Users Section -->
@@ -678,7 +678,7 @@
                                     <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/JoeAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
                                 </Ellipse.Fill>
                             </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource MenuBackgroundBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource SecondaryBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -731,7 +731,7 @@
 
                 <!-- Nearby Expand Panel: hidden when contracted, staggers in when expanded -->
                 <StackPanel x:Name="NearbyExpandPanel" Visibility="Collapsed" Opacity="0">
-                    <Separator Background="{DynamicResource MenuBackgroundBrush}" Height="1" Margin="16,6" />
+                    <Separator Background="{DynamicResource SecondaryBrush}" Height="1" Margin="16,6" />
 
                     <!-- User 1 -->
                     <Button x:Name="btnUser1" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
@@ -747,7 +747,7 @@
                                         <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User1Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
                                     </Ellipse.Fill>
                                 </Ellipse>
-                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource MenuBackgroundBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource SecondaryBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                             </Grid>
                             
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -771,7 +771,7 @@
                                         <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User2Avatar.png" Stretch="UniformToFill" AlignmentY="Top" />
                                     </Ellipse.Fill>
                                 </Ellipse>
-                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource MenuBackgroundBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource SecondaryBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                             </Grid>
                             
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -795,7 +795,7 @@
                                         <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/User3Avatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
                                     </Ellipse.Fill>
                                 </Ellipse>
-                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource MenuBackgroundBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                                <Ellipse Width="12" Height="12" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource SecondaryBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                             </Grid>
                             
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -813,7 +813,7 @@
         </Border>
         </Border>
         <Popup x:Name="popAvatar" StaysOpen="False" AllowsTransparency="True" Placement="Mouse" PopupAnimation="Fade">
-            <Border Background="{DynamicResource MenuBackgroundBrush}" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="10">
+            <Border Background="{DynamicResource SecondaryBrush}" BorderBrush="{DynamicResource TertiaryBrush}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="10">
                 <StackPanel MinWidth="220">
                     <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
@@ -830,7 +830,7 @@
                             <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                     </Grid>
-                    <Separator Background="{DynamicResource MenuBorderBrush}" Height="1" Margin="0,4,0,8" />
+                    <Separator Background="{DynamicResource TertiaryBrush}" Height="1" Margin="0,4,0,8" />
                     
                     <Button Name="btnPopTheme" Style="{StaticResource SpatialListItem}" Margin="0,2">
                         <StackPanel Orientation="Horizontal">
@@ -850,3 +850,4 @@
     </Grid>
     </Border>
 </Window>
+

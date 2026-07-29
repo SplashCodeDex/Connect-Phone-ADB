@@ -27,3 +27,7 @@
 - Update `CHANGELOG.md` with handwritten, precise notes.
 - Git commit with standardized tag prefixes (`[fix]`, `[minor]`, or `[major]`).
 - Push changes to remote repository (`git push`).
+
+## 5. Bleeding Edge Dependency Protocol
+- Always prefer the absolutely latest modern versions of frameworks/libraries (e.g. Ktor 3.x+ over Ktor 2.x).
+- Auto-trigger the `/stale-knowledge-research` protocol proactively whenever introducing a dependency or making architectural decisions to ensure you aren't referencing deprecated APIs.

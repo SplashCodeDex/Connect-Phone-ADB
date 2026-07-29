@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -92,7 +92,18 @@ namespace ConnectPhoneShareTarget
                     UseShellExecute = false
                 };
                 
-                Process.Start(startInfo);
+                var proc = Process.Start(startInfo);
+                
+                try 
+                {
+                    LocalSendServer.StartAsync().Wait();
+                } 
+                catch (Exception ex)
+                {
+                    File.WriteAllText(Path.Combine(Path.GetTempPath(), "LocalSendServerCrash.txt"), ex.ToString());
+                }
+
+                proc?.WaitForExit();
             }
         }
     }

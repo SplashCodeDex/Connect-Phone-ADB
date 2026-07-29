@@ -58,4 +58,21 @@ class ClientEngine {
             null
         }
     }
+
+    suspend fun uploadFile(ip: String, port: Int, sessionId: String, fileId: String, token: String, content: ByteArray): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val response = client.post("https://$ip:$port/api/localsend/v2/upload") {
+                url {
+                    parameters.append("sessionId", sessionId)
+                    parameters.append("fileId", fileId)
+                    parameters.append("token", token)
+                }
+                setBody(content)
+            }
+            response.status.isSuccess()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
 }
