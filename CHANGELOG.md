@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.6.4.0] - 2026-07-29
+### Fixed
+- **[fix]** Resolved WPF DoubleAnimation stacking bugs when switching between Settings and File Explorer.
+- **[fix]** Prevented fatal boot crashes by purging dead UI event bindings from the deprecated avatar popup.
+
 ## [2.6.3.0] - 2026-07-29
 ### Added
 - **[minor]** Integrated native Windows 11 Accent Color syncing. The \SecondaryBrush\ now dynamically inherits the user's active DWM ColorizationColor (with our smooth 300ms fallback crossfade intact).

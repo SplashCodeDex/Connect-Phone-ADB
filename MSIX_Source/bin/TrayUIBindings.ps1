@@ -277,6 +277,18 @@ $actionPull = {
         return
     }
     
+    $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
+    if ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible') {
+        # Quick swap from Settings to File Explorer (avoid DoubleAnimation stacking bug)
+        $settingsPanel.Visibility = 'Collapsed'
+        $settingsPanel.Opacity = 0
+        $script:wpfWindow.FindName("FileExplorer").Visibility = 'Visible'
+        $script:wpfWindow.FindName("FileExplorer").Opacity = 1
+        $script:wpfWindow.FindName("fileTrans").X = 0
+        $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
+        return
+    }
+    
     $mainBorder = $script:wpfWindow.FindName("mainBorder")
     if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
     if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
@@ -298,17 +310,6 @@ $actionAuto = {
     }
     Update-WpfUI
 }
-$script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAuto })
-
-
-$script:wpfWindow.FindName("btnPopTheme").Add_Click({
-    $global:AppThemeMode = "Manual"
-    if ($global:CurrentTheme -eq "DarkTheme") {
-        Set-AppTheme "LightTheme"
-    } else {
-        Set-AppTheme "DarkTheme"
-    }
-})
 
 # Settings Panel Toggle (avatar click expands/contracts settings)
 $actionSettings = {
@@ -324,16 +325,20 @@ $actionSettings = {
     
     # If file explorer is visible, contract it first then expand settings
     if ($fileExplorer.Visibility -eq 'Visible') {
-        $sbContract = $script:wpfWindow.Resources["ContractMenu"]
-        $sbContract.Begin($script:wpfWindow)
+        # Quick swap from File Explorer to Settings (avoid DoubleAnimation stacking bug)
+        $fileExplorer.Visibility = 'Collapsed'
+        $fileExplorer.Opacity = 0
+        $settingsPanel.Visibility = 'Visible'
+        $settingsPanel.Opacity = 1
+        $script:wpfWindow.FindName("settingsTrans").X = 0
+    } else {
+        $mainBorder = $script:wpfWindow.FindName("mainBorder")
+        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
+        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
+        
+        $sb = $script:wpfWindow.Resources["ExpandSettings"]
+        $sb.Begin($script:wpfWindow)
     }
-    
-    $mainBorder = $script:wpfWindow.FindName("mainBorder")
-    if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-    if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-    
-    $sb = $script:wpfWindow.Resources["ExpandSettings"]
-    $sb.Begin($script:wpfWindow)
     
     # Update theme text in settings
     $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")
@@ -364,7 +369,6 @@ $actionSettings = {
     }
 }
 
-$popAvatar = $script:wpfWindow.FindName("popAvatar")
 $btnTopProfile = $script:wpfWindow.FindName("btnProfileTop")
 $btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
 $btnProfileTopSettings = $script:wpfWindow.FindName("btnProfileTopSettings")
@@ -374,7 +378,69 @@ if ($btnTopProfile) { $btnTopProfile.Add_Click({ Invoke-MenuAction $actionSettin
 if ($btnProfileBottom) { $btnProfileBottom.Add_Click({ Invoke-MenuAction $actionSettings }) }
 if ($btnProfileTopSettings) { $btnProfileTopSettings.Add_Click({ Invoke-MenuAction $actionSettings }) }
 
+# Settings Panel Button Handlers
+# Auto-Connect toggle in settings
+$btnSettingsAutoConnect = $script:wpfWindow.FindName("btnSettingsAutoConnect")
+if ($btnSettingsAutoConnect) {
+    $btnSettingsAutoConnect.Add_Click({
+        Invoke-MenuAction $actionAuto
+        # Update badge after toggle
+        $txtBadge = $script:wpfWindow.FindName("txtBadgeAutoConnect")
+        $badge = $script:wpfWindow.FindName("badgeAutoConnect")
+        if ($txtBadge -and $badge) {
+            $isEnabled = Get-AutoConnectStatus
+            $txtBadge.Text = if ($isEnabled) { "ON" } else { "OFF" }
+            if ($isEnabled) {
+                $badge.Background = $script:wpfWindow.FindResource("SecondaryBrush")
+                $txtBadge.Foreground = $script:wpfWindow.FindResource("SecondaryForegroundBrush")
+            } else {
+                $badge.Background = $script:wpfWindow.FindResource("DangerBrush")
+                $txtBadge.Foreground = [System.Windows.Media.Brushes]::White
+            }
+        }
+    })
+}
 
+# Connect Now button in settings
+$btnSettingsConnectNow = $script:wpfWindow.FindName("btnSettingsConnectNow")
+if ($btnSettingsConnectNow) {
+    $btnSettingsConnectNow.Add_Click({ Invoke-MenuAction $actionConnect })
+}
+
+# Theme toggle in settings
+$btnSettingsTheme = $script:wpfWindow.FindName("btnSettingsTheme")
+if ($btnSettingsTheme) {
+    $btnSettingsTheme.Add_Click({
+        $global:AppThemeMode = "Manual"
+        if ($global:CurrentTheme -eq "DarkTheme") {
+            Set-AppTheme "LightTheme"
+        } else {
+            Set-AppTheme "DarkTheme"
+        }
+        $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")
+        if ($txtTheme) {
+            $txtTheme.Text = if ($global:CurrentTheme -eq "DarkTheme") { "Dark" } else { "Light" }
+        }
+    })
+}
+
+# Download Path button in settings
+$btnSettingsDownloadPath = $script:wpfWindow.FindName("btnSettingsDownloadPath")
+if ($btnSettingsDownloadPath) {
+    $btnSettingsDownloadPath.Add_Click({
+        Add-Type -AssemblyName System.Windows.Forms
+        $dialog = New-Object System.Windows.Forms.FolderBrowserDialog
+        $dialog.Description = "Select Download Destination Directory"
+        if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+            $script:customDownloadPath = $dialog.SelectedPath
+            $txtDlPath = $script:wpfWindow.FindName("txtSettingsDownloadPath")
+            if ($txtDlPath) {
+                $txtDlPath.Text = $script:customDownloadPath
+            }
+            Show-Toast -Title "Download Location" -Message "Files will be saved to: $($script:customDownloadPath)"
+        }
+    })
+}
 
 # Edge Case 11 & 14: lbFiles KeyDown for Ctrl+A (visible only), Escape deselect, and Enter key execution
 $script:lbFiles.Add_KeyDown({
@@ -458,6 +524,17 @@ $script:wpfWindow.Add_KeyDown({
         return
     }
     if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
+        $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
+        $fileExplorer = $script:wpfWindow.FindName("FileExplorer")
+        
+        # If settings is visible, contract it instead of hiding the whole window
+        if ($settingsPanel.Visibility -eq 'Visible') {
+            $sb = $script:wpfWindow.Resources["ContractSettings"]
+            $sb.Begin($script:wpfWindow)
+            $e.Handled = $true
+            return
+        }
+        
         $script:wpfWindow.Hide()
         $script:lastDeactivated = [DateTime]::Now
         $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
@@ -465,11 +542,21 @@ $script:wpfWindow.Add_KeyDown({
         $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("FileExplorer").Opacity = 0
         $script:wpfWindow.FindName("fileTrans").X = 150
+        $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
+        $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
+        $script:wpfWindow.FindName("settingsTrans").X = 150
         $script:wpfWindow.FindName("menuTrans").X = 0
         $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
         $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+        
+        $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
+        if ($settingsPanel) {
+            $settingsPanel.Visibility = 'Collapsed'
+            $settingsPanel.Opacity = 0
+            $script:wpfWindow.FindName("settingsTrans").X = 150
+        }
         $e.Handled = $true
     } elseif (($e.Key -eq [System.Windows.Input.Key]::Up -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Alt)) -or ($e.Key -eq [System.Windows.Input.Key]::Back)) {
         # Edge Case 25: Alt + Up Arrow / Backspace navigates Up Directory
@@ -509,6 +596,7 @@ $script:wpfWindow.Add_Deactivated({
     if ($script:wpfWindow.IsVisible) {
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
+        if ($script:wpfWindow.FindName("SettingsPanel").Visibility -eq 'Visible') { return }
         $now = [DateTime]::Now
         Write-Trace "Deactivated - Ms since last: $(($now - $script:lastDeactivated).TotalMilliseconds)"
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
@@ -521,6 +609,16 @@ $script:wpfWindow.Add_Deactivated({
 
 # Close button handler (only visible when expanded)
 $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
+    $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
+    $fileExplorer = $script:wpfWindow.FindName("FileExplorer")
+    
+    # If settings is visible, contract it instead of hiding the whole window
+    if ($settingsPanel.Visibility -eq 'Visible') {
+        $sb = $script:wpfWindow.Resources["ContractSettings"]
+        $sb.Begin($script:wpfWindow)
+        return
+    }
+    
     $script:wpfWindow.Hide()
     $script:lastDeactivated = [DateTime]::Now
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
@@ -528,11 +626,21 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
     $script:wpfWindow.FindName("FileExplorer").Opacity = 0
     $script:wpfWindow.FindName("fileTrans").X = 150
+    $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
+    $script:wpfWindow.FindName("settingsTrans").X = 150
     $script:wpfWindow.FindName("menuTrans").X = 0
     $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
     $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
     $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+    
+    $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
+    if ($settingsPanel) {
+        $settingsPanel.Visibility = 'Collapsed'
+        $settingsPanel.Opacity = 0
+        $script:wpfWindow.FindName("settingsTrans").X = 150
+    }
 })
 
 $script:notifyIcon.Add_MouseUp({
