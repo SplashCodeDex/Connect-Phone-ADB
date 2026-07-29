@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.0.0] - 2026-07-29
+### Added
+- **[major]** Refactored local network discovery to use standard mDNS (Multicast DNS) natively via `Makaretu.Dns` and Android's `NsdManager`, entirely bypassing raw UDP broadcast storms and ensuring enterprise router compatibility.
+- **[major]** Enabled `HttpProtocols.Http1AndHttp2AndHttp3` in the Kestrel server to natively support QUIC transport streams for P2P transfers.
+- **[patch]** Added automatic native Windows Firewall Rules for `ConnectPhoneShareTarget.exe` inside the AppxManifest to silently allow mDNS and QUIC connections without triggering UAC blocks.
+
 ## [2.4.0.0] - 2026-07-29
 ### Added
 - **[minor]** Integrated an automatic Windows System Theme Listener. The UI dynamically detects the \AppsUseLightTheme\ registry key and instantly syncs its XAML theme (Light/Dark) to match the host OS without requiring restarts.
