@@ -21,7 +21,7 @@ class DexService : Service() {
         multicastLock?.acquire()
 
         restServerEngine.startServer()
-        discoveryEngine.startDiscovery()
+        discoveryEngine.startDiscovery(this)
     }
 
     override fun onDestroy() {

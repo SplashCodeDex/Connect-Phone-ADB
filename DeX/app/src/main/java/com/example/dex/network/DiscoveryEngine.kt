@@ -80,8 +80,13 @@ class DiscoveryEngine {
                             if (fp != null && fp != localSendInfo.fingerprint) {
                                 val dto = RegisterDto(
                                     alias = alias,
+                                    version = "2.0",
+                                    deviceModel = "Unknown",
+                                    deviceType = "unknown",
                                     fingerprint = fp,
-                                    port = serviceInfo.port
+                                    port = serviceInfo.port,
+                                    protocol = "https",
+                                    download = true
                                 )
                                 _devices.update { map ->
                                     val newMap = map.toMutableMap()
