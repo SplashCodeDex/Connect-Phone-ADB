@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.5.1.0] - 2026-07-29
+### Added
+- **[fix]** Added `SecondaryForegroundBrush` to ensure device avatars maintain high visual contrast against the dynamic `SecondaryBrush` background in both Light and Dark modes.
+
 ## [2.5.0.0] - 2026-07-29
 ### Added
 - **[major]** Refactored local network discovery to use standard mDNS (Multicast DNS) natively via `Makaretu.Dns` and Android's `NsdManager`, entirely bypassing raw UDP broadcast storms and ensuring enterprise router compatibility.

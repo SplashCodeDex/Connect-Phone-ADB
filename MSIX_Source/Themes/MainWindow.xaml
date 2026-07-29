@@ -699,7 +699,7 @@
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
                             <Ellipse Fill="{DynamicResource SecondaryBrush}" />
-                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -720,7 +720,7 @@
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
                             <Ellipse Fill="{DynamicResource SecondaryBrush}" />
-                            <TextBlock Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
