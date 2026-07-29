@@ -144,13 +144,16 @@ if ($null -eq $script:wpfWindow) {
 }
 
 $global:CurrentTheme = "DarkTheme"
+$global:AppThemeMode = "System"
 
 Set-AppTheme (Get-SystemTheme)
 $themeTimer = New-Object System.Windows.Threading.DispatcherTimer
 $themeTimer.Interval = [TimeSpan]::FromSeconds(2)
 $themeTimer.Add_Tick({
-    $t = Get-SystemTheme
-    if ($global:CurrentTheme -ne $t) { Set-AppTheme $t }
+    if ($global:AppThemeMode -eq "System") {
+        $t = Get-SystemTheme
+        if ($global:CurrentTheme -ne $t) { Set-AppTheme $t }
+    }
 })
 $themeTimer.Start()
 

@@ -302,6 +302,7 @@ $script:wpfWindow.FindName("btnQAAuto").Add_Click({ Invoke-MenuAction $actionAut
 
 
 $script:wpfWindow.FindName("btnPopTheme").Add_Click({
+    $global:AppThemeMode = "Manual"
     if ($global:CurrentTheme -eq "DarkTheme") {
         Set-AppTheme "LightTheme"
     } else {

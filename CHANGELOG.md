@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.2.0] - 2026-07-29
+### Added
+- **[fix]** Implemented \AppThemeMode\ state manager to resolve a bug where the automatic background OS theme listener would forcefully override a user's manual theme toggle selection.
+
 ## [2.6.1.0] - 2026-07-29
 ### Added
 - **[fix]** Unified the \SecondaryBrush\ to identically use the signature Green (#0AE66D) across both Light and Dark themes for consistency. \SecondaryForegroundBrush\ in Light mode is also synced to absolute black to maintain high contrast.
