@@ -235,7 +235,43 @@ namespace ConnectPhoneShareTarget
                 return Results.Json(DiscoveryBackgroundService.Devices.Values);
             });
 
+            _ = Task.Run(StartTcpServerAsync);
+
             await App.StartAsync();
+        }
+
+        private static async Task StartTcpServerAsync()
+        {
+            var listener = new TcpListener(IPAddress.Any, 53319);
+            listener.Start();
+            while (true)
+            {
+                try
+                {
+                    var client = await listener.AcceptTcpClientAsync();
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            using var stream = client.GetStream();
+                            var buffer = new byte[36];
+                            int read = await stream.ReadAsync(buffer, 0, 36);
+                            if (read == 36)
+                            {
+                                var fileId = Encoding.UTF8.GetString(buffer);
+                                if (HostedFiles.TryGetValue(fileId, out var path) && File.Exists(path))
+                                {
+                                    using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+                                    await fs.CopyToAsync(stream, 81920);
+                                }
+                            }
+                        }
+                        catch { }
+                        finally { client.Close(); }
+                    });
+                }
+                catch { }
+            }
         }
     }
 }

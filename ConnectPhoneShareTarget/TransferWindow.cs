@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -135,7 +136,9 @@ namespace ConnectPhoneShareTarget
                 // 2. Send the notify-download signal
                 var notifyReq = new Dictionary<string, string>
                 {
-                    { "url", $"https://{localIp}:53317/download/{fileId}" },
+                    { "ip", localIp },
+                    { "port", "53319" },
+                    { "fileId", fileId },
                     { "fileName", fi.Name }
                 };
 

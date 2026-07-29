@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.1.0] - 2026-07-29
+### Added
+- **[fix]** Unified the \SecondaryBrush\ to identically use the signature Green (#0AE66D) across both Light and Dark themes for consistency. \SecondaryForegroundBrush\ in Light mode is also synced to absolute black to maintain high contrast.
+
 ## [2.6.0.0] - 2026-07-29
 ### Added
 - **[minor]** Injected a WPF \ColorAnimation\ storyboard into the theme-swapping engine, enabling a premium 300ms smooth crossfade for all backgrounds, text, and surfaces when toggling between Light and Dark mode.
