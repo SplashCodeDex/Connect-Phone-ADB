@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.5.0] - 2026-07-29
+### Removed
+- **[minor]** Reverted dynamic Windows System Accent Color adaptation to lock in the signature Green \#0AE66D\ as the permanent \SecondaryBrush\.
+
 ## [2.6.4.0] - 2026-07-29
 ### Fixed
 - **[fix]** Resolved WPF DoubleAnimation stacking bugs when switching between Settings and File Explorer.

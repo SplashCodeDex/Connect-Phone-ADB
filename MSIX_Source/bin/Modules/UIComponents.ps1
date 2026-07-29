@@ -73,15 +73,6 @@ function Set-AppTheme {
         $newDict = [System.Windows.Markup.XamlReader]::Load($xmlReader)
         $xmlReader.Close()
 
-        try {
-            $dwm = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "ColorizationColor" -ErrorAction SilentlyContinue
-            if ($null -ne $dwm) {
-                $hex = "{0:X8}" -f $dwm
-                $rgb = $hex.Substring(2, 6)
-                $newDict["SecondaryBrush"] = [System.Windows.Media.SolidColorBrush]::new([System.Windows.Media.ColorConverter]::ConvertFromString("#FF$rgb"))
-            }
-        } catch {}
-
         $oldDict = $null
         if ($script:wpfWindow.Resources.MergedDictionaries.Count -gt 0) {
             $oldDict = $script:wpfWindow.Resources.MergedDictionaries[0]
