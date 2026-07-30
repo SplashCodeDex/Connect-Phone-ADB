@@ -17,8 +17,10 @@ Import-Module "$PSScriptRoot\Modules\AdbManager.psm1" -Force
 . "$PSScriptRoot\Modules\TaskScheduler.ps1"
 . "$PSScriptRoot\Modules\UIComponents.ps1"
 $mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
+$script:showUiEvent = New-Object System.Threading.EventWaitHandle($false, [System.Threading.EventResetMode]::AutoReset, "Global\CodeDeX_ConnectPhoneADB_ShowUI")
 $script:engineMutex = New-Object System.Threading.Mutex($false, $mutexName)
 if (-not $script:engineMutex.WaitOne(0, $false)) {
+    if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null }
     # Another instance is already running — trigger an immediate connection attempt
     $null = Invoke-AdbConnect
     exit
@@ -313,6 +315,17 @@ $mdnsTimer.Add_Tick({
     $mdnsTimer.Start()
 
 Show-Toast -Title "Connect ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
+
+$uiTimer = New-Object System.Windows.Threading.DispatcherTimer
+$uiTimer.Interval = [TimeSpan]::FromMilliseconds(150)
+$uiTimer.Add_Tick({
+    if ($script:showUiEvent.WaitOne(0)) {
+        $eArgs = New-Object System.Windows.Forms.MouseEventArgs([System.Windows.Forms.MouseButtons]::Left, 1, 0, 0, 0)
+        $script:notifyIcon.GetType().GetMethod('OnMouseUp', [System.Reflection.BindingFlags]'NonPublic,Instance').Invoke($script:notifyIcon, [object[]]@($eArgs))
+    }
+})
+$uiTimer.Start()
+if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null }
 
 [System.Windows.Forms.Application]::add_ApplicationExit({
     if ($script:mdnsJob -and $script:mdnsJob.PowerShell) {

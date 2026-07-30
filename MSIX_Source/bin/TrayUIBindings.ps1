@@ -279,16 +279,40 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
     if ($isShift) {
         # Proceed to exit immediately
     } elseif ($txtExitBtn.Text -eq "Exit Engine") {
-        $txtExitBtn.Text = "Click to Cancel / Shift+Click to Exit"
-        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::VisibilityProperty, $null)
-        $btnProfileBottom.Visibility = 'Collapsed'
+        $txtExitBtn.Text = "Cancel / Shift+Click Exit"
+        $btnExit = $script:wpfWindow.FindName("btnExit")
+        
+        # Smoothly expand left over the avatar space
+        $animExpand = New-Object System.Windows.Media.Animation.ThicknessAnimation
+        $animExpand.To = New-Object System.Windows.Thickness(-46, 1, 8, 1)
+        $animExpand.Duration = [TimeSpan]::FromSeconds(0.3)
+        $ease = New-Object System.Windows.Media.Animation.CubicEase; $ease.EasingMode = 'EaseOut'
+        $animExpand.EasingFunction = $ease
+        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animExpand)
+        
+        # Fade out avatar
+        $animFade = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $animFade.To = 0
+        $animFade.Duration = [TimeSpan]::FromSeconds(0.2)
+        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $animFade)
         
         $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
         $script:exitTimer.Interval = [TimeSpan]::FromSeconds(3)
         $script:exitTimer.Add_Tick({
             $txtExitBtn.Text = "Exit Engine"
-            $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::VisibilityProperty, $null)
-            $btnProfileBottom.Visibility = 'Visible'
+            
+            $animContract = New-Object System.Windows.Media.Animation.ThicknessAnimation
+            $animContract.To = New-Object System.Windows.Thickness(8, 1, 8, 1)
+            $animContract.Duration = [TimeSpan]::FromSeconds(0.3)
+            $ease = New-Object System.Windows.Media.Animation.CubicEase; $ease.EasingMode = 'EaseOut'
+            $animContract.EasingFunction = $ease
+            $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animContract)
+            
+            $animFade = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $animFade.To = 1
+            $animFade.Duration = [TimeSpan]::FromSeconds(0.3)
+            $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $animFade)
+            
             $script:exitTimer.Stop()
         })
         $script:exitTimer.Start()
@@ -296,8 +320,20 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
     } else {
         # Cancel the exit state
         $txtExitBtn.Text = "Exit Engine"
-        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::VisibilityProperty, $null)
-        $btnProfileBottom.Visibility = 'Visible'
+        $btnExit = $script:wpfWindow.FindName("btnExit")
+        
+        $animContract = New-Object System.Windows.Media.Animation.ThicknessAnimation
+        $animContract.To = New-Object System.Windows.Thickness(8, 1, 8, 1)
+        $animContract.Duration = [TimeSpan]::FromSeconds(0.3)
+        $ease = New-Object System.Windows.Media.Animation.CubicEase; $ease.EasingMode = 'EaseOut'
+        $animContract.EasingFunction = $ease
+        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animContract)
+        
+        $animFade = New-Object System.Windows.Media.Animation.DoubleAnimation
+        $animFade.To = 1
+        $animFade.Duration = [TimeSpan]::FromSeconds(0.3)
+        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $animFade)
+        
         if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
         return
     }

@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.1.8.0] - 2026-07-30
+### Added
+- **[minor]** Launching the app explicitly from the Start menu now immediately displays the main UI instead of just starting silently in the system tray. This works seamlessly for both cold starts and warm starts (when the engine is already running in the background), achieved efficiently using `EventWaitHandle` IPC and Windows Startup Task activation context detection.
+
+## [3.1.7.3] - 2026-07-30
+### Added
+- **[feature]** Added fluid WPF `ThicknessAnimation` and `DoubleAnimation` to the Exit Engine sequence. The exit button now smoothly sweeps left to cover the avatar's space, while the avatar elegantly fades out, fulfilling the original overlapping design intention without triggering any abrupt layout reflows or snap-shifts.
+
+## [3.1.7.2] - 2026-07-30
+### Fixed
+- **[patch]** Completely removed the profile avatar visibility toggling logic during the exit sequence to eliminate all visual layout shifting. The new compact text ("Cancel / Shift+Click Exit") fits seamlessly into the existing button space, ensuring zero snapping or popping when the exit sequence resets.
+
+## [3.1.7.1] - 2026-07-30
+### Changed
+- **[patch]** Shortened the exit cancellation text to "Cancel / Shift+Click Exit" for a cleaner appearance when expanded.
+
 ## [3.1.7.0] - 2026-07-30
 ### Fixed
 - **[patch]** Fixed a UI distortion issue where clicking 'Exit Engine' forced the menu to expand horizontally off-screen. The root cause was a storyboard animation `HoldEnd` on the Profile Avatar's Visibility preventing it from collapsing. The fix explicitly clears the animation hold via `BeginAnimation` before applying the `Collapsed` state, allowing the Exit button to properly overlap into the avatar's freed space.

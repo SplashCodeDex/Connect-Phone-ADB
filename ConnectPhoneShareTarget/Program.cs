@@ -84,10 +84,11 @@ namespace ConnectPhoneShareTarget
                 }
                 catch { }
                 
+                string extraArgs = (activatedArgs != null && activatedArgs.Kind == ActivationKind.StartupTask) ? " -Background" : "";
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "powershell.exe",
-                    Arguments = $"-STA -ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -Command \"& '{ps1Path}' 2>> '{logPath}'\"",
+                    Arguments = $"-STA -ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -Command \"& '{ps1Path}'{extraArgs} 2>> '{logPath}'\"",
                     CreateNoWindow = true,
                     UseShellExecute = false
                 };
