@@ -1,4 +1,0 @@
-$iconPath = Join-Path $PSScriptRoot "app-icon.ico"
-<image placement="appLogoOverride" hint-crop="none" src="file:///$($PSScriptRoot -replace '\\', '/')/app-icon.ico"/>
-$themePath = Join-Path $PSScriptRoot "..\Themes\$ThemeName.xaml"
-function Write-Trace($msg) {

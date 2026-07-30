@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.8.0] - 2026-07-30
+### Fixed
+- **[fix]** Resolved UI overlap bug where rapidly switching between File Explorer and Settings Panel caused both grids to render on top of each other due to lingering XAML storyboard state.
+
 ## [2.6.6.0] - 2026-07-30
 ### Added
 - **[minor]** Added a dynamic Y-axis parallax slide-up effect to the spatial menu container (`menuTrans`) during the initial system tray `PopIn` sequence, giving it an elastic bouncy entrance distinct from the main window scaling.

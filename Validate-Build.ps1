@@ -95,7 +95,7 @@ $($PSScriptRoot -replace '\\', '/')
 Write-Host "`n=== 4. Theme dictionaries ===" -ForegroundColor Cyan
 $themeKeys = @{}
 $themeKeySets = @{}
-Get-ChildItem (Join-Path $themesDir '*.xaml') -ErrorAction SilentlyContinue | Where-Object { $_.Name -ne 'MainWindow.xaml' } | ForEach-Object {
+Get-ChildItem (Join-Path $themesDir '*Theme.xaml') -ErrorAction SilentlyContinue | Where-Object { $_.Name -ne 'MainWindow.xaml' } | ForEach-Object {
     try {
         $xr = [System.Xml.XmlReader]::Create($_.FullName)
         $dict = [System.Windows.Markup.XamlReader]::Load($xr)
@@ -148,6 +148,7 @@ Write-Host "`n=== 6. Resource references resolve ===" -ForegroundColor Cyan
 if ($null -ne $script:Win) {
     $keySet = @{}
     foreach ($k in $script:Win.Resources.Keys) { $keySet[$k] = $true }
+    foreach ($md in $script:Win.Resources.MergedDictionaries) { foreach ($k in $md.Keys) { $keySet[$k] = $true } }
     foreach ($k in $themeKeys.Keys) { $keySet[$k] = $true }
 
     $refs = @()
