@@ -219,6 +219,8 @@
             
             <!-- Parallax effect for the menu contents during initial PopIn -->
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="Y" From="20" To="0" Duration="0:0:0.6" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="Y" From="35" To="0" Duration="0:0:0.75" EasingFunction="{StaticResource BouncyEase}" BeginTime="0:0:0.08" />
+            <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.08" />
         </Storyboard>
         
         <DataTemplate x:Key="FolderGridTemplate">
@@ -872,7 +874,10 @@
                 </StackPanel>
                 
                 <!-- Main content fills remaining space -->
-                <DockPanel LastChildFill="True">
+                <DockPanel x:Name="menuContentPanel" LastChildFill="True">
+                    <DockPanel.RenderTransform>
+                        <TranslateTransform x:Name="menuContentTrans" Y="0" />
+                    </DockPanel.RenderTransform>
                     <StackPanel DockPanel.Dock="Top">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,12">
                     <ToggleButton Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
