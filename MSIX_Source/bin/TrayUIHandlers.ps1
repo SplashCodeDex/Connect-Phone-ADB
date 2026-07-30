@@ -1,5 +1,13 @@
 . "$PSScriptRoot\Modules\UIComponents.ps1"
 function Reset-SpatialPanels {
+    try {
+        $script:wpfWindow.FindResource("ExpandMenu").Stop($script:wpfWindow)
+        $script:wpfWindow.FindResource("ContractMenu").Stop($script:wpfWindow)
+        $script:wpfWindow.FindResource("ExpandSettings").Stop($script:wpfWindow)
+        $script:wpfWindow.FindResource("ContractSettings").Stop($script:wpfWindow)
+        $script:wpfWindow.FindResource("PopIn").Stop($script:wpfWindow)
+    } catch {}
+
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
     $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
     $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
@@ -104,7 +112,7 @@ $actionPull = {
         $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
         $sb.Children[1].By = $null
         $sb.Children[1].To = if ($script:contractedHeight) { $script:contractedHeight } else { 500 }
-        $sb.Begin($script:wpfWindow)
+        $sb.Begin($script:wpfWindow, $true)
         $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
         if ($btnQAPull) { $btnQAPull.IsChecked = $false }
         return
@@ -133,7 +141,7 @@ $actionPull = {
     $sb.Children[0].To = $script:contractedWidth + 754
     $sb.Children[1].By = $null
     $sb.Children[1].To = $script:contractedHeight + 195
-    $sb.Begin($script:wpfWindow)
+    $sb.Begin($script:wpfWindow, $true)
     
     $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
     if ($btnQAPull) { $btnQAPull.IsChecked = $true }
@@ -172,7 +180,7 @@ $actionSettings = {
         $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
         $sb.Children[1].By = $null
         $sb.Children[1].To = if ($script:contractedHeight) { $script:contractedHeight } else { 500 }
-        $sb.Begin($script:wpfWindow)
+        $sb.Begin($script:wpfWindow, $true)
         return
     }
     
@@ -202,7 +210,7 @@ $actionSettings = {
     $sb.Children[0].To = 675
     $sb.Children[1].By = $null
     $sb.Children[1].To = $script:contractedHeight + 195
-    $sb.Begin($script:wpfWindow)
+    $sb.Begin($script:wpfWindow, $true)
     
     # Update theme text in settings
     $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")

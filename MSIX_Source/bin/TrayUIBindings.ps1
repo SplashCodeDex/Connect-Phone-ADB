@@ -332,7 +332,7 @@ $script:wpfWindow.Add_KeyDown({
             $sb = $script:wpfWindow.Resources["ContractSettings"].Clone()
             $sb.Children[0].By = $null
             $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
-            $sb.Begin($script:wpfWindow)
+            $sb.Begin($script:wpfWindow, $true)
             $e.Handled = $true
             return
         }
@@ -397,7 +397,7 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
         $sb = $script:wpfWindow.Resources["ContractSettings"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
-        $sb.Begin($script:wpfWindow)
+        $sb.Begin($script:wpfWindow, $true)
         return
     }
     
@@ -406,7 +406,7 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
         $sb = $script:wpfWindow.Resources["ContractMenu"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
-        $sb.Begin($script:wpfWindow)
+        $sb.Begin($script:wpfWindow, $true)
         $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
         if ($btnQAPull) { $btnQAPull.IsChecked = $false }
         return
@@ -488,19 +488,22 @@ $script:notifyIcon.Add_MouseUp({
         
         $script:lastDeactivated = [DateTime]::Now
         
-        try {
-            $sb = $script:wpfWindow.FindResource("PopIn")
-            if ($sb) { 
-                $sb.Begin($script:wpfWindow, $true)
-                $sb.Pause($script:wpfWindow)
-            }
-        } catch { Write-Trace "PopIn trigger failed: $_" }
+        $script:wpfWindow.FindName("winScale").ScaleX = 0.85
+        $script:wpfWindow.FindName("winScale").ScaleY = 0.85
+        $script:wpfWindow.FindName("winTrans").Y = 15
+        $script:wpfWindow.FindName("menuTrans").Y = 20
+        $script:wpfWindow.FindName("menuContentTrans").Y = 35
+        $script:wpfWindow.FindName("menuContentPanel").Opacity = 0
+        $script:wpfWindow.FindName("mainBorder").Opacity = 0
 
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
         $script:wpfWindow.Focus()
         
-        if ($sb) { $sb.Resume($script:wpfWindow) }
+        try {
+            $sb = $script:wpfWindow.FindResource("PopIn")
+            if ($sb) { $sb.Begin($script:wpfWindow, $true) }
+        } catch { Write-Trace "PopIn trigger failed: $_" }
     }
 })
 
