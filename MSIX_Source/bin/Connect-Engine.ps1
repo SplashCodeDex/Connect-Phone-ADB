@@ -262,7 +262,15 @@ $mdnsTimer.Add_Tick({
                 $omniTargets = $uniqueServices | Where-Object { $_.Type -eq 'OmniMesh' }
                 foreach ($omni in $omniTargets) {
                     $ip = $omni.IPPort -replace ':[0-9]+$',''
-                    $script:omniPeers[$ip] = @{ Name = $omni.Name; LastSeen = Get-Date; Type = $omni.DeviceType }
+                    $existing = $script:omniPeers[$ip]
+                    $script:omniPeers[$ip] = @{
+                        Name         = $omni.Name
+                        LastSeen     = Get-Date
+                        Type         = $omni.DeviceType
+                        Model        = if ($omni.Model)   { $omni.Model }   elseif ($existing) { $existing.Model }   else { $null }
+                        Battery      = if ($omni.Battery) { $omni.Battery } elseif ($existing) { $existing.Battery } else { $null }
+                        TelemetryAge = if ($omni.Model -or $omni.Battery) { Get-Date } elseif ($existing) { $existing.TelemetryAge } else { [datetime]::MinValue }
+                    }
                 }
                 
                 # Update UI slots
@@ -271,6 +279,22 @@ $mdnsTimer.Add_Tick({
                     if ($slot -gt 3) { break }
                     $peer = $script:omniPeers[$ip]
                     if ((Get-Date) - $peer.LastSeen -lt [timespan]::FromSeconds(15)) {
+                        
+                        # Stale telemetry refresh: re-query battery if >60s old and device is the active ADB target
+                        $connectedIP = ($script:currentTarget -replace ':.*','')
+                        if ($ip -eq $connectedIP -and
+                            $peer.TelemetryAge -and
+                            (Get-Date) - $peer.TelemetryAge -gt [timespan]::FromSeconds(60)) {
+                            try {
+                                $batLine = (& $global:AdbExePath -s "${ip}:5555" shell dumpsys battery 2>$null) |
+                                           Where-Object { $_ -match '^\s*level:' } | Select-Object -First 1
+                                if ($batLine -match '(\d+)') {
+                                    $peer.Battery      = $matches[1]
+                                    $peer.TelemetryAge = Get-Date
+                                }
+                            } catch {}
+                        }
+                        
                         $btnName2 = "btnUser$slot"
                         $btn = $script:wpfWindow.FindName($btnName2)
                         if ($btn -and $btn.Content -and $btn.Content.Children.Count -ge 2) {
@@ -278,10 +302,13 @@ $mdnsTimer.Add_Tick({
                             $stack.Children[0].Text = $peer.Name
                             # Show live telemetry if available, fall back to plain IP
                             if ($peer.Model -and $peer.Battery) {
-                                $stack.Children[1].Text = "$($peer.Model) | $($peer.Battery)%"
+                                $stack.Children[1].FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                $stack.Children[1].Text = "$([char]0xE8EA) $($peer.Model)  $([char]0xE83F) $($peer.Battery)%"
                             } elseif ($peer.Model) {
-                                $stack.Children[1].Text = "$($peer.Model)"
+                                $stack.Children[1].FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                $stack.Children[1].Text = "$([char]0xE8EA) $($peer.Model)"
                             } else {
+                                $stack.Children[1].FontFamily = "Segoe UI"
                                 $stack.Children[1].Text = "OmniMesh ($ip)"
                             }
                             $btn.Visibility = 'Visible'
