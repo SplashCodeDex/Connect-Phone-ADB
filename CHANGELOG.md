@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.7.17.0] - 2026-07-30
+### Fixed
+- **[fix]** Restored absolute height constraint logic in `TrayUIHandlers.ps1` that was lost during a previous refactoring. This completely resolves the bug where rapidly swapping between the Settings and File Explorer panels caused the spatial menu contents to shift upward off-screen due to relative height accumulation (`By="195"`).
+
 ## [2.7.15.0] - 2026-07-30
 ### Added
 - **[patch]** Added reciprocal 3D parallax depth to the `ContractMenu` and `ContractSettings` exit animations. The spatial menu now subtly slides back out of frame (`X=-30`) as the window contracts, perfectly matching the physics of the `ExpandMenu` entrance.

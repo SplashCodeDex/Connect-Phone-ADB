@@ -495,7 +495,7 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
         
-        $script:wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::ApplicationIdle, [Action]{
+        $script:wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [Action]{
             $script:lastDeactivated = [DateTime]::Now
             $script:wpfWindow.Show()
             $script:wpfWindow.Activate()
