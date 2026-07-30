@@ -82,18 +82,6 @@ $actionMirror = {
 $script:wpfWindow.FindName("btnQAMirror").Add_Click({ Invoke-MenuAction $actionMirror })
 
 $actionPull = {
-        $target = Get-ConnectedDeviceTarget
-    
-    if (-not $target) {
-        & $actionConnect
-        $target = $script:currentTarget
-        
-        if (-not $target) {
-            return
-        }
-    }
-    
-    $script:currentTarget = $target
     
     if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') {
         $sb = $script:wpfWindow.Resources["ContractMenu"]
