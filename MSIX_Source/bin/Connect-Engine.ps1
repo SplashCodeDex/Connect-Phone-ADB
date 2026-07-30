@@ -199,12 +199,7 @@ $script:transferJob = Start-OmniTransferServer -Queue $script:transferQueue
 $script:mdnsJob = $null
 $script:omniPeers = @{}
 
-# Hide placeholders initially
-foreach ($i in 1..3) {
-    $btnName = "btnUser$i"
-    $btn = $script:wpfWindow.FindName($btnName)
-    if ($btn) { $btn.Visibility = 'Collapsed' }
-}
+
 
 if ($script:AutoConnectEnabled) {
     $script:mdnsJob = Start-MdnsDiscovery -Queue $script:mdnsQueue

@@ -490,6 +490,9 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.FindName("winScale").ScaleX = 0.85
         $script:wpfWindow.FindName("winScale").ScaleY = 0.85
         $script:wpfWindow.FindName("winTrans").Y = 15
+        $script:wpfWindow.FindName("menuTrans").Y = 20
+        $script:wpfWindow.FindName("menuContentTrans").Y = 35
+        $script:wpfWindow.FindName("menuContentPanel").Opacity = 0
         $script:wpfWindow.FindName("mainBorder").Opacity = 0
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
