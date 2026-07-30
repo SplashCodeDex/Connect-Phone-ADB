@@ -268,10 +268,9 @@ $mdnsTimer.Add_Tick({
                     }
                 }
                 
-                # Update UI slots
-                $slot = 1
+                # Update Live Peers dynamically via ItemsControl (infinite scrolling rows)
+                $livePeers = @()
                 foreach ($ip in $script:omniPeers.Keys) {
-                    if ($slot -gt 3) { break }
                     $peer = $script:omniPeers[$ip]
                     if ((Get-Date) - $peer.LastSeen -lt [timespan]::FromSeconds(15)) {
                         
@@ -290,27 +289,24 @@ $mdnsTimer.Add_Tick({
                             } catch {}
                         }
                         
-                        $btnName2 = "btnUser$slot"
-                        $btn = $script:wpfWindow.FindName($btnName2)
-                        if ($btn -and $btn.Content -and $btn.Content.Children.Count -ge 2) {
-                            $stack = $btn.Content.Children[1]
-                            $stack.Children[0].Text = $peer.Name
-                            # Show live telemetry if available, fall back to plain IP
-                            if ($peer.Model -and $peer.Battery) {
-                                $stack.Children[1].FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
-                                $stack.Children[1].Text = "$([char]0xE8EA) $($peer.Model)  $([char]0xE83F) $($peer.Battery)%"
-                            } elseif ($peer.Model) {
-                                $stack.Children[1].FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
-                                $stack.Children[1].Text = "$([char]0xE8EA) $($peer.Model)"
-                            } else {
-                                $stack.Children[1].FontFamily = "Segoe UI"
-                                $stack.Children[1].Text = "OmniMesh ($ip)"
-                            }
-                            $btn.Visibility = 'Visible'
+                        $subText = if ($peer.Model -and $peer.Battery) {
+                            "$([char]0xE8EA) $($peer.Model)  $([char]0xE83F) $($peer.Battery)%"
+                        } elseif ($peer.Model) {
+                            "$([char]0xE8EA) $($peer.Model)"
+                        } else {
+                            "OmniMesh ($ip)"
                         }
-                        $slot++
+                        
+                        $livePeers += @{
+                            Name      = $peer.Name
+                            SubText   = $subText
+                            IconGlyph = "$([char]0xE8EA)"
+                        }
                     }
                 }
+                
+                $ic = $script:wpfWindow.FindName("icLivePeers")
+                if ($ic) { $ic.ItemsSource = $livePeers }
                 
             }
     })

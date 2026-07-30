@@ -496,14 +496,21 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.FindName("menuContentPanel").Opacity = 0
         $script:wpfWindow.FindName("mainBorder").Opacity = 0
 
+        try {
+            $sb = $script:wpfWindow.FindResource("PopIn")
+            if ($sb) {
+                $sb.Begin($script:wpfWindow, $true)
+                $sb.Pause($script:wpfWindow)
+            }
+        } catch { Write-Trace "PopIn pre-trigger failed: $_" }
+
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
         $script:wpfWindow.Focus()
         
         try {
-            $sb = $script:wpfWindow.FindResource("PopIn")
-            if ($sb) { $sb.Begin($script:wpfWindow, $true) }
-        } catch { Write-Trace "PopIn trigger failed: $_" }
+            if ($sb) { $sb.Resume($script:wpfWindow) }
+        } catch { Write-Trace "PopIn resume failed: $_" }
     }
 })
 

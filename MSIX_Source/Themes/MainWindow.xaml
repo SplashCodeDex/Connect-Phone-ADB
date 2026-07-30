@@ -1074,6 +1074,34 @@
                             </StackPanel>
                         </Grid>
                     </Button>
+                    
+                    <!-- Dynamic Live Peers (Spawns indefinitely as mDNS peers connect) -->
+                    <ItemsControl x:Name="icLivePeers">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                                            <Ellipse Fill="{DynamicResource SecondaryBrush}" />
+                                            <TextBlock Text="{Binding [IconGlyph]}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                                        </Grid>
+                                        
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding [Name]}" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock Text="{Binding [SubText]}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
                 </StackPanel>
                         </StackPanel>
                     </ScrollViewer>

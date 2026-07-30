@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.6.0] - 2026-07-30
+### Fixed
+- **[patch]** Restored WPF Storyboard `.Begin($true)` and `.Pause()` initialization prior to `Show()` to definitively resolve the spatial menu 1-frame pop-in flash. This mathematically locks the DWM composite frame to the absolute start state of the `PopIn` animation sequence before rendering occurs.
+
 ## [3.1.5.0] - 2026-07-30
 ### Fixed
 - **[patch]** Resolved the root cause of the WPF menu flash. Storyboard `HoldEnd` precedence was overriding local property assignments on `Reset-SpatialPanels`. The engine now correctly calls `.Stop()` on all active storyboards when the window hides, releasing the layout holds so that local properties (Opacity 0) correctly apply on the next `Show()` invocation.
