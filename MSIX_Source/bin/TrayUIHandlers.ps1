@@ -13,6 +13,8 @@ function Reset-SpatialPanels {
     $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
     $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+    $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
+    if ($btnQAPull) { $btnQAPull.IsChecked = $false }
 }
 
 function Invoke-ExitEngine {
@@ -103,6 +105,8 @@ $actionPull = {
         $sb.Children[1].By = $null
         $sb.Children[1].To = if ($script:contractedHeight) { $script:contractedHeight } else { 500 }
         $sb.Begin($script:wpfWindow)
+        $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
+        if ($btnQAPull) { $btnQAPull.IsChecked = $false }
         return
     }
     
@@ -130,6 +134,9 @@ $actionPull = {
     $sb.Children[1].By = $null
     $sb.Children[1].To = $script:contractedHeight + 195
     $sb.Begin($script:wpfWindow)
+    
+    $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
+    if ($btnQAPull) { $btnQAPull.IsChecked = $true }
     
     $script:wpfWindow.Dispatcher.InvokeAsync([Action]{ Load-Directory "/sdcard/" }) | Out-Null
 }

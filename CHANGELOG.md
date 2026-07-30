@@ -3,6 +3,8 @@
 ## [3.1.2.0] - 2026-07-30
 ### Fixed
 - **[patch]** Added missing `-STA` flag to the `powershell.exe` launch arguments inside the C# `ConnectPhoneShareTarget` wrapper. Without this flag, the engine launched from the Start Menu in MTA mode, which caused WPF's `XamlReader::Load` to crash instantly and silently.
+- **[patch]** Fixed spatial menu flashing animation (double-animation jump) by pre-setting scale and translation explicitly before the window executes its first render frame.
+- **[patch]** Fixed 'Phone Files' quick action button becoming out-of-sync (unchecked when open) when the menu is collapsed via the Close button or click-outside.
 
 ## [3.1.1.0] - 2026-07-30
 ### Fixed

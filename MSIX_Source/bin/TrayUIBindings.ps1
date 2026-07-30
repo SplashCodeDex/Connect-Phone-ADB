@@ -407,6 +407,8 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
         $sb.Children[0].By = $null
         $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
         $sb.Begin($script:wpfWindow)
+        $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
+        if ($btnQAPull) { $btnQAPull.IsChecked = $false }
         return
     }
     
@@ -485,6 +487,9 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
+        $script:wpfWindow.FindName("winScale").ScaleX = 0.85
+        $script:wpfWindow.FindName("winScale").ScaleY = 0.85
+        $script:wpfWindow.FindName("winTrans").Y = 15
         $script:wpfWindow.FindName("mainBorder").Opacity = 0
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
