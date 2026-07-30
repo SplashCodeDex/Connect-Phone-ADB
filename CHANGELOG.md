@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.2.0] - 2026-07-30
+### Fixed
+- **[patch]** Added missing `-STA` flag to the `powershell.exe` launch arguments inside the C# `ConnectPhoneShareTarget` wrapper. Without this flag, the engine launched from the Start Menu in MTA mode, which caused WPF's `XamlReader::Load` to crash instantly and silently.
+
 ## [3.1.1.0] - 2026-07-30
 ### Fixed
 - **[patch]** Fixed spatial menu double-animation glitch (1-frame pop-in flash) by pre-zeroing window opacity right before display.

@@ -87,7 +87,7 @@ namespace ConnectPhoneShareTarget
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "powershell.exe",
-                    Arguments = $"-ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -Command \"& '{ps1Path}' 2>> '{logPath}'\"",
+                    Arguments = $"-STA -ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -Command \"& '{ps1Path}' 2>> '{logPath}'\"",
                     CreateNoWindow = true,
                     UseShellExecute = false
                 };
