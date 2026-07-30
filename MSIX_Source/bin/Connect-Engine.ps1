@@ -178,13 +178,16 @@ if ($SelfTest) {
         # Give the Dispatcher.BeginInvoke time to execute the Show()
         $waitCount = 0
         while (-not $script:wpfWindow.IsVisible -and $waitCount -lt 20) {
-            Start-Sleep -Milliseconds 100
+            $frame = New-Object System.Windows.Threading.DispatcherFrame
+            $script:wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::SystemIdle, [Action]{ $frame.Continue = $false }) | Out-Null
+            [System.Windows.Threading.Dispatcher]::PushFrame($frame)
+            Start-Sleep -Milliseconds 50
             $waitCount++
         }
         
         $stShown = [bool]$script:wpfWindow.IsVisible
     } catch {
-        Write-Output "SELFTEST EXCEPTION: $($_.Exception.Message)"
+        Write-Output "SELFTEST EXCEPTION: $($_.Exception.ToString())"
     }
     $stOk = $stWindowCreated -and $stTrayVisible -and $stShown
     Write-Output ("SELFTEST WindowCreated={0} TrayVisible={1} WindowShownAfterTrayClick={2}" -f $stWindowCreated, $stTrayVisible, $stShown)

@@ -279,12 +279,19 @@ $actionPull = {
     
     $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
     if ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible') {
-        # Swap instantly without animation theater (Ponytail)
+        # Swap from Settings to File Explorer gracefully without re-animating shared spatial components
         $settingsPanel.Visibility = 'Collapsed'
         $settingsPanel.Opacity = 0
-        $script:wpfWindow.FindName("FileExplorer").Visibility = 'Visible'
-        $script:wpfWindow.FindName("FileExplorer").Opacity = 1
-        $script:wpfWindow.FindName("fileTrans").X = 0
+        $script:wpfWindow.FindName("settingsTrans").X = 150
+        
+        $mainBorder = $script:wpfWindow.FindName("mainBorder")
+        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
+        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
+        
+        $sb = $script:wpfWindow.Resources["SwapToMenu"].Clone()
+        $sb.Children[0].To = $script:contractedWidth + 754
+        $sb.Children[1].To = $script:contractedHeight + 195
+        $sb.Begin($script:wpfWindow)
         
         $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
         return
@@ -328,12 +335,19 @@ $actionSettings = {
     
     # If file explorer is visible, contract it first then expand settings
     if ($fileExplorer.Visibility -eq 'Visible') {
-        # Swap instantly without animation theater (Ponytail)
+        # Swap from File Explorer to Settings gracefully without re-animating shared spatial components
         $fileExplorer.Visibility = 'Collapsed'
         $fileExplorer.Opacity = 0
-        $settingsPanel.Visibility = 'Visible'
-        $settingsPanel.Opacity = 1
-        $script:wpfWindow.FindName("settingsTrans").X = 0
+        $script:wpfWindow.FindName("fileTrans").X = 150
+        
+        $mainBorder = $script:wpfWindow.FindName("mainBorder")
+        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
+        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
+        
+        $sb = $script:wpfWindow.Resources["SwapToSettings"].Clone()
+        $sb.Children[0].To = 675
+        $sb.Children[1].To = $script:contractedHeight + 195
+        $sb.Begin($script:wpfWindow)
     } else {
         $mainBorder = $script:wpfWindow.FindName("mainBorder")
         if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
@@ -726,7 +740,10 @@ $script:notifyIcon.Add_MouseUp({
             $script:wpfWindow.Show()
             $script:wpfWindow.Activate()
             $script:wpfWindow.Focus()
-            $script:wpfWindow.Resources["PopIn"].Begin($script:wpfWindow)
+            try {
+                $sb = $script:wpfWindow.FindResource("PopIn")
+                if ($sb) { $sb.Begin($script:wpfWindow) }
+            } catch { Write-Trace "PopIn trigger failed: $_" }
         })
     }
 })
