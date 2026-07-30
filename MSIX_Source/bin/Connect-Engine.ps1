@@ -314,14 +314,22 @@ $mdnsTimer.Add_Tick({
     })
     $mdnsTimer.Start()
 
-Show-Toast -Title "Connect ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
+if ($Background) {
+    Show-Toast -Title "Connect ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
+}
 
 $uiTimer = New-Object System.Windows.Threading.DispatcherTimer
 $uiTimer.Interval = [TimeSpan]::FromMilliseconds(150)
 $uiTimer.Add_Tick({
     if ($script:showUiEvent.WaitOne(0)) {
-        $eArgs = New-Object System.Windows.Forms.MouseEventArgs([System.Windows.Forms.MouseButtons]::Left, 1, 0, 0, 0)
-        $script:notifyIcon.GetType().GetMethod('OnMouseUp', [System.Reflection.BindingFlags]'NonPublic,Instance').Invoke($script:notifyIcon, [object[]]@($eArgs))
+        if ($script:wpfWindow.IsVisible) {
+            $script:wpfWindow.Topmost = $true
+            $script:wpfWindow.Activate()
+            $script:wpfWindow.Focus()
+        } else {
+            $eArgs = New-Object System.Windows.Forms.MouseEventArgs([System.Windows.Forms.MouseButtons]::Left, 1, 0, 0, 0)
+            $script:notifyIcon.GetType().GetMethod('OnMouseUp', [System.Reflection.BindingFlags]'NonPublic,Instance').Invoke($script:notifyIcon, [object[]]@($eArgs))
+        }
     }
 })
 $uiTimer.Start()

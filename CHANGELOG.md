@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.1.8.1] - 2026-07-30
+### Fixed
+- **[patch]** Fixed a toggle-loop edge case where clicking the Start Menu shortcut while the main UI was already visible would hide it instead of focusing it.
+- **[patch]** Suppressed the redundant "Connect ADB Active" startup toast notification during explicit launches, as the main UI now opens instantly instead.
+- **[patch]** Refactored the exit button overlapping logic to strictly follow ponytail protocol: removed the `ThicknessAnimation` entirely as it caused brief UI stretch-and-contract artifacts due to width recalibrations. The button now instantly overlaps the avatar using native negative margins and locks onto the solid `AccentBrush` background fill, perfectly hiding the avatar without opacity animations and completely preventing any window resizing bugs.
+
 ## [3.1.8.0] - 2026-07-30
 ### Added
 - **[minor]** Launching the app explicitly from the Start menu now immediately displays the main UI instead of just starting silently in the system tray. This works seamlessly for both cold starts and warm starts (when the engine is already running in the background), achieved efficiently using `EventWaitHandle` IPC and Windows Startup Task activation context detection.

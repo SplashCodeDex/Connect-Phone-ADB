@@ -282,37 +282,18 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
         $txtExitBtn.Text = "Cancel / Shift+Click Exit"
         $btnExit = $script:wpfWindow.FindName("btnExit")
         
-        # Smoothly expand left over the avatar space
-        $animExpand = New-Object System.Windows.Media.Animation.ThicknessAnimation
-        $animExpand.To = New-Object System.Windows.Thickness(-46, 1, 8, 1)
-        $animExpand.Duration = [TimeSpan]::FromSeconds(0.3)
-        $ease = New-Object System.Windows.Media.Animation.CubicEase; $ease.EasingMode = 'EaseOut'
-        $animExpand.EasingFunction = $ease
-        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animExpand)
+        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $null)
+        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $null)
         
-        # Fade out avatar
-        $animFade = New-Object System.Windows.Media.Animation.DoubleAnimation
-        $animFade.To = 0
-        $animFade.Duration = [TimeSpan]::FromSeconds(0.2)
-        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $animFade)
+        $btnExit.Margin = New-Object System.Windows.Thickness(-46, 1, 8, 1)
+        $btnExit.Background = $script:wpfWindow.FindResource("AccentBrush")
         
         $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
         $script:exitTimer.Interval = [TimeSpan]::FromSeconds(3)
         $script:exitTimer.Add_Tick({
             $txtExitBtn.Text = "Exit Engine"
-            
-            $animContract = New-Object System.Windows.Media.Animation.ThicknessAnimation
-            $animContract.To = New-Object System.Windows.Thickness(8, 1, 8, 1)
-            $animContract.Duration = [TimeSpan]::FromSeconds(0.3)
-            $ease = New-Object System.Windows.Media.Animation.CubicEase; $ease.EasingMode = 'EaseOut'
-            $animContract.EasingFunction = $ease
-            $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animContract)
-            
-            $animFade = New-Object System.Windows.Media.Animation.DoubleAnimation
-            $animFade.To = 1
-            $animFade.Duration = [TimeSpan]::FromSeconds(0.3)
-            $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $animFade)
-            
+            $btnExit.Margin = New-Object System.Windows.Thickness(8, 1, 8, 1)
+            $btnExit.ClearValue([System.Windows.Controls.Control]::BackgroundProperty)
             $script:exitTimer.Stop()
         })
         $script:exitTimer.Start()
@@ -322,17 +303,11 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
         $txtExitBtn.Text = "Exit Engine"
         $btnExit = $script:wpfWindow.FindName("btnExit")
         
-        $animContract = New-Object System.Windows.Media.Animation.ThicknessAnimation
-        $animContract.To = New-Object System.Windows.Thickness(8, 1, 8, 1)
-        $animContract.Duration = [TimeSpan]::FromSeconds(0.3)
-        $ease = New-Object System.Windows.Media.Animation.CubicEase; $ease.EasingMode = 'EaseOut'
-        $animContract.EasingFunction = $ease
-        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animContract)
+        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $null)
+        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $null)
         
-        $animFade = New-Object System.Windows.Media.Animation.DoubleAnimation
-        $animFade.To = 1
-        $animFade.Duration = [TimeSpan]::FromSeconds(0.3)
-        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $animFade)
+        $btnExit.Margin = New-Object System.Windows.Thickness(8, 1, 8, 1)
+        $btnExit.ClearValue([System.Windows.Controls.Control]::BackgroundProperty)
         
         if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
         return
