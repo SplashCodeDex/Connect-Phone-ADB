@@ -1,4 +1,4 @@
-﻿. "$PSScriptRoot\Modules\UIComponents.ps1"
+. "$PSScriptRoot\Modules\UIComponents.ps1"
 function Reset-SpatialPanels {
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
     $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
@@ -117,7 +117,7 @@ $actionPull = {
         $sb.Children[0].To = $script:contractedWidth + 754
         $sb.Begin($script:wpfWindow)
         
-        $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
+        $script:wpfWindow.Dispatcher.InvokeAsync([Action]{ Load-Directory "/sdcard/" }) | Out-Null
         return
     }
     
@@ -128,7 +128,7 @@ $actionPull = {
     $sb = $script:wpfWindow.Resources["ExpandMenu"]
     $sb.Begin($script:wpfWindow)
     
-    $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
+    $script:wpfWindow.Dispatcher.InvokeAsync([Action]{ Load-Directory "/sdcard/" }) | Out-Null
 }
 $script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
 

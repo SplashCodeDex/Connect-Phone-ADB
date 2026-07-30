@@ -1,4 +1,4 @@
-﻿. "$PSScriptRoot\TrayUIHandlers.ps1"
+. "$PSScriptRoot\TrayUIHandlers.ps1"
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
@@ -442,7 +442,21 @@ $script:notifyIcon.Add_MouseUp({
         }
         
         try {
-            Update-WpfUI
+            $proc = New-Object System.Diagnostics.Process
+            $proc.StartInfo.FileName = "adb.exe"
+            $proc.StartInfo.Arguments = "devices -l"
+            $proc.StartInfo.UseShellExecute = $false
+            $proc.StartInfo.RedirectStandardOutput = $true
+            $proc.StartInfo.CreateNoWindow = $true
+            $proc.EnableRaisingEvents = $true
+            $proc.Add_Exited({
+                $out = $proc.StandardOutput.ReadToEnd() -split "`r?`n"
+                $script:wpfWindow.Dispatcher.InvokeAsync([Action]{
+                    try { Update-WpfUI -DevicesOutput $out } catch {}
+                }) | Out-Null
+                $proc.Dispose()
+            })
+            $proc.Start() | Out-Null
         } catch { Write-Trace "Update-WpfUI error: $_" }
         
         # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
