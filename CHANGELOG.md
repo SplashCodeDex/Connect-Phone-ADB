@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.7.14.0] - 2026-07-30
+### Fixed
+- **[patch]** Fixed spatial menu fluidity and opening lag. `Update-WpfUI` now fetches connected `adb devices` asynchronously via a background process instead of blocking the UI thread before the entrance animation.
+- **[patch]** Fixed micro-stutter when opening the File Explorer or Settings panels by running `Load-Directory` asynchronously (`InvokeAsync`), ensuring the `ExpandMenu` animation triggers instantly without dropped frames.
+
 ## [2.6.10.0] - 2026-07-30
 ### Fixed
 - **[fix]** Resolved severe UI expansion bug where rapidly swapping between File Explorer and Settings Panel caused the window to infinitely grow vertically off-screen. (The `ExpandMenu` and `ExpandSettings` height animations are now strictly constrained to absolute values instead of relative accumulation).
