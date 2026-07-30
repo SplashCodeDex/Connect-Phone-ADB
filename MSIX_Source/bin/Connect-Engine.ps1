@@ -203,42 +203,48 @@ if ($script:AutoConnectEnabled) {
 }
 
 # Start Omni-Mesh Transfer Server
-$script:transferJob = Start-OmniTransferServer
+$script:transferQueue = [System.Collections.Concurrent.ConcurrentQueue[object]]::new()
+$script:mdnsQueue = [System.Collections.Concurrent.ConcurrentQueue[object]]::new()
+
+$script:transferJob = Start-OmniTransferServer -Queue $script:transferQueue
 
 # Start mDNS & Omni-Mesh auto-discovery
 $script:mdnsJob = $null
+$script:omniPeers = @{}
+
+# Hide placeholders initially
+foreach ($i in 1..3) {
+    $btnName = "btnUser$i"
+    $btn = $script:wpfWindow.FindName($btnName)
+    if ($btn) { $btn.Visibility = 'Collapsed' }
+}
+
 if ($script:AutoConnectEnabled) {
-    $script:mdnsJob = Start-MdnsDiscovery
-    
-    # Hide placeholders initially
-    foreach ($i in 1..3) {
-        $btnName = "btnUser$i"
-        $btn = $script:wpfWindow.FindName($btnName)
-        if ($btn) { $btn.Visibility = 'Collapsed' }
-    }
-    $script:omniPeers = @{}
-    
-    $mdnsTimer = New-Object System.Windows.Threading.DispatcherTimer
-    $mdnsTimer.Interval = [TimeSpan]::FromSeconds(2)
-    $mdnsTimer.Add_Tick({
-        # 1. Check Transfer Server Job
-        if ($null -ne $script:transferJob -and $script:transferJob.HasMoreData) {
-            $trans = Receive-Job -Job $script:transferJob
-            if ($trans) {
-                foreach ($t in $trans) {
-                    if ($t.Type -eq 'TransferComplete') {
-                        Show-Toast -Title "File Received" -Message "Saved to: $($t.File)"
-                        
-                    }
-                }
+    $script:mdnsJob = Start-MdnsDiscovery -Queue $script:mdnsQueue
+}
+
+$mdnsTimer = New-Object System.Windows.Threading.DispatcherTimer
+$mdnsTimer.Interval = [TimeSpan]::FromSeconds(2)
+$mdnsTimer.Add_Tick({
+    # 1. Check Transfer Server Job
+        $t = $null
+        while ($script:transferQueue.TryDequeue([ref]$t)) {
+            if ($t.Type -eq 'TransferComplete') {
+                Show-Toast -Title "File Received" -Message "Saved to: $($t.File)"
+            } elseif ($t.Type -eq 'Error') {
+                Write-Trace $t.Message
             }
         }
         
         # 2. Check Discovery Job
-        if ($null -ne $script:mdnsJob -and $script:mdnsJob.HasMoreData) {
-            $received = Receive-Job -Job $script:mdnsJob
-            if ($received) {
-                $uniqueServices = $received | Sort-Object -Property Type, IPPort -Unique
+        $received = @()
+        $m = $null
+        while ($script:mdnsQueue.TryDequeue([ref]$m)) {
+            $received += $m
+        }
+        
+        if ($received.Count -gt 0) {
+            $uniqueServices = $received | Sort-Object -Property Type, IPPort -Unique
                 
                 # Check for Pairing
                 $pairingTargets = $uniqueServices | Where-Object { $_.Type -eq 'Pairing' } | Select-Object -ExpandProperty IPPort
@@ -298,11 +304,20 @@ if ($script:AutoConnectEnabled) {
                 
                 
             }
-        }
     })
     $mdnsTimer.Start()
-}
 
 Show-Toast -Title "Connect ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
-[System.Windows.Forms.Application]::Run()
 
+[System.Windows.Forms.Application]::add_ApplicationExit({
+    if ($script:mdnsJob -and $script:mdnsJob.PowerShell) {
+        Write-Trace "Disposing mDNS Runspace..."
+        $script:mdnsJob.PowerShell.Dispose()
+    }
+    if ($script:transferJob -and $script:transferJob.PowerShell) {
+        Write-Trace "Disposing Transfer Runspace..."
+        $script:transferJob.PowerShell.Dispose()
+    }
+})
+
+[System.Windows.Forms.Application]::Run()

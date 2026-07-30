@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.0.0] - 2026-07-30
+### Changed
+- **[major]** Refactored background tasks (mDNS polling and Omni-Mesh transfer server) to use raw, in-process `.NET` PowerShell Runspaces (`[powershell]::Create()`) instead of `Start-Job`.
+  - Eliminates the 30-second initialization delay and completely resolves the random console window flashes on startup.
+  - Implements a thread-safe `ConcurrentQueue` for nanosecond-fast inter-thread communication.
+  - Fixes notorious infinite-loop Runspace memory leaks by aggressively piping internal output streams to `[void]` and ensuring the UI explicitly disposes of unmanaged `Runspace` resources via a robust application-exit hook.
+
 ## [2.7.18.0] - 2026-07-30
 ### Fixed
 - **[fix]** Reverted the spatial menu `menuTrans` parallax exit animation introduced in v2.7.15.0. It caused severe visual clipping on the left edge of the main menu during window contraction because the `To="-30"` X-axis translation collided with the shrinking Win32 window bounds.

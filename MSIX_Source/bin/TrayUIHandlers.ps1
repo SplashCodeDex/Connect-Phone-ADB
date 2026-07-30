@@ -139,8 +139,15 @@ $actionAuto = {
     Set-AutoConnectStatus -Enable $newState
     if ($newState) {
         Show-Toast -Title "Auto-Connect Enabled" -Message "Will auto-connect whenever PC joins phone hotspot."
+        if (-not $script:mdnsJob) {
+            $script:mdnsJob = Start-MdnsDiscovery -Queue $script:mdnsQueue
+        }
     } else {
         Show-Toast -Title "Auto-Connect Disabled" -Message "Auto-connection trigger removed."
+        if ($script:mdnsJob -and $script:mdnsJob.PowerShell) {
+            $script:mdnsJob.PowerShell.Dispose()
+            $script:mdnsJob = $null
+        }
     }
     Update-WpfUI
 }
