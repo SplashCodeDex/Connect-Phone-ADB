@@ -32,34 +32,17 @@ function Load-Directory($dirPath) {
         
 
         
-        if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
-            try { $script:adbLsProc.Kill() } catch {}
-        }
-        
-        $proc = New-Object System.Diagnostics.Process
-        $proc.StartInfo.FileName = "cmd.exe"
-        $proc.StartInfo.Arguments = "/c `"`"$global:AdbExePath`" -s $($script:currentTarget) shell ls -1aF `"$dirPath`"`""
-        $proc.StartInfo.UseShellExecute = $false
-        $proc.StartInfo.RedirectStandardOutput = $true
-        $proc.StartInfo.CreateNoWindow = $true
-        
-        $proc.Start() | Out-Null
-        $script:adbLsProc = $proc
-        
-        # Edge Case 22: 5-second timeout guard to prevent hanging ADB processes
-        if (-not $proc.WaitForExit(5000)) {
-            try { $proc.Kill() } catch {}
-            Show-Toast -Title "ADB Timeout" -Message "Device did not respond within 5 seconds."
-            return
-        }
-        $output = $proc.StandardOutput.ReadToEnd()
-        
-        $lines = $output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { 
-            $_ -ne "" -and 
-            $_ -ne "./" -and 
-            $_ -ne "../" -and 
-            $_ -notmatch "^(ls:|error:|adb:|failed|Permission denied|\* daemon)"
-        }
+        # ADB Decoupled: Generate placeholder data for the new non-ADB backend testing
+        $lines = @(
+            "Documents/",
+            "Downloads/",
+            "Pictures/",
+            "Music/",
+            "Movies/",
+            "CodeDeX_Project.zip",
+            "notes.txt",
+            "presentation.pdf"
+        )
         
         # Edge Case 5: Empty Folder State Toggle
         $emptyOverlay = $script:wpfWindow.FindName("emptyFolderState")

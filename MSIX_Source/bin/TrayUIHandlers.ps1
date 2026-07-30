@@ -1,21 +1,30 @@
+﻿. "$PSScriptRoot\Modules\UIComponents.ps1"
+function Reset-SpatialPanels {
+    $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
+    $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
+    $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("FileExplorer").Opacity = 0
+    $script:wpfWindow.FindName("fileTrans").X = 150
+    $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
+    $script:wpfWindow.FindName("settingsTrans").X = 150
+    $script:wpfWindow.FindName("menuTrans").X = 0
+    $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
+    $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
+    $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+}
 
 function Get-ConnectedDeviceTarget {
     $statusText = $script:txtStatus.Text
-    
-    if ($statusText -match "Connected:\s*(.+)") {
-        return $Matches[1]
-    }
-    
+    if ($statusText -match "Connected:\s*(.+)") { return $Matches[1] }
     $devicesOutput = adb devices 2>&1
     $connectedDevice = ($devicesOutput | Where-Object { $_ -match ':5555\s+device' })
     if (-not $connectedDevice) { $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
     $connectedDevice = $connectedDevice | Select-Object -First 1
-    if ($connectedDevice) {
-        return $connectedDevice.Split()[0].Trim()
-    }
+    if ($connectedDevice) { return $connectedDevice.Split()[0].Trim() }
     return $null
 }
-. "$PSScriptRoot\Modules\UIComponents.ps1"
 $actionConnect = {
     $res = Invoke-AdbConnect
     if ($res.Success) {
@@ -49,7 +58,7 @@ $script:wpfWindow.FindName("btnQAConnect").Add_Click({
 })
 
 $actionMirror = {
-    $target = Get-ConnectedDeviceTarget
+        $target = Get-ConnectedDeviceTarget
     
     if (-not $target) {
         Show-Toast -Title "Mirror Failed" -Message "No phone connected over ADB."
@@ -73,7 +82,7 @@ $actionMirror = {
 $script:wpfWindow.FindName("btnQAMirror").Add_Click({ Invoke-MenuAction $actionMirror })
 
 $actionPull = {
-    $target = Get-ConnectedDeviceTarget
+        $target = Get-ConnectedDeviceTarget
     
     if (-not $target) {
         & $actionConnect
@@ -106,8 +115,6 @@ $actionPull = {
         $sb = $script:wpfWindow.Resources["ExpandMenu"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = $script:contractedWidth + 754
-        $sb.Children[1].By = $null
-        $sb.Children[1].To = $script:contractedHeight + 195
         $sb.Begin($script:wpfWindow)
         
         $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
@@ -115,8 +122,6 @@ $actionPull = {
     }
     
     $mainBorder = $script:wpfWindow.FindName("mainBorder")
-    if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
-    if (-not $script:contractedHeight) { $script:contractedHeight = $mainBorder.ActualHeight }
     if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
     if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
     
@@ -164,21 +169,16 @@ $actionSettings = {
         $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = 675
-        $sb.Children[1].By = $null
-        $sb.Children[1].To = $script:contractedHeight + 195
         $sb.Begin($script:wpfWindow)
     } else {
         $mainBorder = $script:wpfWindow.FindName("mainBorder")
         if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
-        if (-not $script:contractedHeight) { $script:contractedHeight = $mainBorder.ActualHeight }
         if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
         if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
         
         $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = 675
-        $sb.Children[1].By = $null
-        $sb.Children[1].To = $script:contractedHeight + 195
         $sb.Begin($script:wpfWindow)
     }
     
@@ -210,6 +210,15 @@ $actionSettings = {
         $txtDlPath.Text = $path
     }
 }
+
+$btnTopProfile = $script:wpfWindow.FindName("btnProfileTop")
+$btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
+$btnProfileTopSettings = $script:wpfWindow.FindName("btnProfileTopSettings")
+
+# Avatar clicks now open the settings panel instead of the popup
+if ($btnTopProfile) { $btnTopProfile.Add_Click({ Invoke-MenuAction $actionSettings }) }
+if ($btnProfileBottom) { $btnProfileBottom.Add_Click({ Invoke-MenuAction $actionSettings }) }
+if ($btnProfileTopSettings) { $btnProfileTopSettings.Add_Click({ Invoke-MenuAction $actionSettings }) }
 
 function Show-PairingPrompt {
     param([string]$IPPort)
@@ -294,20 +303,4 @@ function Show-PairingPrompt {
     
     $null = $win.ShowDialog()
     return $script:resultPin
-}
-
-function Reset-SpatialPanels {
-    $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
-    $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
-    $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("FileExplorer").Opacity = 0
-    $script:wpfWindow.FindName("fileTrans").X = 150
-    $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
-    $script:wpfWindow.FindName("settingsTrans").X = 150
-    $script:wpfWindow.FindName("menuTrans").X = 0
-    $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
-    $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
 }

@@ -1,3 +1,4 @@
+﻿. "$PSScriptRoot\TrayUIHandlers.ps1"
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
@@ -175,227 +176,6 @@ $script:wpfWindow.FindName("btnCopyIP").Add_Click({
     }
 })
 
-$actionConnect = {
-    $res = Invoke-AdbConnect
-    if ($res.Success) {
-        $script:currentTarget = $res.Target
-        $script:notifyIcon.Icon = $iconGreen
-        $script:notifyIcon.Text = "Connected: $($res.Name)"
-        $script:txtStatus.Text = "Connected: $($res.Name)"
-        Show-Toast -Title "ADB Connected" -Message "Successfully connected to $($res.Name)"
-    } else {
-        $script:notifyIcon.Icon = $iconRed
-        $script:notifyIcon.Text = "Disconnected"
-        $script:txtStatus.Text = "Status: $($res.Message)"
-        Show-Toast -Title "Connection Failed" -Message $res.Message
-    }
-    Update-WpfUI
-}
-$actionDisconnect = {
-    $null = adb disconnect 2>&1
-    $script:notifyIcon.Icon = $iconRed
-    $script:notifyIcon.Text = "Connect ADB: Disconnected"
-    $script:txtStatus.Text = "Status: Disconnected"
-    Show-Toast -Title "ADB Disconnected" -Message "Severed all wireless connections."
-    Update-WpfUI
-}
-$script:wpfWindow.FindName("btnQAConnect").Add_Click({
-    if ($this.IsChecked) {
-        Invoke-MenuAction $actionConnect
-    } else {
-        Invoke-MenuAction $actionDisconnect
-    }
-})
-
-$actionMirror = {
-    $statusText = $script:txtStatus.Text
-    $target = $null
-    
-    if ($statusText -match "Connected:\s*(.+)") {
-        $target = $Matches[1]
-    } else {
-        $devicesOutput = adb devices 2>&1
-        $connectedDevice = ($devicesOutput | Where-Object { $_ -match ':5555\s+device' })
-        if (-not $connectedDevice) { $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
-        $connectedDevice = $connectedDevice | Select-Object -First 1
-        if ($connectedDevice) {
-            $target = $connectedDevice.Split()[0].Trim()
-        }
-    }
-    
-    if (-not $target) {
-        Show-Toast -Title "Mirror Failed" -Message "No phone connected over ADB."
-        Update-WpfUI
-        return
-    }
-    
-    $scrcpyExe = Get-Command scrcpy.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
-    if (-not $scrcpyExe -and (Test-Path "$PSScriptRoot\scrcpy.exe")) {
-        $scrcpyExe = "$PSScriptRoot\scrcpy.exe"
-    }
-    
-    if ($scrcpyExe) {
-        Show-Toast -Title "Mirroring Phone" -Message "Launching zero-latency screen mirror for $target..."
-        Start-Process -FilePath $scrcpyExe -ArgumentList "-s `"$target`" --window-title `"Connect Phone ADB - Screen Mirror ($target)`"" -WindowStyle Normal
-    } else {
-        Show-Toast -Title "Mirroring Requires scrcpy" -Message "scrcpy.exe not found in PATH or app directory. Place scrcpy.exe in PATH to mirror."
-    }
-    Update-WpfUI
-}
-$script:wpfWindow.FindName("btnQAMirror").Add_Click({ Invoke-MenuAction $actionMirror })
-
-$actionPull = {
-    $statusText = $script:txtStatus.Text
-    $target = $null
-    
-    if ($statusText -match "Connected:\s*(.+)") {
-        $target = $Matches[1]
-    } else {
-        $devicesOutput = adb devices 2>&1
-        $connectedDevice = ($devicesOutput | Where-Object { $_ -match ':5555\s+device' })
-        if (-not $connectedDevice) { $connectedDevice = ($devicesOutput | Where-Object { $_ -match '\bdevice\b' -and $_ -notmatch 'List of devices' }) }
-        $connectedDevice = $connectedDevice | Select-Object -First 1
-        if ($connectedDevice) {
-            $target = $connectedDevice.Split()[0].Trim()
-        }
-    }
-    
-    if (-not $target) {
-        & $actionConnect
-        $target = $script:currentTarget
-        
-        if (-not $target) {
-            return
-        }
-    }
-    
-    $script:currentTarget = $target
-    
-    if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') {
-        $sb = $script:wpfWindow.Resources["ContractMenu"]
-        $sb.Begin($script:wpfWindow)
-        return
-    }
-    
-    $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
-    if ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible') {
-        # Swap from Settings (675px) to File Explorer (contracted + 754px) with smooth animation
-        $settingsPanel.Visibility = 'Collapsed'
-        $settingsPanel.Opacity = 0
-        $script:wpfWindow.FindName("settingsTrans").X = 150
-        
-        $mainBorder = $script:wpfWindow.FindName("mainBorder")
-        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-        
-        $sb = $script:wpfWindow.Resources["ExpandMenu"].Clone()
-        $sb.Children[0].By = $null
-        $sb.Children[0].To = $script:contractedWidth + 754
-        $sb.Begin($script:wpfWindow)
-        
-        $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
-        return
-    }
-    
-    $mainBorder = $script:wpfWindow.FindName("mainBorder")
-    if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-    if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-    
-    $sb = $script:wpfWindow.Resources["ExpandMenu"]
-    $sb.Begin($script:wpfWindow)
-    
-    $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
-}
-$script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
-
-$actionAuto = {
-    $newState = -not (Get-AutoConnectStatus)
-    Set-AutoConnectStatus -Enable $newState
-    if ($newState) {
-        Show-Toast -Title "Auto-Connect Enabled" -Message "Will auto-connect whenever PC joins phone hotspot."
-    } else {
-        Show-Toast -Title "Auto-Connect Disabled" -Message "Auto-connection trigger removed."
-    }
-    Update-WpfUI
-}
-
-# Settings Panel Toggle (avatar click expands/contracts settings)
-$actionSettings = {
-    $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
-    $fileExplorer = $script:wpfWindow.FindName("FileExplorer")
-    
-    # If settings is already visible, contract it
-    if ($settingsPanel.Visibility -eq 'Visible') {
-        $sb = $script:wpfWindow.Resources["ContractSettings"]
-        $sb.Begin($script:wpfWindow)
-        return
-    }
-    
-    # If file explorer is visible, contract it first then expand settings
-    if ($fileExplorer.Visibility -eq 'Visible') {
-        # Swap from File Explorer to Settings (675px) with smooth animation
-        $fileExplorer.Visibility = 'Collapsed'
-        $fileExplorer.Opacity = 0
-        $script:wpfWindow.FindName("fileTrans").X = 150
-        
-        $mainBorder = $script:wpfWindow.FindName("mainBorder")
-        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-        
-        $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
-        $sb.Children[0].By = $null
-        $sb.Children[0].To = 675
-        $sb.Begin($script:wpfWindow)
-    } else {
-        $mainBorder = $script:wpfWindow.FindName("mainBorder")
-        if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-        
-        $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
-        $sb.Children[0].By = $null
-        $sb.Children[0].To = 675
-        $sb.Begin($script:wpfWindow)
-    }
-    
-    # Update theme text in settings
-    $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")
-    if ($txtTheme) {
-        $txtTheme.Text = if ($global:CurrentTheme -eq "DarkTheme") { "Dark" } else { "Light" }
-    }
-    
-    # Update auto-connect badge
-    $txtBadge = $script:wpfWindow.FindName("txtBadgeAutoConnect")
-    $badge = $script:wpfWindow.FindName("badgeAutoConnect")
-    if ($txtBadge -and $badge) {
-        $isEnabled = Get-AutoConnectStatus
-        $txtBadge.Text = if ($isEnabled) { "ON" } else { "OFF" }
-        if ($isEnabled) {
-            $badge.Background = $script:wpfWindow.FindResource("SecondaryBrush")
-            $txtBadge.Foreground = $script:wpfWindow.FindResource("SecondaryForegroundBrush")
-        } else {
-            $badge.Background = $script:wpfWindow.FindResource("DangerBrush")
-            $txtBadge.Foreground = [System.Windows.Media.Brushes]::White
-        }
-    }
-    
-    # Update download path
-    $txtDlPath = $script:wpfWindow.FindName("txtSettingsDownloadPath")
-    if ($txtDlPath) {
-        $path = if ($script:customDownloadPath) { $script:customDownloadPath } else { "Downloads\dex" }
-        $txtDlPath.Text = $path
-    }
-}
-
-$btnTopProfile = $script:wpfWindow.FindName("btnProfileTop")
-$btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
-$btnProfileTopSettings = $script:wpfWindow.FindName("btnProfileTopSettings")
-
-# Avatar clicks now open the settings panel instead of the popup
-if ($btnTopProfile) { $btnTopProfile.Add_Click({ Invoke-MenuAction $actionSettings }) }
-if ($btnProfileBottom) { $btnProfileBottom.Add_Click({ Invoke-MenuAction $actionSettings }) }
-if ($btnProfileTopSettings) { $btnProfileTopSettings.Add_Click({ Invoke-MenuAction $actionSettings }) }
-
 # Settings Panel Button Handlers
 # Auto-Connect toggle in settings
 $btnSettingsAutoConnect = $script:wpfWindow.FindName("btnSettingsAutoConnect")
@@ -567,19 +347,7 @@ $script:wpfWindow.Add_KeyDown({
         # Edge Case: Reset all expanded panels before hiding
         $script:wpfWindow.Hide()
         $script:lastDeactivated = [DateTime]::Now
-        $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
-        $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
-        $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("FileExplorer").Opacity = 0
-        $script:wpfWindow.FindName("fileTrans").X = 150
-        $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
-        $script:wpfWindow.FindName("settingsTrans").X = 150
-        $script:wpfWindow.FindName("menuTrans").X = 0
-        $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
-        $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
-        $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+        Reset-SpatialPanels
         $e.Handled = $true
     } elseif (($e.Key -eq [System.Windows.Input.Key]::Up -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Alt)) -or ($e.Key -eq [System.Windows.Input.Key]::Back)) {
         # Edge Case 25: Alt + Up Arrow / Backspace navigates Up Directory
@@ -656,19 +424,7 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     # Edge Case: Reset all expanded panels before hiding
     $script:wpfWindow.Hide()
     $script:lastDeactivated = [DateTime]::Now
-    $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
-    $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
-    $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("FileExplorer").Opacity = 0
-    $script:wpfWindow.FindName("fileTrans").X = 150
-    $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
-    $script:wpfWindow.FindName("settingsTrans").X = 150
-    $script:wpfWindow.FindName("menuTrans").X = 0
-    $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
-    $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
-    $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+    Reset-SpatialPanels
 })
 
 $script:notifyIcon.Add_MouseUp({
@@ -681,19 +437,7 @@ $script:notifyIcon.Add_MouseUp({
             # Edge Case: If window was visible with expanded panels, fully reset state on hide
             Write-Trace "MouseUp: Hiding window (debounce or visible)"
             $script:wpfWindow.Hide()
-            $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
-            $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
-            $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
-            $script:wpfWindow.FindName("FileExplorer").Opacity = 0
-            $script:wpfWindow.FindName("fileTrans").X = 150
-            $script:wpfWindow.FindName("SettingsPanel").Visibility = 'Collapsed'
-            $script:wpfWindow.FindName("SettingsPanel").Opacity = 0
-            $script:wpfWindow.FindName("settingsTrans").X = 150
-            $script:wpfWindow.FindName("menuTrans").X = 0
-            $script:wpfWindow.FindName("btnCloseMenu").Visibility = 'Collapsed'
-            $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
-            $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
-            $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+            Reset-SpatialPanels
             return
         }
         
@@ -743,87 +487,3 @@ $script:notifyIcon.Add_MouseUp({
 })
 
 
-function Show-PairingPrompt {
-    param([string]$IPPort)
-    
-    $xaml = @"
-    <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            Title="Pair Device" Width="400" Height="220" WindowStartupLocation="CenterScreen"
-            Background="{DynamicResource MenuBackgroundGradient}" Foreground="{DynamicResource PrimaryTextBrush}" 
-            WindowStyle="None" Topmost="True" ResizeMode="NoResize"
-            BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1" AllowsTransparency="True">
-        <Window.Resources>
-            <Style TargetType="Button">
-                <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}"/>
-                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource MenuBorderBrush}"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="6" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-        </Window.Resources>
-        <Grid Margin="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Text="Pair New Device (mDNS)" FontWeight="Bold" FontSize="18" Foreground="{DynamicResource BrandBrush}" Grid.Row="0" Margin="0,0,0,5"/>
-            <TextBlock Text="IP: $IPPort" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="1" Margin="0,0,0,15"/>
-            <StackPanel Grid.Row="2">
-                <TextBlock Text="Enter 6-digit Wi-Fi pairing code:" FontSize="13" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                <TextBox x:Name="txtPin" Height="34" FontSize="18" Background="{DynamicResource MenuBackgroundBrush}" Foreground="{DynamicResource PrimaryTextBrush}" 
-                         BorderThickness="1" BorderBrush="{DynamicResource MenuBorderBrush}" Padding="5,4,0,0" VerticalContentAlignment="Center" MaxLength="6"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="3" Margin="0,20,0,0">
-                <Button x:Name="btnCancel" Content="Cancel" Width="90" Height="32" Margin="0,0,10,0"/>
-                <Button x:Name="btnPair" Content="Pair" Width="90" Height="32" Background="{DynamicResource BrandBrush}" Foreground="White" BorderThickness="0"/>
-            </StackPanel>
-        </Grid>
-    </Window>
-"@
-    
-    $reader = New-Object System.Xml.XmlNodeReader ([xml]$xaml)
-    $win = [System.Windows.Markup.XamlReader]::Load($reader)
-    
-    # Inherit theme dictionaries from main window
-    foreach ($dict in $script:wpfWindow.Resources.MergedDictionaries) {
-        $win.Resources.MergedDictionaries.Add($dict)
-    }
-    
-    $txtPin = $win.FindName("txtPin")
-    $btnCancel = $win.FindName("btnCancel")
-    $btnPair = $win.FindName("btnPair")
-    
-    $resultPin = $null
-    
-    $btnCancel.Add_Click({
-        $win.DialogResult = $false
-        $win.Close()
-    })
-    
-    $btnPair.Add_Click({
-        $script:resultPin = $txtPin.Text.Trim()
-        $win.DialogResult = $true
-        $win.Close()
-    })
-    
-    # Handle Drag to move
-    $win.Add_MouseLeftButtonDown({ $win.DragMove() })
-    
-    $null = $win.ShowDialog()
-    return $script:resultPin
-}

@@ -1,4 +1,11 @@
-<#
+﻿<#
+  $allScripts = Get-ChildItem -Path MSIX_Source\bin -Include *.ps1,*.psm1 -Recurse
+  foreach ($s in $allScripts) {
+      $errors = $null
+      $null = [Management.Automation.Language.Parser]::ParseFile($s.FullName, [ref]$null, [ref]$errors)
+      if ($errors.Count -gt 0) { Write-Host "  [FAIL] PS syntax error in $($s.Name)" -ForegroundColor Red; exit 1 }
+      else { Write-Host "  [PASS] PS syntax: $($s.Name)" -ForegroundColor Green }
+  }
 .SYNOPSIS
     Validate-Build.ps1 - Pre-flight build gate for Connect Phone ADB
 .DESCRIPTION
