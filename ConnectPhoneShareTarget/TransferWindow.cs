@@ -73,55 +73,6 @@ namespace ConnectPhoneShareTarget
             
             // Allow drag to move
             this.MouseLeftButtonDown += (s, e) => this.DragMove();
-
-            LocalSendServer.OnTransferProgress += LocalSendServer_OnTransferProgress;
-            LocalSendServer.OnTransferComplete += LocalSendServer_OnTransferComplete;
-            
-            this.Closed += (s, e) => {
-                LocalSendServer.OnTransferProgress -= LocalSendServer_OnTransferProgress;
-                LocalSendServer.OnTransferComplete -= LocalSendServer_OnTransferComplete;
-            };
-        }
-
-        private DateTime lastUiUpdate = DateTime.UtcNow;
-        private long lastBytesRead = 0;
-
-        private void LocalSendServer_OnTransferProgress(string fileId, long bytesRead, long totalBytes)
-        {
-            var now = DateTime.UtcNow;
-            if ((now - lastUiUpdate).TotalMilliseconds > 100)
-            {
-                var diff = now - lastUiUpdate;
-                var bytesDiff = bytesRead - lastBytesRead;
-                var speedMBps = (bytesDiff / 1048576.0) / diff.TotalSeconds;
-                
-                lastUiUpdate = now;
-                lastBytesRead = bytesRead;
-
-                Dispatcher.InvokeAsync(() =>
-                {
-                    txtStatus.Text = $"Transferring... {(bytesRead / 1048576.0):F1} MB / {(totalBytes / 1048576.0):F1} MB";
-                    txtSpeed.Text = $"{speedMBps:F1} MB/s";
-                    
-                    var parentFinal = (Border)progressIndicator.Parent;
-                    progressIndicator.Width = parentFinal.ActualWidth * ((double)bytesRead / totalBytes);
-                    TaskbarItemInfo.ProgressValue = (double)bytesRead / totalBytes;
-                });
-            }
-        }
-
-        private void LocalSendServer_OnTransferComplete(string fileId)
-        {
-            Dispatcher.InvokeAsync(() =>
-            {
-                txtStatus.Text = "Transfer Complete!";
-                txtSpeed.Text = "Done";
-                var parentFinal = (Border)progressIndicator.Parent;
-                progressIndicator.Width = parentFinal.ActualWidth;
-                TaskbarItemInfo.ProgressValue = 1.0;
-                
-                Task.Delay(3000).ContinueWith(_ => Dispatcher.Invoke(Close));
-            });
         }
 
 
@@ -200,8 +151,16 @@ namespace ConnectPhoneShareTarget
             txtStatus.Text = "Transfer Signal Sent!";
             txtSpeed.Text = $"{totalBytes / 1048576.0:F1} MB triggered in {globalSw.Elapsed.TotalSeconds:F1}s";
             
-            // DO NOT fake the animation, UI updates are handled by LocalSendServer_OnTransferProgress now!
-            txtStatus.Text = "Transfer Signal Sent! Waiting for Android connection...";
+            var parentFinal = (Border)progressIndicator.Parent;
+            var animFinal = new System.Windows.Media.Animation.DoubleAnimation {
+                To = parentFinal.ActualWidth,
+                Duration = TimeSpan.FromMilliseconds(250),
+                EasingFunction = new System.Windows.Media.Animation.QuadraticEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
+            };
+            progressIndicator.BeginAnimation(Border.WidthProperty, animFinal);
+            
+            TaskbarItemInfo.ProgressValue = 1.0;
+            await Task.Delay(3000);
             
             // Clean up hosted files memory after a while so we don't leak memory (not deleting the physical file)
             _ = Task.Run(async () => {

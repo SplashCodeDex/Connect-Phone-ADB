@@ -11,8 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.cert.X509Certificate
 import javax.net.ssl.X509TrustManager
-import java.io.InputStream
-import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 
 class ClientEngine {
     // LocalSend uses self-signed certificates, so we must trust all certificates on the local network
@@ -61,7 +59,7 @@ class ClientEngine {
         }
     }
 
-    suspend fun uploadFile(ip: String, port: Int, sessionId: String, fileId: String, token: String, content: InputStream): Boolean = withContext(Dispatchers.IO) {
+    suspend fun uploadFile(ip: String, port: Int, sessionId: String, fileId: String, token: String, content: ByteArray): Boolean = withContext(Dispatchers.IO) {
         try {
             val response = client.post("https://$ip:$port/api/localsend/v2/upload") {
                 url {
@@ -69,7 +67,7 @@ class ClientEngine {
                     parameters.append("fileId", fileId)
                     parameters.append("token", token)
                 }
-                setBody(content.toByteReadChannel())
+                setBody(content)
             }
             response.status.isSuccess()
         } catch (e: Exception) {

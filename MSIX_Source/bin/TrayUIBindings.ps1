@@ -279,7 +279,7 @@ $actionPull = {
     
     $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
     if ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible') {
-        # Swap from Settings (675px) to File Explorer (2174px) with smooth animation
+        # Swap from Settings (675px) to File Explorer (contracted + 754px) with smooth animation
         $settingsPanel.Visibility = 'Collapsed'
         $settingsPanel.Opacity = 0
         $script:wpfWindow.FindName("settingsTrans").X = 150
@@ -288,7 +288,9 @@ $actionPull = {
         if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
         if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
         
-        $sb = $script:wpfWindow.Resources["ExpandMenu"]
+        $sb = $script:wpfWindow.Resources["ExpandMenu"].Clone()
+        $sb.Children[0].By = $null
+        $sb.Children[0].To = $script:contractedWidth + 754
         $sb.Begin($script:wpfWindow)
         
         $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
@@ -331,7 +333,7 @@ $actionSettings = {
     
     # If file explorer is visible, contract it first then expand settings
     if ($fileExplorer.Visibility -eq 'Visible') {
-        # Swap from File Explorer (2174px) to Settings (675px) with smooth animation
+        # Swap from File Explorer to Settings (675px) with smooth animation
         $fileExplorer.Visibility = 'Collapsed'
         $fileExplorer.Opacity = 0
         $script:wpfWindow.FindName("fileTrans").X = 150
@@ -340,14 +342,19 @@ $actionSettings = {
         if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
         if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
         
-        $sb = $script:wpfWindow.Resources["ExpandSettings"]
+        $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
+        $sb.Children[0].By = $null
+        $sb.Children[0].To = 675
         $sb.Begin($script:wpfWindow)
     } else {
         $mainBorder = $script:wpfWindow.FindName("mainBorder")
+        if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
         if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
         if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
         
-        $sb = $script:wpfWindow.Resources["ExpandSettings"]
+        $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
+        $sb.Children[0].By = $null
+        $sb.Children[0].To = 675
         $sb.Begin($script:wpfWindow)
     }
     
@@ -549,7 +556,9 @@ $script:wpfWindow.Add_KeyDown({
         
         # If settings is visible, contract it instead of hiding the whole window
         if ($settingsPanel.Visibility -eq 'Visible') {
-            $sb = $script:wpfWindow.Resources["ContractSettings"]
+            $sb = $script:wpfWindow.Resources["ContractSettings"].Clone()
+            $sb.Children[0].By = $null
+            $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
             $sb.Begin($script:wpfWindow)
             $e.Handled = $true
             return
@@ -628,14 +637,18 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     
     # If settings is visible, contract it instead of hiding the whole window
     if ($settingsPanel.Visibility -eq 'Visible') {
-        $sb = $script:wpfWindow.Resources["ContractSettings"]
+        $sb = $script:wpfWindow.Resources["ContractSettings"].Clone()
+        $sb.Children[0].By = $null
+        $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
         $sb.Begin($script:wpfWindow)
         return
     }
     
     # If FileExplorer is visible, contract it instead of hiding the whole window (consistent UX)
     if ($fileExplorer.Visibility -eq 'Visible') {
-        $sb = $script:wpfWindow.Resources["ContractMenu"]
+        $sb = $script:wpfWindow.Resources["ContractMenu"].Clone()
+        $sb.Children[0].By = $null
+        $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
         $sb.Begin($script:wpfWindow)
         return
     }

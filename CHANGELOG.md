@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.6.0] - 2026-07-30
+### Added
+- **[minor]** Added a dynamic Y-axis parallax slide-up effect to the spatial menu container (`menuTrans`) during the initial system tray `PopIn` sequence, giving it an elastic bouncy entrance distinct from the main window scaling.
+
 ## [2.6.5.0] - 2026-07-29
 ### Removed
 - **[minor]** Reverted dynamic Windows System Accent Color adaptation to lock in the signature Green \#0AE66D\ as the permanent \SecondaryBrush\.

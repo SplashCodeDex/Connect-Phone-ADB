@@ -125,11 +125,6 @@ namespace ConnectPhoneShareTarget
     {
         public static WebApplication? App;
         public static ConcurrentDictionary<string, string> HostedFiles = new();
-        
-        // Events for UI tracking
-        public static event Action<string, long, long>? OnTransferProgress;
-        public static event Action<string>? OnTransferComplete;
-        public static event Action<string>? OnTransferFailed;
 
         public static async Task StartAsync()
         {
@@ -267,20 +262,7 @@ namespace ConnectPhoneShareTarget
                                 if (HostedFiles.TryGetValue(fileId, out var path) && File.Exists(path))
                                 {
                                     using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-                                    long totalBytes = fs.Length;
-                                    long totalRead = 0;
-                                    byte[] ioBuffer = new byte[81920];
-                                    int bytesRead;
-
-                                    while ((bytesRead = await fs.ReadAsync(ioBuffer, 0, ioBuffer.Length)) > 0)
-                                    {
-                                        await stream.WriteAsync(ioBuffer, 0, bytesRead);
-                                        totalRead += bytesRead;
-                                        OnTransferProgress?.Invoke(fileId, totalRead, totalBytes);
-                                    }
-                                    
-                                    await stream.FlushAsync();
-                                    OnTransferComplete?.Invoke(fileId);
+                                    await fs.CopyToAsync(stream, 81920);
                                 }
                             }
                         }
