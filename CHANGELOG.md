@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.1.1.0] - 2026-07-30
+### Fixed
+- **[patch]** Fixed spatial menu double-animation glitch (1-frame pop-in flash) by pre-zeroing window opacity right before display.
+- **[patch]** Fixed static elements (close button, profiles, nearby users panel) improperly re-animating when swapping directly between the File Explorer and Settings panels.
+- **[patch]** Fixed quick action buttons staying highlighted by ensuring the Pull button is explicitly unchecked when the Settings panel is opened.
+
 ## [3.1.0.0] - 2026-07-30
 ### Added
 - **[minor]** Live device telemetry on OmniMesh peer buttons. When a nearby phone broadcasts its UDP beacon, the engine now queries `adb` for `ro.product.model` and battery level. Peer slots now display `📱 Samsung Galaxy S21 • 🔋 84%` instead of the plain `OmniMesh (IP)` string. Gracefully falls back to IP when the device isn't yet ADB-connected.
