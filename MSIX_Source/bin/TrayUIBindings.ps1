@@ -434,11 +434,12 @@ $script:notifyIcon.Add_MouseUp({
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
         $now = [DateTime]::Now
         Write-Trace "IsVisible: $($script:wpfWindow.IsVisible) | Ms since lastDeactivated: $(($now - $script:lastDeactivated).TotalMilliseconds)"
-        if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 300)) {
+        if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 400)) {
             # Edge Case: If window was visible with expanded panels, fully reset state on hide
             Write-Trace "MouseUp: Hiding window (debounce or visible)"
             $script:wpfWindow.Hide()
             Reset-SpatialPanels
+            $script:lastDeactivated = $now
             return
         }
         
@@ -448,7 +449,7 @@ $script:notifyIcon.Add_MouseUp({
             $proc.StartInfo.Arguments = "devices -l"
             $proc.StartInfo.UseShellExecute = $false
             $proc.StartInfo.RedirectStandardOutput = $true
-            $proc.StartInfo.CreateNoWindow = $true
+            $proc.StartInfo.CreateNoWindow = true
             $proc.Start() | Out-Null
             
             # Non-blocking poll on UI thread to avoid ThreadPool RunspaceStateException crashes
@@ -495,17 +496,14 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
         
-        $script:wpfWindow.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [Action]{
-            $script:lastDeactivated = [DateTime]::Now
-            $script:wpfWindow.Show()
-            $script:wpfWindow.Activate()
-            $script:wpfWindow.Focus()
-            try {
-                $sb = $script:wpfWindow.FindResource("PopIn")
-                if ($sb) { $sb.Begin($script:wpfWindow) }
-            } catch { Write-Trace "PopIn trigger failed: $_" }
-        })
+        $script:lastDeactivated = [DateTime]::Now
+        $script:wpfWindow.Show()
+        $script:wpfWindow.Activate()
+        $script:wpfWindow.Focus()
+        try {
+            $sb = $script:wpfWindow.FindResource("PopIn")
+            if ($sb) { $sb.Begin($script:wpfWindow) }
+        } catch { Write-Trace "PopIn trigger failed: $_" }
     }
 })
-
 
