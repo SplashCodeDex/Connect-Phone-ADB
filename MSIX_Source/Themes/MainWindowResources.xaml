@@ -129,9 +129,6 @@
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            
-            <!-- Subtle Parallax on Main Menu: Slide Left slightly -->
-            <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" To="-30" Duration="0:0:0.45" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
 
         <!-- Settings Expand Storyboard: same window expansion but shows SettingsPanel instead of FileExplorer -->
@@ -198,9 +195,6 @@
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
-            
-            <!-- Subtle Parallax on Main Menu: Slide Left slightly -->
-            <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" To="-30" Duration="0:0:0.45" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>    
         
         <Storyboard x:Key="PopIn">

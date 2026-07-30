@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.7.18.0] - 2026-07-30
+### Fixed
+- **[fix]** Reverted the spatial menu `menuTrans` parallax exit animation introduced in v2.7.15.0. It caused severe visual clipping on the left edge of the main menu during window contraction because the `To="-30"` X-axis translation collided with the shrinking Win32 window bounds.
+
 ## [2.7.17.0] - 2026-07-30
 ### Fixed
 - **[fix]** Restored absolute height constraint logic in `TrayUIHandlers.ps1` that was lost during a previous refactoring. This completely resolves the bug where rapidly swapping between the Settings and File Explorer panels caused the spatial menu contents to shift upward off-screen due to relative height accumulation (`By="195"`).
