@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.7.15.0] - 2026-07-30
+### Added
+- **[patch]** Added reciprocal 3D parallax depth to the `ContractMenu` and `ContractSettings` exit animations. The spatial menu now subtly slides back out of frame (`X=-30`) as the window contracts, perfectly matching the physics of the `ExpandMenu` entrance.
+
 ## [2.7.14.0] - 2026-07-30
 ### Fixed
 - **[patch]** Fixed spatial menu fluidity and opening lag. `Update-WpfUI` now fetches connected `adb devices` asynchronously via a background process instead of blocking the UI thread before the entrance animation.
