@@ -121,15 +121,16 @@ $script:lbFiles.Add_MouseDoubleClick({
         
         $remotePaths = $fileItems | ForEach-Object { $_.Content.FullPath }
         
+        # ADB Decoupled: The file downloading backend is being migrated away from ADB.
+        # Hook up the new HTTP/QUIC/thru backend here to download $remotePaths to $outDir
         $actionBatchBg = {
-            param($exePath, $tgt, $remPaths, $out)
-            foreach ($rem in $remPaths) {
-                Start-Process $exePath -ArgumentList "-s $tgt pull `"$rem`" `"$out`"" -Wait -NoNewWindow
-            }
+            param($remPaths, $out)
+            # Placeholder for new backend execution
+            # e.g. Start-Process "thru.exe" -ArgumentList "receive ..."
             Start-Process "explorer.exe" -ArgumentList "`"$out`""
         }
         
-        Start-Job -ScriptBlock $actionBatchBg -ArgumentList $global:AdbExePath, $script:currentTarget, $remotePaths, $outDir
+        Start-Job -ScriptBlock $actionBatchBg -ArgumentList $remotePaths, $outDir
         
         $dispName = if ($script:customDownloadPath) { 
             [System.IO.Path]::GetFileName($script:customDownloadPath) 
