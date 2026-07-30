@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.7.0] - 2026-07-30
+### Fixed
+- **[patch]** Fixed a UI distortion issue where clicking 'Exit Engine' forced the menu to expand horizontally off-screen. The root cause was a storyboard animation `HoldEnd` on the Profile Avatar's Visibility preventing it from collapsing. The fix explicitly clears the animation hold via `BeginAnimation` before applying the `Collapsed` state, allowing the Exit button to properly overlap into the avatar's freed space.
+
 ## [3.1.6.0] - 2026-07-30
 ### Fixed
 - **[patch]** Restored WPF Storyboard `.Begin($true)` and `.Pause()` initialization prior to `Show()` to definitively resolve the spatial menu 1-frame pop-in flash. This mathematically locks the DWM composite frame to the absolute start state of the `PopIn` animation sequence before rendering occurs.
@@ -419,7 +423,7 @@
 ## [v1.6.4] - 2026-07-27
 
 ### [feature] Spatial Menu User List & Devices (v1.6.4)
-- **Profile Customization**: Refined the User List UI to display `joe.belfiore@gmail.com` as the subtext and bound the avatar to a real image placeholder (`Assets/JoeAvatar.jpg`).
+- **Profile Customization**: Refined the User List UI to display `joe.belfiore@dex.net` as the subtext and bound the avatar to a real image placeholder (`Assets/JoeAvatar.jpg`).
 - **Device Ecosystem Integration**: Replaced the placeholder "Bill Gates" entry with a sleek, multi-platform device list. Added a `Galaxy S21` mobile node and a `Windows` laptop node, both styled with vibrant purple (`#6200EE`) backgrounds and matching `Segoe Fluent Icons` device glyphs (`&#xE8EA;` and `&#xE7F8;`).
 
 ## [v1.6.3] - 2026-07-27

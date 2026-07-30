@@ -716,7 +716,7 @@
                             </Ellipse>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="Joe Belfiore" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBlock Text="joe.belfiore@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                                 <TextBlock Text="Premium User" FontSize="12" Foreground="{DynamicResource SecondaryBrush}" FontWeight="SemiBold" Margin="0,4,0,0" />
                             </StackPanel>
                         </Grid>
@@ -944,7 +944,7 @@
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            <TextBlock Text="joe.belfiore@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                     </Grid>
                 </Button>
@@ -1022,7 +1022,7 @@
                             
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="Ama Serwaa" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBlock Text="user2@dex.net" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                             </StackPanel>
                         </Grid>
                     </Button>
@@ -1046,7 +1046,7 @@
                             
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="Akua Donkor" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="Local Network" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBlock Text="user1@dex.net" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                             </StackPanel>
                         </Grid>
                     </Button>
@@ -1070,7 +1070,7 @@
                             
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="Kwame Asante" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="Global · via Hotspot" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBlock Text="user3@dex.net" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                             </StackPanel>
                         </Grid>
                     </Button>
@@ -1125,7 +1125,7 @@
                         </Ellipse>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Joe Belfiore" FontSize="16" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="joe.belfiore@gmail.com" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            <TextBlock Text="joe.belfiore@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                     </Grid>
                     <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="0,4,0,8" />

@@ -280,12 +280,14 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
         # Proceed to exit immediately
     } elseif ($txtExitBtn.Text -eq "Exit Engine") {
         $txtExitBtn.Text = "Click to Cancel / Shift+Click to Exit"
+        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::VisibilityProperty, $null)
         $btnProfileBottom.Visibility = 'Collapsed'
         
         $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
         $script:exitTimer.Interval = [TimeSpan]::FromSeconds(3)
         $script:exitTimer.Add_Tick({
             $txtExitBtn.Text = "Exit Engine"
+            $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::VisibilityProperty, $null)
             $btnProfileBottom.Visibility = 'Visible'
             $script:exitTimer.Stop()
         })
@@ -294,6 +296,7 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
     } else {
         # Cancel the exit state
         $txtExitBtn.Text = "Exit Engine"
+        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::VisibilityProperty, $null)
         $btnProfileBottom.Visibility = 'Visible'
         if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
         return
