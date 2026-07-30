@@ -449,15 +449,22 @@ $script:notifyIcon.Add_MouseUp({
             $proc.StartInfo.UseShellExecute = $false
             $proc.StartInfo.RedirectStandardOutput = $true
             $proc.StartInfo.CreateNoWindow = $true
-            $proc.EnableRaisingEvents = $true
-            $proc.Add_Exited({
-                $out = $proc.StandardOutput.ReadToEnd() -split "`r?`n"
-                $script:wpfWindow.Dispatcher.InvokeAsync([Action]{
-                    try { Update-WpfUI -DevicesOutput $out } catch {}
-                }) | Out-Null
-                $proc.Dispose()
-            })
             $proc.Start() | Out-Null
+            
+            # Non-blocking poll on UI thread to avoid ThreadPool RunspaceStateException crashes
+            $timer = New-Object System.Windows.Threading.DispatcherTimer
+            $timer.Interval = [TimeSpan]::FromMilliseconds(50)
+            $timer.Add_Tick({
+                if ($proc.HasExited) {
+                    $timer.Stop()
+                    try {
+                        $out = $proc.StandardOutput.ReadToEnd() -split "`r?`n"
+                        Update-WpfUI -DevicesOutput $out
+                    } catch {}
+                    $proc.Dispose()
+                }
+            })
+            $timer.Start()
         } catch { Write-Trace "Update-WpfUI error: $_" }
         
         # Edge Case 27 & 28: Dynamic work area bounds clipping protection & window activation focus
