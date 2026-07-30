@@ -174,6 +174,10 @@ if ($SelfTest) {
         $invokeArgs = [Array]::CreateInstance([object], 1)
         $invokeArgs.SetValue($eArgs, 0)
         $script:notifyIcon.GetType().GetMethod('OnMouseUp', [System.Reflection.BindingFlags]'NonPublic,Instance').Invoke($script:notifyIcon, $invokeArgs)
+        
+        # Give the Dispatcher.BeginInvoke time to execute the Show()
+        Start-Sleep -Milliseconds 200
+        
         $stShown = [bool]$script:wpfWindow.IsVisible
     } catch {
         Write-Output "SELFTEST EXCEPTION: $($_.Exception.Message)"
