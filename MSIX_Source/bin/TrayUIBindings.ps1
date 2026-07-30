@@ -449,7 +449,7 @@ $script:notifyIcon.Add_MouseUp({
             $proc.StartInfo.Arguments = "devices -l"
             $proc.StartInfo.UseShellExecute = $false
             $proc.StartInfo.RedirectStandardOutput = $true
-            $proc.StartInfo.CreateNoWindow = true
+            $proc.StartInfo.CreateNoWindow = $true
             $proc.Start() | Out-Null
             
             # Non-blocking poll on UI thread to avoid ThreadPool RunspaceStateException crashes
@@ -506,4 +506,5 @@ $script:notifyIcon.Add_MouseUp({
         } catch { Write-Trace "PopIn trigger failed: $_" }
     }
 })
+
 

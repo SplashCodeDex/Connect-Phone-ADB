@@ -222,21 +222,21 @@ if ($script:AutoConnectEnabled) {
     $mdnsTimer.Interval = [TimeSpan]::FromSeconds(2)
     $mdnsTimer.Add_Tick({
         # 1. Check Transfer Server Job
-        if ($null -ne $script:transferJob) {
-            $trans = Receive-Job -Job $script:transferJob -Keep
+        if ($null -ne $script:transferJob -and $script:transferJob.HasMoreData) {
+            $trans = Receive-Job -Job $script:transferJob
             if ($trans) {
                 foreach ($t in $trans) {
                     if ($t.Type -eq 'TransferComplete') {
                         Show-Toast -Title "File Received" -Message "Saved to: $($t.File)"
-                        Receive-Job -Job $script:transferJob | Out-Null
+                        
                     }
                 }
             }
         }
         
         # 2. Check Discovery Job
-        if ($null -ne $script:mdnsJob) {
-            $received = Receive-Job -Job $script:mdnsJob -Keep
+        if ($null -ne $script:mdnsJob -and $script:mdnsJob.HasMoreData) {
+            $received = Receive-Job -Job $script:mdnsJob
             if ($received) {
                 $uniqueServices = $received | Sort-Object -Property Type, IPPort -Unique
                 
@@ -296,7 +296,7 @@ if ($script:AutoConnectEnabled) {
                     if ($btn) { $btn.Visibility = 'Collapsed' }
                 }
                 
-                Receive-Job -Job $script:mdnsJob | Out-Null
+                
             }
         }
     })
@@ -305,3 +305,4 @@ if ($script:AutoConnectEnabled) {
 
 Show-Toast -Title "Connect ADB Active" -Message "Right-click tray icon to toggle Auto-Connect ON/OFF or Connect Now."
 [System.Windows.Forms.Application]::Run()
+
