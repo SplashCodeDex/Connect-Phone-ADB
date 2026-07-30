@@ -487,20 +487,20 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
-        $script:wpfWindow.FindName("winScale").ScaleX = 0.85
-        $script:wpfWindow.FindName("winScale").ScaleY = 0.85
-        $script:wpfWindow.FindName("winTrans").Y = 15
-        $script:wpfWindow.FindName("menuTrans").Y = 20
-        $script:wpfWindow.FindName("menuContentTrans").Y = 35
-        $script:wpfWindow.FindName("menuContentPanel").Opacity = 0
-        $script:wpfWindow.FindName("mainBorder").Opacity = 0
+        
+        try {
+            $sb = $script:wpfWindow.FindResource("PopIn")
+            if ($sb) { 
+                $sb.Begin($script:wpfWindow, $true)
+                $sb.Pause($script:wpfWindow)
+            }
+        } catch { Write-Trace "PopIn trigger failed: $_" }
+
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
         $script:wpfWindow.Focus()
-        try {
-            $sb = $script:wpfWindow.FindResource("PopIn")
-            if ($sb) { $sb.Begin($script:wpfWindow) }
-        } catch { Write-Trace "PopIn trigger failed: $_" }
+        
+        if ($sb) { $sb.Resume($script:wpfWindow) }
     }
 })
 

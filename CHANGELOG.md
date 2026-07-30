@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.4.0] - 2026-07-30
+### Fixed
+- **[patch]** Completely eliminated the residual 1-frame visual pop-in (visible before animation) when opening the spatial menu by utilizing WPF Storyboard `.Begin($true)` and `.Pause()` directly prior to `Show()`. This mathematically locks the DWM composite frame to the absolute start state of the `PopIn` animation sequence, bypassing previous storyboard `HoldEnd` precedence.
+
 ## [3.1.2.0] - 2026-07-30
 ### Fixed
 - **[patch]** Added missing `-STA` flag to the `powershell.exe` launch arguments inside the C# `ConnectPhoneShareTarget` wrapper. Without this flag, the engine launched from the Start Menu in MTA mode, which caused WPF's `XamlReader::Load` to crash instantly and silently.
