@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0.0] - 2026-07-30
+### Added
+- **[minor]** Live device telemetry on OmniMesh peer buttons. When a nearby phone broadcasts its UDP beacon, the engine now queries `adb` for `ro.product.model` and battery level. Peer slots now display `📱 Samsung Galaxy S21 • 🔋 84%` instead of the plain `OmniMesh (IP)` string. Gracefully falls back to IP when the device isn't yet ADB-connected.
+
+### Changed
+- **[minor]** Ponytail audit cleanup: removed 4 unused `PSDataCollection` allocations from Runspace factories, deduplicated identical storyboard-clone blocks in `$actionSettings` and `$actionPull`, extracted `Invoke-ExitEngine` to eliminate duplicate exit sequences across button and keyboard handlers, and merged the redundant double-mutex into a single engine guard.
+- **[minor]** Clarified intentional UI scaffold comment blocks in `EngineUtils.ps1` and `TrayUIBindings.ps1` with prominent boxed banners so no future contributor accidentally "fixes" them.
+
 ## [3.0.0.0] - 2026-07-30
 ### Changed
 - **[major]** Refactored background tasks (mDNS polling and Omni-Mesh transfer server) to use raw, in-process `.NET` PowerShell Runspaces (`[powershell]::Create()`) instead of `Start-Job`.

@@ -109,7 +109,24 @@ function Start-MdnsDiscovery {
                         $devId = "Unknown"
                         if ($msg -match '"id"\s*:\s*"([^"]+)"') { $devId = $matches[1] }
                         
-                        [void]$queue.Enqueue(@{ Type = 'OmniMesh'; IPPort = "$($remoteEp.Address):53317"; DeviceType = $devType; Name = $devId })
+                        # Best-effort: fetch model + battery from ADB (non-blocking, fire-and-forget)
+                        $ip = $remoteEp.Address.ToString()
+                        $model = $null
+                        $battery = $null
+                        try {
+                            $model   = (& $adbPath -s "${ip}:5555" shell getprop ro.product.model 2>$null) | Select-Object -First 1
+                            $batLine = (& $adbPath -s "${ip}:5555" shell dumpsys battery 2>$null) | Where-Object { $_ -match '^\s*level:' } | Select-Object -First 1
+                            if ($batLine -match '(\d+)') { $battery = $matches[1] }
+                        } catch {}
+                        
+                        [void]$queue.Enqueue(@{
+                            Type       = 'OmniMesh'
+                            IPPort     = "${ip}:53317"
+                            DeviceType = $devType
+                            Name       = $devId
+                            Model      = if ($model) { $model.Trim() } else { $null }
+                            Battery    = $battery
+                        })
                     }
                 }
 
@@ -161,10 +178,7 @@ function Start-MdnsDiscovery {
     
     [void]$ps.AddScript($script).AddArgument($global:AdbExePath).AddArgument($env:COMPUTERNAME).AddArgument($Queue)
     
-    $inputCollection = [System.Management.Automation.PSDataCollection[psobject]]::new()
-    $outputCollection = [System.Management.Automation.PSDataCollection[psobject]]::new()
-    
-    $asyncResult = $ps.BeginInvoke($inputCollection, $outputCollection)
+    $asyncResult = $ps.BeginInvoke()
     
     return [PSCustomObject]@{
         PowerShell = $ps
@@ -259,10 +273,7 @@ function Start-OmniTransferServer {
     
     [void]$ps.AddScript($script).AddArgument($DownloadPath).AddArgument($Queue)
     
-    $inputCollection = [System.Management.Automation.PSDataCollection[psobject]]::new()
-    $outputCollection = [System.Management.Automation.PSDataCollection[psobject]]::new()
-    
-    $asyncResult = $ps.BeginInvoke($inputCollection, $outputCollection)
+    $asyncResult = $ps.BeginInvoke()
     
     return [PSCustomObject]@{
         PowerShell = $ps

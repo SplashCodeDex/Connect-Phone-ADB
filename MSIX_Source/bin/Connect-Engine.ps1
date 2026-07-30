@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Connect Phone ADB - Core Engine & Tray Application
 .DESCRIPTION
@@ -19,7 +19,8 @@ Import-Module "$PSScriptRoot\Modules\AdbManager.psm1" -Force
 $mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
 $script:engineMutex = New-Object System.Threading.Mutex($false, $mutexName)
 if (-not $script:engineMutex.WaitOne(0, $false)) {
-    # Another instance is already running
+    # Another instance is already running — trigger an immediate connection attempt
+    $null = Invoke-AdbConnect
     exit
 }
 
@@ -32,9 +33,6 @@ if ($PSScriptRoot -match "WindowsApps") {
 # Force STA Mode Threading for Windows Forms & Tray Icons
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-
-
-
 Add-Type -AssemblyName PresentationFramework
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -42,19 +40,8 @@ $env:ADB_MDNS_OPENSCREEN = 1
 $TaskName = "AutoConnectADB_Hotspot"
 $ScriptPath = $PSCommandPath
 
-# Function: Connect ADB to Gateway
-
 # If called for ConnectOnly (e.g. from background Task Scheduler trigger)
 if ($ConnectOnly) {
-    $res = Invoke-AdbConnect
-    exit
-}
-
-# Prevent multiple tray instances
-$createdNew = $false
-$script:trayMutex = New-Object System.Threading.Mutex($true, "ConnectPhoneADBTrayMutex", [ref]$createdNew)
-if (-not $createdNew) {
-    # If already running, trigger immediate connection check
     $res = Invoke-AdbConnect
     exit
 }
@@ -289,7 +276,14 @@ $mdnsTimer.Add_Tick({
                         if ($btn -and $btn.Content -and $btn.Content.Children.Count -ge 2) {
                             $stack = $btn.Content.Children[1]
                             $stack.Children[0].Text = $peer.Name
-                            $stack.Children[1].Text = "OmniMesh ($ip)"
+                            # Show live telemetry if available, fall back to plain IP
+                            if ($peer.Model -and $peer.Battery) {
+                                $stack.Children[1].Text = "$($peer.Model) | $($peer.Battery)%"
+                            } elseif ($peer.Model) {
+                                $stack.Children[1].Text = "$($peer.Model)"
+                            } else {
+                                $stack.Children[1].Text = "OmniMesh ($ip)"
+                            }
                             $btn.Visibility = 'Visible'
                         }
                         $slot++

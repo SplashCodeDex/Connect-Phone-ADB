@@ -32,7 +32,16 @@ function Load-Directory($dirPath) {
         
 
         
-        # ADB Decoupled: Generate placeholder data for the new non-ADB backend testing
+        # ╔══════════════════════════════════════════════════════════════════╗
+        # ║  INTENTIONAL UI SCAFFOLD — DO NOT REMOVE                        ║
+        # ║  These are static demo entries used to develop and test the      ║
+        # ║  File Explorer panel visuals, animations, and interactions       ║
+        # ║  without requiring a real ADB-connected device.                  ║
+        # ║                                                                  ║
+        # ║  The real file listing backend (thru.exe / HTTP-QUIC) has not   ║
+        # ║  been integrated yet. When it is, replace $lines below with      ║
+        # ║  the actual output from that backend.                            ║
+        # ╚══════════════════════════════════════════════════════════════════╝
         $lines = @(
             "Documents/",
             "Downloads/",

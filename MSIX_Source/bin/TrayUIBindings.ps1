@@ -121,12 +121,15 @@ $script:lbFiles.Add_MouseDoubleClick({
         
         $remotePaths = $fileItems | ForEach-Object { $_.Content.FullPath }
         
-        # ADB Decoupled: The file downloading backend is being migrated away from ADB.
-        # Hook up the new HTTP/QUIC/thru backend here to download $remotePaths to $outDir
+        # ╔══════════════════════════════════════════════════════════════════╗
+        # ║  INTENTIONAL SCAFFOLD — DO NOT REMOVE                           ║
+        # ║  This is the hook point for the real download backend            ║
+        # ║  (thru.exe / HTTP-QUIC). Replace the Start-Process call below   ║
+        # ║  with the actual backend invocation when it is ready.            ║
+        # ╚══════════════════════════════════════════════════════════════════╝
         $actionBatchBg = {
             param($remPaths, $out)
-            # Placeholder for new backend execution
-            # e.g. Start-Process "thru.exe" -ArgumentList "receive ..."
+            # TODO: invoke real backend, e.g. Start-Process "thru.exe" -ArgumentList "receive ..."
             Start-Process "explorer.exe" -ArgumentList "`"$out`""
         }
         
@@ -297,18 +300,7 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
     }
     
     if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
-    
-    # Edge Case 20: Job and process cleanup on exit
-    Get-Job | ForEach-Object { try { Stop-Job $_; Remove-Job $_ } catch {} }
-    if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
-        try { $script:adbLsProc.Kill() } catch {}
-    }
-    
-    $script:wpfWindow.Hide()
-    $script:notifyIcon.Visible = $false
-    $script:notifyIcon.Dispose()
-    Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
-    [System.Windows.Forms.Application]::Exit()
+    Invoke-ExitEngine
 })
 
 $script:wpfWindow.Add_KeyDown({
@@ -369,11 +361,7 @@ $script:wpfWindow.Add_KeyDown({
         Invoke-MenuAction $actionPull
         $e.Handled = $true
     } elseif ($e.Key -eq [System.Windows.Input.Key]::Q) {
-        $script:wpfWindow.Hide()
-        $script:notifyIcon.Visible = $false
-        $script:notifyIcon.Dispose()
-        Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
-        [System.Windows.Forms.Application]::Exit()
+        Invoke-ExitEngine
         $e.Handled = $true
     }
 })

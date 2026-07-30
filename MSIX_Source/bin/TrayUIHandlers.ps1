@@ -15,6 +15,19 @@ function Reset-SpatialPanels {
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
 }
 
+function Invoke-ExitEngine {
+    # Edge Case 20: Job and process cleanup on exit
+    Get-Job | ForEach-Object { try { Stop-Job $_; Remove-Job $_ } catch {} }
+    if ($script:adbLsProc -and -not $script:adbLsProc.HasExited) {
+        try { $script:adbLsProc.Kill() } catch {}
+    }
+    $script:wpfWindow.Hide()
+    $script:notifyIcon.Visible = $false
+    $script:notifyIcon.Dispose()
+    Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
+    [System.Windows.Forms.Application]::Exit()
+}
+
 function Get-ConnectedDeviceTarget {
     $statusText = $script:txtStatus.Text
     if ($statusText -match "Connected:\s*(.+)") { return $Matches[1] }
@@ -95,26 +108,10 @@ $actionPull = {
     
     $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
     if ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible') {
-        # Swap from Settings (675px) to File Explorer (contracted + 754px) with smooth animation
+        # Swap from Settings to File Explorer: collapse settings first, then fall through
         $settingsPanel.Visibility = 'Collapsed'
         $settingsPanel.Opacity = 0
         $script:wpfWindow.FindName("settingsTrans").X = 150
-        
-        $mainBorder = $script:wpfWindow.FindName("mainBorder")
-        if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
-        if (-not $script:contractedHeight) { $script:contractedHeight = $mainBorder.ActualHeight }
-        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-        
-        $sb = $script:wpfWindow.Resources["ExpandMenu"].Clone()
-        $sb.Children[0].By = $null
-        $sb.Children[0].To = $script:contractedWidth + 754
-        $sb.Children[1].By = $null
-        $sb.Children[1].To = $script:contractedHeight + 195
-        $sb.Begin($script:wpfWindow)
-        
-        $script:wpfWindow.Dispatcher.InvokeAsync([Action]{ Load-Directory "/sdcard/" }) | Out-Null
-        return
     }
     
     $mainBorder = $script:wpfWindow.FindName("mainBorder")
@@ -168,39 +165,25 @@ $actionSettings = {
         return
     }
     
-    # If file explorer is visible, contract it first then expand settings
+    # If file explorer is visible, collapse it first then fall through to expand settings
     if ($fileExplorer.Visibility -eq 'Visible') {
-        # Swap from File Explorer to Settings (675px) with smooth animation
         $fileExplorer.Visibility = 'Collapsed'
         $fileExplorer.Opacity = 0
         $script:wpfWindow.FindName("fileTrans").X = 150
-        
-        $mainBorder = $script:wpfWindow.FindName("mainBorder")
-        if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
-        if (-not $script:contractedHeight) { $script:contractedHeight = $mainBorder.ActualHeight }
-        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-        
-        $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
-        $sb.Children[0].By = $null
-        $sb.Children[0].To = 675
-        $sb.Children[1].By = $null
-        $sb.Children[1].To = $script:contractedHeight + 195
-        $sb.Begin($script:wpfWindow)
-    } else {
-        $mainBorder = $script:wpfWindow.FindName("mainBorder")
-        if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
-        if (-not $script:contractedHeight) { $script:contractedHeight = $mainBorder.ActualHeight }
-        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-        
-        $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
-        $sb.Children[0].By = $null
-        $sb.Children[0].To = 675
-        $sb.Children[1].By = $null
-        $sb.Children[1].To = $script:contractedHeight + 195
-        $sb.Begin($script:wpfWindow)
     }
+    
+    $mainBorder = $script:wpfWindow.FindName("mainBorder")
+    if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
+    if (-not $script:contractedHeight) { $script:contractedHeight = $mainBorder.ActualHeight }
+    if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
+    if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
+    
+    $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
+    $sb.Children[0].By = $null
+    $sb.Children[0].To = 675
+    $sb.Children[1].By = $null
+    $sb.Children[1].To = $script:contractedHeight + 195
+    $sb.Begin($script:wpfWindow)
     
     # Update theme text in settings
     $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")
