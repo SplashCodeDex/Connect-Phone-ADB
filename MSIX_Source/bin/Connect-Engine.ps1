@@ -328,7 +328,9 @@ $uiTimer.Add_Tick({
             $script:wpfWindow.Focus()
         } else {
             $eArgs = New-Object System.Windows.Forms.MouseEventArgs([System.Windows.Forms.MouseButtons]::Left, 1, 0, 0, 0)
-            $script:notifyIcon.GetType().GetMethod('OnMouseUp', [System.Reflection.BindingFlags]'NonPublic,Instance').Invoke($script:notifyIcon, [object[]]@($eArgs))
+            $invokeArgs = [Array]::CreateInstance([object], 1)
+            $invokeArgs.SetValue($eArgs, 0)
+            $script:notifyIcon.GetType().GetMethod('OnMouseUp', [System.Reflection.BindingFlags]'NonPublic,Instance').Invoke($script:notifyIcon, $invokeArgs)
         }
     }
 })

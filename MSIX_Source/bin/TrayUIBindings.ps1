@@ -285,15 +285,17 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
         $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $null)
         $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $null)
         
-        $btnExit.Margin = New-Object System.Windows.Thickness(-46, 1, 8, 1)
+        $btnExit.Margin = New-Object System.Windows.Thickness(-62, 1, 8, 1)
         $btnExit.Background = $script:wpfWindow.FindResource("AccentBrush")
         
         $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
         $script:exitTimer.Interval = [TimeSpan]::FromSeconds(3)
         $script:exitTimer.Add_Tick({
-            $txtExitBtn.Text = "Exit Engine"
-            $btnExit.Margin = New-Object System.Windows.Thickness(8, 1, 8, 1)
-            $btnExit.ClearValue([System.Windows.Controls.Control]::BackgroundProperty)
+            $tTxt = $script:wpfWindow.FindName("txtExitBtn")
+            $tBtn = $script:wpfWindow.FindName("btnExit")
+            $tTxt.Text = "Exit Engine"
+            $tBtn.Margin = New-Object System.Windows.Thickness(8, 1, 8, 1)
+            $tBtn.Background = [System.Windows.Media.Brushes]::Transparent
             $script:exitTimer.Stop()
         })
         $script:exitTimer.Start()
@@ -307,7 +309,7 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
         $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $null)
         
         $btnExit.Margin = New-Object System.Windows.Thickness(8, 1, 8, 1)
-        $btnExit.ClearValue([System.Windows.Controls.Control]::BackgroundProperty)
+        $btnExit.Background = [System.Windows.Media.Brushes]::Transparent
         
         if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
         return

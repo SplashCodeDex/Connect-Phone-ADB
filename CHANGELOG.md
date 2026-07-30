@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.1.8.2] - 2026-07-30
+### Fixed
+- **[patch]** Corrected the negative margin calculation for the expanded Exit Engine button (`-62` instead of `-46`) to account for internal padding offsets inside the `SpatialListItem` control template, perfectly aligning it with the avatar's left edge.
+- **[patch]** Fixed a variable scoping issue inside the PowerShell `DispatcherTimer` scriptblock that prevented the button from reverting to its initial state after 3 seconds.
+
 ## [3.1.8.1] - 2026-07-30
 ### Fixed
 - **[patch]** Fixed a toggle-loop edge case where clicking the Start Menu shortcut while the main UI was already visible would hide it instead of focusing it.
