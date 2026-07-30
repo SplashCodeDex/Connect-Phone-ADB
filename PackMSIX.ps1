@@ -1,5 +1,19 @@
 param([string]$Configuration = "Release")
 
+# ── Enforce UTF-8 BOM on Engine (PS 5.1 requirement for non-ASCII chars) ──
+$enginePath = Join-Path $PSScriptRoot "MSIX_Source\bin\Connect-Engine.ps1"
+if (Test-Path $enginePath) {
+    $engineBytes = [System.IO.File]::ReadAllBytes($enginePath)
+    $hasBom = ($engineBytes.Length -ge 3 -and $engineBytes[0] -eq 0xEF -and $engineBytes[1] -eq 0xBB -and $engineBytes[2] -eq 0xBF)
+    if (-not $hasBom) {
+        Write-Host "Auto-fixing missing UTF-8 BOM on Connect-Engine.ps1..." -ForegroundColor Yellow
+        $content = [System.IO.File]::ReadAllText($enginePath)
+        $bom = [byte[]](0xEF, 0xBB, 0xBF)
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($content)
+        [System.IO.File]::WriteAllBytes($enginePath, ($bom + $bytes))
+    }
+}
+
 # ── Build Gate: refuse to pack broken sources (XAML/syntax/resource/asset checks) ──
 $validator = Join-Path $PSScriptRoot "Validate-Build.ps1"
 if (Test-Path $validator) {

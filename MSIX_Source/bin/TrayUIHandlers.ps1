@@ -107,7 +107,8 @@ $actionPull = {
     }
     
     $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
-    if ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible') {
+    $isSwapping = ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible')
+    if ($isSwapping) {
         # Swap from Settings to File Explorer: collapse settings first, then fall through
         $settingsPanel.Visibility = 'Collapsed'
         $settingsPanel.Opacity = 0
@@ -121,6 +122,9 @@ $actionPull = {
     if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
     
     $sb = $script:wpfWindow.Resources["ExpandMenu"].Clone()
+    if ($isSwapping) {
+        14, 13, 12, 11, 10, 9, 8, 7 | ForEach-Object { $sb.Children.RemoveAt($_) }
+    }
     $sb.Children[0].By = $null
     $sb.Children[0].To = $script:contractedWidth + 754
     $sb.Children[1].By = $null
@@ -165,11 +169,16 @@ $actionSettings = {
         return
     }
     
+    $fileExplorer = $script:wpfWindow.FindName("FileExplorer")
+    $isSwapping = ($fileExplorer -and $fileExplorer.Visibility -eq 'Visible')
+    
     # If file explorer is visible, collapse it first then fall through to expand settings
-    if ($fileExplorer.Visibility -eq 'Visible') {
+    if ($isSwapping) {
         $fileExplorer.Visibility = 'Collapsed'
         $fileExplorer.Opacity = 0
         $script:wpfWindow.FindName("fileTrans").X = 150
+        $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
+        if ($btnQAPull) { $btnQAPull.IsChecked = $false }
     }
     
     $mainBorder = $script:wpfWindow.FindName("mainBorder")
@@ -179,6 +188,9 @@ $actionSettings = {
     if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
     
     $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
+    if ($isSwapping) {
+        14, 13, 12, 11, 10, 9, 8, 7 | ForEach-Object { $sb.Children.RemoveAt($_) }
+    }
     $sb.Children[0].By = $null
     $sb.Children[0].To = 675
     $sb.Children[1].By = $null

@@ -485,6 +485,7 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
+        $script:wpfWindow.FindName("mainBorder").Opacity = 0
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
         $script:wpfWindow.Focus()
