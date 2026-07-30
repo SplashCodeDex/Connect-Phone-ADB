@@ -176,7 +176,11 @@ if ($SelfTest) {
         $script:notifyIcon.GetType().GetMethod('OnMouseUp', [System.Reflection.BindingFlags]'NonPublic,Instance').Invoke($script:notifyIcon, $invokeArgs)
         
         # Give the Dispatcher.BeginInvoke time to execute the Show()
-        Start-Sleep -Milliseconds 200
+        $waitCount = 0
+        while (-not $script:wpfWindow.IsVisible -and $waitCount -lt 20) {
+            Start-Sleep -Milliseconds 100
+            $waitCount++
+        }
         
         $stShown = [bool]$script:wpfWindow.IsVisible
     } catch {

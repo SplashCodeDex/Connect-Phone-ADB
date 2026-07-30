@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.10.0] - 2026-07-30
+### Fixed
+- **[fix]** Resolved severe UI expansion bug where rapidly swapping between File Explorer and Settings Panel caused the window to infinitely grow vertically off-screen. (The `ExpandMenu` and `ExpandSettings` height animations are now strictly constrained to absolute values instead of relative accumulation).
+
 ## [2.6.9.0] - 2026-07-30
 ### Added
 - **[minor]** Added a secondary inner-parallax animation to the spatial menu's child content (`menuContentTrans`). The content now slides up from a deeper offset (`Y=35`) and fades in slightly slower than the menu container, creating a beautiful staggered 3D depth effect during the `PopIn` sequence.

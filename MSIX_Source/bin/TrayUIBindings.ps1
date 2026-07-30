@@ -291,6 +291,8 @@ $actionPull = {
         $sb = $script:wpfWindow.Resources["ExpandMenu"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = $script:contractedWidth + 754
+        $sb.Children[1].By = $null
+        $sb.Children[1].To = $script:contractedHeight + 195
         $sb.Begin($script:wpfWindow)
         
         $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
@@ -298,6 +300,8 @@ $actionPull = {
     }
     
     $mainBorder = $script:wpfWindow.FindName("mainBorder")
+    if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
+    if (-not $script:contractedHeight) { $script:contractedHeight = $mainBorder.ActualHeight }
     if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
     if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
     
@@ -345,16 +349,21 @@ $actionSettings = {
         $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = 675
+        $sb.Children[1].By = $null
+        $sb.Children[1].To = $script:contractedHeight + 195
         $sb.Begin($script:wpfWindow)
     } else {
         $mainBorder = $script:wpfWindow.FindName("mainBorder")
         if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
+        if (-not $script:contractedHeight) { $script:contractedHeight = $mainBorder.ActualHeight }
         if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
         if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
         
         $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = 675
+        $sb.Children[1].By = $null
+        $sb.Children[1].To = $script:contractedHeight + 195
         $sb.Begin($script:wpfWindow)
     }
     
@@ -559,6 +568,8 @@ $script:wpfWindow.Add_KeyDown({
             $sb = $script:wpfWindow.Resources["ContractSettings"].Clone()
             $sb.Children[0].By = $null
             $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
+            $sb.Children[1].By = $null
+            $sb.Children[1].To = if ($script:contractedHeight) { $script:contractedHeight } else { 500 }
             $sb.Begin($script:wpfWindow)
             $e.Handled = $true
             return
@@ -640,6 +651,8 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
         $sb = $script:wpfWindow.Resources["ContractSettings"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
+        $sb.Children[1].By = $null
+        $sb.Children[1].To = if ($script:contractedHeight) { $script:contractedHeight } else { 500 }
         $sb.Begin($script:wpfWindow)
         return
     }
@@ -649,6 +662,8 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
         $sb = $script:wpfWindow.Resources["ContractMenu"].Clone()
         $sb.Children[0].By = $null
         $sb.Children[0].To = if ($script:contractedWidth) { $script:contractedWidth } else { 300 }
+        $sb.Children[1].By = $null
+        $sb.Children[1].To = if ($script:contractedHeight) { $script:contractedHeight } else { 500 }
         $sb.Begin($script:wpfWindow)
         return
     }
