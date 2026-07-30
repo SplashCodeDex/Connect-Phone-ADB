@@ -67,14 +67,96 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+        <!-- Premium Context Menu Styles -->
+        <Style x:Key="PremiumContextMenuStyle" TargetType="ContextMenu">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Grid.IsSharedSizeScope" Value="True"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border Background="{DynamicResource PrimaryBrush}" 
+                                BorderBrush="{DynamicResource AccentBrush}" 
+                                BorderThickness="1" 
+                                CornerRadius="8" 
+                                Padding="4">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.3" Direction="270" Color="Black"/>
+                            </Border.Effect>
+                            <ScrollViewer>
+                                <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PremiumMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Padding" Value="10,8,15,8"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border Name="Border" Background="{TemplateBinding Background}" CornerRadius="6" BorderThickness="0" Margin="2,1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition MinWidth="30" Width="Auto" SharedSizeGroup="Icon"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Text="{TemplateBinding Icon}" 
+                                           FontFamily="Segoe MDL2 Assets" 
+                                           FontSize="14" 
+                                           Foreground="{DynamicResource SecondaryTextBrush}" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" 
+                                           Margin="10,0,10,0"/>
+                                           
+                                <ContentPresenter Grid.Column="1" 
+                                                  ContentSource="Header" 
+                                                  RecognizesAccessKey="True" 
+                                                  VerticalAlignment="Center"
+                                                  Margin="5,0,0,0"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}"/>
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PremiumSeparatorStyle" TargetType="Separator">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Separator">
+                        <Border Height="1" Background="{DynamicResource AccentBrush}" Margin="10,0"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         
         <BackEase x:Key="HoverEase" Amplitude="1.22" EasingMode="EaseOut" />
         <BackEase x:Key="PopInEase" Amplitude="3.53" EasingMode="EaseOut" />
         <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
         <Storyboard x:Key="ExpandMenu">
             <!-- Window Size Expansion with ElasticEase (reduced 35% from original) -->
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" To="2174" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" To="955" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <!-- Parallax on File Explorer: Slide from Right to Left while fading -->
             <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
@@ -107,8 +189,8 @@
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
         <Storyboard x:Key="ContractMenu">
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="-754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="-195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" To="1420" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" To="760" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <DoubleAnimation Storyboard.TargetName="fileTrans" Storyboard.TargetProperty="X" To="150" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             <DoubleAnimation Storyboard.TargetName="FileExplorer" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.4" />
@@ -137,10 +219,11 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
-        <!-- Settings Expand Storyboard: expands to 675px max (smaller than File Explorer's 754px) -->
+        <!-- Settings Expand Storyboard: window shrinks to 675×955 instead of growing -->
         <Storyboard x:Key="ExpandSettings">
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="675" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <!-- Animate to absolute target size: 675 wide × 955 tall -->
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" To="675" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" To="955" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <!-- Settings Panel: Slide from Right to Left while fading -->
             <DoubleAnimation Storyboard.TargetName="settingsTrans" Storyboard.TargetProperty="X" From="150" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
@@ -173,8 +256,9 @@
             <DoubleAnimation Storyboard.TargetName="menuTrans" Storyboard.TargetProperty="X" From="-30" To="0" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
         </Storyboard>
         <Storyboard x:Key="ContractSettings">
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="-675" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
-            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" By="-195" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <!-- Animate back to 1420×760 (contracted state) -->
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" To="1420" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Height" To="760" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             
             <DoubleAnimation Storyboard.TargetName="settingsTrans" Storyboard.TargetProperty="X" To="150" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
             <DoubleAnimation Storyboard.TargetName="SettingsPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.4" />
@@ -578,6 +662,16 @@
             </Grid>
             
             <ListBox Name="lbFiles" Grid.Row="1" SelectionMode="Extended" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" Padding="0,0,10,0">
+                <!-- TODO FEATURE: Context Menu for file management (Rename, Delete, New Folder, etc.) -->
+                <ListBox.ContextMenu>
+                    <ContextMenu Style="{DynamicResource PremiumContextMenuStyle}">
+                        <MenuItem Header="Rename" Icon="&#xE8AC;" Style="{DynamicResource PremiumMenuItemStyle}"/>
+                        <MenuItem Header="Delete" Icon="&#xE74D;" Style="{DynamicResource PremiumMenuItemStyle}"/>
+                        <Separator Style="{DynamicResource PremiumSeparatorStyle}"/>
+                        <MenuItem Header="New Folder" Icon="&#xE8F4;" Style="{DynamicResource PremiumMenuItemStyle}"/>
+                        <MenuItem Header="Properties" Icon="&#xE946;" Style="{DynamicResource PremiumMenuItemStyle}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Background" Value="Transparent"/>

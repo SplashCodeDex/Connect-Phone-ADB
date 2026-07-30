@@ -76,13 +76,17 @@ fun MainScreen(
                         Log.i("DeX", "UI: Transfer Prepared! SessionId: ${response.sessionId}")
                         
                         val token = response.files[fileId] ?: ""
-                        val bytes = context.contentResolver.openInputStream(selectedUri)?.readBytes() ?: ByteArray(0)
-                        val success = DexAppContainer.clientEngine.uploadFile(device.ip, device.info.port, response.sessionId, fileId, token, bytes)
-                        if (success) {
-                            Log.i("DeX", "UI: File uploaded successfully!")
-                            Toast.makeText(context, "Upload Success!", Toast.LENGTH_SHORT).show()
+                        val stream = context.contentResolver.openInputStream(selectedUri)
+                        if (stream != null) {
+                            val success = DexAppContainer.clientEngine.uploadFile(device.ip, device.info.port, response.sessionId, fileId, token, stream)
+                            if (success) {
+                                Log.i("DeX", "UI: File uploaded successfully!")
+                                Toast.makeText(context, "Upload Success!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Log.e("DeX", "UI Error: File upload failed.")
+                            }
                         } else {
-                            Log.e("DeX", "UI Error: File upload failed.")
+                            Log.e("DeX", "UI Error: Could not open file stream.")
                         }
                     } else {
                         Log.e("DeX", "UI Error: Transfer preparation failed.")
