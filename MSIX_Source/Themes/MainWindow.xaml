@@ -994,6 +994,15 @@
                 <StackPanel x:Name="NearbyExpandPanel" Visibility="Collapsed" Opacity="0">
                     <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="16,6" />
 
+                    <!-- 
+                    ╔══════════════════════════════════════════════════════════════════╗
+                    ║  INTENTIONAL SCAFFOLD — DO NOT REMOVE                            ║
+                    ║  These dummy users (Ama Serwaa, Akua Donkor, Kwame Asante)       ║
+                    ║  are intentional UI design placeholders. Do not add logic to     ║
+                    ║  hide or collapse these slots when mDNS peers are offline.       ║
+                    ╚══════════════════════════════════════════════════════════════════╝
+                    -->
+
                     <!-- User 1 -->
                     <Button x:Name="btnUser1" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                         <Grid>

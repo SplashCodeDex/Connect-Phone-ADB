@@ -316,13 +316,6 @@ $mdnsTimer.Add_Tick({
                         $slot++
                     }
                 }
-                # Hide unused slots
-                for ($i = $slot; $i -le 3; $i++) {
-                    $btnName3 = "btnUser$i"
-                    $btn = $script:wpfWindow.FindName($btnName3)
-                    if ($btn) { $btn.Visibility = 'Collapsed' }
-                }
-                
                 
             }
     })
