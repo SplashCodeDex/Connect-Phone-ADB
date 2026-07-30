@@ -279,21 +279,12 @@ $actionPull = {
     
     $settingsPanel = $script:wpfWindow.FindName("SettingsPanel")
     if ($settingsPanel -and $settingsPanel.Visibility -eq 'Visible') {
-        # Swap from Settings (675px) to File Explorer (contracted + 754px) with smooth animation
+        # Swap instantly without animation theater (Ponytail)
         $settingsPanel.Visibility = 'Collapsed'
         $settingsPanel.Opacity = 0
-        $script:wpfWindow.FindName("settingsTrans").X = 150
-        
-        $mainBorder = $script:wpfWindow.FindName("mainBorder")
-        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-        
-        $sb = $script:wpfWindow.Resources["ExpandMenu"].Clone()
-        $sb.Children[0].By = $null
-        $sb.Children[0].To = $script:contractedWidth + 754
-        $sb.Children[1].By = $null
-        $sb.Children[1].To = $script:contractedHeight + 195
-        $sb.Begin($script:wpfWindow)
+        $script:wpfWindow.FindName("FileExplorer").Visibility = 'Visible'
+        $script:wpfWindow.FindName("FileExplorer").Opacity = 1
+        $script:wpfWindow.FindName("fileTrans").X = 0
         
         $script:wpfWindow.Dispatcher.Invoke([Action]{ Load-Directory "/sdcard/" })
         return
@@ -337,21 +328,12 @@ $actionSettings = {
     
     # If file explorer is visible, contract it first then expand settings
     if ($fileExplorer.Visibility -eq 'Visible') {
-        # Swap from File Explorer to Settings (675px) with smooth animation
+        # Swap instantly without animation theater (Ponytail)
         $fileExplorer.Visibility = 'Collapsed'
         $fileExplorer.Opacity = 0
-        $script:wpfWindow.FindName("fileTrans").X = 150
-        
-        $mainBorder = $script:wpfWindow.FindName("mainBorder")
-        if ([double]::IsNaN($mainBorder.Width)) { $mainBorder.Width = $mainBorder.ActualWidth }
-        if ([double]::IsNaN($mainBorder.Height)) { $mainBorder.Height = $mainBorder.ActualHeight }
-        
-        $sb = $script:wpfWindow.Resources["ExpandSettings"].Clone()
-        $sb.Children[0].By = $null
-        $sb.Children[0].To = 675
-        $sb.Children[1].By = $null
-        $sb.Children[1].To = $script:contractedHeight + 195
-        $sb.Begin($script:wpfWindow)
+        $settingsPanel.Visibility = 'Visible'
+        $settingsPanel.Opacity = 1
+        $script:wpfWindow.FindName("settingsTrans").X = 0
     } else {
         $mainBorder = $script:wpfWindow.FindName("mainBorder")
         if (-not $script:contractedWidth) { $script:contractedWidth = $mainBorder.ActualWidth }
@@ -396,15 +378,10 @@ $actionSettings = {
     }
 }
 
-$btnTopProfile = $script:wpfWindow.FindName("btnProfileTop")
 $btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
-$btnProfileTopSettings = $script:wpfWindow.FindName("btnProfileTopSettings")
 
 # Avatar clicks now open the settings panel instead of the popup
-if ($btnTopProfile) { $btnTopProfile.Add_Click({ Invoke-MenuAction $actionSettings }) }
 if ($btnProfileBottom) { $btnProfileBottom.Add_Click({ Invoke-MenuAction $actionSettings }) }
-if ($btnProfileTopSettings) { $btnProfileTopSettings.Add_Click({ Invoke-MenuAction $actionSettings }) }
-
 # Settings Panel Button Handlers
 # Auto-Connect toggle in settings
 $btnSettingsAutoConnect = $script:wpfWindow.FindName("btnSettingsAutoConnect")

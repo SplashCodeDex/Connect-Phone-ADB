@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.6.11.0] - 2026-07-30
+### Removed
+- **[ponytail]** Completely removed the slide and fade animations when swapping between the File Explorer and Settings panels. Swapping is now instant (flipping Visibility), reducing UI theater and improving responsiveness.
+- **[ponytail]** Deleted redundant top-aligned profile avatar buttons from the File Explorer and Settings panels, relying instead on the single unified avatar in the persistent spatial menu.
+
 ## [2.6.10.0] - 2026-07-30
 ### Fixed
 - **[fix]** Resolved severe UI expansion bug where rapidly swapping between File Explorer and Settings Panel caused the window to infinitely grow vertically off-screen. (The `ExpandMenu` and `ExpandSettings` height animations are now strictly constrained to absolute values instead of relative accumulation).

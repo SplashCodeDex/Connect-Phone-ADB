@@ -579,15 +579,7 @@
                     </Grid>
                 </Border>
                 
-                <Button Name="btnProfileTop" Grid.Column="2" Style="{StaticResource SpatialListItem}" Margin="12,0,12,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
-                    <Grid>
-                        <Ellipse Width="34" Height="34">
-                            <Ellipse.Fill>
-                                <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
-                            </Ellipse.Fill>
-                        </Ellipse>
-                    </Grid>
-                </Button>
+
             </Grid>
             
             <ListBox Name="lbFiles" Grid.Row="1" SelectionMode="Extended" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" Padding="0,0,10,0">
@@ -688,15 +680,7 @@
                     </StackPanel>
                 </Border>
                 
-                <Button Name="btnProfileTopSettings" Grid.Column="2" Style="{StaticResource SpatialListItem}" Margin="12,0,0,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
-                    <Grid>
-                        <Ellipse Width="34" Height="34">
-                            <Ellipse.Fill>
-                                <ImageBrush ImageSource="file:///$($PSScriptRoot -replace '\\', '/')/../Assets/ProfileAvatar.jpg" Stretch="UniformToFill" AlignmentY="Top" />
-                            </Ellipse.Fill>
-                        </Ellipse>
-                    </Grid>
-                </Button>
+
             </Grid>
             
             <!-- Settings Content -->
