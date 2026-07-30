@@ -931,6 +931,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
@@ -946,6 +947,9 @@
                             <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
                             <TextBlock Text="joe.belfiore@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
+                        
+                        <!-- TODO: Detect device type to choose between phone (xE8EA) and laptop (xE7F8) icons for WAN profiles -->
+                        <TextBlock Grid.Column="2" Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
                     </Grid>
                 </Button>
 
@@ -955,7 +959,6 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         
                         <Grid Width="38" Height="38" Margin="0,0,12,0">
@@ -966,8 +969,6 @@
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Galaxy S21" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
                         </StackPanel>
-                        
-                        <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
                     </Grid>
                 </Button>
 
@@ -1009,6 +1010,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             
                             <Grid Width="38" Height="38" Margin="0,0,12,0">
@@ -1024,6 +1026,9 @@
                                 <TextBlock Text="Ama Serwaa" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                 <TextBlock Text="user2@dex.net" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                             </StackPanel>
+                            
+                            <!-- TODO: Detect device type to choose between phone (xE8EA) and laptop (xE7F8) icons for WAN profiles -->
+                            <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
                         </Grid>
                     </Button>
 
@@ -1033,6 +1038,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             
                             <Grid Width="38" Height="38" Margin="0,0,12,0">
@@ -1048,6 +1054,9 @@
                                 <TextBlock Text="Akua Donkor" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                 <TextBlock Text="user1@dex.net" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                             </StackPanel>
+                            
+                            <!-- TODO: Detect device type to choose between phone (xE8EA) and laptop (xE7F8) icons for WAN profiles -->
+                            <TextBlock Grid.Column="2" Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
                         </Grid>
                     </Button>
 
@@ -1057,6 +1066,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             
                             <Grid Width="38" Height="38" Margin="0,0,12,0">
@@ -1072,6 +1082,9 @@
                                 <TextBlock Text="Kwame Asante" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                 <TextBlock Text="user3@dex.net" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                             </StackPanel>
+                            
+                            <!-- TODO: Detect device type to choose between phone (xE8EA) and laptop (xE7F8) icons for WAN profiles -->
+                            <TextBlock Grid.Column="2" Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
                         </Grid>
                     </Button>
                     
