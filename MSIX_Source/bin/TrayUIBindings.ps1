@@ -1,4 +1,19 @@
 . "$PSScriptRoot\TrayUIHandlers.ps1"
+
+function Set-MainWindowPosition {
+    $workArea = [System.Windows.SystemParameters]::WorkArea
+    $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
+    $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
+    
+    $left = $workArea.Right - $winWidth - 12
+    $top = $workArea.Bottom - $winHeight - 12
+    
+    if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
+    if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
+    
+    $script:wpfWindow.Left = $left
+    $script:wpfWindow.Top = $top
+}
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
@@ -561,18 +576,7 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
         
-        $workArea = [System.Windows.SystemParameters]::WorkArea
-        $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
-        $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
-        
-        $left = $workArea.Right - $winWidth - 12
-        $top = $workArea.Bottom - $winHeight - 12
-        
-        if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
-        if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
-        
-        $script:wpfWindow.Left = $left
-        $script:wpfWindow.Top = $top
+        Set-MainWindowPosition
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
@@ -645,9 +649,7 @@ function Show-WigglePanel {
     # only the previously-connected list sourced from the persisted device history store. ──
 
     # Position: default tray position (bottom-right of work area)
-    $workArea = [System.Windows.SystemParameters]::WorkArea
-    $script:wpfWindow.Left = $workArea.Right - 340
-    $script:wpfWindow.Top  = $workArea.Bottom - 400
+    Set-MainWindowPosition
     $script:wpfWindow.Topmost = $true
 
     # Animate in: same PopIn feel
