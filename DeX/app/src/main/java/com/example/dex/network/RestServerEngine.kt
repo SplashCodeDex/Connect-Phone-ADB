@@ -170,6 +170,44 @@ class RestServerEngine {
                             call.respond(io.ktor.http.HttpStatusCode.BadRequest)
                         }
                     }
+                    get("/api/dex/browse") {
+                        val path = call.request.queryParameters["path"] ?: "/sdcard/"
+                        val dir = java.io.File(path)
+                        
+                        if (!dir.exists() || !dir.isDirectory) {
+                            call.respond(io.ktor.http.HttpStatusCode.NotFound, "Directory not found")
+                            return@get
+                        }
+                        
+                        val files = dir.listFiles()?.map { file ->
+                            BrowseFileDto(
+                                name = file.name,
+                                isDirectory = file.isDirectory,
+                                size = file.length(),
+                                path = file.absolutePath
+                            )
+                        }?.sortedWith(compareBy({ !it.isDirectory }, { it.name.lowercase() })) ?: emptyList()
+                        
+                        call.respond(files)
+                    }
+                    get("/api/dex/pull") {
+                        val path = call.request.queryParameters["path"]
+                        if (path == null) {
+                            call.respond(io.ktor.http.HttpStatusCode.BadRequest, "Missing path parameter")
+                            return@get
+                        }
+                        val file = java.io.File(path)
+                        if (!file.exists() || !file.isFile) {
+                            call.respond(io.ktor.http.HttpStatusCode.NotFound, "File not found")
+                            return@get
+                        }
+                        
+                        call.response.header(
+                            io.ktor.http.HttpHeaders.ContentDisposition,
+                            io.ktor.http.ContentDisposition.Attachment.withParameter(io.ktor.http.ContentDisposition.Parameters.FileName, file.name).toString()
+                        )
+                        call.respondFile(file)
+                    }
                 }
             }.start(wait = true)
         }

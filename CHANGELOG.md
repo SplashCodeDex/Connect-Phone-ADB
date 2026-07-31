@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.5.0.0] - 2026-07-31
+### Added
+- **[major] OmniMesh File Explorer:** Completely rewired the WPF File Explorer to use the blazing fast OmniMesh Ktor HTTP REST API (`/api/dex/browse` and `/api/dex/pull`) instead of sluggish `adb shell ls` and `adb pull` commands.
+- **[minor]** Android Ktor Server now exposes `/api/dex/browse` and `/api/dex/pull` for direct native file streaming to PC.
+
+
 ## [3.2.0.0] - 2026-07-31
 ### Added
 - **Wiggle-to-Open Feature:** Users can now rapidly move their mouse back and forth ("wiggle") while holding a file (during a drag operation) to instantly summon the Connect-Phone-ADB drop menu at the cursor's location. This feature can be toggled via the new Interaction section in the Settings panel.

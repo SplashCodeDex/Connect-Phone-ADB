@@ -133,7 +133,7 @@ $actionMirror = {
     
     if ($scrcpyExe) {
         Show-Toast -Title "Mirroring Phone" -Message "Launching zero-latency screen mirror for $target..."
-        Start-Process -FilePath $scrcpyExe -ArgumentList "-s `"$target`" --window-title `"Connect Phone ADB - Screen Mirror ($target)`"" -WindowStyle Normal
+        Start-Process -FilePath $scrcpyExe -ArgumentList "-s `"$target`" --window-title `"DeX - Screen Mirror ($target)`"" -WindowStyle Normal
     } else {
         Show-Toast -Title "Mirroring Requires scrcpy" -Message "scrcpy.exe not found in PATH or app directory. Place scrcpy.exe in PATH to mirror."
     }

@@ -124,19 +124,28 @@ $script:lbFiles.Add_MouseDoubleClick({
         
         $remotePaths = $fileItems | ForEach-Object { $_.Content.FullPath }
         
-        # ╔══════════════════════════════════════════════════════════════════╗
-        # ║  INTENTIONAL SCAFFOLD — DO NOT REMOVE                           ║
-        # ║  This is the hook point for the real download backend            ║
-        # ║  (thru.exe / HTTP-QUIC). Replace the Start-Process call below   ║
-        # ║  with the actual backend invocation when it is ready.            ║
-        # ╚══════════════════════════════════════════════════════════════════╝
         $actionBatchBg = {
-            param($remPaths, $out)
-            # TODO: invoke real backend, e.g. Start-Process "thru.exe" -ArgumentList "receive ..."
+            param($remPaths, $out, $ip)
+            foreach ($rp in $remPaths) {
+                try {
+                    $fileName = [System.IO.Path]::GetFileName($rp)
+                    if (-not $fileName) { $fileName = $rp.Split('/')[-1] }
+                    $destPath = Join-Path $out $fileName
+                    $uri = "https://${ip}:53317/api/dex/pull?path=" + [uri]::EscapeDataString($rp)
+                    [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+                    Invoke-RestMethod -Uri $uri -Method Get -OutFile $destPath -ErrorAction Stop
+                } catch {
+                    # Silent fail on bg job
+                }
+            }
             Start-Process "explorer.exe" -ArgumentList "`"$out`""
         }
         
-        Start-Job -ScriptBlock $actionBatchBg -ArgumentList $remotePaths, $outDir
+        $target = Get-ConnectedDeviceTarget
+        if ($target) {
+            $ip = $target.Split(':')[0]
+            Start-Job -ScriptBlock $actionBatchBg -ArgumentList $remotePaths, $outDir, $ip
+        }
         
         $dispName = if ($script:customDownloadPath) { 
             [System.IO.Path]::GetFileName($script:customDownloadPath) 

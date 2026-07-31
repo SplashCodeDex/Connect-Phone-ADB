@@ -35,3 +35,11 @@ data class PrepareUploadResponseDto(
     val sessionId: String,
     val files: Map<String, String>
 )
+
+@Serializable
+data class BrowseFileDto(
+    val name: String,
+    val isDirectory: Boolean,
+    val size: Long,
+    val path: String
+)

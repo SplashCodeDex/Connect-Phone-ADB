@@ -31,27 +31,32 @@ function Load-Directory($dirPath) {
         }
         
 
-        
-        # ╔══════════════════════════════════════════════════════════════════╗
-        # ║  INTENTIONAL UI SCAFFOLD — DO NOT REMOVE                        ║
-        # ║  These are static demo entries used to develop and test the      ║
-        # ║  File Explorer panel visuals, animations, and interactions       ║
-        # ║  without requiring a real ADB-connected device.                  ║
-        # ║                                                                  ║
-        # ║  The real file listing backend (thru.exe / HTTP-QUIC) has not   ║
-        # ║  been integrated yet. When it is, replace $lines below with      ║
-        # ║  the actual output from that backend.                            ║
-        # ╚══════════════════════════════════════════════════════════════════╝
-        $lines = @(
-            "Documents/",
-            "Downloads/",
-            "Pictures/",
-            "Music/",
-            "Movies/",
-            "CodeDeX_Project.zip",
-            "notes.txt",
-            "presentation.pdf"
-        )
+        $target = Get-ConnectedDeviceTarget
+        if (-not $target) {
+            $lines = @()
+        } else {
+            $ip = $target.Split(':')[0]
+            try {
+                $uri = "https://${ip}:53317/api/dex/browse?path=" + [uri]::EscapeDataString($dirPath)
+                [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+                $res = Invoke-RestMethod -Uri $uri -Method Get -ErrorAction Stop
+                
+                $lines = @()
+                if ($res) {
+                    foreach ($f in $res) {
+                        $name = $f.name
+                        if ($f.isDirectory) {
+                            $lines += "$name/"
+                        } else {
+                            $lines += $name
+                        }
+                    }
+                }
+            } catch {
+                Write-Trace "Browse Error: $_"
+                $lines = @()
+            }
+        }
         
         # Edge Case 5: Empty Folder State Toggle
         $emptyOverlay = $script:wpfWindow.FindName("emptyFolderState")
