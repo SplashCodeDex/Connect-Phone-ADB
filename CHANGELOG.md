@@ -1,24 +1,8 @@
 # Changelog
 
-## [3.4.0.0] - 2026-07-31
+## [3.2.0.0] - 2026-07-31
 ### Added
-- **[major] OmniMesh LAN Architecture**: Completely migrated the core pipeline away from ADB/USB to a peer-to-peer LAN architecture.
-- **[major] Zero-Copy Streaming**: Android uploads now use zero-memory `InputStream` streaming in Ktor to push multi-gigabyte files to the PC without OutOfMemory errors.
-- **[major] LocalSend v2 UDP Multicast Piercer**: Replaced legacy `255.255.255.255` broadcast with the strict LocalSend v2 standard UDP Multicast (`224.0.0.167:53317`) for both PC and Android, bypassing Windows Public Firewall blocks and Android 15 Hotspot restrictions.
-- **[minor] WPF Security Barrier**: PC `LocalSendServer` now explicitly halts transfers and displays a native WPF `MessageBox` to confirm incoming files before writing them to disk.
-- **[minor] Android Transfer Prompts**: Android now intercepts incoming `/prepare-upload` requests with Coroutine suspension (`CompletableDeferred`), showing a high-priority Heads-Up Notification for user approval.
-
-## [3.2.1.0] - 2026-07-31
-### Fixed
-- **Wiggle not triggering during drag:** The wiggle heuristics were too strict. The 400px distance constraint failed on high-res monitors or when users naturally dragged a file across the screen while wiggling. Increased distance tolerance to 1200px and lowered the reversals threshold from 3 to 2 for a more natural shake gesture.
-- **Wiggle not triggering (internal):** Root cause was `System.Windows.Forms` assembly not being loaded before the wiggle timer fired, causing `Cursor.Position` to silently throw on every tick. Fixed by loading the assembly eagerly before timer creation.
-- **Wiggle Panel animation and state leak:** Fixed DispatcherTimer scope issue where `$fadeStep` was incrementing a local copy, causing the animation to freeze. Also fixed state corruption where a deactivated window wouldn't reset the `wiggleOpenedByWiggle` flag, preventing subsequent wiggles.
-### Changed
-- **Wiggle opens dedicated device picker:** The wiggle gesture now shows `wiggleDragPanel` — a compact, focused panel (same `CornerRadius="34"` style) listing only ADB devices. Active connected device appears first (green dot), previously connected devices below (gray dot). Clear `TODO` comments mark exactly where real device discovery data should be wired in.
-- **Drop-outside auto-close:** When the wiggle panel is visible and the left mouse button is released outside the window (file dropped elsewhere), the panel automatically hides itself via `IsMouseOver` check in the wiggle timer.
-
-### Added
-- **Wiggle-to-Open Feature:** Users can now rapidly move their mouse back and forth ("wiggle") while holding a file (during a drag operation) to instantly summon the Connect-Phone-ADB drop menu at its default tray position. This feature can be toggled via the new Interaction section in the Settings panel.
+- **Wiggle-to-Open Feature:** Users can now rapidly move their mouse back and forth ("wiggle") while holding a file (during a drag operation) to instantly summon the Connect-Phone-ADB drop menu at the cursor's location. This feature can be toggled via the new Interaction section in the Settings panel.
 
 
 ## [3.1.8.8] - 2026-07-31

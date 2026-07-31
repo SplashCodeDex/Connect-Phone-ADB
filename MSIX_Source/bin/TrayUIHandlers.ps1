@@ -10,7 +10,6 @@ function Reset-SpatialPanels {
 
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
     $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
-    $script:wpfWindow.FindName("mainBorder").Visibility = 'Visible'
     $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
     $script:wpfWindow.FindName("FileExplorer").Opacity = 0
     $script:wpfWindow.FindName("fileTrans").X = 150
@@ -24,10 +23,6 @@ function Reset-SpatialPanels {
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
     $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
     if ($btnQAPull) { $btnQAPull.IsChecked = $false }
-    # Reset wiggle drag panel state so it never bleeds through on normal open
-    $wigglePanel = $script:wpfWindow.FindName("wiggleDragPanel")
-    if ($wigglePanel) { $wigglePanel.Visibility = 'Collapsed'; $wigglePanel.Opacity = 0 }
-    $script:wiggleOpenedByWiggle = $false
 }
 
 function Invoke-ExitEngine {
@@ -138,7 +133,7 @@ $actionMirror = {
     
     if ($scrcpyExe) {
         Show-Toast -Title "Mirroring Phone" -Message "Launching zero-latency screen mirror for $target..."
-        Start-Process -FilePath $scrcpyExe -ArgumentList "-s `"$target`" --window-title `"DeX - Screen Mirror ($target)`"" -WindowStyle Normal
+        Start-Process -FilePath $scrcpyExe -ArgumentList "-s `"$target`" --window-title `"Connect Phone ADB - Screen Mirror ($target)`"" -WindowStyle Normal
     } else {
         Show-Toast -Title "Mirroring Requires scrcpy" -Message "scrcpy.exe not found in PATH or app directory. Place scrcpy.exe in PATH to mirror."
     }

@@ -11,11 +11,11 @@
   <Identity
     Name="CodeDeX.ConnectPhoneADB"
     Publisher="CN=CodeDeX"
-    Version="3.4.0.0"
+    Version="3.2.3.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>DeX</DisplayName>
+    <DisplayName>Connect Phone ADB</DisplayName>
     <PublisherDisplayName>CodeDeX</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -34,8 +34,8 @@
       Executable="ConnectPhoneShareTarget.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="DeX"
-        Description="inter-device ecosystem"
+        DisplayName="Connect Phone ADB"
+        Description="Send files directly to your ADB connected phone"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
@@ -54,7 +54,7 @@
         
         <!-- Native MSIX Startup Task -->
         <desktop:Extension Category="windows.startupTask" Executable="ConnectPhoneShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
-          <desktop:StartupTask TaskId="ConnectPhoneStartup" Enabled="true" DisplayName="DeX Engine" />
+          <desktop:StartupTask TaskId="ConnectPhoneStartup" Enabled="true" DisplayName="Connect Phone ADB Engine" />
         </desktop:Extension>
       </Extensions>
     </Application>
@@ -62,7 +62,7 @@
     <!-- Invisible Secondary Application to expose ADB Alias natively without Start Menu clutter -->
     <Application Id="AdbConsole" Executable="bin\adb.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="DeX Engine"
+        DisplayName="Connect Phone ADB Engine"
         Description="ADB Background Process"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"

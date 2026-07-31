@@ -1,19 +1,4 @@
 . "$PSScriptRoot\TrayUIHandlers.ps1"
-
-function Set-MainWindowPosition {
-    $workArea = [System.Windows.SystemParameters]::WorkArea
-    $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
-    $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
-    
-    $left = $workArea.Right - $winWidth - 12
-    $top = $workArea.Bottom - $winHeight - 12
-    
-    if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
-    if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
-    
-    $script:wpfWindow.Left = $left
-    $script:wpfWindow.Top = $top
-}
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
@@ -473,14 +458,12 @@ $script:wpfWindow.Add_Deactivated({
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
         if ($script:wpfWindow.FindName("SettingsPanel").Visibility -eq 'Visible') { return }
-        if ($script:wiggleOpenedByWiggle) { return }
         $now = [DateTime]::Now
         Write-Trace "Deactivated - Ms since last: $(($now - $script:lastDeactivated).TotalMilliseconds)"
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
             Write-Trace "Deactivated: Hiding window"
             try { $script:wpfWindow.FindResource("PopIn").Stop($script:wpfWindow) } catch {}
             $script:wpfWindow.Hide()
-            Reset-SpatialPanels
             $script:lastDeactivated = $now
         }
     }
@@ -577,7 +560,18 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
         
-        Set-MainWindowPosition
+        $workArea = [System.Windows.SystemParameters]::WorkArea
+        $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
+        $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
+        
+        $left = $workArea.Right - $winWidth - 12
+        $top = $workArea.Bottom - $winHeight - 12
+        
+        if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
+        if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
+        
+        $script:wpfWindow.Left = $left
+        $script:wpfWindow.Top = $top
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now
@@ -629,153 +623,121 @@ try {
     public class Win32Input {
         [DllImport("user32.dll")]
         public static extern short GetAsyncKeyState(int vKey);
-
         [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetCursorPos(ref POINT lpPoint);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct POINT {
-            public int X;
-            public int Y;
-        }
+        public static extern int GetSystemMetrics(int nIndex);
     }
 "@
 } catch {}
 
-
-# System.Windows.Forms must be loaded before the timer ticks so Cursor.Position doesn't throw.
-Add-Type -AssemblyName System.Windows.Forms
-
 $script:wiggleHistory = @()
-$script:wiggleReversals = 0
 $script:wiggleEnabled = $true
 $script:wiggleReversalsThreshold = 3
-$script:wiggleOpenedByWiggle = $false   # tracks if wiggleDragPanel is currently shown by us
-
-function Show-WigglePanel {
-    $panel = $script:wpfWindow.FindName("wiggleDragPanel")
-    if ($null -eq $panel -or $panel.Visibility -eq 'Visible') { return }
-
-    # ── TODO (device discovery wired up): populate txtWiggleActiveDeviceName / txtWiggleActiveDeviceIP
-    # from $script:currentTarget. If no device is connected, hide the active section and show
-    # only the previously-connected list sourced from the persisted device history store. ──
-
-    # Position: appear near the cursor so the drop is immediate!
-    [Win32Input+POINT]$pt = New-Object Win32Input+POINT
-    if ([Win32Input]::GetCursorPos([ref]$pt)) {
-        # Panel is at bottom-right of 1420x760 window (about 280x250 in size).
-        # We align the window so the panel's top-left is roughly at the cursor.
-        # So we shift left by ~1140 and up by ~510.
-        $script:wpfWindow.Left = $pt.X - 1140 + 20
-        $script:wpfWindow.Top = $pt.Y - 510 + 20
-    } else {
-        Set-MainWindowPosition
-    }
-    $script:wpfWindow.Topmost = $true
-
-    # Animate in: same PopIn feel
-    $script:wpfWindow.FindName("mainBorder").Visibility = 'Collapsed'
-    $panel.Visibility = 'Visible'
-    $panel.Opacity = 0
-    $script:wpfWindow.FindName("wiggleScale").ScaleX = 0.88
-    $script:wpfWindow.FindName("wiggleScale").ScaleY = 0.88
-    $script:wpfWindow.FindName("wiggleTrans").Y = 14
-
-    $script:wpfWindow.Show()
-    $script:wpfWindow.Activate()
-    $script:wiggleOpenedByWiggle = $true
-
-    # Fade + scale in via DispatcherTimer (no storyboard dependency needed)
-    $script:wiggleFadeStep = 0
-    $fadeTimer = New-Object System.Windows.Threading.DispatcherTimer
-    $fadeTimer.Interval = [TimeSpan]::FromMilliseconds(16)
-    $fadeTimer.Add_Tick({
-        $script:wiggleFadeStep++
-        $t = [Math]::Min(1.0, $script:wiggleFadeStep / 12.0)
-        $ease = 1 - [Math]::Pow(1 - $t, 3)
-        $panel.Opacity = $ease
-        $script:wpfWindow.FindName("wiggleScale").ScaleX = 0.88 + (0.12 * $ease)
-        $script:wpfWindow.FindName("wiggleScale").ScaleY = 0.88 + (0.12 * $ease)
-        $script:wpfWindow.FindName("wiggleTrans").Y = 14 * (1 - $ease)
-        if ($script:wiggleFadeStep -ge 12) { $fadeTimer.Stop() }
-    })
-    $fadeTimer.Start()
-}
-
-function Hide-WigglePanel {
-    $panel = $script:wpfWindow.FindName("wiggleDragPanel")
-    if ($null -eq $panel) { return }
-    $panel.Visibility = 'Collapsed'
-    $panel.Opacity = 0
-    $script:wpfWindow.Hide()
-    $script:wiggleOpenedByWiggle = $false
-    Reset-SpatialPanels
-}
-
+$script:wiggleGraceTicks = 0
+$script:wiggleLastTick = [DateTime]::Now
 $script:wiggleTimer = New-Object System.Windows.Threading.DispatcherTimer
-$script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(50)
+$script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(20)
 
 $script:wiggleTimer.Add_Tick({
-    # 0x01 = VK_LBUTTON, 0x02 = VK_RBUTTON
-    $isLButtonDown = ([Win32Input]::GetAsyncKeyState(0x01) -band 0x8000) -ne 0
-    $isRButtonDown = ([Win32Input]::GetAsyncKeyState(0x02) -band 0x8000) -ne 0
+    if ($script:wpfWindow.IsVisible) { return }
+    
+    $now = [DateTime]::Now
+    if (($now - $script:wiggleLastTick).TotalMilliseconds -gt 150) {
+        $script:wiggleHistory = @()
+    }
+    $script:wiggleLastTick = $now
 
-    # ── Edge case: drop-outside auto-close ──────────────────────────────────────
-    if ($script:wiggleOpenedByWiggle -and -not $isLButtonDown -and -not $isRButtonDown) {
-        if (-not $script:wpfWindow.IsMouseOver) {
-            Hide-WigglePanel
+    $btn = if ([Win32Input]::GetSystemMetrics(23) -ne 0) { 0x02 } else { 0x01 }
+    $isDown = ([Win32Input]::GetAsyncKeyState($btn) -band 0x8000) -ne 0
+    if (-not $isDown) {
+        $script:wiggleGraceTicks++
+        if ($script:wiggleGraceTicks -gt 2) {
+            $script:wiggleHistory = @()
         }
-        $script:wiggleHistory = @()
-        $script:wiggleReversals = 0
         return
     }
+    $script:wiggleGraceTicks = 0
 
-    if (-not $isLButtonDown -and -not $isRButtonDown) {
-        $script:wiggleHistory = @()
-        $script:wiggleReversals = 0
-        return
-    }
-
-    # Don't trigger wiggle if our main menu is already fully open
-    if ($script:wpfWindow.IsVisible -and -not $script:wiggleOpenedByWiggle) {
-        $script:wiggleHistory = @()
-        $script:wiggleReversals = 0
-        return
-    }
-
-    $pt = New-Object Win32Input+POINT
-    [Win32Input]::GetCursorPos([ref]$pt) | Out-Null
-    $script:wiggleHistory += $pt.X
-    # Keep last 1s of samples (20 × 50ms)
+    $pos = [System.Windows.Forms.Cursor]::Position
+    $script:wiggleHistory += $pos.X
     if ($script:wiggleHistory.Count -gt 20) {
+        # Keep last 1 second of history (20 * 50ms = 1000ms)
         $script:wiggleHistory = $script:wiggleHistory[-20..-1]
     }
 
-    if ($script:wiggleHistory.Count -lt 5) { return }
-
-    $reversals = 0
-    $lastDir = 0
-    $minX = $script:wiggleHistory[0]
-    $maxX = $script:wiggleHistory[0]
-
-    for ($i = 1; $i -lt $script:wiggleHistory.Count; $i++) {
-        $prev = $script:wiggleHistory[$i-1]
-        $curr = $script:wiggleHistory[$i]
-        if ($curr -lt $minX) { $minX = $curr }
-        if ($curr -gt $maxX) { $maxX = $curr }
-        $diff = $curr - $prev
-        if ([Math]::Abs($diff) -gt 5) {
-            $dir = if ($diff -gt 0) { 1 } else { -1 }
-            if ($lastDir -ne 0 -and $dir -ne $lastDir) { $reversals++ }
-            $lastDir = $dir
+    # Wiggle detection logic: count direction reversals
+    if ($script:wiggleHistory.Count -ge 5) {
+        $reversals = 0
+        $lastDir = 0 # 1 for right, -1 for left
+        $minX = $script:wiggleHistory[0]
+        $maxX = $script:wiggleHistory[0]
+        
+        for ($i = 1; $i -lt $script:wiggleHistory.Count; $i++) {
+            $prev = $script:wiggleHistory[$i-1]
+            $curr = $script:wiggleHistory[$i]
+            if ($curr -lt $minX) { $minX = $curr }
+            if ($curr -gt $maxX) { $maxX = $curr }
+            
+            $diff = $curr - $prev
+            if ([Math]::Abs($diff) -gt 5) { # Minimum delta to be considered a movement
+                $dir = if ($diff -gt 0) { 1 } else { -1 }
+                if ($lastDir -ne 0 -and $dir -ne $lastDir) {
+                    $reversals++
+                }
+                $lastDir = $dir
+            }
         }
-    }
+        
+        $totalDist = $maxX - $minX
+        # A wiggle is threshold or more reversals in a localized area (< 150 pixels)
+        if ($script:wiggleEnabled -and $reversals -ge $script:wiggleReversalsThreshold -and $totalDist -lt 150) {
+            # Wiggle detected! Reset history
+            $script:wiggleHistory = @()
+            
+            # Show the menu near the cursor
+            if (-not $script:wpfWindow.IsVisible) {
+                # Prepare animations if needed
+                $script:wpfWindow.FindName("winScale").ScaleX = 0.85
+                $script:wpfWindow.FindName("winScale").ScaleY = 0.85
+                $script:wpfWindow.FindName("winTrans").Y = 15
+                $script:wpfWindow.FindName("menuTrans").Y = 20
+                $script:wpfWindow.FindName("menuContentTrans").Y = 35
+                $script:wpfWindow.FindName("menuContentPanel").Opacity = 0
+                $script:wpfWindow.FindName("mainBorder").Opacity = 0
 
-    $totalDist = $maxX - $minX
-    if ($script:wiggleEnabled -and $reversals -ge $script:wiggleReversalsThreshold -and $totalDist -lt 1200) {
-        $script:wiggleHistory = @()
-        Show-WigglePanel
+                try {
+                    $sb = $script:wpfWindow.FindResource("PopIn")
+                    if ($sb) {
+                        $sb.Begin($script:wpfWindow, $true)
+                        $sb.Pause($script:wpfWindow)
+                    }
+                } catch {}
+
+                # Setup position (center window loosely around cursor)
+                $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
+                $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
+                
+                $targetLeft = $pos.X - ($winWidth / 2)
+                $targetTop = $pos.Y - ($winHeight / 2)
+                
+                # Keep within work area of the correct monitor
+                $workArea = [System.Windows.Forms.Screen]::FromPoint($pos).WorkingArea
+                if ($targetLeft -lt $workArea.Left) { $targetLeft = $workArea.Left }
+                if ($targetTop -lt $workArea.Top) { $targetTop = $workArea.Top }
+                if ($targetLeft + $winWidth -gt $workArea.Right) { $targetLeft = $workArea.Right - $winWidth }
+                if ($targetTop + $winHeight -gt $workArea.Bottom) { $targetTop = $workArea.Bottom - $winHeight }
+                
+                $script:wpfWindow.Left = $targetLeft
+                $script:wpfWindow.Top = $targetTop
+                $script:wpfWindow.Topmost = $true
+                
+                $script:wpfWindow.Show()
+                # (Activate removed to prevent dragging focus loss)
+
+                try {
+                    if ($sb) { $sb.Resume($script:wpfWindow) }
+                } catch {}
+            }
+        }
     }
 })
 $script:wiggleTimer.Start()
