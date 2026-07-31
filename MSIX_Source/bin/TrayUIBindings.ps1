@@ -696,22 +696,19 @@ $script:wiggleTimer.Add_Tick({
                     }
                 } catch {}
 
-                # Setup position (center window loosely around cursor)
+                # Setup position (default tray position)
+                $workArea = [System.Windows.SystemParameters]::WorkArea
                 $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
                 $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
                 
-                $targetLeft = $pos.X - ($winWidth / 2)
-                $targetTop = $pos.Y - ($winHeight / 2)
+                $left = $workArea.Right - $winWidth - 12
+                $top = $workArea.Bottom - $winHeight - 12
                 
-                # Keep within work area
-                $workArea = [System.Windows.SystemParameters]::WorkArea
-                if ($targetLeft -lt $workArea.Left) { $targetLeft = $workArea.Left }
-                if ($targetTop -lt $workArea.Top) { $targetTop = $workArea.Top }
-                if ($targetLeft + $winWidth -gt $workArea.Right) { $targetLeft = $workArea.Right - $winWidth }
-                if ($targetTop + $winHeight -gt $workArea.Bottom) { $targetTop = $workArea.Bottom - $winHeight }
+                if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
+                if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
                 
-                $script:wpfWindow.Left = $targetLeft
-                $script:wpfWindow.Top = $targetTop
+                $script:wpfWindow.Left = $left
+                $script:wpfWindow.Top = $top
                 $script:wpfWindow.Topmost = $true
                 
                 $script:wpfWindow.Show()
