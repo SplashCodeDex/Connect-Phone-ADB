@@ -23,6 +23,10 @@ function Reset-SpatialPanels {
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
     $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
     if ($btnQAPull) { $btnQAPull.IsChecked = $false }
+    # Reset wiggle drag panel state so it never bleeds through on normal open
+    $wigglePanel = $script:wpfWindow.FindName("wiggleDragPanel")
+    if ($wigglePanel) { $wigglePanel.Visibility = 'Collapsed'; $wigglePanel.Opacity = 0 }
+    $script:wiggleOpenedByWiggle = $false
 }
 
 function Invoke-ExitEngine {

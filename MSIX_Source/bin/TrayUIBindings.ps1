@@ -464,6 +464,7 @@ $script:wpfWindow.Add_Deactivated({
             Write-Trace "Deactivated: Hiding window"
             try { $script:wpfWindow.FindResource("PopIn").Stop($script:wpfWindow) } catch {}
             $script:wpfWindow.Hide()
+            Reset-SpatialPanels
             $script:lastDeactivated = $now
         }
     }
@@ -661,18 +662,18 @@ function Show-WigglePanel {
     $script:wiggleOpenedByWiggle = $true
 
     # Fade + scale in via DispatcherTimer (no storyboard dependency needed)
-    $fadeStep = 0
+    $script:wiggleFadeStep = 0
     $fadeTimer = New-Object System.Windows.Threading.DispatcherTimer
     $fadeTimer.Interval = [TimeSpan]::FromMilliseconds(16)
     $fadeTimer.Add_Tick({
-        $fadeStep++
-        $t = [Math]::Min(1.0, $fadeStep / 12.0)
+        $script:wiggleFadeStep++
+        $t = [Math]::Min(1.0, $script:wiggleFadeStep / 12.0)
         $ease = 1 - [Math]::Pow(1 - $t, 3)
         $panel.Opacity = $ease
         $script:wpfWindow.FindName("wiggleScale").ScaleX = 0.88 + (0.12 * $ease)
         $script:wpfWindow.FindName("wiggleScale").ScaleY = 0.88 + (0.12 * $ease)
         $script:wpfWindow.FindName("wiggleTrans").Y = 14 * (1 - $ease)
-        if ($fadeStep -ge 12) { $fadeTimer.Stop() }
+        if ($script:wiggleFadeStep -ge 12) { $fadeTimer.Stop() }
     })
     $fadeTimer.Start()
 }
