@@ -784,6 +784,29 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Interaction -->
+                    <TextBlock Text="Interaction" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" Margin="4,8,0,8" />
+                    
+                    <Border Background="{DynamicResource AccentBrush}" CornerRadius="16" Padding="4" Margin="0,0,0,12">
+                        <StackPanel>
+                            <Button Name="btnSettingsWiggleToggle" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="&#xE92C;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Wiggle-to-Open Menu" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                        <TextBlock Name="txtSettingsWiggleToggle" Text="Enabled" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="&#xE76B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
                     <!-- Storage -->
                     <TextBlock Text="Storage" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" Margin="4,8,0,8" />
                     

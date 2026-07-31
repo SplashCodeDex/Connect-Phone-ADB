@@ -2,7 +2,7 @@
 
 ## [3.2.0.0] - 2026-07-31
 ### Added
-- **Wiggle-to-Open Feature:** Users can now rapidly move their mouse back and forth ("wiggle") while holding a file (during a drag operation) to instantly summon the Connect-Phone-ADB drop menu at the cursor's location, allowing for a seamless drag-and-drop experience.
+- **Wiggle-to-Open Feature:** Users can now rapidly move their mouse back and forth ("wiggle") while holding a file (during a drag operation) to instantly summon the Connect-Phone-ADB drop menu at the cursor's location. This feature can be toggled via the new Interaction section in the Settings panel.
 
 
 ## [3.1.8.8] - 2026-07-31

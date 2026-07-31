@@ -225,6 +225,18 @@ if ($btnSettingsTheme) {
     })
 }
 
+# Wiggle Toggle button in settings
+$btnSettingsWiggleToggle = $script:wpfWindow.FindName("btnSettingsWiggleToggle")
+if ($btnSettingsWiggleToggle) {
+    $btnSettingsWiggleToggle.Add_Click({
+        $script:wiggleEnabled = -not $script:wiggleEnabled
+        $txtSettingsWiggleToggle = $script:wpfWindow.FindName("txtSettingsWiggleToggle")
+        if ($txtSettingsWiggleToggle) {
+            $txtSettingsWiggleToggle.Text = if ($script:wiggleEnabled) { "Enabled" } else { "Disabled" }
+        }
+    })
+}
+
 # Download Path button in settings
 $btnSettingsDownloadPath = $script:wpfWindow.FindName("btnSettingsDownloadPath")
 if ($btnSettingsDownloadPath) {
@@ -616,6 +628,8 @@ try {
 } catch {}
 
 $script:wiggleHistory = @()
+$script:wiggleEnabled = $true
+$script:wiggleReversalsThreshold = 3
 $script:wiggleTimer = New-Object System.Windows.Threading.DispatcherTimer
 $script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(50)
 
@@ -658,8 +672,8 @@ $script:wiggleTimer.Add_Tick({
         }
         
         $totalDist = $maxX - $minX
-        # A wiggle is 3 or more reversals in a small localized area (e.g., < 400 pixels)
-        if ($reversals -ge 3 -and $totalDist -lt 400) {
+        # A wiggle is threshold or more reversals in a small localized area (e.g., < 400 pixels)
+        if ($script:wiggleEnabled -and $reversals -ge $script:wiggleReversalsThreshold -and $totalDist -lt 400) {
             # Wiggle detected! Reset history
             $script:wiggleHistory = @()
             
