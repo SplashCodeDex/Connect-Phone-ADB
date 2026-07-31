@@ -911,7 +911,6 @@
                                 <ThicknessAnimation Storyboard.TargetName="btnToggleTopmost" Storyboard.TargetProperty="Margin" To="0,0,8,0" Duration="0:0:0.2">
                                     <ThicknessAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></ThicknessAnimation.EasingFunction>
                                 </ThicknessAnimation>
-                                <DoubleAnimation Storyboard.TargetName="dragPillAccent" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
                             </Storyboard>
                             <Storyboard x:Key="HidePinAnim">
                                 <DoubleAnimation Storyboard.TargetName="btnToggleTopmost" Storyboard.TargetProperty="Width" To="0" Duration="0:0:0.2">
@@ -921,7 +920,6 @@
                                 <ThicknessAnimation Storyboard.TargetName="btnToggleTopmost" Storyboard.TargetProperty="Margin" To="0,0,0,0" Duration="0:0:0.2">
                                     <ThicknessAnimation.EasingFunction><CubicEase EasingMode="EaseIn"/></ThicknessAnimation.EasingFunction>
                                 </ThicknessAnimation>
-                                <DoubleAnimation Storyboard.TargetName="dragPillAccent" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
                             </Storyboard>
                         </StackPanel.Resources>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14">

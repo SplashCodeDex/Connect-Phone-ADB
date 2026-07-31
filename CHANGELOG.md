@@ -2,6 +2,10 @@
 
 ## [3.6.11.0] - 2026-07-31
 ### Changed
+- **[patch]** The spatial menu drag handle now strictly ties its active color state to physical mouse interaction. It will only illuminate with the secondary theme color while actively clicked and held, smoothly fading back to its subtle state the moment the mouse is released.
+
+## [3.6.11.0] - 2026-07-31
+### Changed
 - **[patch]** Eliminated the 40MB `thru_linux` executable bloat from the repository.
 - **[patch]** Replaced `Invoke-RestMethod` with `System.Net.WebClient` for batch file pulls to permanently resolve `System.OutOfMemoryException` memory leaks when transferring multi-gigabyte files.
 

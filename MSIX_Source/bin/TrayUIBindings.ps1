@@ -464,7 +464,15 @@ $script:lastDeactivated = [DateTime]::MinValue
 
 $script:wpfWindow.Add_MouseLeftButtonDown({
     if ($_.ButtonState -eq [System.Windows.Input.MouseButtonState]::Pressed) {
-        $this.DragMove()
+        try { $this.DragMove() } catch {}
+        
+        $dragPillAccent = $this.FindName("dragPillAccent")
+        if ($dragPillAccent) {
+            $anim = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $anim.To = 0
+            $anim.Duration = [TimeSpan]::FromSeconds(0.15)
+            $dragPillAccent.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $anim)
+        }
     }
 })
 
@@ -482,6 +490,13 @@ if ($script:dragPill) {
             $_.Handled = $true
         } else {
             $topPanel = $script:wpfWindow.FindName("TopActionsPanel")
+            $dragPillAccent = $script:wpfWindow.FindName("dragPillAccent")
+            if ($dragPillAccent) {
+                $anim = New-Object System.Windows.Media.Animation.DoubleAnimation
+                $anim.To = 1
+                $anim.Duration = [TimeSpan]::FromSeconds(0.1)
+                $dragPillAccent.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $anim)
+            }
             if ($topPanel) {
                 try { $topPanel.FindResource("ShowPinAnim").Begin($script:wpfWindow) } catch {}
             }
