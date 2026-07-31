@@ -73,51 +73,8 @@ function Set-AppTheme {
         $newDict = [System.Windows.Markup.XamlReader]::Load($xmlReader)
         $xmlReader.Close()
 
-        $oldDict = $null
-        if ($script:wpfWindow.Resources.MergedDictionaries.Count -gt 0) {
-            $oldDict = $script:wpfWindow.Resources.MergedDictionaries[0]
-        }
-
-        if ($oldDict -ne $null -and $oldDict.Keys.Count -gt 0) {
-            $storyboard = New-Object System.Windows.Media.Animation.Storyboard
-            $duration = [System.Windows.Duration]::new([System.TimeSpan]::FromMilliseconds(300))
-            $ease = New-Object System.Windows.Media.Animation.SineEase
-            $ease.EasingMode = [System.Windows.Media.Animation.EasingMode]::EaseInOut
-
-            foreach ($key in $newDict.Keys) {
-                if ($oldDict.Contains($key)) {
-                    $oldBrush = $oldDict[$key]
-                    $newBrush = $newDict[$key]
-
-                    if ($oldBrush -is [System.Windows.Media.SolidColorBrush] -and $newBrush -is [System.Windows.Media.SolidColorBrush]) {
-                        $anim = New-Object System.Windows.Media.Animation.ColorAnimation
-                        $anim.To = $newBrush.Color
-                        $anim.Duration = $duration
-                        $anim.EasingFunction = $ease
-
-                        [System.Windows.Media.Animation.Storyboard]::SetTarget($anim, $oldBrush)
-                        [System.Windows.Media.Animation.Storyboard]::SetTargetProperty($anim, [System.Windows.PropertyPath]::new("Color"))
-
-                        $storyboard.Children.Add($anim)
-                    }
-                }
-            }
-
-            if ($storyboard.Children.Count -gt 0) {
-                $storyboard.add_Completed({
-                    $script:wpfWindow.Resources.MergedDictionaries.Clear()
-                    $script:wpfWindow.Resources.MergedDictionaries.Add($newDict)
-                })
-                $storyboard.Begin()
-            } else {
-                $script:wpfWindow.Resources.MergedDictionaries.Clear()
-                $script:wpfWindow.Resources.MergedDictionaries.Add($newDict)
-            }
-        } else {
-            $script:wpfWindow.Resources.MergedDictionaries.Clear()
-            $script:wpfWindow.Resources.MergedDictionaries.Add($newDict)
-        }
-        
+        $script:wpfWindow.Resources.MergedDictionaries.Clear()
+        $script:wpfWindow.Resources.MergedDictionaries.Add($newDict)
         $global:CurrentTheme = $ThemeName
     }
 }

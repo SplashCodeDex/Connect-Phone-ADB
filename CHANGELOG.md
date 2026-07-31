@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.8.7] - 2026-07-31
+### Fixed
+- **[patch]** Fixed light mode theme transparency bug in `Set-AppTheme`. Removed over-engineered `ColorAnimation` loop targeting freezable `SolidColorBrush` resource objects (which failed silently in WPF causing transparent UI rendering) and replaced it with direct, native `MergedDictionaries` dictionary replacement.
+
 ## [3.1.8.6] - 2026-07-31
 ### Fixed
 - **[patch]** Eliminated the ~1-second UI freeze when opening the Settings panel by replacing the sluggish `Get-ScheduledTask` cmdlet with the native `Schedule.Service` COM object for Auto-Connect status checks, allowing the animation to run instantly without dropping frames.
