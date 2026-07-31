@@ -26,7 +26,7 @@ namespace ConnectPhoneShareTarget
         public TransferWindow(List<string> filePaths)
         {
             files = filePaths;
-            Title = "Connect Phone ADB - Share";
+            Title = "DeX - Share";
             Width = 420;
             Height = 160;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;

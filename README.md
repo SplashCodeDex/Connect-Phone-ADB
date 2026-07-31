@@ -1,4 +1,4 @@
-# Connect Phone ADB
+# DeX
 
 ## Features
 - **Zero-Touch Connection:** Auto-connects when your PC joins your mobile hotspot.

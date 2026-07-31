@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-    Connect Phone ADB - Core Engine & Tray Application
+    DeX - Core Engine & Tray Application
 .DESCRIPTION
     Manages wireless ADB hotspot connections, provides a clean System Tray UI with Auto-Connect ON/OFF toggle,
     and handles Windows Task Scheduler integration.
@@ -92,7 +92,7 @@ if ($null -eq $script:wpfWindow) {
         $script:notifyIcon.Dispose()
         exit 1
     }
-    [System.Windows.MessageBox]::Show("Connect Phone ADB could not load its spatial interface and is running in fallback mode.`n`n$script:WindowLoadError", "Connect Phone ADB - Fallback Mode", 'OK', 'Warning') | Out-Null
+    [System.Windows.MessageBox]::Show("DeX could not load its spatial interface and is running in fallback mode.`n`n$script:WindowLoadError", "DeX - Fallback Mode", 'OK', 'Warning') | Out-Null
 
     $script:notifyIcon.Text = "Connect ADB (Fallback Mode)"
     $fallbackMenu = New-Object System.Windows.Forms.ContextMenuStrip

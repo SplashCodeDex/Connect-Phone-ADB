@@ -684,7 +684,7 @@
                 <Border Grid.Column="1" Background="{DynamicResource AccentBrush}" CornerRadius="20" Padding="14,8">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                        <TextBlock Name="txtSettingsSubtitle" Text="Connect Phone ADB" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center" />
+                        <TextBlock Name="txtSettingsSubtitle" Text="DeX" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center" />
                     </StackPanel>
                 </Border>
                 
@@ -843,7 +843,7 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="Connect Phone ADB" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                        <TextBlock Text="DeX" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
                                         <TextBlock Text="Version 1.0.0" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                                     </StackPanel>
                                 </Grid>

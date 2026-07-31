@@ -7,7 +7,7 @@
       else { Write-Host "  [PASS] PS syntax: $($s.Name)" -ForegroundColor Green }
   }
 .SYNOPSIS
-    Validate-Build.ps1 - Pre-flight build gate for Connect Phone ADB
+    Validate-Build.ps1 - Pre-flight build gate for DeX
 .DESCRIPTION
     Catches the exact class of bugs that shipped as the "dead tray icon" saga (v1.9.4.x-1.9.9.0):
     malformed engine XAML (e.g. a missing </Button> closing tag), missing FindName targets,

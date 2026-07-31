@@ -1,4 +1,4 @@
-# Connect Phone ADB — Project Rules
+# DeX — Project Rules
 
 ## 1. Minimalist Execution (`/ponytail`)
 - **Always enforce `/ponytail` ladder**:
