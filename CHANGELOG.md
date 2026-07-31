@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.6.11.0] - 2026-07-31
+### Changed
+- **[patch]** Eliminated the 40MB `thru_linux` executable bloat from the repository.
+- **[patch]** Replaced `Invoke-RestMethod` with `System.Net.WebClient` for batch file pulls to permanently resolve `System.OutOfMemoryException` memory leaks when transferring multi-gigabyte files.
+
 ## [3.6.10.0] - 2026-07-31
 ### Changed
 - **[patch]** The "Pin to Top" icon now elegantly fades to the accent color on hover, and permanently fades to the secondary theme color when checked. The slide-out tray will also remain securely visible as long as the window is pinned.
