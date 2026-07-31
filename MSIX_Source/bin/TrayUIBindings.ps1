@@ -457,6 +457,12 @@ $script:wpfWindow.Add_KeyDown({
 
 $script:lastDeactivated = [DateTime]::MinValue
 
+$script:wpfWindow.Add_MouseLeftButtonDown({
+    if ($_.ButtonState -eq [System.Windows.Input.MouseButtonState]::Pressed) {
+        $this.DragMove()
+    }
+})
+
 
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({
@@ -568,6 +574,10 @@ $script:notifyIcon.Add_MouseUp({
         $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
         $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
         $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+        $script:wpfWindow.FindName("TopActionsPanel").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnUserJoe").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnDeviceGalaxy").Visibility = 'Visible'
+        $script:wpfWindow.FindName("btnDeviceWindows").Visibility = 'Visible'
         
         $workArea = [System.Windows.SystemParameters]::WorkArea
         $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
@@ -647,7 +657,24 @@ $script:wiggleTimer = New-Object System.Windows.Threading.DispatcherTimer
 $script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(20)
 
 $script:wiggleTimer.Add_Tick({
-    if ($script:wpfWindow.IsVisible) { return }
+    if ($script:wpfWindow.IsVisible) {
+        if ($script:openedViaWiggle) {
+            $btn = if ([Win32Input]::GetSystemMetrics(23) -ne 0) { 0x02 } else { 0x01 }
+            $isDown = ([Win32Input]::GetAsyncKeyState($btn) -band 0x8000) -ne 0
+            if (-not $isDown) {
+                $script:openedViaWiggle = $false
+                # Run at Background priority so WPF Drop events fire first before we hide
+                $script:wpfWindow.Dispatcher.InvokeAsync({
+                    if ($script:wpfWindow.IsVisible) {
+                        $script:wpfWindow.Hide()
+                        Reset-SpatialPanels
+                        $script:lastDeactivated = [DateTime]::Now
+                    }
+                }, [System.Windows.Threading.DispatcherPriority]::Background) | Out-Null
+            }
+        }
+        return
+    }
     
     $now = [DateTime]::Now
     if (($now - $script:wiggleLastTick).TotalMilliseconds -gt 150) {
@@ -712,6 +739,15 @@ $script:wiggleTimer.Add_Tick({
                 $script:wpfWindow.FindName("menuContentTrans").Y = 35
                 $script:wpfWindow.FindName("menuContentPanel").Opacity = 0
                 $script:wpfWindow.FindName("mainBorder").Opacity = 0
+                
+                # Show only nearby devices (dummies) for Wiggle menu
+                $script:wpfWindow.FindName("TopActionsPanel").Visibility = 'Collapsed'
+                $script:wpfWindow.FindName("btnUserJoe").Visibility = 'Collapsed'
+                $script:wpfWindow.FindName("btnDeviceGalaxy").Visibility = 'Collapsed'
+                $script:wpfWindow.FindName("btnDeviceWindows").Visibility = 'Collapsed'
+                $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Visible'
+                $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 1
+                $script:openedViaWiggle = $true
 
                 try {
                     $sb = $script:wpfWindow.FindResource("PopIn")

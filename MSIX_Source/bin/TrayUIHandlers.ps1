@@ -21,6 +21,10 @@ function Reset-SpatialPanels {
     $script:wpfWindow.FindName("btnCloseMenu").Opacity = 0
     $script:wpfWindow.FindName("NearbyExpandPanel").Visibility = 'Collapsed'
     $script:wpfWindow.FindName("NearbyExpandPanel").Opacity = 0
+    $script:wpfWindow.FindName("TopActionsPanel").Visibility = 'Visible'
+    $script:wpfWindow.FindName("btnUserJoe").Visibility = 'Visible'
+    $script:wpfWindow.FindName("btnDeviceGalaxy").Visibility = 'Visible'
+    $script:wpfWindow.FindName("btnDeviceWindows").Visibility = 'Visible'
     $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
     if ($btnQAPull) { $btnQAPull.IsChecked = $false }
 }

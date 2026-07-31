@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.6.2.0] - 2026-07-31
+### Added
+- **[patch]** Added `DragMove()` via `MouseLeftButtonDown` event to the WPF window to allow users to easily drag the spatial menu panel around natively without any external dependencies or bloated layout logic.
+
+## [3.6.1.0] - 2026-07-31
+### Fixed
+- **[patch]** Wiggle-to-Open menu now automatically hides when the mouse button is released (after drag-and-drop ends). Delay execution added to ensure WPF Drop events are cleanly routed before collapsing the window.
+
+## [3.6.0.0] - 2026-07-31
+### Added
+- **[minor]** Wiggle-to-Open now conditionally filters the spatial menu, hiding unneeded UI elements to exclusively show the Nearby Devices list for faster, focused device selection.
+
 ## [3.5.0.0] - 2026-07-31
 ### Added
 - **[major] OmniMesh File Explorer:** Completely rewired the WPF File Explorer to use the blazing fast OmniMesh Ktor HTTP REST API (`/api/dex/browse` and `/api/dex/pull`) instead of sluggish `adb shell ls` and `adb pull` commands.
