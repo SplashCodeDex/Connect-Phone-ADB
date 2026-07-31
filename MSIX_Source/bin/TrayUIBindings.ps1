@@ -621,6 +621,23 @@ $script:notifyIcon.Add_MouseUp({
 })
 
 # --- Wiggle-to-Open Feature ---
+try {
+    Add-Type -TypeDefinition @"
+    using System;
+    using System.Runtime.InteropServices;
+    public class Win32Input {
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(ref POINT lpPoint);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT {
+            public int X;
+            public int Y;
+        }
+    }
+"@
+} catch {}
 
 
 # System.Windows.Forms must be loaded before the timer ticks so Cursor.Position doesn't throw.
@@ -694,8 +711,9 @@ $script:wiggleTimer.Add_Tick({
         return
     }
 
-    $pos = [System.Windows.Forms.Cursor]::Position
-    $script:wiggleHistory += $pos.X
+    $pt = New-Object Win32Input+POINT
+    [Win32Input]::GetCursorPos([ref]$pt) | Out-Null
+    $script:wiggleHistory += $pt.X
     # Keep last 1s of samples (20 × 50ms)
     if ($script:wiggleHistory.Count -gt 20) {
         $script:wiggleHistory = $script:wiggleHistory[-20..-1]
