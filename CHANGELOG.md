@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.1.8.6] - 2026-07-31
+### Fixed
+- **[patch]** Eliminated the ~1-second UI freeze when opening the Settings panel by replacing the sluggish `Get-ScheduledTask` cmdlet with the native `Schedule.Service` COM object for Auto-Connect status checks, allowing the animation to run instantly without dropping frames.
+
+## [3.1.8.5] - 2026-07-31
+### Fixed
+- **[patch]** Fixed system tray menu double-opening flash bug caused by a tri-fold race condition: (1) Windows 11 tray focus shifts triggering `Deactivated` mid-animation were suppressed with an 800ms `isShowingMenu` guard flag, (2) stale `PopIn` animation fill clocks were cleared before hiding to prevent property override glitches, and (3) WinForms `NotifyIcon.MouseUp` double-fire events from single physical clicks were debounced.
+
+## [3.1.8.4] - 2026-07-30
+### Fixed
+- **[patch]** Prevented the Exit button from needlessly animating its margin leftward when the menu is in the expanded state, as the avatar is already collapsed and the button natively occupies the full layout width.
+
+## [3.1.8.3] - 2026-07-30
+### Added
+- **[feature]** Restored fluid animations to the Exit Engine sequence while strictly enforcing layout stability. The Exit button now animates its margin to slide left, while the parent grid width is explicitly locked to perfectly prevent any window-resizing pops. The avatar image subtly shrinks and scales behind the expanding solid AccentBrush overlay, creating a premium visual effect.
+
 ## [3.1.8.2] - 2026-07-30
 ### Fixed
 - **[patch]** Corrected the negative margin calculation for the expanded Exit Engine button (`-62` instead of `-46`) to account for internal padding offsets inside the `SpatialListItem` control template, perfectly aligning it with the avatar's left edge.

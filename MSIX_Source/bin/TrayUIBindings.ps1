@@ -47,6 +47,9 @@ $script:currentDirPath = "/sdcard/"
 $script:adbLsProc = $null
 
 $script:isLoadingDir = $false
+$script:isShowingMenu = $false
+$script:showMenuGuardTimer = $null
+$script:lastMouseUpTime = [DateTime]::MinValue
 
 
 $script:btnUpDir.Add_Click({
@@ -279,13 +282,32 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
     if ($isShift) {
         # Proceed to exit immediately
     } elseif ($txtExitBtn.Text -eq "Exit Engine") {
-        $txtExitBtn.Text = "Cancel / Shift+Click Exit"
         $btnExit = $script:wpfWindow.FindName("btnExit")
+        $parentGrid = $btnExit.Parent
+        $parentGrid.Width = $parentGrid.ActualWidth # Prevent layout popping
         
-        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $null)
-        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $null)
+        $txtExitBtn.Text = "Cancel / Shift+Click Exit"
         
-        $btnExit.Margin = New-Object System.Windows.Thickness(-62, 1, 8, 1)
+        $ease = New-Object System.Windows.Media.Animation.CubicEase; $ease.EasingMode = 'EaseOut'
+        
+        if ($btnProfileBottom.Visibility.ToString() -eq 'Visible') {
+            $animExpand = New-Object System.Windows.Media.Animation.ThicknessAnimation
+            $animExpand.To = New-Object System.Windows.Thickness(-62, 0, 0, 0)
+            $animExpand.Duration = [TimeSpan]::FromSeconds(0.3)
+            $animExpand.EasingFunction = $ease
+            $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animExpand)
+            
+            $btnProfileBottom.RenderTransformOrigin = New-Object System.Windows.Point(0.5, 0.5)
+            $scale = New-Object System.Windows.Media.ScaleTransform
+            $btnProfileBottom.RenderTransform = $scale
+            $animScale = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $animScale.To = 0.6
+            $animScale.Duration = [TimeSpan]::FromSeconds(0.3)
+            $animScale.EasingFunction = $ease
+            $scale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleXProperty, $animScale)
+            $scale.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleYProperty, $animScale)
+        }
+        
         $btnExit.Background = $script:wpfWindow.FindResource("AccentBrush")
         
         $script:exitTimer = New-Object System.Windows.Threading.DispatcherTimer
@@ -293,9 +315,29 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
         $script:exitTimer.Add_Tick({
             $tTxt = $script:wpfWindow.FindName("txtExitBtn")
             $tBtn = $script:wpfWindow.FindName("btnExit")
+            $tAvatar = $script:wpfWindow.FindName("btnProfileBottom")
+            
             $tTxt.Text = "Exit Engine"
-            $tBtn.Margin = New-Object System.Windows.Thickness(8, 1, 8, 1)
-            $tBtn.Background = [System.Windows.Media.Brushes]::Transparent
+            
+            $easeOut = New-Object System.Windows.Media.Animation.CubicEase; $easeOut.EasingMode = 'EaseOut'
+            $animContract = New-Object System.Windows.Media.Animation.ThicknessAnimation
+            $animContract.To = New-Object System.Windows.Thickness(0)
+            $animContract.Duration = [TimeSpan]::FromSeconds(0.3)
+            $animContract.EasingFunction = $easeOut
+            $tBtn.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animContract)
+            
+            if ($null -ne $tAvatar.RenderTransform -and $tAvatar.RenderTransform -is [System.Windows.Media.ScaleTransform]) {
+                $animScaleBack = New-Object System.Windows.Media.Animation.DoubleAnimation
+                $animScaleBack.To = 1.0
+                $animScaleBack.Duration = [TimeSpan]::FromSeconds(0.3)
+                $animScaleBack.EasingFunction = $easeOut
+                $tAvatar.RenderTransform.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleXProperty, $animScaleBack)
+                $tAvatar.RenderTransform.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleYProperty, $animScaleBack)
+            }
+            
+            $tBtn.ClearValue([System.Windows.Controls.Control]::BackgroundProperty)
+            $tBtn.Parent.Width = [Double]::NaN
+            
             $script:exitTimer.Stop()
         })
         $script:exitTimer.Start()
@@ -305,11 +347,24 @@ $script:wpfWindow.FindName("btnExit").Add_Click({
         $txtExitBtn.Text = "Exit Engine"
         $btnExit = $script:wpfWindow.FindName("btnExit")
         
-        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $null)
-        $btnProfileBottom.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $null)
+        $easeOut = New-Object System.Windows.Media.Animation.CubicEase; $easeOut.EasingMode = 'EaseOut'
+        $animContract = New-Object System.Windows.Media.Animation.ThicknessAnimation
+        $animContract.To = New-Object System.Windows.Thickness(0)
+        $animContract.Duration = [TimeSpan]::FromSeconds(0.3)
+        $animContract.EasingFunction = $easeOut
+        $btnExit.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $animContract)
         
-        $btnExit.Margin = New-Object System.Windows.Thickness(8, 1, 8, 1)
-        $btnExit.Background = [System.Windows.Media.Brushes]::Transparent
+        if ($null -ne $btnProfileBottom.RenderTransform -and $btnProfileBottom.RenderTransform -is [System.Windows.Media.ScaleTransform]) {
+            $animScaleBack = New-Object System.Windows.Media.Animation.DoubleAnimation
+            $animScaleBack.To = 1.0
+            $animScaleBack.Duration = [TimeSpan]::FromSeconds(0.3)
+            $animScaleBack.EasingFunction = $easeOut
+            $btnProfileBottom.RenderTransform.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleXProperty, $animScaleBack)
+            $btnProfileBottom.RenderTransform.BeginAnimation([System.Windows.Media.ScaleTransform]::ScaleYProperty, $animScaleBack)
+        }
+        
+        $btnExit.ClearValue([System.Windows.Controls.Control]::BackgroundProperty)
+        $btnExit.Parent.Width = [Double]::NaN
         
         if ($null -ne $script:exitTimer) { $script:exitTimer.Stop() }
         return
@@ -388,6 +443,8 @@ $script:lastDeactivated = [DateTime]::MinValue
 
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({
+    # Guard: suppress Deactivated during show+PopIn animation to prevent double-flash
+    if ($script:isShowingMenu) { return }
     Write-Trace "Deactivated fired! IsVisible: $($script:wpfWindow.IsVisible)"
     if ($script:wpfWindow.IsVisible) {
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
@@ -397,6 +454,7 @@ $script:wpfWindow.Add_Deactivated({
         Write-Trace "Deactivated - Ms since last: $(($now - $script:lastDeactivated).TotalMilliseconds)"
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
             Write-Trace "Deactivated: Hiding window"
+            try { $script:wpfWindow.FindResource("PopIn").Stop($script:wpfWindow) } catch {}
             $script:wpfWindow.Hide()
             $script:lastDeactivated = $now
         }
@@ -439,6 +497,12 @@ $script:notifyIcon.Add_MouseUp({
     Write-Trace "MouseUp fired! Button: $($e.Button)"
     if ($e.Button -eq 'Right' -or $e.Button -eq 'Left') {
         $now = [DateTime]::Now
+        # Debounce: reject double-fired MouseUp events from a single physical click
+        if (($now - $script:lastMouseUpTime).TotalMilliseconds -lt 300) {
+            Write-Trace "MouseUp: Debounced (too fast)"
+            return
+        }
+        $script:lastMouseUpTime = $now
         Write-Trace "IsVisible: $($script:wpfWindow.IsVisible) | Ms since lastDeactivated: $(($now - $script:lastDeactivated).TotalMilliseconds)"
         if ($script:wpfWindow.IsVisible -or (($now - $script:lastDeactivated).TotalMilliseconds -lt 400)) {
             # Edge Case: If window was visible with expanded panels, fully reset state on hide
@@ -520,6 +584,10 @@ $script:notifyIcon.Add_MouseUp({
             }
         } catch { Write-Trace "PopIn pre-trigger failed: $_" }
 
+        # Guard: suppress Deactivated during show+animate to prevent double-flash race
+        if ($script:showMenuGuardTimer) { $script:showMenuGuardTimer.Stop() }
+        $script:isShowingMenu = $true
+
         $script:wpfWindow.Show()
         $script:wpfWindow.Activate()
         $script:wpfWindow.Focus()
@@ -527,6 +595,15 @@ $script:notifyIcon.Add_MouseUp({
         try {
             if ($sb) { $sb.Resume($script:wpfWindow) }
         } catch { Write-Trace "PopIn resume failed: $_" }
+
+        # Clear the guard after PopIn animation completes (~800ms covers the longest 750ms tween)
+        $script:showMenuGuardTimer = New-Object System.Windows.Threading.DispatcherTimer
+        $script:showMenuGuardTimer.Interval = [TimeSpan]::FromMilliseconds(800)
+        $script:showMenuGuardTimer.Add_Tick({
+            $script:isShowingMenu = $false
+            $script:showMenuGuardTimer.Stop()
+        })
+        $script:showMenuGuardTimer.Start()
     }
 })
 
