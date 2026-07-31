@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.6.9.0] - 2026-07-31
+### Added
+- **[patch]** Added smooth XAML Storyboard animations for the spatial menu drag handle. The slide-out pin toggle now fluidly expands into view, and the pill indicator seamlessly cross-fades its background color.
+- **[patch]** The "Pin to Top" toggle icon now highlights using the active theme's accent color when checked, instead of the primary text color.
+
 ## [3.6.8.0] - 2026-07-31
 ### Changed
 - **[patch]** The spatial menu drag handle now dynamically changes its color to the theme's secondary accent brush when active.

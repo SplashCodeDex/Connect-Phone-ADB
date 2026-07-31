@@ -465,7 +465,6 @@ $script:wpfWindow.Add_MouseLeftButtonDown({
 
 $script:dragPill = $script:wpfWindow.FindName("dragPill")
 $script:btnToggleTopmost = $script:wpfWindow.FindName("btnToggleTopmost")
-$script:dragPillInner = $script:wpfWindow.FindName("dragPillInner")
 
 if ($script:dragPill) {
     $script:dragPill.Add_MouseLeftButtonDown({
@@ -477,19 +476,17 @@ if ($script:dragPill) {
             $script:wpfWindow.Top = $workArea.Top + ($workArea.Height / 2) - ($winHeight / 2)
             $_.Handled = $true
         } else {
-            $script:btnToggleTopmost.Visibility = 'Visible'
-            if ($script:dragPillInner) {
-                $script:dragPillInner.SetResourceReference([System.Windows.Controls.Border]::BackgroundProperty, "SecondaryBrush")
-                $script:dragPillInner.Opacity = 1
+            $topPanel = $script:wpfWindow.FindName("TopActionsPanel")
+            if ($topPanel) {
+                try { $topPanel.FindResource("ShowPinAnim").Begin($script:wpfWindow) } catch {}
             }
             if ($null -eq $script:pinTimer) {
                 $script:pinTimer = New-Object System.Windows.Threading.DispatcherTimer
                 $script:pinTimer.Interval = [TimeSpan]::FromSeconds(3)
                 $script:pinTimer.Add_Tick({
-                    $script:btnToggleTopmost.Visibility = 'Collapsed'
-                    if ($script:dragPillInner) {
-                        $script:dragPillInner.SetResourceReference([System.Windows.Controls.Border]::BackgroundProperty, "SecondaryTextBrush")
-                        $script:dragPillInner.Opacity = 0.4
+                    $topPanel = $script:wpfWindow.FindName("TopActionsPanel")
+                    if ($topPanel) {
+                        try { $topPanel.FindResource("HidePinAnim").Begin($script:wpfWindow) } catch {}
                     }
                     $script:pinTimer.Stop()
                 })
@@ -504,7 +501,7 @@ if ($script:btnToggleTopmost) {
     $script:btnToggleTopmost.Add_Click({
         $script:wpfWindow.Topmost = -not $script:wpfWindow.Topmost
         if ($script:wpfWindow.Topmost) {
-            $this.Foreground = $script:wpfWindow.FindResource("PrimaryBrush")
+            $this.Foreground = $script:wpfWindow.FindResource("AccentBrush")
             $this.ToolTip = "Unpin"
         } else {
             $this.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
