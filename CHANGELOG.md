@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.6.10.0] - 2026-07-31
+### Changed
+- **[patch]** The "Pin to Top" icon now elegantly fades to the accent color on hover, and permanently fades to the secondary theme color when checked. The slide-out tray will also remain securely visible as long as the window is pinned.
+
 ## [3.6.9.0] - 2026-07-31
 ### Added
 - **[patch]** Added smooth XAML Storyboard animations for the spatial menu drag handle. The slide-out pin toggle now fluidly expands into view, and the pill indicator seamlessly cross-fades its background color.

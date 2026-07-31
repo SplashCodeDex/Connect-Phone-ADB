@@ -926,12 +926,63 @@
                         </StackPanel.Resources>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14">
                             <ToggleButton x:Name="btnToggleTopmost" Width="0" Height="16" Background="Transparent" BorderThickness="0" Margin="0,0,0,0" Opacity="0" ToolTip="Always on Top">
-                                <TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                                        <Grid>
+                                                            <TextBlock x:Name="iconBase" Text="&#xE718;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            <TextBlock x:Name="iconHover" Opacity="0" Text="&#xE718;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            <TextBlock x:Name="iconChecked" Opacity="0" Text="&#xE718;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource SecondaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="bgBorder" Property="Background" Value="#1A808080" />
+                                                            <Trigger.EnterActions>
+                                                                <BeginStoryboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation Storyboard.TargetName="iconHover" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15" />
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </Trigger.EnterActions>
+                                                            <Trigger.ExitActions>
+                                                                <BeginStoryboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation Storyboard.TargetName="iconHover" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </Trigger.ExitActions>
+                                                        </Trigger>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Trigger.EnterActions>
+                                                                <BeginStoryboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation Storyboard.TargetName="iconChecked" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </Trigger.EnterActions>
+                                                            <Trigger.ExitActions>
+                                                                <BeginStoryboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation Storyboard.TargetName="iconChecked" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </Trigger.ExitActions>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
                             </ToggleButton>
                             <Border x:Name="dragPill" Width="66" Height="16" Cursor="Hand" Background="Transparent" ToolTip="Drag to move. Double-click to reset.">
                                 <Grid VerticalAlignment="Center">
                                     <Border Height="4" Background="{DynamicResource SecondaryTextBrush}" Opacity="0.4" CornerRadius="2" />
-                                    <Border x:Name="dragPillAccent" Height="4" Background="{DynamicResource AccentBrush}" Opacity="0" CornerRadius="2" />
+                                    <Border x:Name="dragPillAccent" Height="4" Background="{DynamicResource SecondaryBrush}" Opacity="0" CornerRadius="2" />
                                 </Grid>
                             </Border>
                         </StackPanel>

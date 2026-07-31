@@ -126,18 +126,23 @@ $script:lbFiles.Add_MouseDoubleClick({
         
         $actionBatchBg = {
             param($remPaths, $out, $ip)
+            
+            $wc = New-Object System.Net.WebClient
+            [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+            
             foreach ($rp in $remPaths) {
                 try {
                     $fileName = [System.IO.Path]::GetFileName($rp)
                     if (-not $fileName) { $fileName = $rp.Split('/')[-1] }
                     $destPath = Join-Path $out $fileName
                     $uri = "https://${ip}:53317/api/dex/pull?path=" + [uri]::EscapeDataString($rp)
-                    [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
-                    Invoke-RestMethod -Uri $uri -Method Get -OutFile $destPath -ErrorAction Stop
+                    
+                    $wc.DownloadFile($uri, $destPath)
                 } catch {
                     # Silent fail on bg job
                 }
             }
+            if ($wc) { $wc.Dispose() }
             Start-Process "explorer.exe" -ArgumentList "`"$out`""
         }
         
@@ -484,15 +489,19 @@ if ($script:dragPill) {
                 $script:pinTimer = New-Object System.Windows.Threading.DispatcherTimer
                 $script:pinTimer.Interval = [TimeSpan]::FromSeconds(3)
                 $script:pinTimer.Add_Tick({
-                    $topPanel = $script:wpfWindow.FindName("TopActionsPanel")
-                    if ($topPanel) {
-                        try { $topPanel.FindResource("HidePinAnim").Begin($script:wpfWindow) } catch {}
+                    if (-not $script:wpfWindow.Topmost) {
+                        $topPanel = $script:wpfWindow.FindName("TopActionsPanel")
+                        if ($topPanel) {
+                            try { $topPanel.FindResource("HidePinAnim").Begin($script:wpfWindow) } catch {}
+                        }
                     }
                     $script:pinTimer.Stop()
                 })
             }
-            $script:pinTimer.Stop()
-            $script:pinTimer.Start()
+            if (-not $script:wpfWindow.Topmost) {
+                $script:pinTimer.Stop()
+                $script:pinTimer.Start()
+            }
         }
     })
 }
@@ -500,12 +509,16 @@ if ($script:dragPill) {
 if ($script:btnToggleTopmost) {
     $script:btnToggleTopmost.Add_Click({
         $script:wpfWindow.Topmost = -not $script:wpfWindow.Topmost
+        
         if ($script:wpfWindow.Topmost) {
-            $this.Foreground = $script:wpfWindow.FindResource("AccentBrush")
             $this.ToolTip = "Unpin"
+            if ($script:pinTimer) { $script:pinTimer.Stop() }
         } else {
-            $this.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
             $this.ToolTip = "Always on Top"
+            if ($script:pinTimer) {
+                $script:pinTimer.Stop()
+                $script:pinTimer.Start()
+            }
         }
     })
 }
