@@ -621,16 +621,7 @@ $script:notifyIcon.Add_MouseUp({
 })
 
 # --- Wiggle-to-Open Feature ---
-try {
-    Add-Type -TypeDefinition @"
-    using System;
-    using System.Runtime.InteropServices;
-    public class Win32Input {
-        [DllImport("user32.dll")]
-        public static extern short GetAsyncKeyState(int vKey);
-    }
-"@
-} catch {}
+
 
 # System.Windows.Forms must be loaded before the timer ticks so Cursor.Position doesn't throw.
 Add-Type -AssemblyName System.Windows.Forms
@@ -693,26 +684,9 @@ $script:wiggleTimer = New-Object System.Windows.Threading.DispatcherTimer
 $script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(50)
 
 $script:wiggleTimer.Add_Tick({
-    # 0x01 = VK_LBUTTON
-    $isLButtonDown = ([Win32Input]::GetAsyncKeyState(0x01) -band 0x8000) -ne 0
-
-    # ── Edge case: drop-outside auto-close ──────────────────────────────────────
-    # If the wiggle panel is showing and the user released the mouse button,
-    # that means they dropped the file somewhere. If they dropped outside our
-    # window, WPF's Drop event won't fire on us, so we need to close ourselves.
-    # We give a small 200ms grace period so an on-panel drop still processes.
-    if ($script:wiggleOpenedByWiggle -and -not $isLButtonDown) {
-        if (-not $script:wpfWindow.IsMouseOver) {
-            Hide-WigglePanel
-        }
-        $script:wiggleHistory = @()
-        return
-    }
-
-    if (-not $isLButtonDown) {
-        $script:wiggleHistory = @()
-        return
-    }
+    # We no longer poll GetAsyncKeyState because it fails during OLE drag-and-drop.
+    # Wiggling at any time (dragging or not) will open the panel.
+    # The panel closes naturally via Deactivated event if they click away or drop outside.
 
     # Don't trigger wiggle if our main menu is already fully open
     if ($script:wpfWindow.IsVisible -and -not $script:wiggleOpenedByWiggle) {
