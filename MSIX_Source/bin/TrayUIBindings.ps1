@@ -624,16 +624,6 @@ try {
     public class Win32Input {
         [DllImport("user32.dll")]
         public static extern short GetAsyncKeyState(int vKey);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetCursorPos(out POINT lpPoint);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct POINT {
-            public int X;
-            public int Y;
-        }
     }
 "@
 } catch {}
@@ -643,7 +633,7 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $script:wiggleHistory = @()
 $script:wiggleEnabled = $true
-$script:wiggleReversalsThreshold = 3
+$script:wiggleReversalsThreshold = 2
 $script:wiggleOpenedByWiggle = $false   # tracks if wiggleDragPanel is currently shown by us
 
 function Show-WigglePanel {
@@ -728,9 +718,8 @@ $script:wiggleTimer.Add_Tick({
         return
     }
 
-    $pt = New-Object Win32Input+POINT
-    [Win32Input]::GetCursorPos([ref]$pt) | Out-Null
-    $script:wiggleHistory += $pt.X
+    $pos = [System.Windows.Forms.Cursor]::Position
+    $script:wiggleHistory += $pos.X
     # Keep last 1s of samples (20 × 50ms)
     if ($script:wiggleHistory.Count -gt 20) {
         $script:wiggleHistory = $script:wiggleHistory[-20..-1]
@@ -757,7 +746,7 @@ $script:wiggleTimer.Add_Tick({
     }
 
     $totalDist = $maxX - $minX
-    if ($script:wiggleEnabled -and $reversals -ge $script:wiggleReversalsThreshold -and $totalDist -lt 400) {
+    if ($script:wiggleEnabled -and $reversals -ge $script:wiggleReversalsThreshold -and $totalDist -lt 1200) {
         $script:wiggleHistory = @()
         Show-WigglePanel
     }

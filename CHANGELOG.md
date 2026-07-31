@@ -2,7 +2,7 @@
 
 ## [3.2.1.0] - 2026-07-31
 ### Fixed
-- **Wiggle not triggering during drag:** Root cause was `System.Windows.Forms.Cursor.Position` getting frozen because OLE Drag-and-Drop operations (like dragging a file from Windows Explorer) hold system-wide mouse capture, suppressing WPF mouse updates. Fixed by replacing it with a direct native P/Invoke to `GetCursorPos` to poll raw physical mouse coordinates.
+- **Wiggle not triggering during drag:** The wiggle heuristics were too strict. The 400px distance constraint failed on high-res monitors or when users naturally dragged a file across the screen while wiggling. Increased distance tolerance to 1200px and lowered the reversals threshold from 3 to 2 for a more natural shake gesture.
 - **Wiggle not triggering (internal):** Root cause was `System.Windows.Forms` assembly not being loaded before the wiggle timer fired, causing `Cursor.Position` to silently throw on every tick. Fixed by loading the assembly eagerly before timer creation.
 - **Wiggle Panel animation and state leak:** Fixed DispatcherTimer scope issue where `$fadeStep` was incrementing a local copy, causing the animation to freeze. Also fixed state corruption where a deactivated window wouldn't reset the `wiggleOpenedByWiggle` flag, preventing subsequent wiggles.
 ### Changed
