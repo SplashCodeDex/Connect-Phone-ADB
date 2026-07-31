@@ -301,6 +301,7 @@ $mdnsTimer.Add_Tick({
                             Name      = $peer.Name
                             SubText   = $subText
                             IconGlyph = "$([char]0xE8EA)"
+                            IP        = $ip
                         }
                     }
                 }

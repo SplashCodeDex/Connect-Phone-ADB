@@ -603,4 +603,111 @@ $script:notifyIcon.Add_MouseUp({
     }
 })
 
+# --- Wiggle-to-Open Feature ---
+try {
+    Add-Type -TypeDefinition @"
+    using System;
+    using System.Runtime.InteropServices;
+    public class Win32Input {
+        [DllImport("user32.dll")]
+        public static extern short GetAsyncKeyState(int vKey);
+    }
+"@
+} catch {}
 
+$script:wiggleHistory = @()
+$script:wiggleTimer = New-Object System.Windows.Threading.DispatcherTimer
+$script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(50)
+
+$script:wiggleTimer.Add_Tick({
+    # 0x01 is VK_LBUTTON
+    $isLButtonDown = ([Win32Input]::GetAsyncKeyState(0x01) -band 0x8000) -ne 0
+    if (-not $isLButtonDown) {
+        $script:wiggleHistory = @()
+        return
+    }
+
+    $pos = [System.Windows.Forms.Cursor]::Position
+    $script:wiggleHistory += $pos.X
+    if ($script:wiggleHistory.Count -gt 20) {
+        # Keep last 1 second of history (20 * 50ms = 1000ms)
+        $script:wiggleHistory = $script:wiggleHistory[-20..-1]
+    }
+
+    # Wiggle detection logic: count direction reversals
+    if ($script:wiggleHistory.Count -ge 5) {
+        $reversals = 0
+        $lastDir = 0 # 1 for right, -1 for left
+        $minX = $script:wiggleHistory[0]
+        $maxX = $script:wiggleHistory[0]
+        
+        for ($i = 1; $i -lt $script:wiggleHistory.Count; $i++) {
+            $prev = $script:wiggleHistory[$i-1]
+            $curr = $script:wiggleHistory[$i]
+            if ($curr -lt $minX) { $minX = $curr }
+            if ($curr -gt $maxX) { $maxX = $curr }
+            
+            $diff = $curr - $prev
+            if ([Math]::Abs($diff) -gt 5) { # Minimum delta to be considered a movement
+                $dir = if ($diff -gt 0) { 1 } else { -1 }
+                if ($lastDir -ne 0 -and $dir -ne $lastDir) {
+                    $reversals++
+                }
+                $lastDir = $dir
+            }
+        }
+        
+        $totalDist = $maxX - $minX
+        # A wiggle is 3 or more reversals in a small localized area (e.g., < 400 pixels)
+        if ($reversals -ge 3 -and $totalDist -lt 400) {
+            # Wiggle detected! Reset history
+            $script:wiggleHistory = @()
+            
+            # Show the menu near the cursor
+            if (-not $script:wpfWindow.IsVisible) {
+                # Prepare animations if needed
+                $script:wpfWindow.FindName("winScale").ScaleX = 0.85
+                $script:wpfWindow.FindName("winScale").ScaleY = 0.85
+                $script:wpfWindow.FindName("winTrans").Y = 15
+                $script:wpfWindow.FindName("menuTrans").Y = 20
+                $script:wpfWindow.FindName("menuContentTrans").Y = 35
+                $script:wpfWindow.FindName("menuContentPanel").Opacity = 0
+                $script:wpfWindow.FindName("mainBorder").Opacity = 0
+
+                try {
+                    $sb = $script:wpfWindow.FindResource("PopIn")
+                    if ($sb) {
+                        $sb.Begin($script:wpfWindow, $true)
+                        $sb.Pause($script:wpfWindow)
+                    }
+                } catch {}
+
+                # Setup position (center window loosely around cursor)
+                $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
+                $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
+                
+                $targetLeft = $pos.X - ($winWidth / 2)
+                $targetTop = $pos.Y - ($winHeight / 2)
+                
+                # Keep within work area
+                $workArea = [System.Windows.SystemParameters]::WorkArea
+                if ($targetLeft -lt $workArea.Left) { $targetLeft = $workArea.Left }
+                if ($targetTop -lt $workArea.Top) { $targetTop = $workArea.Top }
+                if ($targetLeft + $winWidth -gt $workArea.Right) { $targetLeft = $workArea.Right - $winWidth }
+                if ($targetTop + $winHeight -gt $workArea.Bottom) { $targetTop = $workArea.Bottom - $winHeight }
+                
+                $script:wpfWindow.Left = $targetLeft
+                $script:wpfWindow.Top = $targetTop
+                $script:wpfWindow.Topmost = $true
+                
+                $script:wpfWindow.Show()
+                $script:wpfWindow.Activate()
+
+                try {
+                    if ($sb) { $sb.Resume($script:wpfWindow) }
+                } catch {}
+            }
+        }
+    }
+})
+$script:wiggleTimer.Start()

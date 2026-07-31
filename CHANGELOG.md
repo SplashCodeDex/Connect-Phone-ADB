@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.2.0.0] - 2026-07-31
+### Added
+- **Wiggle-to-Open Feature:** Users can now rapidly move their mouse back and forth ("wiggle") while holding a file (during a drag operation) to instantly summon the Connect-Phone-ADB drop menu at the cursor's location, allowing for a seamless drag-and-drop experience.
+
+
 ## [3.1.8.8] - 2026-07-31
 ### Changed
 - **[patch]** Optimized system theme listener: replaced the 2-second background `DispatcherTimer` polling loop with `UserPreferenceChanged` native event handler, eliminating idle timer overhead.

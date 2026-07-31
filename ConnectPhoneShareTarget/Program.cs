@@ -23,7 +23,7 @@ namespace ConnectPhoneShareTarget
             try 
             {
                 var program = new Program();
-                program.Run();
+                program.Run(args);
             }
             catch (Exception ex)
             {
@@ -31,12 +31,39 @@ namespace ConnectPhoneShareTarget
             }
         }
 
-        public void Run()
+        public void Run(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += (s, e) => File.WriteAllText(Path.Combine(Path.GetTempPath(), $"ConnectPhoneCrash_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), e.ExceptionObject.ToString());
             
             var activatedArgs = AppInstance.GetActivatedEventArgs();
             
+            // 1. Direct CLI invocation (e.g. from UI)
+            if (args != null && args.Length >= 3 && args[0].Equals("-IP", StringComparison.OrdinalIgnoreCase))
+            {
+                string targetIp = args[1];
+                var filePaths = new List<string>();
+                for (int i = 2; i < args.Length; i++)
+                {
+                    if (File.Exists(args[i])) filePaths.Add(args[i]);
+                }
+                
+                if (filePaths.Count > 0)
+                {
+                    Application app = new Application();
+                    app.Startup += async (s, e) =>
+                    {
+                        var window = new TransferWindow(filePaths);
+                        window.TargetIp = targetIp;
+                        window.Show();
+                        await window.StartTransferAsync();
+                        app.Shutdown();
+                    };
+                    app.Run();
+                    return;
+                }
+            }
+
+            // 2. Windows Share Target Invocation
             if (activatedArgs != null && activatedArgs.Kind == ActivationKind.ShareTarget)
             {
                 var shareArgs = (ShareTargetActivatedEventArgs)activatedArgs;

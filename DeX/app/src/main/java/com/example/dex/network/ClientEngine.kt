@@ -7,6 +7,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.cert.X509Certificate
@@ -59,7 +60,7 @@ class ClientEngine {
         }
     }
 
-    suspend fun uploadFile(ip: String, port: Int, sessionId: String, fileId: String, token: String, content: ByteArray): Boolean = withContext(Dispatchers.IO) {
+    suspend fun uploadFile(ip: String, port: Int, sessionId: String, fileId: String, token: String, stream: java.io.InputStream, fileSize: Long): Boolean = withContext(Dispatchers.IO) {
         try {
             val response = client.post("https://$ip:$port/api/localsend/v2/upload") {
                 url {
@@ -67,7 +68,22 @@ class ClientEngine {
                     parameters.append("fileId", fileId)
                     parameters.append("token", token)
                 }
-                setBody(content)
+                setBody(object : io.ktor.http.content.OutgoingContent.WriteChannelContent() {
+                    override val contentType = io.ktor.http.ContentType.Application.OctetStream
+                    override val contentLength = fileSize
+                    override suspend fun writeTo(channel: io.ktor.utils.io.ByteWriteChannel) {
+                        withContext(Dispatchers.IO) {
+                            val buffer = ByteArray(8192)
+                            var bytesRead = stream.read(buffer)
+                            while (bytesRead != -1) {
+                                channel.writeFully(buffer, 0, bytesRead)
+                                bytesRead = stream.read(buffer)
+                            }
+                            stream.close()
+                            channel.flush()
+                        }
+                    }
+                })
             }
             response.status.isSuccess()
         } catch (e: Exception) {

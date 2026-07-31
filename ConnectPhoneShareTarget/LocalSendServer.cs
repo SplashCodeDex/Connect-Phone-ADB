@@ -163,6 +163,16 @@ namespace ConnectPhoneShareTarget
 
             App.MapPost("/api/localsend/v2/prepare-upload", (PrepareUploadRequestDto req) =>
             {
+                var res = System.Windows.MessageBox.Show(
+                    $"Incoming transfer: {req.Files.Count} files. Accept?", 
+                    "ConnectPhone", 
+                    System.Windows.MessageBoxButton.YesNo,
+                    System.Windows.MessageBoxImage.Question, 
+                    System.Windows.MessageBoxResult.No,
+                    System.Windows.MessageBoxOptions.DefaultDesktopOnly);
+                    
+                if (res != System.Windows.MessageBoxResult.Yes) return Results.StatusCode(403);
+                
                 var sessionId = Guid.NewGuid().ToString();
                 activeSessions[sessionId] = req;
                 var resFiles = new Dictionary<string, string>();

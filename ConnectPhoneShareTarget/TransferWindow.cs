@@ -15,9 +15,10 @@ using System.Windows.Shell;
 
 namespace ConnectPhoneShareTarget
 {
-    class TransferWindow : Window
+    public partial class TransferWindow : Window
     {
         private List<string> files;
+        public string TargetIp { get; set; }
         private TextBlock txtStatus;
         private Border progressIndicator;
         private TextBlock txtSpeed;
@@ -80,6 +81,13 @@ namespace ConnectPhoneShareTarget
         {
             try
             {
+                if (!string.IsNullOrEmpty(TargetIp))
+                {
+                    var directDevice = new DiscoveredDevice { Ip = TargetIp, Info = new RegisterDto { Port = 53317 } };
+                    await PerformLocalSendTransferAsync(directDevice);
+                    return;
+                }
+
                 // Try LocalSend Wi-Fi discovery first!
                 var wifiDevice = await GetLocalSendDeviceAsync();
                 if (wifiDevice != null)

@@ -715,8 +715,8 @@
                                 </Ellipse.Fill>
                             </Ellipse>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Joe Belfiore" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                <TextBlock Text="joe.belfiore@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBlock Text="DeXStudios" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="dexify@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                                 <TextBlock Text="Premium User" FontSize="12" Foreground="{DynamicResource SecondaryBrush}" FontWeight="SemiBold" Margin="0,4,0,0" />
                             </StackPanel>
                         </Grid>
@@ -944,8 +944,8 @@
                         </Grid>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Joe Belfiore" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="joe.belfiore@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            <TextBlock Text="DeXStudios" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="dexify@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                         
                         <!-- TODO: Detect device type to choose between phone (xE8EA) and laptop (xE7F8) icons for WAN profiles -->
@@ -1092,7 +1092,7 @@
                     <ItemsControl x:Name="icLivePeers">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                                <Button Style="{StaticResource SpatialListItem}" Margin="0,2,0,2" Tag="{Binding [IP]}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -1137,8 +1137,8 @@
                             </Ellipse.Fill>
                         </Ellipse>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Joe Belfiore" FontSize="16" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="joe.belfiore@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            <TextBlock Text="DeXStudios" FontSize="16" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="dexstudios@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                     </Grid>
                     <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="0,4,0,8" />

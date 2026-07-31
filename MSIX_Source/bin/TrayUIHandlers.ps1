@@ -80,6 +80,43 @@ $script:wpfWindow.FindName("btnQAConnect").Add_Click({
     }
 })
 
+$script:wpfWindow.Add_PreviewMouseLeftButtonUp({
+    param($sender, $e)
+    $element = $e.OriginalSource
+    while ($element -and $element -isnot [System.Windows.Controls.Button]) {
+        $element = [System.Windows.Media.VisualTreeHelper]::GetParent($element)
+    }
+    
+    if ($element -and $element -is [System.Windows.Controls.Button]) {
+        # Check if the Button has an IP Tag (Omni-Mesh device)
+        if ($element.Tag -and $element.Tag -match '^\d+\.\d+\.\d+\.\d+') {
+            $ip = $element.Tag -replace ':.*', ''
+            
+            Add-Type -AssemblyName System.Windows.Forms
+            $dialog = New-Object System.Windows.Forms.OpenFileDialog
+            $dialog.Multiselect = $true
+            $dialog.Title = "Select files to send to $ip"
+            
+            if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+                $files = $dialog.FileNames | ForEach-Object { "`"$_`"" }
+                $filesStr = $files -join ' '
+                
+                $exePath = Join-Path $PSScriptRoot "..\..\ConnectPhoneShareTarget\bin\Release\net10.0-windows10.0.22000.0\ConnectPhoneShareTarget.exe"
+                if (-not (Test-Path $exePath)) {
+                    $exePath = Join-Path $PSScriptRoot "..\..\ConnectPhoneShareTarget\ConnectPhoneShareTarget.exe"
+                }
+                if (-not (Test-Path $exePath)) {
+                    $exePath = "ConnectPhoneShareTarget.exe"
+                }
+                
+                Start-Process -FilePath $exePath -ArgumentList "-IP `"$ip`" $filesStr" -WindowStyle Hidden
+            }
+            
+            $e.Handled = $true
+        }
+    }
+})
+
 $actionMirror = {
         $target = Get-ConnectedDeviceTarget
     

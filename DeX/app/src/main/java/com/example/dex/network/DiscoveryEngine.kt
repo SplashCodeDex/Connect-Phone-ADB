@@ -12,6 +12,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import org.json.JSONObject
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.InetSocketAddress
+import kotlinx.coroutines.isActive
 
 data class DiscoveredDevice(
     val ip: String,
@@ -22,6 +27,8 @@ data class DiscoveredDevice(
 class DiscoveryEngine {
     private val scope = CoroutineScope(Dispatchers.IO)
     private var cleanupJob: Job? = null
+    private var udpJob: Job? = null
+    private var udpSocket: DatagramSocket? = null
     
     private val _devices = MutableStateFlow<Map<String, DiscoveredDevice>>(emptyMap())
     val devices: StateFlow<Map<String, DiscoveredDevice>> = _devices.asStateFlow()
@@ -102,12 +109,41 @@ class DiscoveryEngine {
 
         // Cleanup stale devices
         cleanupJob = scope.launch {
-            while (true) {
+            while (isActive) {
                 delay(10000)
                 val now = System.currentTimeMillis()
                 _devices.update { map ->
                     map.filterValues { now - it.lastSeenTimestamp < 20000 }
                 }
+            }
+        }
+        
+        // Omni-Mesh Hotspot Piercer UDP Listener
+        udpJob = scope.launch {
+            try {
+                udpSocket = DatagramSocket(null).apply {
+                    reuseAddress = true
+                    bind(InetSocketAddress(53317))
+                }
+                val buffer = ByteArray(1024)
+                while (isActive) {
+                    val packet = DatagramPacket(buffer, buffer.size)
+                    udpSocket?.receive(packet)
+                    val msg = String(packet.data, 0, packet.length)
+                    
+                    try {
+                        val json = JSONObject(msg)
+                        if (json.optString("type") == "pc") {
+                            val deviceName = android.os.Build.MODEL ?: "Android Device"
+                            val replyMsg = """{ "id": "$deviceName", "type": "phone" }"""
+                            val replyData = replyMsg.toByteArray(Charsets.UTF_8)
+                            val replyPacket = DatagramPacket(replyData, replyData.size, packet.address, 53317)
+                            udpSocket?.send(replyPacket)
+                        }
+                    } catch (e: Exception) {}
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -157,5 +193,7 @@ class DiscoveryEngine {
             e.printStackTrace()
         }
         cleanupJob?.cancel()
+        udpJob?.cancel()
+        udpSocket?.close()
     }
 }
