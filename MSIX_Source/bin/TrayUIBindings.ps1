@@ -648,8 +648,9 @@ try {
 Add-Type -AssemblyName System.Windows.Forms
 
 $script:wiggleHistory = @()
+$script:wiggleReversals = 0
 $script:wiggleEnabled = $true
-$script:wiggleReversalsThreshold = 2
+$script:wiggleReversalsThreshold = 3
 $script:wiggleOpenedByWiggle = $false   # tracks if wiggleDragPanel is currently shown by us
 
 function Show-WigglePanel {
@@ -660,11 +661,21 @@ function Show-WigglePanel {
     # from $script:currentTarget. If no device is connected, hide the active section and show
     # only the previously-connected list sourced from the persisted device history store. ──
 
-    # Position: default tray position (bottom-right of work area)
-    Set-MainWindowPosition
+    # Position: appear near the cursor so the drop is immediate!
+    [Win32Input+POINT]$pt = New-Object Win32Input+POINT
+    if ([Win32Input]::GetCursorPos([ref]$pt)) {
+        # Panel is at bottom-right of 1420x760 window (about 280x250 in size).
+        # We align the window so the panel's top-left is roughly at the cursor.
+        # So we shift left by ~1140 and up by ~510.
+        $script:wpfWindow.Left = $pt.X - 1140 + 20
+        $script:wpfWindow.Top = $pt.Y - 510 + 20
+    } else {
+        Set-MainWindowPosition
+    }
     $script:wpfWindow.Topmost = $true
 
     # Animate in: same PopIn feel
+    $script:wpfWindow.FindName("mainBorder").Visibility = 'Collapsed'
     $panel.Visibility = 'Visible'
     $panel.Opacity = 0
     $script:wpfWindow.FindName("wiggleScale").ScaleX = 0.88
@@ -699,36 +710,37 @@ function Hide-WigglePanel {
     $panel.Opacity = 0
     $script:wpfWindow.Hide()
     $script:wiggleOpenedByWiggle = $false
+    Reset-SpatialPanels
 }
 
 $script:wiggleTimer = New-Object System.Windows.Threading.DispatcherTimer
 $script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(50)
 
 $script:wiggleTimer.Add_Tick({
-    # 0x01 = VK_LBUTTON
+    # 0x01 = VK_LBUTTON, 0x02 = VK_RBUTTON
     $isLButtonDown = ([Win32Input]::GetAsyncKeyState(0x01) -band 0x8000) -ne 0
+    $isRButtonDown = ([Win32Input]::GetAsyncKeyState(0x02) -band 0x8000) -ne 0
 
     # ── Edge case: drop-outside auto-close ──────────────────────────────────────
-    # If the wiggle panel is showing and the user released the mouse button,
-    # that means they dropped the file somewhere. If they dropped outside our
-    # window, WPF's Drop event won't fire on us, so we need to close ourselves.
-    # We give a small 200ms grace period so an on-panel drop still processes.
-    if ($script:wiggleOpenedByWiggle -and -not $isLButtonDown) {
+    if ($script:wiggleOpenedByWiggle -and -not $isLButtonDown -and -not $isRButtonDown) {
         if (-not $script:wpfWindow.IsMouseOver) {
             Hide-WigglePanel
         }
         $script:wiggleHistory = @()
+        $script:wiggleReversals = 0
         return
     }
 
-    if (-not $isLButtonDown) {
+    if (-not $isLButtonDown -and -not $isRButtonDown) {
         $script:wiggleHistory = @()
+        $script:wiggleReversals = 0
         return
     }
 
     # Don't trigger wiggle if our main menu is already fully open
     if ($script:wpfWindow.IsVisible -and -not $script:wiggleOpenedByWiggle) {
         $script:wiggleHistory = @()
+        $script:wiggleReversals = 0
         return
     }
 

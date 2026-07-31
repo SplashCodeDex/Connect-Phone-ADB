@@ -10,6 +10,7 @@ function Reset-SpatialPanels {
 
     $script:wpfWindow.FindName("mainBorder").Width = [double]::NaN
     $script:wpfWindow.FindName("mainBorder").Height = [double]::NaN
+    $script:wpfWindow.FindName("mainBorder").Visibility = 'Visible'
     $script:wpfWindow.FindName("FileExplorer").Visibility = 'Collapsed'
     $script:wpfWindow.FindName("FileExplorer").Opacity = 0
     $script:wpfWindow.FindName("fileTrans").X = 150

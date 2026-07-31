@@ -14,8 +14,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.json.JSONObject
 import java.net.DatagramPacket
-import java.net.DatagramSocket
 import java.net.InetSocketAddress
+import java.net.MulticastSocket
+import java.net.InetAddress
+import android.net.wifi.WifiManager
 import kotlinx.coroutines.isActive
 
 data class DiscoveredDevice(
@@ -28,7 +30,8 @@ class DiscoveryEngine {
     private val scope = CoroutineScope(Dispatchers.IO)
     private var cleanupJob: Job? = null
     private var udpJob: Job? = null
-    private var udpSocket: DatagramSocket? = null
+    private var udpSocket: MulticastSocket? = null
+    private var multicastLock: WifiManager.MulticastLock? = null
     
     private val _devices = MutableStateFlow<Map<String, DiscoveredDevice>>(emptyMap())
     val devices: StateFlow<Map<String, DiscoveredDevice>> = _devices.asStateFlow()
@@ -121,9 +124,14 @@ class DiscoveryEngine {
         // Omni-Mesh Hotspot Piercer UDP Listener
         udpJob = scope.launch {
             try {
-                udpSocket = DatagramSocket(null).apply {
+                val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+                multicastLock = wifiManager.createMulticastLock("dex_multicast_lock")
+                multicastLock?.setReferenceCounted(true)
+                multicastLock?.acquire()
+
+                udpSocket = MulticastSocket(53317).apply {
                     reuseAddress = true
-                    bind(InetSocketAddress(53317))
+                    joinGroup(InetAddress.getByName("224.0.0.167"))
                 }
                 val buffer = ByteArray(1024)
                 while (isActive) {
@@ -133,11 +141,46 @@ class DiscoveryEngine {
                     
                     try {
                         val json = JSONObject(msg)
-                        if (json.optString("type") == "pc") {
+                        val fp = json.optString("fingerprint", "")
+                        val alias = json.optString("alias", "Unknown")
+                        val port = json.optInt("port", 53317)
+                        val protocol = json.optString("protocol", "https")
+                        val type = json.optString("type", "")
+
+                        if (fp.isNotEmpty() && fp != localSendInfo.fingerprint) {
+                            val ip = packet.address.hostAddress ?: ""
+                            val dto = RegisterDto(
+                                alias = alias,
+                                version = json.optString("version", "2.0"),
+                                deviceModel = json.optString("deviceModel", "Unknown"),
+                                deviceType = json.optString("deviceType", "unknown"),
+                                fingerprint = fp,
+                                port = port,
+                                protocol = protocol,
+                                download = json.optBoolean("download", true)
+                            )
+                            _devices.update { map ->
+                                val newMap = map.toMutableMap()
+                                newMap[fp] = DiscoveredDevice(ip, dto, System.currentTimeMillis())
+                                newMap
+                            }
+                        }
+
+                        if (type == "pc" || json.optString("deviceType") == "desktop") {
                             val deviceName = android.os.Build.MODEL ?: "Android Device"
-                            val replyMsg = """{ "id": "$deviceName", "type": "phone" }"""
+                            val replyJson = JSONObject().apply {
+                                put("alias", localSendInfo.alias)
+                                put("version", localSendInfo.version)
+                                put("deviceModel", localSendInfo.deviceModel)
+                                put("deviceType", localSendInfo.deviceType)
+                                put("fingerprint", localSendInfo.fingerprint)
+                                put("port", localSendInfo.port)
+                                put("protocol", localSendInfo.protocol)
+                                put("download", localSendInfo.download)
+                            }
+                            val replyMsg = replyJson.toString()
                             val replyData = replyMsg.toByteArray(Charsets.UTF_8)
-                            val replyPacket = DatagramPacket(replyData, replyData.size, packet.address, 53317)
+                            val replyPacket = DatagramPacket(replyData, replyData.size, InetAddress.getByName("224.0.0.167"), 53317)
                             udpSocket?.send(replyPacket)
                         }
                     } catch (e: Exception) {}
@@ -187,13 +230,24 @@ class DiscoveryEngine {
 
     fun stopDiscovery() {
         try {
-            registrationListener?.let { nsdManager?.unregisterService(it) }
-            discoveryListener?.let { nsdManager?.stopServiceDiscovery(it) }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+            if (registrationListener != null) {
+                nsdManager?.unregisterService(registrationListener)
+                registrationListener = null
+            }
+        } catch (e: Exception) { e.printStackTrace() }
+
+        try {
+            if (discoveryListener != null) {
+                nsdManager?.stopServiceDiscovery(discoveryListener)
+                discoveryListener = null
+            }
+        } catch (e: Exception) { e.printStackTrace() }
+
         cleanupJob?.cancel()
         udpJob?.cancel()
+        try {
+            multicastLock?.release()
+        } catch (e: Exception) { e.printStackTrace() }
         udpSocket?.close()
     }
 }

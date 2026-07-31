@@ -527,6 +527,7 @@
             </Setter>
         </Style>
     </Window.Resources>
+    <Grid>
     <Border x:Name="mainBorder" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="34" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Background="{DynamicResource PrimaryBrush}" RenderTransformOrigin="0.5,1">
         <Border.RenderTransform>
             <TransformGroup>
@@ -1146,6 +1147,8 @@
                 </DockPanel>
         </Border>
         </Border>
+        </Grid>
+    </Border>
 
         <!-- ══════════════════════════════════════════════════════════════════════
              WIGGLE DRAG-DROP PANEL
@@ -1300,5 +1303,4 @@
             </Border>
         </Popup>
     </Grid>
-    </Border>
 </Window>

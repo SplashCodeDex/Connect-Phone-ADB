@@ -111,6 +111,61 @@ namespace ConnectPhoneShareTarget
 
             mdns.Start();
             
+            var multicastAddress = IPAddress.Parse("224.0.0.167");
+            var endPoint = new IPEndPoint(IPAddress.Any, 53317);
+            using var udp = new UdpClient();
+            udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            udp.Client.Bind(endPoint);
+            udp.JoinMulticastGroup(multicastAddress);
+
+            var myJson = JsonSerializer.Serialize(myInfo);
+            var myBytes = Encoding.UTF8.GetBytes(myJson);
+
+            _ = Task.Run(async () =>
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var result = await udp.ReceiveAsync(stoppingToken);
+                        var msg = Encoding.UTF8.GetString(result.Buffer);
+                        var doc = JsonDocument.Parse(msg);
+                        var root = doc.RootElement;
+                        var fp = root.TryGetProperty("fingerprint", out var f) ? f.GetString() : "";
+                        if (!string.IsNullOrEmpty(fp) && fp != myInfo.Fingerprint)
+                        {
+                            var dto = new RegisterDto
+                            {
+                                Fingerprint = fp,
+                                Alias = root.TryGetProperty("alias", out var a) ? a.GetString() : "Unknown",
+                                Port = root.TryGetProperty("port", out var p) ? p.GetInt32() : 53317,
+                                DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? dm.GetString() : "Unknown",
+                                DeviceType = root.TryGetProperty("deviceType", out var dt) ? dt.GetString() : "unknown"
+                            };
+                            Devices[fp] = new DiscoveredDevice
+                            {
+                                Ip = result.RemoteEndPoint.Address.ToString(),
+                                Info = dto,
+                                LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                            };
+                        }
+                    } catch { }
+                }
+            }, stoppingToken);
+
+            _ = Task.Run(async () =>
+            {
+                var targetEp = new IPEndPoint(multicastAddress, 53317);
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        await udp.SendAsync(myBytes, myBytes.Length, targetEp);
+                    } catch { }
+                    await Task.Delay(2000, stoppingToken);
+                }
+            }, stoppingToken);
+            
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(2000, stoppingToken);
