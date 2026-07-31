@@ -104,28 +104,20 @@ function Start-MdnsDiscovery {
                     $bytes = $udpClient.Receive([ref]$remoteEp)
                     $msg = [System.Text.Encoding]::UTF8.GetString($bytes)
                     
-                    if ($msg -match '"type"\s*:\s*"(pc|phone)"') {
+                    if ($msg -match '"(?:deviceType|type)"\s*:\s*"(pc|phone|mobile|desktop)"') {
                         $devType = $matches[1]
                         $devId = "Unknown"
-                        if ($msg -match '"id"\s*:\s*"([^"]+)"') { $devId = $matches[1] }
+                        if ($msg -match '"(?:alias|id)"\s*:\s*"([^"]+)"') { $devId = $matches[1] }
                         
-                        # Best-effort: fetch model + battery from ADB (non-blocking, fire-and-forget)
                         $ip = $remoteEp.Address.ToString()
-                        $model = $null
-                        $battery = $null
-                        try {
-                            $model   = (& $adbPath -s "${ip}:5555" shell getprop ro.product.model 2>$null) | Select-Object -First 1
-                            $batLine = (& $adbPath -s "${ip}:5555" shell dumpsys battery 2>$null) | Where-Object { $_ -match '^\s*level:' } | Select-Object -First 1
-                            if ($batLine -match '(\d+)') { $battery = $matches[1] }
-                        } catch {}
                         
                         [void]$queue.Enqueue(@{
                             Type       = 'OmniMesh'
                             IPPort     = "${ip}:53317"
                             DeviceType = $devType
                             Name       = $devId
-                            Model      = if ($model) { $model.Trim() } else { $null }
-                            Battery    = $battery
+                            Model      = $null
+                            Battery    = $null
                         })
                     }
                 }

@@ -459,10 +459,26 @@ $script:lastDeactivated = [DateTime]::MinValue
 
 $script:wpfWindow.Add_MouseLeftButtonDown({
     if ($_.ButtonState -eq [System.Windows.Input.MouseButtonState]::Pressed) {
-        $this.DragMove()
+        $script:isDragging = $true
+        $script:dragStartCursor = [System.Windows.Forms.Cursor]::Position
+        $script:dragStartLeft = $script:wpfWindow.Left
+        $script:dragStartTop = $script:wpfWindow.Top
+        $script:wpfWindow.CaptureMouse() | Out-Null
     }
 })
-
+$script:wpfWindow.Add_MouseMove({
+    if ($script:isDragging) {
+        $pos = [System.Windows.Forms.Cursor]::Position
+        $script:wpfWindow.Left = $script:dragStartLeft + ($pos.X - $script:dragStartCursor.X)
+        $script:wpfWindow.Top = $script:dragStartTop + ($pos.Y - $script:dragStartCursor.Y)
+    }
+})
+$script:wpfWindow.Add_MouseLeftButtonUp({
+    if ($script:isDragging) {
+        $script:isDragging = $false
+        $script:wpfWindow.ReleaseMouseCapture()
+    }
+})
 
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({

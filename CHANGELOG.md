@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.6.2.1] - 2026-07-31
+### Fixed
+- **[patch]** Replaced native WPF `DragMove()` with absolute `Left`/`Top` cursor delta tracking to bypass OS top-edge snapping bounds, allowing the invisible 1420x760 canvas to drag freely off-screen so the visual menu can reach the very top of the monitor.
+
 ## [3.6.2.0] - 2026-07-31
 ### Added
 - **[patch]** Added `DragMove()` via `MouseLeftButtonDown` event to the WPF window to allow users to easily drag the spatial menu panel around natively without any external dependencies or bloated layout logic.
