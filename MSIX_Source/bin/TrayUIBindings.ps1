@@ -546,6 +546,7 @@ $script:wpfWindow.Add_Deactivated({
     Write-Trace "Deactivated fired! IsVisible: $($script:wpfWindow.IsVisible)"
     if ($script:wpfWindow.IsVisible) {
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
+        if ($script:wpfWindow.Topmost) { return }
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
         if ($script:wpfWindow.FindName("SettingsPanel").Visibility -eq 'Visible') { return }
         $now = [DateTime]::Now

@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.6.13.0] - 2026-07-31
+### Fixed
+- **[patch]** The "Pin to Top" button now properly prevents the tray menu from auto-hiding when clicking outside the window, ensuring the menu remains securely anchored to its physical screen location.
+
 ## [3.6.11.0] - 2026-07-31
 ### Changed
 - **[patch]** The spatial menu drag handle now strictly ties its active color state to physical mouse interaction. It will only illuminate with the secondary theme color while actively clicked and held, smoothly fading back to its subtle state the moment the mouse is released.
