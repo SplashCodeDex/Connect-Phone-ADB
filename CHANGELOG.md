@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.6.3.0] - 2026-07-31
+### Added
+- **[patch]** Added a pill-shaped drag handle indicator above the quick action buttons to visually communicate that the spatial menu can be dragged.
+
 ## [3.6.2.0] - 2026-07-31
 ### Added
 - **[patch]** Added `DragMove()` via `MouseLeftButtonDown` event to the WPF window to allow users to easily drag the spatial menu panel around natively without any external dependencies or bloated layout logic.
