@@ -902,7 +902,14 @@
                         <TranslateTransform x:Name="menuContentTrans" Y="0" />
                     </DockPanel.RenderTransform>
                     <StackPanel x:Name="TopActionsPanel" DockPanel.Dock="Top">
-                        <Border Width="66" Height="4" CornerRadius="2" Background="{DynamicResource SecondaryTextBrush}" Opacity="0.4" HorizontalAlignment="Center" Margin="0,0,0,14" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14">
+                            <ToggleButton x:Name="btnToggleTopmost" Width="16" Height="16" Background="Transparent" BorderThickness="0" Margin="0,0,8,0" Visibility="Collapsed" ToolTip="Always on Top">
+                                <TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </ToggleButton>
+                            <Border x:Name="dragPill" Width="66" Height="16" Cursor="Hand" Background="Transparent" ToolTip="Drag to move. Double-click to reset.">
+                                <Border x:Name="dragPillInner" Height="4" Background="{DynamicResource SecondaryTextBrush}" Opacity="0.4" CornerRadius="2" VerticalAlignment="Center" />
+                            </Border>
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
                     <ToggleButton Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />

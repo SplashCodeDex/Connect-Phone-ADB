@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.6.8.0] - 2026-07-31
+### Changed
+- **[patch]** The spatial menu drag handle now dynamically changes its color to the theme's secondary accent brush when active.
+- **[patch]** Reduced the slide-out pin toggle size to fit cleanly within the 16px hit area, preventing layout shifting/stretching when revealed.
+
+## [3.6.7.0] - 2026-07-31
+### Added
+- **[patch]** The spatial menu drag handle is now fully interactive. Double-clicking it snaps the menu back to the center of the primary screen. Single-clicking it reveals a sliding "Pin to Top" toggle that automatically fades out after 3 seconds to keep the UI clean.
+
 ## [3.6.3.0] - 2026-07-31
 ### Added
 - **[patch]** Added a pill-shaped drag handle indicator above the quick action buttons to visually communicate that the spatial menu can be dragged.

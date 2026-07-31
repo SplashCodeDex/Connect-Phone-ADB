@@ -463,6 +463,56 @@ $script:wpfWindow.Add_MouseLeftButtonDown({
     }
 })
 
+$script:dragPill = $script:wpfWindow.FindName("dragPill")
+$script:btnToggleTopmost = $script:wpfWindow.FindName("btnToggleTopmost")
+$script:dragPillInner = $script:wpfWindow.FindName("dragPillInner")
+
+if ($script:dragPill) {
+    $script:dragPill.Add_MouseLeftButtonDown({
+        if ($_.ClickCount -eq 2) {
+            $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
+            $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
+            $workArea = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
+            $script:wpfWindow.Left = $workArea.Left + ($workArea.Width / 2) - ($winWidth / 2)
+            $script:wpfWindow.Top = $workArea.Top + ($workArea.Height / 2) - ($winHeight / 2)
+            $_.Handled = $true
+        } else {
+            $script:btnToggleTopmost.Visibility = 'Visible'
+            if ($script:dragPillInner) {
+                $script:dragPillInner.SetResourceReference([System.Windows.Controls.Border]::BackgroundProperty, "SecondaryBrush")
+                $script:dragPillInner.Opacity = 1
+            }
+            if ($null -eq $script:pinTimer) {
+                $script:pinTimer = New-Object System.Windows.Threading.DispatcherTimer
+                $script:pinTimer.Interval = [TimeSpan]::FromSeconds(3)
+                $script:pinTimer.Add_Tick({
+                    $script:btnToggleTopmost.Visibility = 'Collapsed'
+                    if ($script:dragPillInner) {
+                        $script:dragPillInner.SetResourceReference([System.Windows.Controls.Border]::BackgroundProperty, "SecondaryTextBrush")
+                        $script:dragPillInner.Opacity = 0.4
+                    }
+                    $script:pinTimer.Stop()
+                })
+            }
+            $script:pinTimer.Stop()
+            $script:pinTimer.Start()
+        }
+    })
+}
+
+if ($script:btnToggleTopmost) {
+    $script:btnToggleTopmost.Add_Click({
+        $script:wpfWindow.Topmost = -not $script:wpfWindow.Topmost
+        if ($script:wpfWindow.Topmost) {
+            $this.Foreground = $script:wpfWindow.FindResource("PrimaryBrush")
+            $this.ToolTip = "Unpin"
+        } else {
+            $this.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
+            $this.ToolTip = "Always on Top"
+        }
+    })
+}
+
 
 # Click-outside closes menu ONLY when contracted (not expanded)
 $script:wpfWindow.Add_Deactivated({

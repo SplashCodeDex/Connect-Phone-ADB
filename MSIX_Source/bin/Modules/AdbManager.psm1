@@ -108,6 +108,8 @@ function Start-MdnsDiscovery {
                         $devType = $matches[1]
                         $devId = "Unknown"
                         if ($msg -match '"(?:alias|id)"\s*:\s*"([^"]+)"') { $devId = $matches[1] }
+                        $devModel = $null
+                        if ($msg -match '"deviceModel"\s*:\s*"([^"]+)"') { $devModel = $matches[1] }
                         
                         $ip = $remoteEp.Address.ToString()
                         
@@ -116,7 +118,7 @@ function Start-MdnsDiscovery {
                             IPPort     = "${ip}:53317"
                             DeviceType = $devType
                             Name       = $devId
-                            Model      = $null
+                            Model      = $devModel
                             Battery    = $null
                         })
                     }
