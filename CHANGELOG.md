@@ -1,6 +1,12 @@
 # Changelog
 
-## [3.2.0.0] - 2026-07-31
+## [3.2.1.0] - 2026-07-31
+### Fixed
+- **Wiggle not triggering:** Root cause was `System.Windows.Forms` assembly not being loaded before the wiggle timer fired, causing `Cursor.Position` to silently throw on every tick. Fixed by loading the assembly eagerly before timer creation.
+### Changed
+- **Wiggle opens dedicated device picker:** The wiggle gesture now shows `wiggleDragPanel` — a compact, focused panel (same `CornerRadius="34"` style) listing only ADB devices. Active connected device appears first (green dot), previously connected devices below (gray dot). Clear `TODO` comments mark exactly where real device discovery data should be wired in.
+- **Drop-outside auto-close:** When the wiggle panel is visible and the left mouse button is released outside the window (file dropped elsewhere), the panel automatically hides itself via `IsMouseOver` check in the wiggle timer.
+
 ### Added
 - **Wiggle-to-Open Feature:** Users can now rapidly move their mouse back and forth ("wiggle") while holding a file (during a drag operation) to instantly summon the Connect-Phone-ADB drop menu at its default tray position. This feature can be toggled via the new Interaction section in the Settings panel.
 

@@ -627,98 +627,127 @@ try {
 "@
 } catch {}
 
+# System.Windows.Forms must be loaded before the timer ticks so Cursor.Position doesn't throw.
+Add-Type -AssemblyName System.Windows.Forms
+
 $script:wiggleHistory = @()
 $script:wiggleEnabled = $true
 $script:wiggleReversalsThreshold = 3
+$script:wiggleOpenedByWiggle = $false   # tracks if wiggleDragPanel is currently shown by us
+
+function Show-WigglePanel {
+    $panel = $script:wpfWindow.FindName("wiggleDragPanel")
+    if ($null -eq $panel -or $panel.Visibility -eq 'Visible') { return }
+
+    # ── TODO (device discovery wired up): populate txtWiggleActiveDeviceName / txtWiggleActiveDeviceIP
+    # from $script:currentTarget. If no device is connected, hide the active section and show
+    # only the previously-connected list sourced from the persisted device history store. ──
+
+    # Position: default tray position (bottom-right of work area)
+    $workArea = [System.Windows.SystemParameters]::WorkArea
+    $script:wpfWindow.Left = $workArea.Right - 340
+    $script:wpfWindow.Top  = $workArea.Bottom - 400
+    $script:wpfWindow.Topmost = $true
+
+    # Animate in: same PopIn feel
+    $panel.Visibility = 'Visible'
+    $panel.Opacity = 0
+    $script:wpfWindow.FindName("wiggleScale").ScaleX = 0.88
+    $script:wpfWindow.FindName("wiggleScale").ScaleY = 0.88
+    $script:wpfWindow.FindName("wiggleTrans").Y = 14
+
+    $script:wpfWindow.Show()
+    $script:wpfWindow.Activate()
+    $script:wiggleOpenedByWiggle = $true
+
+    # Fade + scale in via DispatcherTimer (no storyboard dependency needed)
+    $fadeStep = 0
+    $fadeTimer = New-Object System.Windows.Threading.DispatcherTimer
+    $fadeTimer.Interval = [TimeSpan]::FromMilliseconds(16)
+    $fadeTimer.Add_Tick({
+        $fadeStep++
+        $t = [Math]::Min(1.0, $fadeStep / 12.0)
+        $ease = 1 - [Math]::Pow(1 - $t, 3)
+        $panel.Opacity = $ease
+        $script:wpfWindow.FindName("wiggleScale").ScaleX = 0.88 + (0.12 * $ease)
+        $script:wpfWindow.FindName("wiggleScale").ScaleY = 0.88 + (0.12 * $ease)
+        $script:wpfWindow.FindName("wiggleTrans").Y = 14 * (1 - $ease)
+        if ($fadeStep -ge 12) { $fadeTimer.Stop() }
+    })
+    $fadeTimer.Start()
+}
+
+function Hide-WigglePanel {
+    $panel = $script:wpfWindow.FindName("wiggleDragPanel")
+    if ($null -eq $panel) { return }
+    $panel.Visibility = 'Collapsed'
+    $panel.Opacity = 0
+    $script:wpfWindow.Hide()
+    $script:wiggleOpenedByWiggle = $false
+}
+
 $script:wiggleTimer = New-Object System.Windows.Threading.DispatcherTimer
 $script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(50)
 
 $script:wiggleTimer.Add_Tick({
-    # 0x01 is VK_LBUTTON
+    # 0x01 = VK_LBUTTON
     $isLButtonDown = ([Win32Input]::GetAsyncKeyState(0x01) -band 0x8000) -ne 0
+
+    # ── Edge case: drop-outside auto-close ──────────────────────────────────────
+    # If the wiggle panel is showing and the user released the mouse button,
+    # that means they dropped the file somewhere. If they dropped outside our
+    # window, WPF's Drop event won't fire on us, so we need to close ourselves.
+    # We give a small 200ms grace period so an on-panel drop still processes.
+    if ($script:wiggleOpenedByWiggle -and -not $isLButtonDown) {
+        if (-not $script:wpfWindow.IsMouseOver) {
+            Hide-WigglePanel
+        }
+        $script:wiggleHistory = @()
+        return
+    }
+
     if (-not $isLButtonDown) {
+        $script:wiggleHistory = @()
+        return
+    }
+
+    # Don't trigger wiggle if our main menu is already fully open
+    if ($script:wpfWindow.IsVisible -and -not $script:wiggleOpenedByWiggle) {
         $script:wiggleHistory = @()
         return
     }
 
     $pos = [System.Windows.Forms.Cursor]::Position
     $script:wiggleHistory += $pos.X
+    # Keep last 1s of samples (20 × 50ms)
     if ($script:wiggleHistory.Count -gt 20) {
-        # Keep last 1 second of history (20 * 50ms = 1000ms)
         $script:wiggleHistory = $script:wiggleHistory[-20..-1]
     }
 
-    # Wiggle detection logic: count direction reversals
-    if ($script:wiggleHistory.Count -ge 5) {
-        $reversals = 0
-        $lastDir = 0 # 1 for right, -1 for left
-        $minX = $script:wiggleHistory[0]
-        $maxX = $script:wiggleHistory[0]
-        
-        for ($i = 1; $i -lt $script:wiggleHistory.Count; $i++) {
-            $prev = $script:wiggleHistory[$i-1]
-            $curr = $script:wiggleHistory[$i]
-            if ($curr -lt $minX) { $minX = $curr }
-            if ($curr -gt $maxX) { $maxX = $curr }
-            
-            $diff = $curr - $prev
-            if ([Math]::Abs($diff) -gt 5) { # Minimum delta to be considered a movement
-                $dir = if ($diff -gt 0) { 1 } else { -1 }
-                if ($lastDir -ne 0 -and $dir -ne $lastDir) {
-                    $reversals++
-                }
-                $lastDir = $dir
-            }
+    if ($script:wiggleHistory.Count -lt 5) { return }
+
+    $reversals = 0
+    $lastDir = 0
+    $minX = $script:wiggleHistory[0]
+    $maxX = $script:wiggleHistory[0]
+
+    for ($i = 1; $i -lt $script:wiggleHistory.Count; $i++) {
+        $prev = $script:wiggleHistory[$i-1]
+        $curr = $script:wiggleHistory[$i]
+        if ($curr -lt $minX) { $minX = $curr }
+        if ($curr -gt $maxX) { $maxX = $curr }
+        $diff = $curr - $prev
+        if ([Math]::Abs($diff) -gt 5) {
+            $dir = if ($diff -gt 0) { 1 } else { -1 }
+            if ($lastDir -ne 0 -and $dir -ne $lastDir) { $reversals++ }
+            $lastDir = $dir
         }
-        
-        $totalDist = $maxX - $minX
-        # A wiggle is threshold or more reversals in a small localized area (e.g., < 400 pixels)
-        if ($script:wiggleEnabled -and $reversals -ge $script:wiggleReversalsThreshold -and $totalDist -lt 400) {
-            # Wiggle detected! Reset history
-            $script:wiggleHistory = @()
-            
-            # Show the menu near the cursor
-            if (-not $script:wpfWindow.IsVisible) {
-                # Prepare animations if needed
-                $script:wpfWindow.FindName("winScale").ScaleX = 0.85
-                $script:wpfWindow.FindName("winScale").ScaleY = 0.85
-                $script:wpfWindow.FindName("winTrans").Y = 15
-                $script:wpfWindow.FindName("menuTrans").Y = 20
-                $script:wpfWindow.FindName("menuContentTrans").Y = 35
-                $script:wpfWindow.FindName("menuContentPanel").Opacity = 0
-                $script:wpfWindow.FindName("mainBorder").Opacity = 0
+    }
 
-                try {
-                    $sb = $script:wpfWindow.FindResource("PopIn")
-                    if ($sb) {
-                        $sb.Begin($script:wpfWindow, $true)
-                        $sb.Pause($script:wpfWindow)
-                    }
-                } catch {}
-
-                # Setup position (default tray position)
-                $workArea = [System.Windows.SystemParameters]::WorkArea
-                $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
-                $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
-                
-                $left = $workArea.Right - $winWidth - 12
-                $top = $workArea.Bottom - $winHeight - 12
-                
-                if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
-                if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
-                
-                $script:wpfWindow.Left = $left
-                $script:wpfWindow.Top = $top
-                $script:wpfWindow.Topmost = $true
-                
-                $script:wpfWindow.Show()
-                $script:wpfWindow.Activate()
-
-                try {
-                    if ($sb) { $sb.Resume($script:wpfWindow) }
-                } catch {}
-            }
-        }
+    $totalDist = $maxX - $minX
+    if ($script:wiggleEnabled -and $reversals -ge $script:wiggleReversalsThreshold -and $totalDist -lt 400) {
+        $script:wiggleHistory = @()
+        Show-WigglePanel
     }
 })
 $script:wiggleTimer.Start()

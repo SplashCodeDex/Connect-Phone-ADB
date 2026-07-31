@@ -1146,6 +1146,124 @@
                 </DockPanel>
         </Border>
         </Border>
+
+        <!-- ══════════════════════════════════════════════════════════════════════
+             WIGGLE DRAG-DROP PANEL
+             Appears on wiggle-to-open gesture. Hides the full menu and shows ONLY
+             connected devices for quick file drop selection.
+             Layout: same mainBorder corner radius so it visually matches.
+             Hidden by default. Shown/hidden exclusively by the wiggle timer in
+             TrayUIBindings.ps1.
+             ══════════════════════════════════════════════════════════════════════ -->
+        <Border x:Name="wiggleDragPanel"
+                Visibility="Collapsed" Opacity="0"
+                Background="{DynamicResource PrimaryBrush}"
+                BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
+                CornerRadius="34" Padding="8,12"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                MinWidth="280">
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1" ScaleY="1" x:Name="wiggleScale" />
+                    <TranslateTransform Y="0" x:Name="wiggleTrans" />
+                </TransformGroup>
+            </Border.RenderTransform>
+            <StackPanel>
+                <!-- Header -->
+                <StackPanel Orientation="Horizontal" Margin="16,6,16,10">
+                    <TextBlock Text="&#xE8B7;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                               FontSize="15" Foreground="{DynamicResource SecondaryBrush}"
+                               VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Text="Drop on Device" FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="12,0,12,8"/>
+
+                <!-- ── ACTIVE / CURRENTLY CONNECTED ADB DEVICE ───────────────────────
+                     REAL LOGIC (TODO when discovery is wired up):
+                       • Query `adb devices` output from $script:currentTarget
+                       • Show ONE entry: the device currently reachable via ADB TCP.
+                       • Green status dot = connected.
+                       • Clicking sends the dragged files to this device immediately.
+                     ─────────────────────────────────────────────────────────────────── -->
+                <TextBlock x:Name="txtWiggleActiveHeader"
+                           Text="Connected" FontSize="11" FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryBrush}"
+                           Margin="16,0,0,4" />
+
+                <!-- DUMMY: Active device — replace content binding with $script:currentTarget data when discovery ready -->
+                <Button x:Name="btnWiggleActiveDevice" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Status ring: green dot = active ADB connection -->
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse Fill="{DynamicResource SecondaryBrush}"/>
+                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                       FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <!-- Green dot: visible when device is live-connected -->
+                            <Ellipse Width="12" Height="12" Fill="#30D158"
+                                     Stroke="{DynamicResource PrimaryBrush}" StrokeThickness="2"
+                                     HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                        </Grid>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <!-- DUMMY name/IP — bind to $script:currentTarget display name when ready -->
+                            <TextBlock x:Name="txtWiggleActiveDeviceName"
+                                       Text="Galaxy S21" FontSize="14" FontWeight="Medium"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock x:Name="txtWiggleActiveDeviceIP"
+                                       Text="192.168.x.x:5555" FontSize="12"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <!-- ── PREVIOUSLY CONNECTED DEVICES ──────────────────────────────────
+                     REAL LOGIC (TODO):
+                       • Read from a persisted list (e.g., registry or JSON sidecar)
+                         of device serials/IPs that were ever successfully connected.
+                       • Sort descending by last-seen timestamp.
+                       • Show grayed-out status dot (not currently reachable).
+                       • Clicking attempts adb connect to that IP before sending files.
+                     ─────────────────────────────────────────────────────────────────── -->
+                <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="12,8"/>
+                <TextBlock Text="Previously Connected" FontSize="11" FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryTextBrush}"
+                           Margin="16,0,0,4"/>
+
+                <!-- DUMMY: Previously connected device 1 -->
+                <Button x:Name="btnWigglePrevDevice1" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                            <Ellipse Fill="{DynamicResource AccentBrush}"/>
+                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
+                                       FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <!-- Gray dot = offline/previously connected -->
+                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryTextBrush}"
+                                     Stroke="{DynamicResource PrimaryBrush}" StrokeThickness="2"
+                                     HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                        </Grid>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Pixel 8 Pro" FontSize="14" FontWeight="Medium"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"/>
+                            <TextBlock Text="Last seen 2h ago" FontSize="12"
+                                       Foreground="{DynamicResource SecondaryTextBrush}" Opacity="0.6"/>
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <Rectangle Height="8" Fill="Transparent"/>
+            </StackPanel>
+        </Border>
+
         <Popup x:Name="popAvatar" StaysOpen="False" AllowsTransparency="True" Placement="Mouse" PopupAnimation="Fade">
             <Border Background="{DynamicResource AccentBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="10">
                 <StackPanel MinWidth="190">
