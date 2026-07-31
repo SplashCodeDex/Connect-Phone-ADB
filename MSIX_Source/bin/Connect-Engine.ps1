@@ -263,8 +263,8 @@ $mdnsTimer.Add_Tick({
                         LastSeen     = Get-Date
                         Type         = $omni.DeviceType
                         Model        = if ($omni.Model)   { $omni.Model }   elseif ($existing) { $existing.Model }   else { $null }
-                        Battery      = if ($omni.Battery) { $omni.Battery } elseif ($existing) { $existing.Battery } else { $null }
-                        TelemetryAge = if ($omni.Model -or $omni.Battery) { Get-Date } elseif ($existing) { $existing.TelemetryAge } else { [datetime]::MinValue }
+                        Battery      = if ($existing) { $existing.Battery } else { $null }
+                        TelemetryAge = if ($existing) { $existing.TelemetryAge } else { [datetime]::MinValue }
                     }
                 }
                 
