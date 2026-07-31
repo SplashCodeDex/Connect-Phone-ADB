@@ -222,10 +222,6 @@ if ($btnSettingsTheme) {
         } else {
             Set-AppTheme "DarkTheme"
         }
-        $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")
-        if ($txtTheme) {
-            $txtTheme.Text = if ($global:CurrentTheme -eq "DarkTheme") { "Dark" } else { "Light" }
-        }
     })
 }
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.1.8.8] - 2026-07-31
+### Changed
+- **[patch]** Optimized system theme listener: replaced the 2-second background `DispatcherTimer` polling loop with `UserPreferenceChanged` native event handler, eliminating idle timer overhead.
+- **[patch]** Centralized theme UI label binding directly inside `Set-AppTheme`, removing duplicate text updating logic across settings handlers.
+
 ## [3.1.8.7] - 2026-07-31
 ### Fixed
 - **[patch]** Fixed light mode theme transparency bug in `Set-AppTheme`. Removed over-engineered `ColorAnimation` loop targeting freezable `SolidColorBrush` resource objects (which failed silently in WPF causing transparent UI rendering) and replaced it with direct, native `MergedDictionaries` dictionary replacement.

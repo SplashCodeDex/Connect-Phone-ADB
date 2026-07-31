@@ -212,11 +212,7 @@ $actionSettings = {
     $sb.Children[1].To = $script:contractedHeight + 195
     $sb.Begin($script:wpfWindow, $true)
     
-    # Update theme text in settings
-    $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")
-    if ($txtTheme) {
-        $txtTheme.Text = if ($global:CurrentTheme -eq "DarkTheme") { "Dark" } else { "Light" }
-    }
+
     
     # Update auto-connect badge
     $txtBadge = $script:wpfWindow.FindName("txtBadgeAutoConnect")

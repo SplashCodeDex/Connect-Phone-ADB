@@ -76,6 +76,11 @@ function Set-AppTheme {
         $script:wpfWindow.Resources.MergedDictionaries.Clear()
         $script:wpfWindow.Resources.MergedDictionaries.Add($newDict)
         $global:CurrentTheme = $ThemeName
+
+        $txtTheme = $script:wpfWindow.FindName("txtSettingsTheme")
+        if ($txtTheme) {
+            $txtTheme.Text = if ($ThemeName -eq "DarkTheme") { "Dark" } else { "Light" }
+        }
     }
 }
 #Export-ModuleMember -Function Set-AppTheme
