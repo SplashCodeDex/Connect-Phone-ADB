@@ -473,6 +473,7 @@ $script:wpfWindow.Add_Deactivated({
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
         if ($script:wpfWindow.FindName("SettingsPanel").Visibility -eq 'Visible') { return }
+        if ($script:wiggleOpenedByWiggle) { return }
         $now = [DateTime]::Now
         Write-Trace "Deactivated - Ms since last: $(($now - $script:lastDeactivated).TotalMilliseconds)"
         if (($now - $script:lastDeactivated).TotalMilliseconds -gt 200) {
@@ -627,6 +628,9 @@ try {
     using System.Runtime.InteropServices;
     public class Win32Input {
         [DllImport("user32.dll")]
+        public static extern short GetAsyncKeyState(int vKey);
+
+        [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetCursorPos(ref POINT lpPoint);
 
@@ -701,9 +705,26 @@ $script:wiggleTimer = New-Object System.Windows.Threading.DispatcherTimer
 $script:wiggleTimer.Interval = [TimeSpan]::FromMilliseconds(50)
 
 $script:wiggleTimer.Add_Tick({
-    # We no longer poll GetAsyncKeyState because it fails during OLE drag-and-drop.
-    # Wiggling at any time (dragging or not) will open the panel.
-    # The panel closes naturally via Deactivated event if they click away or drop outside.
+    # 0x01 = VK_LBUTTON
+    $isLButtonDown = ([Win32Input]::GetAsyncKeyState(0x01) -band 0x8000) -ne 0
+
+    # ── Edge case: drop-outside auto-close ──────────────────────────────────────
+    # If the wiggle panel is showing and the user released the mouse button,
+    # that means they dropped the file somewhere. If they dropped outside our
+    # window, WPF's Drop event won't fire on us, so we need to close ourselves.
+    # We give a small 200ms grace period so an on-panel drop still processes.
+    if ($script:wiggleOpenedByWiggle -and -not $isLButtonDown) {
+        if (-not $script:wpfWindow.IsMouseOver) {
+            Hide-WigglePanel
+        }
+        $script:wiggleHistory = @()
+        return
+    }
+
+    if (-not $isLButtonDown) {
+        $script:wiggleHistory = @()
+        return
+    }
 
     # Don't trigger wiggle if our main menu is already fully open
     if ($script:wpfWindow.IsVisible -and -not $script:wiggleOpenedByWiggle) {
