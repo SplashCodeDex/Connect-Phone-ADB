@@ -902,7 +902,7 @@
                         <TranslateTransform x:Name="menuContentTrans" Y="0" />
                     </DockPanel.RenderTransform>
                     <StackPanel x:Name="TopActionsPanel" DockPanel.Dock="Top">
-                        <Border Width="36" Height="4" CornerRadius="2" Background="{DynamicResource SecondaryTextBrush}" Opacity="0.4" HorizontalAlignment="Center" Margin="0,8,0,8" />
+                        <Border Width="66" Height="4" CornerRadius="2" Background="{DynamicResource SecondaryTextBrush}" Opacity="0.4" HorizontalAlignment="Center" Margin="0,0,0,14" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
                     <ToggleButton Name="btnQAConnect" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Connect ADB">
                         <TextBlock Text="&#xE71B;" />
