@@ -1,4 +1,4 @@
 *.msix
-ConnectPhoneShareTarget/bin/
-ConnectPhoneShareTarget/obj/
+DeXShareTarget/bin/
+DeXShareTarget/obj/
 *.appx

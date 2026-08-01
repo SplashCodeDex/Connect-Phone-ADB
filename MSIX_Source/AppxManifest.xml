@@ -9,9 +9,9 @@
   IgnorableNamespaces="uap uap3 rescap desktop desktop2">
 
   <Identity
-    Name="CodeDeX.ConnectPhoneADB"
+    Name="CodeDeX.DeX"
     Publisher="CN=CodeDeX"
-    Version="3.6.13.0"
+    Version="4.0.0.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
@@ -31,7 +31,7 @@
   <Applications>
     <Application
       Id="App"
-      Executable="ConnectPhoneShareTarget.exe"
+      Executable="DeXShareTarget.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
         DisplayName="DeX"
@@ -53,7 +53,7 @@
         </uap:Extension>
         
         <!-- Native MSIX Startup Task -->
-        <desktop:Extension Category="windows.startupTask" Executable="ConnectPhoneShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
+        <desktop:Extension Category="windows.startupTask" Executable="DeXShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
           <desktop:StartupTask TaskId="ConnectPhoneStartup" Enabled="true" DisplayName="DeX Engine" />
         </desktop:Extension>
       </Extensions>
@@ -98,7 +98,7 @@
       </desktop2:FirewallRules>
     </desktop2:Extension>
     <desktop2:Extension Category="windows.firewallRules">
-      <desktop2:FirewallRules Executable="ConnectPhoneShareTarget.exe">
+      <desktop2:FirewallRules Executable="DeXShareTarget.exe">
         <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all"/>
         <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all"/>
         <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all"/>

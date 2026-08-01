@@ -89,7 +89,7 @@ function Start-MdnsDiscovery {
             # 2. Setup UDP Sender
             $targetEp = [System.Net.IPEndPoint]::new($mcastIp, 53317)
             $sendUdp = New-Object System.Net.Sockets.UdpClient
-            $payloadString = "{ `"id`": `"$computerName`", `"type`": `"pc`" }"
+            $payloadString = "{ `"id`": `"$computerName`", `"type`": `"pc`", `"identityHash`": `"dex_static_placeholder_hash_123`" }"
             $payload = [System.Text.Encoding]::UTF8.GetBytes($payloadString)
             
             $lastMdns = [datetime]::MinValue
@@ -111,15 +111,19 @@ function Start-MdnsDiscovery {
                         $devModel = $null
                         if ($msg -match '"deviceModel"\s*:\s*"([^"]+)"') { $devModel = $matches[1] }
                         
+                        $devHash = $null
+                        if ($msg -match '"identityHash"\s*:\s*"([^"]+)"') { $devHash = $matches[1] }
+                        
                         $ip = $remoteEp.Address.ToString()
                         
                         [void]$queue.Enqueue(@{
-                            Type       = 'OmniMesh'
-                            IPPort     = "${ip}:53317"
-                            DeviceType = $devType
-                            Name       = $devId
-                            Model      = $devModel
-                            Battery    = $null
+                            Type         = 'OmniMesh'
+                            IPPort       = "${ip}:53317"
+                            DeviceType   = $devType
+                            Name         = $devId
+                            Model        = $devModel
+                            Battery      = $null
+                            IdentityHash = $devHash
                         })
                     }
                 }

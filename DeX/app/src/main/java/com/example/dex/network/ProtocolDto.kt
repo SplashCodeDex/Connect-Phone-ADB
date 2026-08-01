@@ -11,7 +11,8 @@ data class RegisterDto(
     val fingerprint: String,
     val port: Int,
     val protocol: String,
-    val download: Boolean
+    val download: Boolean,
+    val identityHash: String? = null
 )
 
 @Serializable

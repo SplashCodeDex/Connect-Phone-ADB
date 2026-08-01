@@ -23,7 +23,8 @@ import kotlinx.coroutines.isActive
 data class DiscoveredDevice(
     val ip: String,
     val info: RegisterDto,
-    val lastSeenTimestamp: Long
+    val lastSeenTimestamp: Long,
+    val trustLevel: String
 )
 
 class DiscoveryEngine {
@@ -48,7 +49,8 @@ class DiscoveryEngine {
         fingerprint = "dex-fingerprint",
         port = 53317,
         protocol = "https",
-        download = true
+        download = true,
+        identityHash = "dex_static_placeholder_hash_123"
     )
 
     fun startDiscovery(context: Context) {
@@ -61,6 +63,7 @@ class DiscoveryEngine {
             port = localSendInfo.port
             setAttribute("alias", localSendInfo.alias)
             setAttribute("fingerprint", localSendInfo.fingerprint)
+            setAttribute("identityHash", localSendInfo.identityHash)
         }
 
         registrationListener = object : NsdManager.RegistrationListener {
@@ -149,6 +152,7 @@ class DiscoveryEngine {
 
                         if (fp.isNotEmpty() && fp != localSendInfo.fingerprint) {
                             val ip = packet.address.hostAddress ?: ""
+                            val incomingHash = if (json.has("identityHash")) json.getString("identityHash") else null
                             val dto = RegisterDto(
                                 alias = alias,
                                 version = json.optString("version", "2.0"),
@@ -157,11 +161,13 @@ class DiscoveryEngine {
                                 fingerprint = fp,
                                 port = port,
                                 protocol = protocol,
-                                download = json.optBoolean("download", true)
+                                download = json.optBoolean("download", true),
+                                identityHash = incomingHash
                             )
+                            val level = if (incomingHash != null && incomingHash == localSendInfo.identityHash) "Auto-Trusted" else "Guest"
                             _devices.update { map ->
                                 val newMap = map.toMutableMap()
-                                newMap[fp] = DiscoveredDevice(ip, dto, System.currentTimeMillis())
+                                newMap[fp] = DiscoveredDevice(ip, dto, System.currentTimeMillis(), level)
                                 newMap
                             }
                         }
@@ -177,6 +183,7 @@ class DiscoveryEngine {
                                 put("port", localSendInfo.port)
                                 put("protocol", localSendInfo.protocol)
                                 put("download", localSendInfo.download)
+                                put("identityHash", localSendInfo.identityHash)
                             }
                             val replyMsg = replyJson.toString()
                             val replyData = replyMsg.toByteArray(Charsets.UTF_8)
@@ -194,8 +201,10 @@ class DiscoveryEngine {
     private fun handleResolvedService(serviceInfo: NsdServiceInfo) {
         val fpBytes = serviceInfo.attributes["fingerprint"]
         val aliasBytes = serviceInfo.attributes["alias"]
+        val hashBytes = serviceInfo.attributes["identityHash"]
         val fp = fpBytes?.let { String(it) }
         val alias = aliasBytes?.let { String(it) } ?: "Unknown"
+        val incomingHash = hashBytes?.let { String(it) }
 
         if (fp != null && fp != localSendInfo.fingerprint) {
             val ip = if (android.os.Build.VERSION.SDK_INT >= 34) {
@@ -213,14 +222,17 @@ class DiscoveryEngine {
                 fingerprint = fp,
                 port = serviceInfo.port,
                 protocol = "https",
-                download = true
+                download = true,
+                identityHash = incomingHash
             )
+            val level = if (incomingHash != null && incomingHash == localSendInfo.identityHash) "Auto-Trusted" else "Guest"
             _devices.update { map ->
                 val newMap = map.toMutableMap()
                 newMap[fp] = DiscoveredDevice(
                     ip = ip,
                     info = dto,
-                    lastSeenTimestamp = System.currentTimeMillis()
+                    lastSeenTimestamp = System.currentTimeMillis(),
+                    trustLevel = level
                 )
                 newMap
             }

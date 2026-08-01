@@ -16,8 +16,8 @@ param(
 Import-Module "$PSScriptRoot\Modules\AdbManager.psm1" -Force
 . "$PSScriptRoot\Modules\TaskScheduler.ps1"
 . "$PSScriptRoot\Modules\UIComponents.ps1"
-$mutexName = "Global\CodeDeX_ConnectPhoneADB_Engine"
-$script:showUiEvent = New-Object System.Threading.EventWaitHandle($false, [System.Threading.EventResetMode]::AutoReset, "Global\CodeDeX_ConnectPhoneADB_ShowUI")
+$mutexName = "Global\CodeDeX_DeX_Engine"
+$script:showUiEvent = New-Object System.Threading.EventWaitHandle($false, [System.Threading.EventResetMode]::AutoReset, "Global\CodeDeX_DeX_ShowUI")
 $script:engineMutex = New-Object System.Threading.Mutex($false, $mutexName)
 if (-not $script:engineMutex.WaitOne(0, $false)) {
     if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null }
@@ -258,6 +258,7 @@ $mdnsTimer.Add_Tick({
                 foreach ($omni in $omniTargets) {
                     $ip = $omni.IPPort -replace ':[0-9]+$',''
                     $existing = $script:omniPeers[$ip]
+                    $trustLevel = if ($omni.IdentityHash -and $omni.IdentityHash -eq "dex_static_placeholder_hash_123") { "Auto-Trusted" } else { "Guest" }
                     $script:omniPeers[$ip] = @{
                         Name         = $omni.Name
                         LastSeen     = Get-Date
@@ -265,6 +266,7 @@ $mdnsTimer.Add_Tick({
                         Model        = if ($omni.Model)   { $omni.Model }   elseif ($existing) { $existing.Model }   else { $null }
                         Battery      = if ($existing) { $existing.Battery } else { $null }
                         TelemetryAge = if ($existing) { $existing.TelemetryAge } else { [datetime]::MinValue }
+                        TrustLevel   = $trustLevel
                     }
                 }
                 

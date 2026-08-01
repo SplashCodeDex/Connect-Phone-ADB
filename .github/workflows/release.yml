@@ -48,7 +48,7 @@ jobs:
           include-prerelease: true
           
       - name: Build C# Transfer Engine
-        run: dotnet build ConnectPhoneShareTarget --configuration Release
+        run: dotnet build DeXShareTarget --configuration Release
 
       - name: Pack MSIX
         run: powershell -ExecutionPolicy Bypass -File PackMSIX.ps1
@@ -73,7 +73,7 @@ jobs:
           body_path: RELEASE_NOTES.md
           name: Release ${{ github.ref_name }}
           files: |
-            ConnectPhoneADB.msix
+            DeX.msix
             CodeDeX.cer
             Install-App.ps1
         env:

@@ -166,7 +166,8 @@ $script:lbFiles.Add_MouseDoubleClick({
     }
 })
 
-
+$script:wpfWindow.FindName("btnDeviceGalaxy").Add_Click({ $script:isMockMode = $true; Invoke-MenuAction $actionPull })
+$script:wpfWindow.FindName("btnDeviceWindows").Add_Click({ $script:isMockMode = $true; Invoke-MenuAction $actionPull })
 
 $script:wpfWindow.FindName("btnCopyIP").Add_Click({
     if (-not [string]::IsNullOrWhiteSpace($script:currentTarget)) {
@@ -273,7 +274,7 @@ if ($btnSettingsDownloadPath) {
 $btnSettingsAbout = $script:wpfWindow.FindName("btnSettingsAbout")
 if ($btnSettingsAbout) {
     $btnSettingsAbout.Add_Click({
-        Start-Process "https://github.com/SplashCodeDex/Connect-Phone-ADB"
+        Start-Process "https://github.com/SplashCodeDex/DeX"
         $script:wpfWindow.Hide()
     })
 }
@@ -464,6 +465,7 @@ $script:lastDeactivated = [DateTime]::MinValue
 
 $script:wpfWindow.Add_MouseLeftButtonDown({
     if ($_.ButtonState -eq [System.Windows.Input.MouseButtonState]::Pressed) {
+        $script:hasBeenDragged = $true
         try { $this.DragMove() } catch {}
         
         $dragPillAccent = $this.FindName("dragPillAccent")
@@ -482,11 +484,36 @@ $script:btnToggleTopmost = $script:wpfWindow.FindName("btnToggleTopmost")
 if ($script:dragPill) {
     $script:dragPill.Add_MouseLeftButtonDown({
         if ($_.ClickCount -eq 2) {
-            $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
-            $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
-            $workArea = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
-            $script:wpfWindow.Left = $workArea.Left + ($workArea.Width / 2) - ($winWidth / 2)
-            $script:wpfWindow.Top = $workArea.Top + ($workArea.Height / 2) - ($winHeight / 2)
+            if ($script:hasBeenDragged) {
+                if ($script:isLocationPinned) {
+                    $anim = New-Object System.Windows.Media.Animation.ThicknessAnimation
+                    $anim.To = "5,0,-5,0"
+                    $anim.Duration = [TimeSpan]::FromSeconds(0.05)
+                    $anim.AutoReverse = $true
+                    $anim.RepeatBehavior = New-Object System.Windows.Media.Animation.RepeatBehavior(3)
+                    if ($script:btnToggleTopmost) { $script:btnToggleTopmost.BeginAnimation([System.Windows.FrameworkElement]::MarginProperty, $anim) }
+                } else {
+                    $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
+                    $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
+                    $workArea = [System.Windows.SystemParameters]::WorkArea
+                    $left = $workArea.Right - $winWidth + 13
+                    $top = $workArea.Bottom - $winHeight + 13
+                    if ($left -lt $workArea.Left) { $left = $workArea.Left - 13 }
+                    if ($top -lt $workArea.Top) { $top = $workArea.Top - 13 }
+                    
+                    $ease = $script:wpfWindow.FindResource("BouncyEase")
+                    $animX = New-Object System.Windows.Media.Animation.DoubleAnimation -Property @{ From = $script:wpfWindow.Left; To = $left; Duration = "0:0:0.45"; EasingFunction = $ease; FillBehavior = "Stop" }
+                    $animY = New-Object System.Windows.Media.Animation.DoubleAnimation -Property @{ From = $script:wpfWindow.Top; To = $top; Duration = "0:0:0.45"; EasingFunction = $ease; FillBehavior = "Stop" }
+                    
+                    $script:wpfWindow.Left = $left
+                    $script:wpfWindow.Top = $top
+                    
+                    $script:wpfWindow.BeginAnimation([System.Windows.Window]::LeftProperty, $animX)
+                    $script:wpfWindow.BeginAnimation([System.Windows.Window]::TopProperty, $animY)
+                    
+                    $script:hasBeenDragged = $false
+                }
+            }
             $_.Handled = $true
         } else {
             $topPanel = $script:wpfWindow.FindName("TopActionsPanel")
@@ -504,7 +531,7 @@ if ($script:dragPill) {
                 $script:pinTimer = New-Object System.Windows.Threading.DispatcherTimer
                 $script:pinTimer.Interval = [TimeSpan]::FromSeconds(3)
                 $script:pinTimer.Add_Tick({
-                    if (-not $script:wpfWindow.Topmost) {
+                    if (-not $script:isLocationPinned) {
                         $topPanel = $script:wpfWindow.FindName("TopActionsPanel")
                         if ($topPanel) {
                             try { $topPanel.FindResource("HidePinAnim").Begin($script:wpfWindow) } catch {}
@@ -513,7 +540,7 @@ if ($script:dragPill) {
                     $script:pinTimer.Stop()
                 })
             }
-            if (-not $script:wpfWindow.Topmost) {
+            if (-not $script:isLocationPinned) {
                 $script:pinTimer.Stop()
                 $script:pinTimer.Start()
             }
@@ -523,13 +550,13 @@ if ($script:dragPill) {
 
 if ($script:btnToggleTopmost) {
     $script:btnToggleTopmost.Add_Click({
-        $script:wpfWindow.Topmost = -not $script:wpfWindow.Topmost
+        $script:isLocationPinned = -not $script:isLocationPinned
         
-        if ($script:wpfWindow.Topmost) {
-            $this.ToolTip = "Unpin"
+        if ($script:isLocationPinned) {
+            $this.ToolTip = "Unpin Location"
             if ($script:pinTimer) { $script:pinTimer.Stop() }
         } else {
-            $this.ToolTip = "Always on Top"
+            $this.ToolTip = "Pin Location"
             if ($script:pinTimer) {
                 $script:pinTimer.Stop()
                 $script:pinTimer.Start()
@@ -546,7 +573,6 @@ $script:wpfWindow.Add_Deactivated({
     Write-Trace "Deactivated fired! IsVisible: $($script:wpfWindow.IsVisible)"
     if ($script:wpfWindow.IsVisible) {
         # If menu is expanded, do NOT close on click-outside (use Close button instead)
-        if ($script:wpfWindow.Topmost) { return }
         if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible') { return }
         if ($script:wpfWindow.FindName("SettingsPanel").Visibility -eq 'Visible') { return }
         $now = [DateTime]::Now
@@ -659,14 +685,16 @@ $script:notifyIcon.Add_MouseUp({
         $winWidth = if ($script:wpfWindow.Width -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Width)) { $script:wpfWindow.Width } else { 1420 }
         $winHeight = if ($script:wpfWindow.Height -gt 0 -and -not [double]::IsNaN($script:wpfWindow.Height)) { $script:wpfWindow.Height } else { 760 }
         
-        $left = $workArea.Right - $winWidth - 12
-        $top = $workArea.Bottom - $winHeight - 12
-        
-        if ($left -lt $workArea.Left) { $left = $workArea.Left + 12 }
-        if ($top -lt $workArea.Top) { $top = $workArea.Top + 12 }
-        
-        $script:wpfWindow.Left = $left
-        $script:wpfWindow.Top = $top
+        if (-not $script:isLocationPinned) {
+            $left = $workArea.Right - $winWidth + 13
+            $top = $workArea.Bottom - $winHeight + 13
+            
+            if ($left -lt $workArea.Left) { $left = $workArea.Left - 13 }
+            if ($top -lt $workArea.Top) { $top = $workArea.Top - 13 }
+            
+            $script:wpfWindow.Left = $left
+            $script:wpfWindow.Top = $top
+        }
         $script:wpfWindow.Topmost = $true
         
         $script:lastDeactivated = [DateTime]::Now

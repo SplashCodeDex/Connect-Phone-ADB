@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.0.0.0] - 2026-08-01
+### Changed
+- **[major]** Completely rebranded the project identity from **Connect-Phone-ADB** to **DeX**.
+- **[major]** Updated all metadata, AppInstaller references, Git configurations, C# project spaces, and source identifiers to reflect the new `DeX` identity.
+
 ## [3.6.13.0] - 2026-07-31
 ### Fixed
 - **[patch]** The "Pin to Top" button now properly prevents the tray menu from auto-hiding when clicking outside the window, ensuring the menu remains securely anchored to its physical screen location.

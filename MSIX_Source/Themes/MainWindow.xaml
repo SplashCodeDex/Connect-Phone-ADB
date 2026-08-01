@@ -71,6 +71,7 @@
         <BackEase x:Key="HoverEase" Amplitude="1.22" EasingMode="EaseOut" />
         <BackEase x:Key="PopInEase" Amplitude="3.53" EasingMode="EaseOut" />
         <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
+        <CubicEase x:Key="SmoothEase" EasingMode="EaseOut" />
         <Storyboard x:Key="ExpandMenu">
             <!-- Window Size Expansion with ElasticEase (reduced 35% from original) -->
             <DoubleAnimation Storyboard.TargetName="mainBorder" Storyboard.TargetProperty="Width" By="754" Duration="0:0:0.8" EasingFunction="{StaticResource BouncyEase}" />
@@ -133,6 +134,9 @@
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileBottom" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="btnProfileBottom" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.4" />
+            <DoubleAnimation Storyboard.TargetName="btnProfileBottomScale" Storyboard.TargetProperty="ScaleX" From="0.2" To="1" Duration="0:0:0.5" BeginTime="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="btnProfileBottomScale" Storyboard.TargetProperty="ScaleY" From="0.2" To="1" Duration="0:0:0.5" BeginTime="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
             
             <!-- Hide Nearby Expand Users when contracting -->
             <DoubleAnimation Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
@@ -203,6 +207,9 @@
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnProfileBottom" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="{x:Static Visibility.Visible}" />
             </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="btnProfileBottom" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.4" />
+            <DoubleAnimation Storyboard.TargetName="btnProfileBottomScale" Storyboard.TargetProperty="ScaleX" From="0.2" To="1" Duration="0:0:0.5" BeginTime="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="btnProfileBottomScale" Storyboard.TargetProperty="ScaleY" From="0.2" To="1" Duration="0:0:0.5" BeginTime="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
             
             <!-- Hide Nearby Expand Users when contracting -->
             <DoubleAnimation Storyboard.TargetName="NearbyExpandPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
@@ -527,7 +534,10 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Border x:Name="mainBorder" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="34" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Background="{DynamicResource PrimaryBrush}" RenderTransformOrigin="0.5,1">
+    <Border x:Name="mainBorder" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="34" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Background="{DynamicResource PrimaryBrush}" RenderTransformOrigin="0.5,1" Margin="25">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="30" ShadowDepth="12" Direction="270" Color="Black" Opacity="0.5" />
+        </Border.Effect>
         <Border.RenderTransform>
             <TransformGroup>
                 <ScaleTransform ScaleX="1" ScaleY="1" x:Name="winScale" />
@@ -857,7 +867,7 @@
             </ScrollViewer>
         </Grid>
         
-        <Border Grid.Column="1" Background="Transparent" Padding="0" MinWidth="300">
+        <Border Grid.Column="1" Background="Transparent" Padding="0" MinWidth="300" HorizontalAlignment="Right">
             <Border.RenderTransform>
                 <TranslateTransform x:Name="menuTrans" X="0" Y="0" />
             </Border.RenderTransform>
@@ -874,7 +884,10 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         
-                        <Button Name="btnProfileBottom" Grid.Column="0" Style="{StaticResource SpatialListItem}" Margin="16,0,4,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0">
+                        <Button Name="btnProfileBottom" Grid.Column="0" Style="{StaticResource SpatialListItem}" Margin="16,0,4,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0" RenderTransformOrigin="0.5,0.5">
+                            <Button.RenderTransform>
+                                <ScaleTransform x:Name="btnProfileBottomScale" ScaleX="1" ScaleY="1" />
+                            </Button.RenderTransform>
                             <Grid>
                                 <Ellipse Width="34" Height="34">
                                     <Ellipse.Fill>
@@ -923,7 +936,7 @@
                             </Storyboard>
                         </StackPanel.Resources>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14">
-                            <ToggleButton x:Name="btnToggleTopmost" Width="0" Height="16" Background="Transparent" BorderThickness="0" Margin="0,0,0,0" Opacity="0" ToolTip="Always on Top">
+                            <ToggleButton x:Name="btnToggleTopmost" Width="0" Height="16" Background="Transparent" BorderThickness="0" Margin="0,0,0,0" Opacity="0" ToolTip="Pin Location">
                                 <ToggleButton.Style>
                                     <Style TargetType="ToggleButton">
                                         <Setter Property="Template">

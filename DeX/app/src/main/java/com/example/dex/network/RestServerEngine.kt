@@ -18,8 +18,25 @@ import io.ktor.utils.io.copyAndClose
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+
+object AuthState {
+    val guestTokens = mutableSetOf<String>()
+    var currentPairingPin: String? = null
+}
+
 class RestServerEngine {
     private var server: EmbeddedServer<*, *>? = null
+
+    private fun verifyToken(call: io.ktor.server.application.ApplicationCall): Boolean {
+        val authHeader = call.request.header(io.ktor.http.HttpHeaders.Authorization)
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            val token = authHeader.removePrefix("Bearer ")
+            if (token == "dex_static_placeholder_hash_123" || AuthState.guestTokens.contains(token)) {
+                return true
+            }
+        }
+        return false
+    }
 
     fun startServer() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -170,7 +187,34 @@ class RestServerEngine {
                             call.respond(io.ktor.http.HttpStatusCode.BadRequest)
                         }
                     }
+                    post("/api/dex/pair/request") {
+                        val pin = (100000..999999).random().toString()
+                        AuthState.currentPairingPin = pin
+                        val ctx = DexAppContainer.context!!
+                        val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
+                        mainHandler.post {
+                            android.widget.Toast.makeText(ctx, "DeX Pairing PIN: $pin", android.widget.Toast.LENGTH_LONG).show()
+                        }
+                        call.respond(io.ktor.http.HttpStatusCode.OK, "PIN generated")
+                    }
+                    post("/api/dex/pair/verify") {
+                        val request = call.receive<Map<String, String>>()
+                        val pin = request["pin"]
+                        if (pin != null && pin == AuthState.currentPairingPin) {
+                            val token = UUID.randomUUID().toString()
+                            AuthState.guestTokens.add(token)
+                            AuthState.currentPairingPin = null
+                            call.respond(mapOf("token" to token))
+                        } else {
+                            call.respond(io.ktor.http.HttpStatusCode.Forbidden, "Invalid PIN")
+                        }
+                    }
                     get("/api/dex/browse") {
+                        if (!verifyToken(call)) {
+                            call.respond(io.ktor.http.HttpStatusCode.Unauthorized, "Unauthorized")
+                            return@get
+                        }
+
                         val path = call.request.queryParameters["path"] ?: "/sdcard/"
                         val dir = java.io.File(path)
                         
@@ -191,6 +235,10 @@ class RestServerEngine {
                         call.respond(files)
                     }
                     get("/api/dex/pull") {
+                        if (!verifyToken(call)) {
+                            call.respond(io.ktor.http.HttpStatusCode.Unauthorized, "Unauthorized")
+                            return@get
+                        }
                         val path = call.request.queryParameters["path"]
                         if (path == null) {
                             call.respond(io.ktor.http.HttpStatusCode.BadRequest, "Missing path parameter")

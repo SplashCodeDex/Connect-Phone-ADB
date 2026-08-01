@@ -17,7 +17,7 @@
   - **Patch** (`X.Y.Z+1.0`) — bug fixes, minor tweaks.
   - **Minor** (`X.Y+1.0.0`) — new features, UI additions.
   - **Major** (`X+1.0.0.0`) — breaking changes, architecture overhauls.
-  - `PackMSIX.ps1` auto-syncs this version to `ConnectPhoneADB.appinstaller`.
+  - `PackMSIX.ps1` auto-syncs this version to `DeX.appinstaller`.
 - Verify script syntax and AST correctness.
 - Re-pack MSIX package using `PackMSIX.ps1`.
 - Re-sign MSIX package using `SignMSIX.ps1`.

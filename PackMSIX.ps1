@@ -25,7 +25,7 @@ if (Test-Path $validator) {
     Write-Host ""
 }
 
-$ProjDir = Join-Path $PSScriptRoot "ConnectPhoneShareTarget"
+$ProjDir = Join-Path $PSScriptRoot "DeXShareTarget"
 Write-Host "Building C# Project ($Configuration)..."
 Set-Location $ProjDir
 dotnet build -c $Configuration
@@ -38,7 +38,7 @@ if (Test-Path $SourceDir) {
 
 # Sync Version from AppxManifest to AppInstaller
 $ManifestPath = Join-Path $PSScriptRoot "MSIX_Source\AppxManifest.xml"
-$InstallerPath = Join-Path $PSScriptRoot "ConnectPhoneADB.appinstaller"
+$InstallerPath = Join-Path $PSScriptRoot "DeX.appinstaller"
 if ((Test-Path $ManifestPath) -and (Test-Path $InstallerPath)) {
     [xml]$manifestXml = Get-Content $ManifestPath
     $version = $manifestXml.Package.Identity.Version
@@ -53,12 +53,12 @@ if ((Test-Path $ManifestPath) -and (Test-Path $InstallerPath)) {
 $makeappx = (Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\makeappx.exe" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
 if (-not $makeappx) { throw "makeappx.exe not found. Please install the Windows 10/11 SDK." }
 
-& $makeappx pack /d (Join-Path $PSScriptRoot "MSIX_Source") /p (Join-Path $PSScriptRoot "ConnectPhoneADB.msix") /o
+& $makeappx pack /d (Join-Path $PSScriptRoot "MSIX_Source") /p (Join-Path $PSScriptRoot "DeX.msix") /o
 if ($LASTEXITCODE -ne 0) { throw "makeappx pack failed (exit code $LASTEXITCODE)." }
 
 # ── Post-pack verification: packaged engine must match the validated source byte-for-byte ──
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-$msixPath = Join-Path $PSScriptRoot "ConnectPhoneADB.msix"
+$msixPath = Join-Path $PSScriptRoot "DeX.msix"
 $zip = [System.IO.Compression.ZipFile]::OpenRead($msixPath)
 try {
     $engineEntry = $zip.Entries | Where-Object { $_.FullName -eq 'bin/Connect-Engine.ps1' } | Select-Object -First 1

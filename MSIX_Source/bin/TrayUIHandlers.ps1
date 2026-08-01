@@ -96,24 +96,42 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
         if ($element.Tag -and $element.Tag -match '^\d+\.\d+\.\d+\.\d+') {
             $ip = $element.Tag -replace ':.*', ''
             
-            Add-Type -AssemblyName System.Windows.Forms
-            $dialog = New-Object System.Windows.Forms.OpenFileDialog
-            $dialog.Multiselect = $true
-            $dialog.Title = "Select files to send to $ip"
+            # Check Identity and Pairing status
+            $trustLevel = if ($script:omniPeers[$ip]) { $script:omniPeers[$ip].TrustLevel } else { "Guest" }
+            if ($trustLevel -eq "Guest") {
+                $settingsPath = Join-Path $PSScriptRoot "..\appsettings.json"
+                $tokens = @{}
+                if (Test-Path $settingsPath) { try { $tokens = Get-Content $settingsPath -Raw | ConvertFrom-Json -AsHashtable } catch {} }
+                
+                if (-not $tokens[$ip]) {
+                    try {
+                        [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+                        [void](Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/request" -Method Post -ErrorAction Stop)
+                        
+                        Add-Type -AssemblyName Microsoft.VisualBasic
+                        $pin = [Microsoft.VisualBasic.Interaction]::InputBox("Enter the 6-digit PIN shown on the target phone:", "DeX Guest Pairing")
+                        if ($pin) {
+                            $verifyRes = Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/verify" -Method Post -Body (@{ pin = $pin } | ConvertTo-Json -Depth 2) -ContentType "application/json" -ErrorAction Stop
+                            $tokens[$ip] = $verifyRes.token
+                            $tokens | ConvertTo-Json -Depth 2 | Set-Content $settingsPath
+                        } else {
+                            $e.Handled = $true
+                            return
+                        }
+                    } catch {
+                        Show-Toast -Title "Pairing Failed" -Message $_.Exception.Message
+                        $e.Handled = $true
+                        return
+                    }
+                }
+            }
             
-            if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
-                $files = $dialog.FileNames | ForEach-Object { "`"$_`"" }
-                $filesStr = $files -join ' '
-                
-                $exePath = Join-Path $PSScriptRoot "..\..\ConnectPhoneShareTarget\bin\Release\net10.0-windows10.0.22000.0\ConnectPhoneShareTarget.exe"
-                if (-not (Test-Path $exePath)) {
-                    $exePath = Join-Path $PSScriptRoot "..\..\ConnectPhoneShareTarget\ConnectPhoneShareTarget.exe"
-                }
-                if (-not (Test-Path $exePath)) {
-                    $exePath = "ConnectPhoneShareTarget.exe"
-                }
-                
-                Start-Process -FilePath $exePath -ArgumentList "-IP `"$ip`" $filesStr" -WindowStyle Hidden
+            # Connect to the device and open File Explorer as requested
+            $res = Invoke-AdbConnect -Target $ip
+            if ($res.Success) {
+                Invoke-MenuAction $actionPull
+            } else {
+                Show-Toast -Title "Connection Failed" -Message $res.Message
             }
             
             $e.Handled = $true

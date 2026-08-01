@@ -7,7 +7,7 @@ if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $CertPath = Join-Path $ScriptDir "CodeDeX.cer"
-$AppPath = Join-Path $ScriptDir "ConnectPhoneADB.msix"
+$AppPath = Join-Path $ScriptDir "DeX.msix"
 
 if (Test-Path $CertPath) {
     Write-Host "Installing Certificate to Trusted Root..."
@@ -22,7 +22,7 @@ if (Test-Path $AppPath) {
     Add-AppxPackage -Path $AppPath -ForceUpdateFromAnyVersion -ForceApplicationShutdown
     Write-Host "App installed/updated successfully."
 } else {
-    Write-Error "Could not find ConnectPhoneADB.msix in $ScriptDir"
+    Write-Error "Could not find DeX.msix in $ScriptDir"
 }
 
 Write-Host "Press any key to exit..."

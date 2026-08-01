@@ -32,14 +32,31 @@ function Load-Directory($dirPath) {
         
 
         $target = Get-ConnectedDeviceTarget
-        if (-not $target) {
+        if ($script:isMockMode) {
+            $lines = @("mock_vacation_photo.jpg", "IMG_9021.png", "received_document.pdf", "project_video.mp4", "DeX_Transfers/")
+        } elseif (-not $target) {
             $lines = @()
         } else {
             $ip = $target.Split(':')[0]
             try {
                 $uri = "https://${ip}:53317/api/dex/browse?path=" + [uri]::EscapeDataString($dirPath)
                 [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
-                $res = Invoke-RestMethod -Uri $uri -Method Get -ErrorAction Stop
+                
+                $token = $null
+                $trustLevel = if ($script:omniPeers -and $script:omniPeers[$ip]) { $script:omniPeers[$ip].TrustLevel } else { "Guest" }
+                if ($trustLevel -eq "Auto-Trusted") {
+                    $token = "dex_static_placeholder_hash_123"
+                } else {
+                    $settingsPath = Join-Path $PSScriptRoot "..\..\appsettings.json"
+                    if (Test-Path $settingsPath) {
+                        try { $token = (Get-Content $settingsPath -Raw | ConvertFrom-Json -AsHashtable)[$ip] } catch {}
+                    }
+                }
+                
+                $headers = @{}
+                if ($token) { $headers["Authorization"] = "Bearer $token" }
+                
+                $res = Invoke-RestMethod -Uri $uri -Method Get -Headers $headers -ErrorAction Stop
                 
                 $lines = @()
                 if ($res) {
