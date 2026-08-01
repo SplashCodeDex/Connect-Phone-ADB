@@ -27,7 +27,7 @@ if (-not $script:engineMutex.WaitOne(0, $false)) {
 }
 
 if ($PSScriptRoot -match "WindowsApps") {
-    $global:AdbExePath = "ConnectPhone-adb.exe"
+    $global:AdbExePath = "DeX-adb.exe"
 } else {
     $global:AdbExePath = "$PSScriptRoot\adb.exe"
 }

@@ -54,7 +54,7 @@
         
         <!-- Native MSIX Startup Task -->
         <desktop:Extension Category="windows.startupTask" Executable="DeXShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
-          <desktop:StartupTask TaskId="ConnectPhoneStartup" Enabled="true" DisplayName="DeX Engine" />
+          <desktop:StartupTask TaskId="DeXStartup" Enabled="true" DisplayName="DeX Engine" />
         </desktop:Extension>
       </Extensions>
     </Application>
@@ -73,7 +73,7 @@
       <Extensions>
         <uap3:Extension Category="windows.appExecutionAlias" Executable="bin\adb.exe" EntryPoint="Windows.FullTrustApplication">
           <uap3:AppExecutionAlias>
-            <desktop:ExecutionAlias Alias="ConnectPhone-adb.exe" />
+            <desktop:ExecutionAlias Alias="DeX-adb.exe" />
           </uap3:AppExecutionAlias>
         </uap3:Extension>
       </Extensions>

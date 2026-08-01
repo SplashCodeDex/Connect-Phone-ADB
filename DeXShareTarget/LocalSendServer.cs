@@ -220,7 +220,7 @@ namespace DeXShareTarget
             {
                 var res = System.Windows.MessageBox.Show(
                     $"Incoming transfer: {req.Files.Count} files. Accept?", 
-                    "ConnectPhone", 
+                    "DeX", 
                     System.Windows.MessageBoxButton.YesNo,
                     System.Windows.MessageBoxImage.Question, 
                     System.Windows.MessageBoxResult.No,

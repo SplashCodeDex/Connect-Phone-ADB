@@ -19,7 +19,7 @@ namespace DeXShareTarget
         [STAThread]
         static void Main(string[] args)
         {
-            File.WriteAllText(Path.Combine(Path.GetTempPath(), "ConnectPhoneArgs.txt"), $"Args Length: {args.Length}, Args: {string.Join(" | ", args)}");
+            File.WriteAllText(Path.Combine(Path.GetTempPath(), "DeXArgs.txt"), $"Args Length: {args.Length}, Args: {string.Join(" | ", args)}");
             try 
             {
                 var program = new Program();
@@ -27,13 +27,13 @@ namespace DeXShareTarget
             }
             catch (Exception ex)
             {
-                File.WriteAllText(Path.Combine(Path.GetTempPath(), $"ConnectPhoneCrash_Main_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), ex.ToString());
+                File.WriteAllText(Path.Combine(Path.GetTempPath(), $"DeXCrash_Main_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), ex.ToString());
             }
         }
 
         public void Run(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += (s, e) => File.WriteAllText(Path.Combine(Path.GetTempPath(), $"ConnectPhoneCrash_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), e.ExceptionObject.ToString());
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => File.WriteAllText(Path.Combine(Path.GetTempPath(), $"DeXCrash_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), e.ExceptionObject.ToString());
             
             var activatedArgs = AppInstance.GetActivatedEventArgs();
             
@@ -98,7 +98,7 @@ namespace DeXShareTarget
             {
                 string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                 string ps1Path = Path.Combine(exeDir, "bin", "Connect-Engine.ps1");
-                string logPath = Path.Combine(Path.GetTempPath(), "ConnectPhoneEngine_Errors.txt");
+                string logPath = Path.Combine(Path.GetTempPath(), "DeXEngine_Errors.txt");
                 
                 // Rotate the stderr log so it stays forensically useful (keep last 500 lines when > 512 KB)
                 try
