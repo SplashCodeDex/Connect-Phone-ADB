@@ -9,6 +9,10 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.dex.ui.main.MainScreen
+import com.example.dex.ui.settings.SettingsScreen
+
+object Main
+object Settings
 
 @Composable
 fun MainNavigation() {
@@ -20,7 +24,16 @@ fun MainNavigation() {
     entryProvider =
       entryProvider {
         entry<Main> {
-          MainScreen(modifier = Modifier.safeDrawingPadding().padding(16.dp))
+          MainScreen(
+            onNavigateToSettings = { backStack.add(Settings) },
+            modifier = Modifier.safeDrawingPadding().padding(16.dp)
+          )
+        }
+        entry<Settings> {
+          SettingsScreen(
+            onBack = { backStack.removeLastOrNull() },
+            modifier = Modifier.safeDrawingPadding()
+          )
         }
       },
   )

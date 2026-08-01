@@ -11,11 +11,11 @@
   <Identity
     Name="CodeDeX.DeX"
     Publisher="CN=CodeDeX"
-    Version="4.0.2.0"
+    Version="4.1.0.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>DeX</DisplayName>
+    <DisplayName>DeX - Next Gen Local Send</DisplayName>
     <PublisherDisplayName>CodeDeX</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>

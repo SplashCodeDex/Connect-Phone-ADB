@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.0.0] - 2026-08-01
+### Added
+- [minor] Implemented secure "Gmail-based" shared trust via SHA-256 identity hashing.
+- [minor] Added Settings UI to Android app for configuring identity email.
+- [minor] Added local API endpoint on PC for configuring identity email.
+### Security
+- [minor] Auto-Trusted mode now cryptographically tied to the SHA-256 hash of the configured email address, maintaining Guest separation for unknown devices.
+
 ## [4.0.2.0] - 2026-08-01
 ### Fixed
 - **[fix]** Replaced hardcoded `"dex_static_placeholder_hash_123"` with persistent, per-device UUID generation for `identityHash` and `fingerprint` on both Android and PC to establish genuine device identity and trust levels.

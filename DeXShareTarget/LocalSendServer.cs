@@ -26,6 +26,7 @@ namespace DeXShareTarget
     {
         public static string Fingerprint { get; set; } = "";
         public static string IdentityHash { get; set; } = "";
+        public static string Email { get; set; } = "";
         
         public static void Initialize()
         {
@@ -39,14 +40,44 @@ namespace DeXShareTarget
                     var json = File.ReadAllText(file);
                     var doc = JsonDocument.Parse(json);
                     Fingerprint = doc.RootElement.GetProperty("fingerprint").GetString() ?? Guid.NewGuid().ToString();
-                    IdentityHash = doc.RootElement.GetProperty("identityHash").GetString() ?? Guid.NewGuid().ToString();
+                    Email = doc.RootElement.TryGetProperty("email", out var e) ? e.GetString() ?? "" : "";
+                    
+                    if (!string.IsNullOrWhiteSpace(Email))
+                    {
+                        using var sha = SHA256.Create();
+                        var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(Email.Trim().ToLowerInvariant()));
+                        IdentityHash = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+                    }
+                    else
+                    {
+                        IdentityHash = doc.RootElement.TryGetProperty("identityHash", out var h) ? h.GetString() ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
+                    }
                     return;
                 } catch {}
             }
             
             Fingerprint = Guid.NewGuid().ToString();
             IdentityHash = Guid.NewGuid().ToString();
-            File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash }));
+            File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
+        }
+
+        public static void SetEmail(string email)
+        {
+            Email = email;
+            if (!string.IsNullOrWhiteSpace(Email))
+            {
+                using var sha = SHA256.Create();
+                var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(Email.Trim().ToLowerInvariant()));
+                IdentityHash = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+            }
+            else
+            {
+                IdentityHash = Guid.NewGuid().ToString();
+            }
+            
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+            var file = Path.Combine(dir, "identity.json");
+            File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
         }
     }
 
@@ -344,6 +375,14 @@ namespace DeXShareTarget
                         DiscoveryBackgroundService.Devices.TryRemove(k, out _);
                 }
                 return Results.Json(DiscoveryBackgroundService.Devices.Values);
+            });
+
+            App.MapPost("/local/settings/email", async (HttpRequest req) => 
+            {
+                using var reader = new StreamReader(req.Body);
+                var email = await reader.ReadToEndAsync();
+                IdentityManager.SetEmail(email);
+                return Results.Ok();
             });
 
             _ = Task.Run(StartTcpServerAsync);
