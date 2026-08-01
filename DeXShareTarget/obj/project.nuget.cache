@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LfIoBno4ciI=",
+  "dgSpecHash": "JWtxMJcw1Sw=",
   "success": true,
-  "projectFilePath": "W:\\CodeDeX\\Connect-Phone-ADB\\DeXShareTarget\\DeXShareTarget.csproj",
+  "projectFilePath": "W:\\CodeDeX\\DeX\\DeXShareTarget\\DeXShareTarget.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\NicoDex\\.nuget\\packages\\common.logging\\3.4.1\\common.logging.3.4.1.nupkg.sha512",
     "C:\\Users\\NicoDex\\.nuget\\packages\\common.logging.core\\3.4.1\\common.logging.core.3.4.1.nupkg.sha512",

@@ -128,7 +128,16 @@ class RestServerEngine {
                             return@post
                         }
                         
-                        val responseFiles = request.files.mapValues { UUID.randomUUID().toString() }
+                        val downloadsFolder = java.io.File(
+                            android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS),
+                            "DeX"
+                        )
+                        val responseFiles = mutableMapOf<String, String>()
+                        for ((fileId, fileMeta) in request.files) {
+                            val existing = java.io.File(downloadsFolder, fileMeta.fileName)
+                            if (existing.exists() && existing.length() == fileMeta.size) continue
+                            responseFiles[fileId] = UUID.randomUUID().toString()
+                        }
                         
                         // ponytail: store session to map fileId to original name
                         TransferPromptState.activeSessions[sessionId] = request
@@ -153,7 +162,15 @@ class RestServerEngine {
                         )
                         if (!downloadsFolder.exists()) downloadsFolder.mkdirs()
                         
-                        val file = java.io.File(downloadsFolder, originalFileName)
+                        val ext = if (originalFileName.contains(".")) ".${originalFileName.substringAfterLast(".")}" else ""
+                        val base = if (originalFileName.contains(".")) originalFileName.substringBeforeLast(".") else originalFileName
+                        var file = java.io.File(downloadsFolder, originalFileName)
+                        var counter = 1
+                        while (file.exists()) {
+                            file = java.io.File(downloadsFolder, "$base ($counter)$ext")
+                            counter++
+                        }
+                        
                         val channel = call.receiveChannel()
                         channel.copyAndClose(file.writeChannel())
                         

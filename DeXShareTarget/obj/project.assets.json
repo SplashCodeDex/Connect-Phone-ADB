@@ -294,11 +294,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "W:\\CodeDeX\\Connect-Phone-ADB\\DeXShareTarget\\DeXShareTarget.csproj",
+      "projectUniqueName": "W:\\CodeDeX\\DeX\\DeXShareTarget\\DeXShareTarget.csproj",
       "projectName": "DeXShareTarget",
-      "projectPath": "W:\\CodeDeX\\Connect-Phone-ADB\\DeXShareTarget\\DeXShareTarget.csproj",
+      "projectPath": "W:\\CodeDeX\\DeX\\DeXShareTarget\\DeXShareTarget.csproj",
       "packagesPath": "C:\\Users\\NicoDex\\.nuget\\packages\\",
-      "outputPath": "W:\\CodeDeX\\Connect-Phone-ADB\\DeXShareTarget\\obj\\",
+      "outputPath": "W:\\CodeDeX\\DeX\\DeXShareTarget\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\NicoDex\\AppData\\Roaming\\NuGet\\NuGet.Config"

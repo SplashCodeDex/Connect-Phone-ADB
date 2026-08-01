@@ -40,6 +40,7 @@ class DiscoveryEngine {
     private var nsdManager: NsdManager? = null
     private var registrationListener: NsdManager.RegistrationListener? = null
     private var discoveryListener: NsdManager.DiscoveryListener? = null
+    private var appContext: Context? = null
 
     private val localSendInfo = RegisterDto(
         alias = "DeX",
@@ -54,6 +55,7 @@ class DiscoveryEngine {
     )
 
     fun startDiscovery(context: Context) {
+        appContext = context.applicationContext
         nsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 
         // 1. Register Service
@@ -119,7 +121,16 @@ class DiscoveryEngine {
                 delay(10000)
                 val now = System.currentTimeMillis()
                 _devices.update { map ->
-                    map.filterValues { now - it.lastSeenTimestamp < 20000 }
+                    val toKeep = map.filterValues { now - it.lastSeenTimestamp < 20000 }
+                    val toRemove = map.keys - toKeep.keys
+                    if (toRemove.isNotEmpty()) {
+                        appContext?.let { ctx ->
+                            try {
+                                androidx.core.content.pm.ShortcutManagerCompat.removeDynamicShortcuts(ctx, toRemove.toList())
+                            } catch (e: Exception) { e.printStackTrace() }
+                        }
+                    }
+                    toKeep
                 }
             }
         }
@@ -165,11 +176,13 @@ class DiscoveryEngine {
                                 identityHash = incomingHash
                             )
                             val level = if (incomingHash != null && incomingHash == localSendInfo.identityHash) "Auto-Trusted" else "Guest"
+                            val newDevice = DiscoveredDevice(ip, dto, System.currentTimeMillis(), level)
                             _devices.update { map ->
                                 val newMap = map.toMutableMap()
-                                newMap[fp] = DiscoveredDevice(ip, dto, System.currentTimeMillis(), level)
+                                newMap[fp] = newDevice
                                 newMap
                             }
+                            publishShortcut(newDevice)
                         }
 
                         if (type == "pc" || json.optString("deviceType") == "desktop") {
@@ -226,19 +239,44 @@ class DiscoveryEngine {
                 identityHash = incomingHash
             )
             val level = if (incomingHash != null && incomingHash == localSendInfo.identityHash) "Auto-Trusted" else "Guest"
+            val newDevice = DiscoveredDevice(
+                ip = ip,
+                info = dto,
+                lastSeenTimestamp = System.currentTimeMillis(),
+                trustLevel = level
+            )
             _devices.update { map ->
                 val newMap = map.toMutableMap()
-                newMap[fp] = DiscoveredDevice(
-                    ip = ip,
-                    info = dto,
-                    lastSeenTimestamp = System.currentTimeMillis(),
-                    trustLevel = level
-                )
+                newMap[fp] = newDevice
                 newMap
             }
+            publishShortcut(newDevice)
         }
     }
 
+    private fun publishShortcut(device: DiscoveredDevice) {
+        if (device.info.deviceType != "desktop" && device.info.deviceType != "pc") return
+        val ctx = appContext ?: return
+        try {
+            val intent = android.content.Intent(ctx, com.example.dex.ShareTargetActivity::class.java).apply {
+                action = android.content.Intent.ACTION_SEND
+                putExtra("EXTRA_TARGET_FINGERPRINT", device.info.fingerprint)
+            }
+
+            val shortcut = androidx.core.content.pm.ShortcutInfoCompat.Builder(ctx, device.info.fingerprint)
+                .setShortLabel(device.info.alias)
+                .setLongLabel("Send to ${device.info.alias}")
+                .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(ctx, com.example.dex.R.mipmap.ic_launcher))
+                .setIntent(intent)
+                .setCategories(setOf("com.example.dex.category.DIRECT_SHARE_TARGET"))
+                .setLongLived(true)
+                .build()
+
+            androidx.core.content.pm.ShortcutManagerCompat.addDynamicShortcuts(ctx, listOf(shortcut))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     fun stopDiscovery() {
         try {

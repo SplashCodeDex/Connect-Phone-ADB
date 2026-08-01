@@ -231,8 +231,11 @@ namespace DeXShareTarget
                 var sessionId = Guid.NewGuid().ToString();
                 activeSessions[sessionId] = req;
                 var resFiles = new Dictionary<string, string>();
+                string downloadsFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
                 foreach (var kvp in req.Files)
                 {
+                    string destPath = Path.Combine(downloadsFolder, kvp.Value.FileName);
+                    if (File.Exists(destPath) && new FileInfo(destPath).Length == kvp.Value.Size) continue;
                     resFiles[kvp.Key] = Guid.NewGuid().ToString(); // Token for the file
                 }
                 return Results.Json(new PrepareUploadResponseDto { SessionId = sessionId, Files = resFiles });
@@ -250,7 +253,16 @@ namespace DeXShareTarget
                 string downloadsFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
                 string destPath = Path.Combine(downloadsFolder, fileMeta.FileName);
 
-                using var fs = new FileStream(destPath, FileMode.Create);
+                int counter = 1;
+                while (File.Exists(destPath))
+                {
+                    string nameNoExt = Path.GetFileNameWithoutExtension(fileMeta.FileName);
+                    string ext = Path.GetExtension(fileMeta.FileName);
+                    destPath = Path.Combine(downloadsFolder, $"{nameNoExt} ({counter}){ext}");
+                    counter++;
+                }
+
+                using var fs = new FileStream(destPath, FileMode.CreateNew);
                 await request.Body.CopyToAsync(fs);
 
                 try

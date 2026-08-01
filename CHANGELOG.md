@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.0.1.0] - 2026-08-01
+### Fixed
+- **[fix]** Resolved critical data loss bug in LAN file transfer by replacing silent overwrites with `(n)` counter renaming mechanism for both PC and Android receivers.
+- **[minor]** Implemented size-based deduplication on prepare-upload to intelligently skip redundant LAN transfers, saving bandwidth.
+
 ## [4.0.0.0] - 2026-08-01
 ### Changed
 - **[major]** Completely rebranded the project identity from **Connect-Phone-ADB** to **DeX**.
