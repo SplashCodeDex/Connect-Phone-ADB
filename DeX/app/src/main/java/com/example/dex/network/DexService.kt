@@ -19,7 +19,7 @@ class DexService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        DexAppContainer.context = this
+        DexAppContainer.initialize(this)
         startForegroundServiceNotification()
         
         // Acquire Multicast lock to ensure UDP broadcasts are received

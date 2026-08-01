@@ -42,17 +42,18 @@ class DiscoveryEngine {
     private var discoveryListener: NsdManager.DiscoveryListener? = null
     private var appContext: Context? = null
 
-    private val localSendInfo = RegisterDto(
-        alias = "DeX",
-        version = "2.0",
-        deviceModel = "Android",
-        deviceType = "mobile",
-        fingerprint = "dex-fingerprint",
-        port = 53317,
-        protocol = "https",
-        download = true,
-        identityHash = "dex_static_placeholder_hash_123"
-    )
+    private val localSendInfo: RegisterDto
+        get() = RegisterDto(
+            alias = "DeX",
+            version = "2.0",
+            deviceModel = android.os.Build.MODEL ?: "Android",
+            deviceType = "mobile",
+            fingerprint = DexAppContainer.fingerprint,
+            port = 53317,
+            protocol = "https",
+            download = true,
+            identityHash = DexAppContainer.identityHash
+        )
 
     fun startDiscovery(context: Context) {
         appContext = context.applicationContext

@@ -288,11 +288,11 @@ class ShareTargetActivity : ComponentActivity() {
                             version = "2.0",
                             deviceModel = android.os.Build.MODEL,
                             deviceType = "mobile",
-                            fingerprint = "dex-fingerprint-sender",
+                            fingerprint = DexAppContainer.fingerprint,
                             port = 53317,
                             protocol = "https",
                             download = true,
-                            identityHash = "dex_static_placeholder_hash_123"
+                            identityHash = DexAppContainer.identityHash
                         ),
                         files = filesMap
                     )

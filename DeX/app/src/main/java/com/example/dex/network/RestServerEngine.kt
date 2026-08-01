@@ -31,7 +31,7 @@ class RestServerEngine {
         val authHeader = call.request.header(io.ktor.http.HttpHeaders.Authorization)
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             val token = authHeader.removePrefix("Bearer ")
-            if (token == "dex_static_placeholder_hash_123" || AuthState.guestTokens.contains(token)) {
+            if (token == DexAppContainer.identityHash || AuthState.guestTokens.contains(token)) {
                 return true
             }
         }

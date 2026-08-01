@@ -22,6 +22,34 @@ using Microsoft.Extensions.Hosting;
 
 namespace DeXShareTarget
 {
+    public static class IdentityManager
+    {
+        public static string Fingerprint { get; set; } = "";
+        public static string IdentityHash { get; set; } = "";
+        
+        public static void Initialize()
+        {
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+            Directory.CreateDirectory(dir);
+            var file = Path.Combine(dir, "identity.json");
+            
+            if (File.Exists(file))
+            {
+                try {
+                    var json = File.ReadAllText(file);
+                    var doc = JsonDocument.Parse(json);
+                    Fingerprint = doc.RootElement.GetProperty("fingerprint").GetString() ?? Guid.NewGuid().ToString();
+                    IdentityHash = doc.RootElement.GetProperty("identityHash").GetString() ?? Guid.NewGuid().ToString();
+                    return;
+                } catch {}
+            }
+            
+            Fingerprint = Guid.NewGuid().ToString();
+            IdentityHash = Guid.NewGuid().ToString();
+            File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash }));
+        }
+    }
+
     public class RegisterDto
     {
         [JsonPropertyName("alias")] public string Alias { get; set; } = "DeXDesktop";
@@ -32,6 +60,7 @@ namespace DeXShareTarget
         [JsonPropertyName("port")] public int Port { get; set; } = 53317;
         [JsonPropertyName("protocol")] public string Protocol { get; set; } = "https";
         [JsonPropertyName("download")] public bool Download { get; set; } = true;
+        [JsonPropertyName("identityHash")] public string? IdentityHash { get; set; }
     }
 
     public class PrepareUploadRequestDto
@@ -67,12 +96,16 @@ namespace DeXShareTarget
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var myInfo = new RegisterDto { Fingerprint = "dexdesktop-fingerprint" };
+            var myInfo = new RegisterDto { 
+                Fingerprint = IdentityManager.Fingerprint,
+                IdentityHash = IdentityManager.IdentityHash
+            };
 
             using var mdns = new Makaretu.Dns.MulticastService();
             var service = new Makaretu.Dns.ServiceProfile("DeXDesktop", "_dex._udp", (ushort)53317);
             service.AddProperty("alias", myInfo.Alias);
             service.AddProperty("fingerprint", myInfo.Fingerprint);
+            service.AddProperty("identityHash", myInfo.IdentityHash);
             
             var sd = new Makaretu.Dns.ServiceDiscovery(mdns);
             sd.Advertise(service);
@@ -183,6 +216,7 @@ namespace DeXShareTarget
 
         public static async Task StartAsync()
         {
+            IdentityManager.Initialize();
             var builder = WebApplication.CreateBuilder();
 
             // Self-signed certificate for TLS

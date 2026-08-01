@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.0.2.0] - 2026-08-01
+### Fixed
+- **[fix]** Replaced hardcoded `"dex_static_placeholder_hash_123"` with persistent, per-device UUID generation for `identityHash` and `fingerprint` on both Android and PC to establish genuine device identity and trust levels.
+
 ## [4.0.1.0] - 2026-08-01
 ### Fixed
 - **[fix]** Resolved critical data loss bug in LAN file transfer by replacing silent overwrites with `(n)` counter renaming mechanism for both PC and Android receivers.
