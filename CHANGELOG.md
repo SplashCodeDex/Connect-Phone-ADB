@@ -3,6 +3,7 @@
 ## [4.3.0.0] - 2026-08-02
 ### Added
 - **[minor]** Added "Send Files" and "Send Folder" floating action buttons to the PC Tray UI's File Explorer panel, enabling native PC-to-Android reverse transfers.
+- **[minor]** Added Drag and Drop support to the PC Tray UI File Explorer panel. You can now drag files from Windows desktop and drop them onto the tray window to instantly transfer them to the connected Android device.
 ## [4.2.0.0] - 2026-08-02
 ### Added
 - **[minor]** Upgraded Android file picker from `GetContent()` to `GetMultipleContents()` to support batch sending multiple files at once.

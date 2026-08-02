@@ -552,7 +552,7 @@
         </Grid.ColumnDefinitions>
         
         <!-- File Explorer Panel (left side, hidden by default) -->
-        <Grid Name="FileExplorer" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="24,24,15,15">
+        <Grid Name="FileExplorer" Grid.Column="0" Visibility="Collapsed" Opacity="0" Margin="24,24,15,15" AllowDrop="True" Background="Transparent">
             <Grid.RenderTransform>
                 <TranslateTransform x:Name="fileTrans" X="150" />
             </Grid.RenderTransform>
