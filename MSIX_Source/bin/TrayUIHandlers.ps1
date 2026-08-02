@@ -126,10 +126,10 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
                 }
             }
             
-            # Connect to the device and open File Explorer as requested
             $res = Invoke-AdbConnect -Target $ip
             if ($res.Success) {
-                Invoke-MenuAction $actionPull
+                Show-Toast -Title "Connected" -Message "Connected to $ip"
+                Update-WpfUI
             } else {
                 Show-Toast -Title "Connection Failed" -Message $res.Message
             }

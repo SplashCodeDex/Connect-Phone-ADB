@@ -23,7 +23,7 @@ $script:searchTimer.Interval = [TimeSpan]::FromMilliseconds(150)
 $script:searchTimer.Add_Tick({
     $script:searchTimer.Stop()
     $query = $script:txtSearch.Text.ToLower()
-    if ($query -eq "search files...") { $query = "" }
+    if ($query -eq "search transfers...") { $query = "" }
     foreach ($item in $script:lbFiles.Items) {
         $name = if ($item.Content -and $item.Content.Name) { $item.Content.Name.ToLower() } else { "" }
         if ([string]::IsNullOrWhiteSpace($query) -or $name.Contains($query)) {
@@ -926,3 +926,41 @@ $script:wiggleTimer.Add_Tick({
     }
 })
 $script:wiggleTimer.Start()
+
+$ctxMenu = $script:wpfWindow.Resources["TransferContextMenu"]
+if ($ctxMenu) {
+    $ctxMenu.AddHandler([System.Windows.Controls.MenuItem]::ClickEvent, [System.Windows.RoutedEventHandler]{
+        param($sender, $e)
+        $menuItem = $e.OriginalSource
+        $listBoxItem = $ctxMenu.PlacementTarget
+        if ($null -eq $listBoxItem -or $listBoxItem -isnot [System.Windows.Controls.ListBoxItem]) { return }
+        $path = $listBoxItem.Tag
+        
+        $dangerousExts = @('.exe','.bat','.cmd','.ps1','.vbs','.vbe','.msi','.scr','.com','.pif','.wsf')
+        switch ($menuItem.Name) {
+            "CtxOpen" {
+                if (-not (Test-Path $path)) {
+                    Show-DownloadDockToast "File is missing."
+                    $script:lbFiles.Items.Remove($listBoxItem)
+                    return
+                }
+                $ext = [System.IO.Path]::GetExtension($path).ToLower()
+                if ($dangerousExts -contains $ext) {
+                    Start-Process explorer.exe -ArgumentList "/select,"$path""
+                } else {
+                    Start-Process $path
+                }
+            }
+            "CtxOpenFolder" {
+                Start-Process explorer.exe -ArgumentList "/select,"$path""
+            }
+            "CtxCopyPath" {
+                [System.Windows.Clipboard]::SetText($path)
+            }
+            "CtxDelete" {
+                if (Test-Path $path) { Remove-Item -LiteralPath $path -Force }
+                $script:lbFiles.Items.Remove($listBoxItem)
+            }
+        }
+    })
+}

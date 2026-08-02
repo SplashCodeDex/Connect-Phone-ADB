@@ -129,6 +129,11 @@ function Load-Directory($dirPath) {
             $item.ContentTemplate = $template
             $item.Tag = $full
             
+            if ($isLocal) {
+                $ctx = $script:wpfWindow.Resources["TransferContextMenu"]
+                if ($ctx) { $item.ContextMenu = $ctx }
+            }
+            
             # Staggered Entrance Animation
             $trans = New-Object System.Windows.Media.TranslateTransform
             $trans.Y = 80

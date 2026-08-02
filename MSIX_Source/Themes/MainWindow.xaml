@@ -229,9 +229,45 @@
             <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="Y" From="35" To="0" Duration="0:0:0.75" EasingFunction="{StaticResource BouncyEase}" BeginTime="0:0:0.08" />
             <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.08" />
         </Storyboard>
+        <ContextMenu x:Key="TransferContextMenu" Background="{DynamicResource PrimaryBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="4">
+            <ContextMenu.Resources>
+                <Style TargetType="MenuItem">
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Padding" Value="10,6" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="MenuItem">
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}" Margin="0,2">
+                                    <ContentPresenter ContentSource="Header" RecognizesAccessKey="True" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsHighlighted" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SecondaryHoverBrush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ContextMenu.Resources>
+            <MenuItem Header="Open" Name="CtxOpen" />
+            <MenuItem Header="Open Containing Folder" Name="CtxOpenFolder" />
+            <MenuItem Header="Copy Path" Name="CtxCopyPath" />
+            <Separator Background="{DynamicResource AccentBrush}" Margin="0,4" />
+            <MenuItem Header="Delete" Name="CtxDelete" Foreground="#FF6B6B" />
+        </ContextMenu>
         
         <DataTemplate x:Key="FolderGridTemplate">
-            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="folderBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+                <Border.ToolTip>
+                    <ToolTip Background="{DynamicResource PrimaryBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Placement="Mouse">
+                        <StackPanel Margin="4">
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding Meta}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11" />
+                        </StackPanel>
+                    </ToolTip>
+                </Border.ToolTip>
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
@@ -282,7 +318,15 @@
             </Border>
         </DataTemplate>
         <DataTemplate x:Key="FileGridTemplate">
-            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" ToolTip="{Binding Name}" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+            <Border x:Name="fileBorder" Background="Transparent" CornerRadius="8" Cursor="Hand" Margin="6" Padding="4" RenderTransformOrigin="0.5,0.5">
+                <Border.ToolTip>
+                    <ToolTip Background="{DynamicResource PrimaryBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Placement="Mouse">
+                        <StackPanel Margin="4">
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding Meta}" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11" />
+                        </StackPanel>
+                    </ToolTip>
+                </Border.ToolTip>
                 <Border.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1" ScaleY="1" x:Name="itemScale" />
@@ -1443,3 +1487,4 @@
     </Grid>
     </Border>
 </Window>
+

@@ -1,5 +1,10 @@
 # Changelog
 
+### [minor] Transfer History UX Enhancements (v4.7.0.0)
+- **[minor]** Added a right-click Context Menu to local transfer history items matching the modern rounded-corner aesthetics. Includes 'Open', 'Open Containing Folder', 'Copy Path', and a red 'Delete' action.
+- **[minor]** Added rich multi-line ToolTips on hover for file and folder items, displaying the full item name and its size/date metadata, which is extremely useful for truncated filenames.
+- **[minor]** Fixed a UX regression where connecting to a new or existing device via the tray menu would awkwardly auto-open the local Transfer History folder instead of quietly connecting. Device connects now simply show a success toast.
+- **[fix]** Fixed a stale search filter condition where the search box wouldn't clear automatically because it was still checking for the old "search files..." placeholder instead of "search transfers...".
 ### [fix] Transfer History Edge Case Hardening (v4.6.1.0)
 - **[fix]** Fixed a crash vector where removing missing-file items during a `foreach` loop over `SelectedItems` would throw `InvalidOperationException: Collection was modified`. Now collects missing items into a separate array and removes them after the loop completes.
 - **[fix]** Blocked direct execution of dangerous file types (`.exe`, `.bat`, `.cmd`, `.ps1`, `.vbs`, `.msi`, `.scr`, etc.) when double-clicked in the Transfers panel. These files are now safely revealed in Windows Explorer (`/select`) instead of executed.
@@ -743,5 +748,6 @@
 - **Persistent Spatial Menu**: Removed auto-hiding behavior on `Connect`, `Disconnect`, `Phone Files`, and `Auto-Connect` menu actions so the menu stays open for interactive use.
 - **Dynamic UI State Sync**: Added immediate `Update-WpfUI` triggers on menu actions to update connect/disconnect states and auto-connect highlights live.
 - **Project Rule Protocol**: Configured workspace rules enforcing `/ponytail` ladder, deep edge-case resolution, MSIX build & signing pipelines, and automated release commits.
+
 
 
