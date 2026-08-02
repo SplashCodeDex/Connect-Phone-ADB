@@ -1,5 +1,10 @@
 # Changelog
 
+### [fix] Transfer History Edge Case Hardening (v4.6.1.0)
+- **[fix]** Fixed a crash vector where removing missing-file items during a `foreach` loop over `SelectedItems` would throw `InvalidOperationException: Collection was modified`. Now collects missing items into a separate array and removes them after the loop completes.
+- **[fix]** Blocked direct execution of dangerous file types (`.exe`, `.bat`, `.cmd`, `.ps1`, `.vbs`, `.msi`, `.scr`, etc.) when double-clicked in the Transfers panel. These files are now safely revealed in Windows Explorer (`/select`) instead of executed.
+- **[fix]** Guarded the `Alt+Up` / `Backspace` keyboard shortcut to only fire when browsing a remote phone directory, preventing a silent `RaiseEvent` on the now-collapsed `btnUpDir` button during local Transfer History mode.
+- **[fix]** Changed the stale `` initializer from `/sdcard/` to an empty string, ensuring the auto-refresh guard in `Connect-Engine.ps1` correctly detects local mode on the first `TransferComplete` event.
 ### [minor] Repurposed File Explorer to Transfer History (v4.6.0.0)
 - **Lazy Refactor**: Seamlessly repurposed the existing WPF File Explorer panel into a fully functional local Transfer History viewer pointing at Downloads\dex.
 - **UI Enhancements**: Renamed 'Phone Files' to 'Transfers', updated search placeholders, and hid remote directory navigation controls.
@@ -738,4 +743,5 @@
 - **Persistent Spatial Menu**: Removed auto-hiding behavior on `Connect`, `Disconnect`, `Phone Files`, and `Auto-Connect` menu actions so the menu stays open for interactive use.
 - **Dynamic UI State Sync**: Added immediate `Update-WpfUI` triggers on menu actions to update connect/disconnect states and auto-connect highlights live.
 - **Project Rule Protocol**: Configured workspace rules enforcing `/ponytail` ladder, deep edge-case resolution, MSIX build & signing pipelines, and automated release commits.
+
 

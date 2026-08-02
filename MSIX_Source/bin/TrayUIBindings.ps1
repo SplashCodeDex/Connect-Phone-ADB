@@ -43,7 +43,7 @@ $script:txtSearch.Add_TextChanged({
 
 $script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")
 $script:currentTarget = ""
-$script:currentDirPath = "/sdcard/"
+$script:currentDirPath = ""
 $script:adbLsProc = $null
 
 $script:isLoadingDir = $false
@@ -111,13 +111,24 @@ $script:lbFiles.Add_MouseDoubleClick({
         
         $firstPath = $fileItems[0].Content.FullPath
         if ([System.IO.Path]::IsPathRooted($firstPath) -and $firstPath -match '^[A-Za-z]:\\') {
+            $dangerousExts = @('.exe','.bat','.cmd','.ps1','.vbs','.vbe','.msi','.scr','.com','.pif','.wsf')
+            $missing = @()
             foreach ($item in $fileItems) {
-                if (Test-Path $item.Content.FullPath) {
-                    Start-Process $item.Content.FullPath
+                $fp = $item.Content.FullPath
+                if (-not (Test-Path $fp)) {
+                    $missing += $item
                 } else {
-                    Show-DownloadDockToast "$($item.Content.Name) is missing."
-                    $script:lbFiles.Items.Remove($item)
+                    $ext = [System.IO.Path]::GetExtension($fp).ToLower()
+                    if ($dangerousExts -contains $ext) {
+                        Start-Process explorer.exe -ArgumentList "/select,`"$fp`""
+                    } else {
+                        Start-Process $fp
+                    }
                 }
+            }
+            if ($missing.Count -gt 0) {
+                $missing | ForEach-Object { $script:lbFiles.Items.Remove($_) }
+                Show-DownloadDockToast "$($missing.Count) file(s) missing."
             }
             return
         }
@@ -462,8 +473,8 @@ $script:wpfWindow.Add_KeyDown({
         Reset-SpatialPanels
         $e.Handled = $true
     } elseif (($e.Key -eq [System.Windows.Input.Key]::Up -and ($e.KeyboardDevice.Modifiers -band [System.Windows.Input.ModifierKeys]::Alt)) -or ($e.Key -eq [System.Windows.Input.Key]::Back)) {
-        # Edge Case 25: Alt + Up Arrow / Backspace navigates Up Directory
-        if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible' -and $null -ne $script:btnUpDir) {
+        # Edge Case 25: Alt + Up Arrow / Backspace navigates Up Directory (remote mode only)
+        if ($script:wpfWindow.FindName("FileExplorer").Visibility -eq 'Visible' -and $null -ne $script:btnUpDir -and $script:currentDirPath -notmatch '^[A-Za-z]:\\') {
             $script:btnUpDir.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Primitives.ButtonBase]::ClickEvent)))
             $e.Handled = $true
         }
