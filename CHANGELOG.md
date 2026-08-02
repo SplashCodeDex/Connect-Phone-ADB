@@ -1,5 +1,8 @@
 # Changelog
 
+### [fix] Hotspot Multicast UDP Isolation Bypass (v4.10.1.0)
+- **[fix]** Resolved an issue where Android devices acting as a Hotspot dropped multicast discovery packets. Replaced separate UDP sender with the unified multicast listener socket in `AdbManager.psm1` to establish a stateful Windows Firewall mapping, and updated the Android `DiscoveryEngine.kt` to mirror unicast replies back to the dynamic source port.
+
 ### [minor] Dynamic UDP Device UI & Hotspot Bypass (v4.10.0.0)
 - **[minor]** Bridged the robust UDP discovery backend (`LocalSendServer.cs`) with the PowerShell UI (`Connect-Engine.ps1`) to dynamically render newly discovered local devices.
 - **[minor]** Added a smooth WPF expand/fade-in animation for dynamic UDP devices so they beautifully slide in above the "Nearby Users" section, shifting the static scaffolding down.

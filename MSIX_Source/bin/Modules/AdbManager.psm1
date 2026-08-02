@@ -79,16 +79,15 @@ function Start-MdnsDiscovery {
         param($adbPath, $computerName, $queue)
         
         try {
-            # 1. Setup UDP Multicast Listener
+            # 1. Setup UDP Multicast Listener & Sender
             $udpClient = New-Object System.Net.Sockets.UdpClient
             [void]$udpClient.Client.SetSocketOption([System.Net.Sockets.SocketOptionLevel]::Socket, [System.Net.Sockets.SocketOptionName]::ReuseAddress, $true)
             [void]$udpClient.Client.Bind([System.Net.IPEndPoint]::new([System.Net.IPAddress]::Any, 53317))
             $mcastIp = [System.Net.IPAddress]::Parse("224.0.0.167")
             [void]$udpClient.JoinMulticastGroup($mcastIp)
             
-            # 2. Setup UDP Sender
+            # 2. Setup Target Endpoints
             $targetEp = [System.Net.IPEndPoint]::new($mcastIp, 53317)
-            $sendUdp = New-Object System.Net.Sockets.UdpClient
             $payloadString = "{ `"id`": `"$computerName`", `"type`": `"pc`", `"identityHash`": `"dex_static_placeholder_hash_123`" }"
             $payload = [System.Text.Encoding]::UTF8.GetBytes($payloadString)
             
@@ -131,13 +130,13 @@ function Start-MdnsDiscovery {
                 # B. Broadcast Omni-Mesh beacon (every 5 seconds)
                 if ($now - $lastBroadcast -gt [timespan]::FromSeconds(5)) {
                     # Multicast LAN
-                    [void]$sendUdp.Send($payload, $payload.Length, $targetEp)
+                    [void]$udpClient.Send($payload, $payload.Length, $targetEp)
                     
                     # Hotspot Piercer: Direct Unicast to Gateway
                     $gw = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Where-Object NextHop -match '^[0-9\.]+$' | Select-Object -First 1).NextHop
                     if ($gw -and $gw -ne '0.0.0.0') {
                         $gwEp = [System.Net.IPEndPoint]::new([System.Net.IPAddress]::Parse($gw), 53317)
-                        [void]$sendUdp.Send($payload, $payload.Length, $gwEp)
+                        [void]$udpClient.Send($payload, $payload.Length, $gwEp)
                     }
                     
                     $lastBroadcast = $now

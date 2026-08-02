@@ -217,6 +217,7 @@ class DiscoveryEngine {
                             val replyMsg = replyJson.toString()
                             val replyData = replyMsg.toByteArray(Charsets.UTF_8)
                             val replyPacket = DatagramPacket(replyData, replyData.size, InetAddress.getByName("224.0.0.167"), 53317)
+                            val unicastReplyPacket = DatagramPacket(replyData, replyData.size, packet.address, packet.port) // ponytail: Hotspot return path with dynamic NAT tracking
                             
                             java.net.NetworkInterface.getNetworkInterfaces().toList().forEach { ni ->
                                 try {
@@ -226,6 +227,7 @@ class DiscoveryEngine {
                                     }
                                 } catch (e: Exception) {}
                             }
+                            try { udpSocket?.send(unicastReplyPacket) } catch (e: Exception) {}
                         }
                     } catch (e: Exception) {}
                 }
