@@ -1,5 +1,7 @@
 # Changelog
 
+### [fix] New vs Trusted Device Connect UX (v4.7.1.0)
+- **[fix]** Fixed the connection UX so that connecting to a previously paired or Auto-Trusted device successfully auto-expands the Transfers panel, while connecting to a freshly paired Guest device just shows a "Paired & Connected" toast without aggressively opening the panel.
 ### [minor] Transfer History UX Enhancements (v4.7.0.0)
 - **[minor]** Added a right-click Context Menu to local transfer history items matching the modern rounded-corner aesthetics. Includes 'Open', 'Open Containing Folder', 'Copy Path', and a red 'Delete' action.
 - **[minor]** Added rich multi-line ToolTips on hover for file and folder items, displaying the full item name and its size/date metadata, which is extremely useful for truncated filenames.
@@ -748,6 +750,7 @@
 - **Persistent Spatial Menu**: Removed auto-hiding behavior on `Connect`, `Disconnect`, `Phone Files`, and `Auto-Connect` menu actions so the menu stays open for interactive use.
 - **Dynamic UI State Sync**: Added immediate `Update-WpfUI` triggers on menu actions to update connect/disconnect states and auto-connect highlights live.
 - **Project Rule Protocol**: Configured workspace rules enforcing `/ponytail` ladder, deep edge-case resolution, MSIX build & signing pipelines, and automated release commits.
+
 
 
 

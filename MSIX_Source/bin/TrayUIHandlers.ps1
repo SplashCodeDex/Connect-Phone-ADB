@@ -98,12 +98,16 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
             
             # Check Identity and Pairing status
             $trustLevel = if ($script:omniPeers[$ip]) { $script:omniPeers[$ip].TrustLevel } else { "Guest" }
+            $wasPreviouslyPaired = $trustLevel -eq "Auto-Trusted"
             if ($trustLevel -eq "Guest") {
                 $settingsPath = Join-Path $PSScriptRoot "..\appsettings.json"
                 $tokens = @{}
                 if (Test-Path $settingsPath) { try { $tokens = Get-Content $settingsPath -Raw | ConvertFrom-Json -AsHashtable } catch {} }
                 
-                if (-not $tokens[$ip]) {
+                if ($tokens[$ip]) {
+                    # Previously paired — token already exists
+                    $wasPreviouslyPaired = $true
+                } else {
                     try {
                         [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
                         [void](Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/request" -Method Post -ErrorAction Stop)
@@ -125,11 +129,18 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
                     }
                 }
             }
-            
+
+
             $res = Invoke-AdbConnect -Target $ip
             if ($res.Success) {
-                Show-Toast -Title "Connected" -Message "Connected to $ip"
-                Update-WpfUI
+                if ($wasPreviouslyPaired) {
+                    # Trusted device — auto-expand Transfers panel
+                    Invoke-MenuAction $actionPull
+                } else {
+                    # Just paired for the first time — toast confirmation, don't auto-expand
+                    Show-Toast -Title "Paired & Connected" -Message "Successfully paired with $ip"
+                    Update-WpfUI
+                }
             } else {
                 Show-Toast -Title "Connection Failed" -Message $res.Message
             }
