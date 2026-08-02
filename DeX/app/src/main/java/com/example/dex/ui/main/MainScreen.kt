@@ -43,7 +43,7 @@ fun MainScreen(
 
     // Modern Android Photo/File Picker
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
+        contract = ActivityResultContracts.OpenMultipleDocuments()
     ) { uris: List<Uri> ->
         if (uris.isEmpty()) return@rememberLauncherForActivityResult
         selectedDevice?.let { device ->
@@ -51,6 +51,10 @@ fun MainScreen(
             
             scope.launch {
                 val fileData = uris.associate { uri ->
+                    try {
+                        context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    } catch (e: SecurityException) { /* Ignored */ }
+                    
                     var name = "shared_file"
                     var size = 0L
                     context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
@@ -182,8 +186,8 @@ fun MainScreen(
                     items(devices) { device ->
                         DeviceCard(device = device, onClick = {
                             selectedDevice = device
-                            // Open native file picker (Filters to all files)
-                            filePickerLauncher.launch("*/*") 
+                            // Open native document picker (Filters to all files)
+                            filePickerLauncher.launch(arrayOf("*/*")) 
                         })
                     }
                 }

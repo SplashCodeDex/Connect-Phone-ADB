@@ -650,6 +650,29 @@
                 <TextBlock Text="This folder is empty" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" HorizontalAlignment="Center" Opacity="0.6"/>
             </StackPanel>
             
+            <!-- Floating Action Buttons for PC -> Android Upload -->
+            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,25,30">
+                <Button Name="btnPushFolder" Background="{DynamicResource AccentBrush}" BorderThickness="0" ToolTip="Send Folder" Margin="0,0,0,10" Width="44" Height="44" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="22">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18"/>
+                </Button>
+                <Button Name="btnPushFiles" Background="{DynamicResource AccentBrush}" BorderThickness="0" ToolTip="Send Files" Width="44" Height="44" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="22">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE898;" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="18"/>
+                </Button>
+            </StackPanel>
             <!-- Subtle Floating Dock for Download Status & Location Change -->
             <Border Name="dockDownloadToast" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,15" Background="{DynamicResource AccentBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="20" Padding="14,8" Visibility="Collapsed" Opacity="0" RenderTransformOrigin="0.5,1">
                 <Border.RenderTransform>
