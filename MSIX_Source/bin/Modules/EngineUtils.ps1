@@ -33,7 +33,11 @@ function Load-Directory($dirPath) {
 
         $target = Get-ConnectedDeviceTarget
         if ($script:isMockMode) {
-            $lines = @("mock_vacation_photo.jpg", "IMG_9021.png", "received_document.pdf", "project_video.mp4", "DeX_Transfers/")
+            $lines = @("DeX_Transfers/")
+            for ($i = 1; $i -le 49; $i++) {
+                $ext = if ($i % 4 -eq 0) { ".pdf" } elseif ($i % 3 -eq 0) { ".mp4" } elseif ($i % 2 -eq 0) { ".png" } else { ".jpg" }
+                $lines += "dummy_file_$i$ext"
+            }
         } elseif (-not $target) {
             $lines = @()
         } else {
