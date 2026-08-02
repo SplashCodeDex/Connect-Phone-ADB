@@ -39,7 +39,7 @@ namespace DeXShareTarget
             string xaml = @"
             <Border xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
                     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-                    Background=""#1E1E1E"" CornerRadius=""12"" BorderBrush=""#333333"" BorderThickness=""1"" Margin=""10"">
+                    Background=""{DynamicResource PrimaryBrush}"" CornerRadius=""12"" BorderBrush=""{DynamicResource AccentBrush}"" BorderThickness=""1"" Margin=""10"">
                 <Border.Effect>
                     <DropShadowEffect Color=""Black"" BlurRadius=""15"" ShadowDepth=""0"" Opacity=""0.5""/>
                 </Border.Effect>
@@ -51,17 +51,26 @@ namespace DeXShareTarget
                         <RowDefinition Height=""Auto""/>
                     </Grid.RowDefinitions>
                     
-                    <TextBlock Text=""Sending to Android Device"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Grid.Row=""0"" Margin=""0,0,0,5""/>
+                    <TextBlock Text=""Sending to Android Device"" FontSize=""14"" FontWeight=""Bold"" Foreground=""{DynamicResource PrimaryTextBrush}"" Grid.Row=""0"" Margin=""0,0,0,5""/>
                     
-                    <TextBlock x:Name=""txtStatus"" Text=""Initializing transfer..."" FontSize=""12"" Foreground=""#A0A0A0"" Grid.Row=""1"" Margin=""0,0,0,15"" TextTrimming=""CharacterEllipsis""/>
+                    <TextBlock x:Name=""txtStatus"" Text=""Initializing transfer..."" FontSize=""12"" Foreground=""{DynamicResource SecondaryTextBrush}"" Grid.Row=""1"" Margin=""0,0,0,15"" TextTrimming=""CharacterEllipsis""/>
                     
-                    <Border Grid.Row=""2"" Height=""8"" Background=""#2C2C2E"" CornerRadius=""4"" Margin=""0,0,0,5"" ClipToBounds=""True"">
-                        <Border x:Name=""progressIndicator"" Background=""#00E676"" CornerRadius=""4"" Width=""0"" HorizontalAlignment=""Left""/>
+                    <Border Grid.Row=""2"" Height=""8"" Background=""{DynamicResource AccentBrush}"" CornerRadius=""4"" Margin=""0,0,0,5"" ClipToBounds=""True"">
+                        <Border x:Name=""progressIndicator"" Background=""{DynamicResource SecondaryBrush}"" CornerRadius=""4"" Width=""0"" HorizontalAlignment=""Left""/>
                     </Border>
                     
-                    <TextBlock x:Name=""txtSpeed"" Text=""0 MB/s"" FontSize=""11"" Foreground=""#A0A0A0"" HorizontalAlignment=""Right"" Grid.Row=""3""/>
+                    <TextBlock x:Name=""txtSpeed"" Text=""0.00 MB/s - 0%"" FontSize=""11"" Foreground=""{DynamicResource SecondaryTextBrush}"" Grid.Row=""3"" HorizontalAlignment=""Right""/>
                 </Grid>
             </Border>";
+
+            string themeName = "DarkTheme";
+            try 
+            {
+                var txt = System.IO.File.ReadAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX", "theme.json"));
+                if (txt.Contains("LightTheme")) themeName = "LightTheme";
+            } catch {}
+            var dict = (ResourceDictionary)System.Windows.Markup.XamlReader.Load(new System.IO.FileStream(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Themes", themeName + ".xaml"), System.IO.FileMode.Open, System.IO.FileAccess.Read));
+            this.Resources.MergedDictionaries.Add(dict);
 
             var rootBorder = (Border)System.Windows.Markup.XamlReader.Parse(xaml);
             txtStatus = (TextBlock)rootBorder.FindName("txtStatus");

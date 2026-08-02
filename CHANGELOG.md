@@ -1,6 +1,14 @@
 # Changelog
 
-### [fix] Resolve UI Binding Bug for Discovered Devices (v4.11.6.0)
+### [fix] OmniMesh Discovery Hotspot Fallback (v4.11.12.0)
+- **[fix]** Restored robust OmniMesh discovery for devices acting as Wi-Fi Hotspots by integrating a `/ponytail` fallback that reads active ADB connected devices and injects them directly into the Spatial UI's peer list, bypassing flaky UDP Multicast filtering on Android Hotspots.
+### [fix] Enable HTTP/3 (QUIC) without Blocking Discovery (v4.11.8.0)
+- **[fix]** Restored HTTP/3 capabilities on the Kestrel server without compromising background discovery. Split the Kestrel endpoints to host HTTP/1.1 and HTTP/2 on TCP 53317, while hosting HTTP/3 (QUIC) on UDP 53316.
+- **[fix]** Injected a custom middleware to rewrite the `Alt-Svc` HTTP header to advertise the dedicated HTTP/3 port (53316) to compliant clients. This resolves the `WSAEACCES` socket conflict with the OmniMesh UDP multicast beacon logic on port 53317.
+
+### [fix] Resolve Discovery Daemon Crash & Kestrel Port Conflict (v4.11.7.0)
+- **[fix]** Disabled HTTP/3 (QUIC) in Kestrel, which was implicitly binding to UDP 53317 and causing the DiscoveryBackgroundService to crash with Access Denied (10013), crashing the entire app instance.
+- **[fix]** Program.cs now waits infinitely, keeping DeXShareTarget alive for continuous background discovery.
 - **[fix]** Desktop UDP discovery (OmniMesh beacons) now starts unconditionally instead of being gated behind the Auto-Connect toggle. Auto-Connect still only gates automatic ADB connections — the PC is now always visible on the local network.
 - **[fix]** Changed Android `MainActivity` to use `startForegroundService()` instead of `startService()`, preventing Samsung's `FreecessHandler` from freezing the DeX companion process when backgrounded.
 - **[fix]** Added unicast UDP reply in `DiscoveryEngine.kt` to bypass Android Hotspot AP client isolation that drops multicast responses.

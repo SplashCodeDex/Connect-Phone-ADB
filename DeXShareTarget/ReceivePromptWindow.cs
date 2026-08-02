@@ -123,6 +123,15 @@ namespace DeXShareTarget
                 </Grid>
             </Border>";
 
+            string themeName = "DarkTheme";
+            try 
+            {
+                var txt = System.IO.File.ReadAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX", "theme.json"));
+                if (txt.Contains("LightTheme")) themeName = "LightTheme";
+            } catch {}
+            var dict = (ResourceDictionary)System.Windows.Markup.XamlReader.Load(new System.IO.FileStream(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Themes", themeName + ".xaml"), System.IO.FileMode.Open, System.IO.FileAccess.Read));
+            this.Resources.MergedDictionaries.Add(dict);
+
             var rootBorder = (Border)System.Windows.Markup.XamlReader.Parse(xaml);
             
             var btnDecline = (Button)rootBorder.FindName("btnDecline");

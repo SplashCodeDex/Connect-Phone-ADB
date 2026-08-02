@@ -81,6 +81,10 @@ function Set-AppTheme {
         if ($txtTheme) {
             $txtTheme.Text = if ($ThemeName -eq "DarkTheme") { "Dark" } else { "Light" }
         }
+        try {
+            $themeFile = Join-Path $env:LOCALAPPDATA "DeX\theme.json"
+            @{ CurrentTheme = $global:CurrentTheme; AppThemeMode = $global:AppThemeMode } | ConvertTo-Json -Depth 2 | Set-Content -Path $themeFile -Force -ErrorAction SilentlyContinue
+        } catch {}
     }
 }
 #Export-ModuleMember -Function Set-AppTheme

@@ -227,7 +227,9 @@ class DiscoveryEngine {
                                     }
                                 } catch (e: Exception) {}
                             }
-                            try { udpSocket?.send(unicastReplyPacket) } catch (e: Exception) {}
+                            try { 
+                                java.net.DatagramSocket().use { ds -> ds.send(unicastReplyPacket) } 
+                            } catch (e: Exception) {}
                         }
                     } catch (e: Exception) {}
                 }

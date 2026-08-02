@@ -38,7 +38,7 @@ function Invoke-ExitEngine {
     $script:wpfWindow.Hide()
     $script:notifyIcon.Visible = $false
     $script:notifyIcon.Dispose()
-    Stop-Process -Name "adb", "scrcpy" -ErrorAction SilentlyContinue
+    Stop-Process -Name "adb", "scrcpy", "DeXShareTarget" -ErrorAction SilentlyContinue
     [System.Windows.Forms.Application]::Exit()
 }
 

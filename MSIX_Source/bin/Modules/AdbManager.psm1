@@ -98,6 +98,27 @@ function Start-MdnsDiscovery {
                             }
                         }
                     }
+                    
+                    # B. /ponytail: Fallback to active ADB devices for robust Hotspot discovery
+                    $devOut = & $adbPath devices -l 2>&1
+                    if ($null -ne $devOut) {
+                        $dLines = $devOut -split '`r?`n'
+                        foreach ($line in $dLines) {
+                            if ($line -match '^([0-9\.]+):[0-9]+\s+device.*?model:([^\s]+)') {
+                                $ip = $matches[1]
+                                $model = $matches[2] -replace '_', ' '
+                                [void]$queue.Enqueue(@{ 
+                                    Type = 'OmniMesh'
+                                    IPPort = "$ip:5555"
+                                    Name = $model
+                                    DeviceType = "mobile"
+                                    Model = $model
+                                    IdentityHash = "dex_static_placeholder_hash_123" # Auto-trust adb connected
+                                })
+                            }
+                        }
+                    }
+                    
                     $lastMdns = $now
                 }
                 

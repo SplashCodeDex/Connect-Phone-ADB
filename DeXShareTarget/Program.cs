@@ -122,16 +122,19 @@ namespace DeXShareTarget
                 
                 var proc = Process.Start(startInfo);
                 
-                try 
+                var app = new System.Windows.Application();
+                app.Startup += (s, e) => 
                 {
-                    LocalSendServer.StartAsync().Wait();
-                } 
-                catch (Exception ex)
-                {
-                    File.WriteAllText(Path.Combine(Path.GetTempPath(), "LocalSendServerCrash.txt"), ex.ToString());
-                }
-
-                proc?.WaitForExit();
+                    try 
+                    {
+                        LocalSendServer.StartAsync();
+                    } 
+                    catch (Exception ex) 
+                    {
+                        File.WriteAllText(Path.Combine(Path.GetTempPath(), "LocalSendServerCrash.txt"), ex.ToString());
+                    }
+                };
+                app.Run();
             }
         }
     }

@@ -110,6 +110,16 @@ class UploadWorker(
     private fun createForegroundInfo(progress: Int, text: String): ForegroundInfo {
         val cancelIntent = androidx.work.WorkManager.getInstance(applicationContext).createCancelPendingIntent(id)
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = android.app.NotificationChannel(
+                channelId,
+                "File Uploads",
+                android.app.NotificationManager.IMPORTANCE_LOW
+            )
+            val manager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setContentTitle("Sending Files")
             .setContentText(text)

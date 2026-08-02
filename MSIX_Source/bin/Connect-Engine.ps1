@@ -132,10 +132,22 @@ if ($null -eq $script:wpfWindow) {
     exit
 }
 
-$global:CurrentTheme = "DarkTheme"
-$global:AppThemeMode = "System"
+$themeFile = Join-Path $env:LOCALAPPDATA "DeX\theme.json"
+if (Test-Path $themeFile) {
+    try {
+        $cfg = Get-Content $themeFile -Raw | ConvertFrom-Json
+        $global:CurrentTheme = $cfg.CurrentTheme
+        $global:AppThemeMode = $cfg.AppThemeMode
+    } catch {}
+}
+if (-not $global:CurrentTheme) { $global:CurrentTheme = "DarkTheme" }
+if (-not $global:AppThemeMode) { $global:AppThemeMode = "System" }
 
-Set-AppTheme (Get-SystemTheme)
+if ($global:AppThemeMode -eq "System") {
+    Set-AppTheme (Get-SystemTheme)
+} else {
+    Set-AppTheme $global:CurrentTheme
+}
 [Microsoft.Win32.SystemEvents]::add_UserPreferenceChanged({
     param($sender, $e)
     if ($global:AppThemeMode -eq "System") {
@@ -320,7 +332,7 @@ $mdnsTimer.Add_Tick({
                         $icUdp = $script:wpfWindow.FindName("icUdpPeers")
                         if ($icUdp) {
                             $liveUdp = @()
-                            foreach ($p in $udpRes.psobject.properties.Value) {
+                            foreach ($p in $udpRes) {
                                 $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
                                 if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
                                     $liveUdp += $p
