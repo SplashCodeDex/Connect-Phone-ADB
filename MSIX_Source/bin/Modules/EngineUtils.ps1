@@ -1,3 +1,68 @@
+if (-not ("ThumbHelper" -as [type])) {
+    $thumbCode = @"
+using System;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
+using System.Windows;
+
+public class ThumbHelper {
+    [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+    public static extern void SHCreateItemFromParsingName(string path, IntPtr pbc, [MarshalAs(UnmanagedType.LPStruct)] Guid riid, out object ppv);
+
+    [DllImport("gdi32.dll")]
+    public static extern bool DeleteObject(IntPtr hObject);
+
+    public static BitmapSource GetThumb(string path, int size) {
+        Guid iid = new Guid("bcc18b79-ba16-442f-80c4-8a15c3ed75a8");
+        object item;
+        SHCreateItemFromParsingName(path, IntPtr.Zero, iid, out item);
+        
+        IntPtr hBitmap;
+        // SIIGBF_MEMORYONLY (0x2) is safer for performance, but 0x0 will fetch or generate
+        ((dynamic)item).GetImage(new System.Drawing.Size(size, size), 0x0, out hBitmap);
+        
+        BitmapSource bs = Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        bs.Freeze();
+        DeleteObject(hBitmap);
+        return bs;
+    }
+}
+"@
+    try {
+        Add-Type -TypeDefinition $thumbCode -ReferencedAssemblies "System.Drawing", "PresentationCore", "WindowsBase", "Microsoft.CSharp" -ErrorAction SilentlyContinue
+    } catch {}
+}
+
+function Load-ThumbnailAsync($targetItem, $fullPath, $fileName, $isDir, $metaStr) {
+    if ($isDir -or -not ("ThumbHelper" -as [type])) { return }
+    $action = [System.Action]{
+        try {
+            $bs = $null
+            if ($fileName -match '\.(jpg|jpeg|png|webp|bmp)$') {
+                $bmp = New-Object System.Windows.Media.Imaging.BitmapImage
+                $bmp.BeginInit()
+                $bmp.UriSource = New-Object System.Uri("file:///$fullPath")
+                $bmp.DecodePixelWidth = 100
+                $bmp.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
+                $bmp.EndInit()
+                $bmp.Freeze()
+                $bs = $bmp
+            } else {
+                $bs = [ThumbHelper]::GetThumb($fullPath, 100)
+            }
+            if ($bs) {
+                $uiAction = [System.Action]{
+                    $targetItem.Content = [PSCustomObject]@{ Name = $fileName; FullPath = $fullPath; IsDir = $isDir; Meta = $metaStr; Thumb = $bs; NoThumb = 'Collapsed' }
+                }
+                $script:wpfWindow.Dispatcher.Invoke($uiAction)
+            }
+        } catch {
+            # Silently fail for unsupported files
+        }
+    }
+    $null = $action.BeginInvoke($null, $null)
+}
 
 function Load-Directory($dirPath) {
     if ($script:isLoadingDir) { return }
@@ -125,13 +190,16 @@ function Load-Directory($dirPath) {
             
             $meta = if ($isLocal -and $script:localFileMeta[$name]) { $script:localFileMeta[$name] } else { "" }
             $item = New-Object System.Windows.Controls.ListBoxItem
-            $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir; Meta = $meta }
+            $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir; Meta = $meta; Thumb = $null; NoThumb = 'Visible' }
             $item.ContentTemplate = $template
             $item.Tag = $full
             
             if ($isLocal) {
                 $ctx = $script:wpfWindow.Resources["TransferContextMenu"]
                 if ($ctx) { $item.ContextMenu = $ctx }
+                
+                # Kick off async thumbnail generation
+                Load-ThumbnailAsync $item $full $name $isDir $meta
             }
             
             # Staggered Entrance Animation

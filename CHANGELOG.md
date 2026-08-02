@@ -1,5 +1,8 @@
 # Changelog
 
+### [minor] Async File Thumbnails in Transfer History (v4.8.0.0)
+- **[minor]** Replaced static generic document icons with rich, async-loaded thumbnails in the local File Explorer / Transfer History. 
+- Implemented a high-performance Hybrid loading strategy: standard images use ultra-fast WPF decoding, while videos and documents utilize native Windows IShellItemImageFactory via dynamic C# injection.
 ### [fix] New vs Trusted Device Connect UX (v4.7.1.0)
 - **[fix]** Fixed the connection UX so that connecting to a previously paired or Auto-Trusted device successfully auto-expands the Transfers panel, while connecting to a freshly paired Guest device just shows a "Paired & Connected" toast without aggressively opening the panel.
 ### [minor] Transfer History UX Enhancements (v4.7.0.0)
@@ -750,6 +753,7 @@
 - **Persistent Spatial Menu**: Removed auto-hiding behavior on `Connect`, `Disconnect`, `Phone Files`, and `Auto-Connect` menu actions so the menu stays open for interactive use.
 - **Dynamic UI State Sync**: Added immediate `Update-WpfUI` triggers on menu actions to update connect/disconnect states and auto-connect highlights live.
 - **Project Rule Protocol**: Configured workspace rules enforcing `/ponytail` ladder, deep edge-case resolution, MSIX build & signing pipelines, and automated release commits.
+
 
 
 
