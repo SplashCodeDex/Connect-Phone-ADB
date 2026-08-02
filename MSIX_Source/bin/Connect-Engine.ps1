@@ -213,6 +213,10 @@ $mdnsTimer.Add_Tick({
         while ($script:transferQueue.TryDequeue([ref]$t)) {
             if ($t.Type -eq 'TransferComplete') {
                 Show-Toast -Title "File Received" -Message "Saved to: $($t.File)"
+                $fe = $script:wpfWindow.FindName("FileExplorer")
+                if ($fe -and $fe.Visibility -eq 'Visible' -and $script:currentDirPath -match '^[A-Za-z]:\\') {
+                    $script:wpfWindow.Dispatcher.InvokeAsync([Action]{ Load-Directory $script:currentDirPath }) | Out-Null
+                }
             } elseif ($t.Type -eq 'Error') {
                 Write-Trace $t.Message
             }

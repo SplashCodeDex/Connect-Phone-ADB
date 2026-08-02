@@ -238,9 +238,10 @@
                         <TranslateTransform X="0" Y="0" x:Name="itemTrans" />
                     </TransformGroup>
                 </Border.RenderTransform>
-                <StackPanel Width="85" Height="90">
+                <StackPanel Width="100" Height="105">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                     <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" FontWeight="Medium"/>
+                    <TextBlock Text="{Binding Meta}" Foreground="{DynamicResource SecondaryTextBrush}" TextAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" FontSize="10" Margin="0,4,0,0" Opacity="0.7"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -288,9 +289,10 @@
                         <TranslateTransform X="0" Y="0" x:Name="itemTrans" />
                     </TransformGroup>
                 </Border.RenderTransform>
-                <StackPanel Width="85" Height="90">
+                <StackPanel Width="100" Height="105">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE7C3;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="42" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                     <TextBlock Text="{Binding Name}" Foreground="{DynamicResource PrimaryTextBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35" TextTrimming="CharacterEllipsis" FontSize="12" Margin="0,8,0,0" Opacity="0.85"/>
+                    <TextBlock Text="{Binding Meta}" Foreground="{DynamicResource SecondaryTextBrush}" TextAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" FontSize="10" Margin="0,4,0,0" Opacity="0.7"/>
                 </StackPanel>
                 <Border.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -699,7 +701,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 
-                <Button Name="btnUpDir" Grid.Column="0" Background="{DynamicResource AccentBrush}" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Content="&#xE898;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="12">
+                <Button Name="btnUpDir" Grid.Column="0" Background="{DynamicResource AccentBrush}" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Content="&#xE898;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="12" Visibility="Collapsed">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border Background="{TemplateBinding Background}" CornerRadius="18">
@@ -716,7 +718,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                        <TextBox Name="txtSearch" Grid.Column="1" Text="Search files..." FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" CaretBrush="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
+                        <TextBox Name="txtSearch" Grid.Column="1" Text="Search transfers..." FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" CaretBrush="{DynamicResource PrimaryTextBrush}" Background="Transparent" BorderThickness="0" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" Padding="0" Margin="0" />
                     </Grid>
                 </Border>
                 
@@ -778,7 +780,7 @@
             <!-- Empty Folder State Overlay -->
             <StackPanel Name="emptyFolderState" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" Opacity="0">
                 <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="48" HorizontalAlignment="Center" Opacity="0.4" Margin="0,0,0,10"/>
-                <TextBlock Text="This folder is empty" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" HorizontalAlignment="Center" Opacity="0.6"/>
+                <TextBlock Text="No transfers yet" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" HorizontalAlignment="Center" Opacity="0.6"/>
             </StackPanel>
             
             <StackPanel Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,15,0,25">
@@ -1166,7 +1168,7 @@
                     <ToggleButton Name="btnQAMirror" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Mirror Phone">
                         <TextBlock Text="&#xE8EA;" />
                     </ToggleButton>
-                    <ToggleButton Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Phone Files">
+                    <ToggleButton Name="btnQAPull" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Transfers">
                         <TextBlock Text="&#xE8B7;" />
                     </ToggleButton>
                     <ToggleButton Name="btnQAClipboard" Style="{StaticResource QuickActionBtn}" Margin="3,0" ToolTip="Clipboard">

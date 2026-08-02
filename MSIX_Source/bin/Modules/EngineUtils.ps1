@@ -8,14 +8,19 @@ function Load-Directory($dirPath) {
         
         # Auto-reset search bar text so the new directory displays all items cleanly
         if ($null -ne $script:txtSearch) {
-            $script:txtSearch.Text = "Search files..."
+            $script:txtSearch.Text = "Search transfers..."
             $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
         }
         
         # Edge Case 27: Normalize and sanitize directory path
-        $dirPath = ($dirPath -replace '(?<!:)/+', '/').Trim()
-        if (-not $dirPath.StartsWith("/")) { $dirPath = "/" + $dirPath }
-        if (-not $dirPath.EndsWith("/")) { $dirPath = $dirPath + "/" }
+        $isLocal = [System.IO.Path]::IsPathRooted($dirPath) -and $dirPath -match '^[A-Za-z]:\\'
+        if (-not $isLocal) {
+            $dirPath = ($dirPath -replace '(?<!:)/+', '/').Trim()
+            if (-not $dirPath.StartsWith("/")) { $dirPath = "/" + $dirPath }
+            if (-not $dirPath.EndsWith("/")) { $dirPath = $dirPath + "/" }
+        } else {
+            if (-not $dirPath.EndsWith("\")) { $dirPath = $dirPath + "\" }
+        }
         
         $script:currentDirPath = $dirPath
         $script:lbFiles.Items.Clear()
@@ -32,7 +37,22 @@ function Load-Directory($dirPath) {
         
 
         $target = Get-ConnectedDeviceTarget
-        if ($script:isMockMode) {
+        if ($isLocal) {
+            $lines = @()
+            $script:localFileMeta = @{}
+            if (Test-Path $dirPath) {
+                Get-ChildItem -Path $dirPath -File | Sort-Object LastWriteTime -Descending | Select-Object -First 50 | ForEach-Object {
+                    $lines += $_.Name
+                    $bytes = $_.Length
+                    if ($bytes -ge 1GB) { $sz = "{0:N1} GB" -f ($bytes / 1GB) }
+                    elseif ($bytes -ge 1MB) { $sz = "{0:N1} MB" -f ($bytes / 1MB) }
+                    elseif ($bytes -ge 1KB) { $sz = "{0:N0} KB" -f ($bytes / 1KB) }
+                    else { $sz = "$bytes B" }
+                    $dt = $_.LastWriteTime.ToString("MMM d, h:mm tt")
+                    $script:localFileMeta[$_.Name] = "$sz · $dt"
+                }
+            }
+        } elseif ($script:isMockMode) {
             $lines = @("DeX_Transfers/")
             for ($i = 1; $i -le 49; $i++) {
                 $ext = if ($i % 4 -eq 0) { ".pdf" } elseif ($i % 3 -eq 0) { ".mp4" } elseif ($i % 2 -eq 0) { ".png" } else { ".jpg" }
@@ -93,18 +113,19 @@ function Load-Directory($dirPath) {
         
         $idx = 0
         foreach ($line in $lines) {
-            $isDir = $line.EndsWith("/")
-            $name = $line.TrimEnd('/', '*', '@', '=')
+            $isDir = $line.EndsWith("/") -or $line.EndsWith("\")
+            $name = $line.TrimEnd('/', '\', '*', '@', '=')
             if ($isDir) {
-                $full = $dirPath + $name + "/"
+                $full = if ($isLocal) { $dirPath + $name + "\" } else { $dirPath + $name + "/" }
                 $template = $script:wpfWindow.Resources["FolderGridTemplate"]
             } else {
                 $full = $dirPath + $name
                 $template = $script:wpfWindow.Resources["FileGridTemplate"]
             }
             
+            $meta = if ($isLocal -and $script:localFileMeta[$name]) { $script:localFileMeta[$name] } else { "" }
             $item = New-Object System.Windows.Controls.ListBoxItem
-            $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir }
+            $item.Content = [PSCustomObject]@{ Name = $name; FullPath = $full; IsDir = $isDir; Meta = $meta }
             $item.ContentTemplate = $template
             $item.Tag = $full
             

@@ -7,14 +7,14 @@ $script:lbFiles = $script:wpfWindow.FindName("lbFiles")
 
 $script:txtSearch = $script:wpfWindow.FindName("txtSearch")
 $script:txtSearch.Add_GotFocus({
-    if ($script:txtSearch.Text -eq "Search files...") {
+    if ($script:txtSearch.Text -eq "Search transfers...") {
         $script:txtSearch.Text = ""
         $script:txtSearch.Foreground = $script:wpfWindow.FindResource("PrimaryTextBrush")
     }
 })
 $script:txtSearch.Add_LostFocus({
     if ([string]::IsNullOrWhiteSpace($script:txtSearch.Text)) {
-        $script:txtSearch.Text = "Search files..."
+        $script:txtSearch.Text = "Search transfers..."
         $script:txtSearch.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
     }
 })
@@ -108,6 +108,19 @@ $script:lbFiles.Add_MouseDoubleClick({
         # Batch pull all selected file items
         $fileItems = @($selectedItems | Where-Object { $null -ne $_.Content -and -not $_.Content.IsDir })
         if ($fileItems.Count -eq 0) { return }
+        
+        $firstPath = $fileItems[0].Content.FullPath
+        if ([System.IO.Path]::IsPathRooted($firstPath) -and $firstPath -match '^[A-Za-z]:\\') {
+            foreach ($item in $fileItems) {
+                if (Test-Path $item.Content.FullPath) {
+                    Start-Process $item.Content.FullPath
+                } else {
+                    Show-DownloadDockToast "$($item.Content.Name) is missing."
+                    $script:lbFiles.Items.Remove($item)
+                }
+            }
+            return
+        }
         
         $outDir = if ($script:customDownloadPath) { 
             $script:customDownloadPath 
@@ -420,7 +433,7 @@ $script:wpfWindow.Add_KeyDown({
     )
     if ($isInputFocused) {
         if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
-            if ($script:txtSearch.Text -and $script:txtSearch.Text -ne "Search files...") {
+            if ($script:txtSearch.Text -and $script:txtSearch.Text -ne "Search transfers...") {
                 $script:txtSearch.Text = ""
             } else {
                 [System.Windows.Input.Keyboard]::ClearFocus()

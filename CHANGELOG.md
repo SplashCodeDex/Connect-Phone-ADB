@@ -1,5 +1,12 @@
 # Changelog
 
+### [minor] Repurposed File Explorer to Transfer History (v4.6.0.0)
+- **Lazy Refactor**: Seamlessly repurposed the existing WPF File Explorer panel into a fully functional local Transfer History viewer pointing at Downloads\dex.
+- **UI Enhancements**: Renamed 'Phone Files' to 'Transfers', updated search placeholders, and hid remote directory navigation controls.
+- **Smart Double-Click**: Changed double-click behavior to launch the downloaded file natively in Windows instead of triggering a redundant ADB pull.
+- **Missing File Edge Case**: Added proactive Test-Path checks; if a user tries to open a file they've deleted externally, DeX intercepts it, safely removes the ghost entry from the list, and toasts "File missing" instead of failing silently.
+- **Live Auto-Refresh**: Piggybacked on the mDNS polling timer so that when a new file arrives via the OmniTransfer server, the Transfers UI auto-refreshes instantly without needing to close and reopen the panel.
+- **Rich Metadata**: Upgraded the file grid UI to display formatted file sizes (KB/MB/GB) and exact transfer timestamps (e.g., 2.4 MB · Aug 2, 4:30 PM) using a 50-item performance cap.
 ## [4.3.0.0] - 2026-08-02
 ### Added
 - **[minor]** Added "Send Files" and "Send Folder" floating action buttons to the PC Tray UI's File Explorer panel, enabling native PC-to-Android reverse transfers.
@@ -731,3 +738,4 @@
 - **Persistent Spatial Menu**: Removed auto-hiding behavior on `Connect`, `Disconnect`, `Phone Files`, and `Auto-Connect` menu actions so the menu stays open for interactive use.
 - **Dynamic UI State Sync**: Added immediate `Update-WpfUI` triggers on menu actions to update connect/disconnect states and auto-connect highlights live.
 - **Project Rule Protocol**: Configured workspace rules enforcing `/ponytail` ladder, deep edge-case resolution, MSIX build & signing pipelines, and automated release commits.
+
