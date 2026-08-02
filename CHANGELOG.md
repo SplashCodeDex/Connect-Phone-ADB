@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.2.0.0] - 2026-08-02
+### Added
+- **[minor]** Upgraded Android file picker from `GetContent()` to `GetMultipleContents()` to support batch sending multiple files at once.
+- **[fix]** Resolved a silent compile failure in `Navigation.kt` by correctly implementing `NavKey` and `@Serializable` on `Settings` object for Jetpack Compose Navigation 3.
+
 ## [4.1.0.0] - 2026-08-01
 ### Added
 - [minor] Implemented secure "Gmail-based" shared trust via SHA-256 identity hashing.

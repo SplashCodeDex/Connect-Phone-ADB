@@ -11,8 +11,6 @@ import androidx.navigation3.ui.NavDisplay
 import com.example.dex.ui.main.MainScreen
 import com.example.dex.ui.settings.SettingsScreen
 
-object Main
-object Settings
 
 @Composable
 fun MainNavigation() {

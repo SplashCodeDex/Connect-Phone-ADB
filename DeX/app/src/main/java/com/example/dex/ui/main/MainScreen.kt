@@ -43,58 +43,56 @@ fun MainScreen(
 
     // Modern Android Photo/File Picker
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let { selectedUri ->
-            selectedDevice?.let { device ->
-                var fileName = "shared_file"
-                var fileSize = 0L
-
-                context.contentResolver.query(selectedUri, null, null, null, null)?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
-                        val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
-                        if (nameIndex >= 0) fileName = cursor.getString(nameIndex) ?: fileName
-                        if (sizeIndex >= 0) fileSize = cursor.getLong(sizeIndex)
-                    }
-                }
-                
-                val fileId = java.util.UUID.randomUUID().toString()
-
-                Toast.makeText(context, "Sending $fileName to ${device.info.alias}...", Toast.LENGTH_SHORT).show()
-                // Hooking into LocalSend client engine
-                scope.launch {
-                    val prepareRequest = com.example.dex.network.PrepareUploadRequestDto(
-                        info = com.example.dex.network.RegisterDto(
-                            alias = "DeX", version = "2.0", deviceModel = "Android",
-                            deviceType = "mobile", fingerprint = "dex-fingerprint",
-                            port = 53317, protocol = "https", download = true
-                        ),
-                        files = mapOf(fileId to com.example.dex.network.FileDto(fileId, fileName, fileSize, "application/octet-stream"))
-                    )
-                    
-                    val response = DexAppContainer.clientEngine.prepareUpload(device.ip, device.info.port, prepareRequest)
-                    if (response != null) {
-                        Log.i("DeX", "UI: Transfer Prepared! SessionId: ${response.sessionId}")
-                        
-                        val token = response.files[fileId] ?: ""
-                        val stream = context.contentResolver.openInputStream(selectedUri)
-                        if (stream != null) {
-                            stream.use {
-                                val success = DexAppContainer.clientEngine.uploadFile(device.ip, device.info.port, response.sessionId, fileId, token, it, fileSize)
-                                if (success) {
-                                    Log.i("DeX", "UI: File uploaded successfully!")
-                                    Toast.makeText(context, "Upload Success!", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Log.e("DeX", "UI Error: File upload failed.")
-                                }
-                            }
-                        } else {
-                            Log.e("DeX", "UI Error: Could not open stream.")
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        if (uris.isEmpty()) return@rememberLauncherForActivityResult
+        selectedDevice?.let { device ->
+            Toast.makeText(context, "Sending ${uris.size} files to ${device.info.alias}...", Toast.LENGTH_SHORT).show()
+            
+            scope.launch {
+                val fileData = uris.associate { uri ->
+                    var name = "shared_file"
+                    var size = 0L
+                    context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val nameIdx = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                            val sizeIdx = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
+                            if (nameIdx >= 0) name = cursor.getString(nameIdx) ?: name
+                            if (sizeIdx >= 0) size = cursor.getLong(sizeIdx)
                         }
-                    } else {
-                        Log.e("DeX", "UI Error: Transfer preparation failed.")
                     }
+                    java.util.UUID.randomUUID().toString() to Triple(uri, name, size)
+                }
+
+                val prepareRequest = com.example.dex.network.PrepareUploadRequestDto(
+                    info = com.example.dex.network.RegisterDto(
+                        alias = "DeX", version = "2.0", deviceModel = "Android",
+                        deviceType = "mobile", fingerprint = "dex-fingerprint",
+                        port = 53317, protocol = "https", download = true
+                    ),
+                    files = fileData.mapValues { (id, d) -> com.example.dex.network.FileDto(id, d.second, d.third, "application/octet-stream") }
+                )
+                
+                val response = DexAppContainer.clientEngine.prepareUpload(device.ip, device.info.port, prepareRequest)
+                if (response != null) {
+                    Log.i("DeX", "UI: Transfer Prepared! SessionId: ${response.sessionId}")
+                    var successCount = 0
+                    fileData.forEach { (id, d) ->
+                        val token = response.files[id] ?: return@forEach
+                        context.contentResolver.openInputStream(d.first)?.use { stream ->
+                            if (DexAppContainer.clientEngine.uploadFile(device.ip, device.info.port, response.sessionId, id, token, stream, d.third)) {
+                                successCount++
+                            }
+                        }
+                    }
+                    if (successCount > 0) {
+                        Toast.makeText(context, "Uploaded $successCount/${uris.size} files successfully!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Upload failed for all files.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Log.e("DeX", "UI Error: Transfer preparation failed.")
+                    Toast.makeText(context, "Transfer preparation failed.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
