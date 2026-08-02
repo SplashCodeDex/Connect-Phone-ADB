@@ -11,7 +11,7 @@
   <Identity
     Name="CodeDeX.DeX"
     Publisher="CN=CodeDeX"
-    Version="4.8.0.0"
+    Version="4.10.0.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
@@ -35,7 +35,7 @@
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
         DisplayName="DeX"
-        Description="Send files directly to your ADB connected phone"
+        Description="Send files directly between your devices"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">

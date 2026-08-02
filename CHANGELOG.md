@@ -1,5 +1,10 @@
 # Changelog
 
+### [minor] Dynamic UDP Device UI & Hotspot Bypass (v4.10.0.0)
+- **[minor]** Bridged the robust UDP discovery backend (`LocalSendServer.cs`) with the PowerShell UI (`Connect-Engine.ps1`) to dynamically render newly discovered local devices.
+- **[minor]** Added a smooth WPF expand/fade-in animation for dynamic UDP devices so they beautifully slide in above the "Nearby Users" section, shifting the static scaffolding down.
+- **[minor]** Implemented Gateway Unicast fallback in C# `LocalSendServer.cs` to reliably penetrate Android Hotspot (SoftAP) packet filters that block conventional multicast/broadcast traffic.
+
 ### [minor] Async File Thumbnails in Transfer History (v4.8.0.0)
 - **[minor]** Replaced static generic document icons with rich, async-loaded thumbnails in the local File Explorer / Transfer History. 
 - Implemented a high-performance Hybrid loading strategy: standard images use ultra-fast WPF decoding, while videos and documents utilize native Windows IShellItemImageFactory via dynamic C# injection.
@@ -87,18 +92,6 @@
 ## [3.6.3.0] - 2026-07-31
 ### Added
 - **[patch]** Added a pill-shaped drag handle indicator above the quick action buttons to visually communicate that the spatial menu can be dragged.
-
-## [3.6.2.0] - 2026-07-31
-### Added
-- **[patch]** Added `DragMove()` via `MouseLeftButtonDown` event to the WPF window to allow users to easily drag the spatial menu panel around natively without any external dependencies or bloated layout logic.
-
-## [3.6.1.0] - 2026-07-31
-### Fixed
-- **[patch]** Wiggle-to-Open menu now automatically hides when the mouse button is released (after drag-and-drop ends). Delay execution added to ensure WPF Drop events are cleanly routed before collapsing the window.
-
-## [3.6.0.0] - 2026-07-31
-### Added
-- **[minor]** Wiggle-to-Open now conditionally filters the spatial menu, hiding unneeded UI elements to exclusively show the Nearby Devices list for faster, focused device selection.
 
 ## [3.5.0.0] - 2026-07-31
 ### Added

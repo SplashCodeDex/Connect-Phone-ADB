@@ -1,5 +1,6 @@
 package com.example.dex.network
 
+import android.util.Log
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
@@ -146,13 +147,27 @@ class DiscoveryEngine {
 
                 udpSocket = MulticastSocket(53317).apply {
                     reuseAddress = true
-                    joinGroup(InetAddress.getByName("224.0.0.167"))
+                    val groupAddr = InetSocketAddress(InetAddress.getByName("224.0.0.167"), 53317)
+                    java.net.NetworkInterface.getNetworkInterfaces().toList().forEach { ni ->
+                        try {
+                            if (ni.isUp && !ni.isLoopback && ni.supportsMulticast()) {
+                                joinGroup(groupAddr, ni)
+                                Log.d("DeXDiscovery", "Joined multicast on interface: ${ni.name} (${ni.displayName})")
+                            } else {
+                                Log.d("DeXDiscovery", "Skipped interface: ${ni.name} (up=${ni.isUp}, loopback=${ni.isLoopback}, mcast=${ni.supportsMulticast()})")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("DeXDiscovery", "Failed to join on ${ni.name}", e)
+                        }
+                    }
                 }
+                Log.d("DeXDiscovery", "UDP MulticastSocket successfully bound and waiting for packets...")
                 val buffer = ByteArray(1024)
                 while (isActive) {
                     val packet = DatagramPacket(buffer, buffer.size)
                     udpSocket?.receive(packet)
                     val msg = String(packet.data, 0, packet.length)
+                    Log.d("DeXDiscovery", "Received UDP packet from ${packet.address.hostAddress}: $msg")
                     
                     try {
                         val json = JSONObject(msg)
@@ -202,7 +217,15 @@ class DiscoveryEngine {
                             val replyMsg = replyJson.toString()
                             val replyData = replyMsg.toByteArray(Charsets.UTF_8)
                             val replyPacket = DatagramPacket(replyData, replyData.size, InetAddress.getByName("224.0.0.167"), 53317)
-                            udpSocket?.send(replyPacket)
+                            
+                            java.net.NetworkInterface.getNetworkInterfaces().toList().forEach { ni ->
+                                try {
+                                    if (ni.isUp && !ni.isLoopback && ni.supportsMulticast()) {
+                                        udpSocket?.networkInterface = ni
+                                        udpSocket?.send(replyPacket)
+                                    }
+                                } catch (e: Exception) {}
+                            }
                         }
                     } catch (e: Exception) {}
                 }

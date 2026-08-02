@@ -1253,11 +1253,53 @@
                 <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="16,0" />
                     </StackPanel>
                 
+                    <!-- Dynamic UDP Discovered Devices -->
+                    <ItemsControl x:Name="icUdpPeers">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                                    <Button.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5" />
+                                                    <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="42" Duration="0:0:0.3" >
+                                                        <DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                    </DoubleAnimation>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Button.Triggers>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <Grid Width="38" Height="38" Margin="0,0,12,0">
+                                            <Ellipse Fill="{DynamicResource SecondaryBrush}" />
+                                            <TextBlock Text="&#xE8EA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <Ellipse Width="12" Height="12" Fill="{DynamicResource SecondaryBrush}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                                        </Grid>
+                                        
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Info.Alias}" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock Text="{Binding Info.DeviceModel}" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        </StackPanel>
+                                        
+                                        <TextBlock Grid.Column="2" Text="{Binding Ip}" FontFamily="Segoe UI" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
                     <!-- Nearby Users Section -->
                     <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly">
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
-
+                            
                 <!-- User Joe (always visible when contracted) -->
                 <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
                     <Grid>
@@ -1281,7 +1323,6 @@
                             <TextBlock Text="dexify@dex.net" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </StackPanel>
                         
-                        <!-- TODO: Detect device type to choose between phone (xE8EA) and laptop (xE7F8) icons for WAN profiles -->
                         <TextBlock Grid.Column="2" Text="&#xE7F8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" />
                     </Grid>
                 </Button>
@@ -1323,6 +1364,7 @@
                         </StackPanel>
                     </Grid>
                 </RadioButton>
+
 
                 <!-- Nearby Expand Panel: hidden when contracted, staggers in when expanded -->
                 <StackPanel x:Name="NearbyExpandPanel" Visibility="Collapsed" Opacity="0">

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -125,6 +126,43 @@ namespace DeXShareTarget
     {
         public static readonly ConcurrentDictionary<string, DiscoveredDevice> Devices = new();
 
+        private static List<IPEndPoint> GetDirectedBroadcasts(int port)
+        {
+            var endpoints = new List<IPEndPoint> { new IPEndPoint(IPAddress.Broadcast, port) };
+            try
+            {
+                foreach (var iface in NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    if (iface.OperationalStatus != OperationalStatus.Up) continue;
+                    var ipProps = iface.GetIPProperties();
+                    
+                    // 1. Add Default Gateway (The Ultimate Unicast Fallback for Android Hotspots)
+                    foreach (var gateway in ipProps.GatewayAddresses)
+                    {
+                        if (gateway.Address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            endpoints.Add(new IPEndPoint(gateway.Address, port));
+                        }
+                    }
+
+                    // 2. Add Directed Subnet Broadcasts
+                    foreach (var ip in ipProps.UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork && ip.IPv4Mask != null)
+                        {
+                            var addressBytes = ip.Address.GetAddressBytes();
+                            var maskBytes = ip.IPv4Mask.GetAddressBytes();
+                            var broadcastBytes = new byte[4];
+                            for (int i = 0; i < 4; i++)
+                                broadcastBytes[i] = (byte)(addressBytes[i] | ~maskBytes[i]);
+                            endpoints.Add(new IPEndPoint(new IPAddress(broadcastBytes), port));
+                        }
+                    }
+                }
+            } catch { }
+            return endpoints.GroupBy(e => e.Address.ToString()).Select(g => g.First()).ToList();
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var myInfo = new RegisterDto { 
@@ -178,6 +216,7 @@ namespace DeXShareTarget
             var multicastAddress = IPAddress.Parse("224.0.0.167");
             var endPoint = new IPEndPoint(IPAddress.Any, 53317);
             using var udp = new UdpClient();
+            udp.EnableBroadcast = true;
             udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             udp.Client.Bind(endPoint);
             udp.JoinMulticastGroup(multicastAddress);
@@ -225,6 +264,10 @@ namespace DeXShareTarget
                     try
                     {
                         await udp.SendAsync(myBytes, myBytes.Length, targetEp);
+                        foreach (var ep in GetDirectedBroadcasts(53317))
+                        {
+                            await udp.SendAsync(myBytes, myBytes.Length, ep);
+                        }
                     } catch { }
                     await Task.Delay(2000, stoppingToken);
                 }

@@ -13,7 +13,7 @@
 - Resolve all identified edge cases until zero edge cases remain.
 
 ## 3. Automated Verification & MSIX Build Protocol
-- **Version Bump (before build):** Bump `Version` in [`AppxManifest.xml`](file:///w:/CodeDeX/Connect-Phone-ADB/MSIX_Source/AppxManifest.xml) based on what was implemented:
+- **Version Bump (before build):** Bump `Version` in [`AppxManifest.xml`](file:///w:/CodeDeX/DeX/MSIX_Source/AppxManifest.xml) based on what was implemented:
   - **Patch** (`X.Y.Z+1.0`) — bug fixes, minor tweaks.
   - **Minor** (`X.Y+1.0.0`) — new features, UI additions.
   - **Major** (`X+1.0.0.0`) — breaking changes, architecture overhauls.

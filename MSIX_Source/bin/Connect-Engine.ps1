@@ -315,6 +315,15 @@ $mdnsTimer.Add_Tick({
                 $ic = $script:wpfWindow.FindName("icLivePeers")
                 if ($ic) { $ic.ItemsSource = $livePeers }
                 
+                # Poll robust UDP devices (LocalSendServer Gateway Unicast fallback)
+                try {
+                    $udpRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/devices" -ErrorAction Stop
+                    if ($udpRes) {
+                        $icUdp = $script:wpfWindow.FindName("icUdpPeers")
+                        if ($icUdp) { $icUdp.ItemsSource = $udpRes }
+                    }
+                } catch { }
+                
             }
     })
     $mdnsTimer.Start()
