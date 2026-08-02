@@ -391,33 +391,43 @@ function Show-PairingPrompt {
 }
 
 $actionPushFiles = {
-    Add-Type -AssemblyName PresentationFramework
-    $dlg = New-Object Microsoft.Win32.OpenFileDialog
-    $dlg.Multiselect = $true
-    $dlg.Title = "Select files to send to Android"
-    $result = $dlg.ShowDialog()
-    if ($result -eq $true) {
-        $targetIp = (Get-ItemProperty "HKCU:\Software\DeX" -Name "LastIp" -ErrorAction SilentlyContinue).LastIp
-        if ([string]::IsNullOrEmpty($targetIp)) { $targetIp = "127.0.0.1" }
-        $exePath = Join-Path $PSScriptRoot "..\DeXShareTarget.exe"
-        $argsList = @("-IP", $targetIp) + $dlg.FileNames
-        Start-Process $exePath -ArgumentList $argsList
+    try {
+        Add-Type -AssemblyName PresentationFramework
+        $dlg = New-Object Microsoft.Win32.OpenFileDialog
+        $dlg.Multiselect = $true
+        $dlg.Title = "Select files to send to Android"
+        $result = $dlg.ShowDialog()
+        if ($result -eq $true) {
+            $targetIp = (Get-ItemProperty "HKCU:\Software\DeX" -Name "LastIp" -ErrorAction SilentlyContinue).LastIp
+            if ([string]::IsNullOrEmpty($targetIp)) { $targetIp = "127.0.0.1" }
+            $exePath = Join-Path $PSScriptRoot "..\DeXShareTarget.exe"
+            $argsList = @("-IP", $targetIp) + $dlg.FileNames
+            Start-Process $exePath -ArgumentList $argsList
+        }
+    } finally {
+        $btn = $script:wpfWindow.FindName("btnPushFiles")
+        if ($btn) { $btn.IsChecked = $false }
     }
 }
 
 $actionPushFolder = {
-    Add-Type -AssemblyName System.Windows.Forms
-    $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
-    $dlg.Description = "Select a folder to send to Android"
-    $result = $dlg.ShowDialog()
-    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
-        $targetIp = (Get-ItemProperty "HKCU:\Software\DeX" -Name "LastIp" -ErrorAction SilentlyContinue).LastIp
-        if ([string]::IsNullOrEmpty($targetIp)) { $targetIp = "127.0.0.1" }
-        $files = Get-ChildItem -Path $dlg.SelectedPath -File -Recurse | Select-Object -ExpandProperty FullName
-        if ($files.Count -eq 0) { return }
-        $exePath = Join-Path $PSScriptRoot "..\DeXShareTarget.exe"
-        $argsList = @("-IP", $targetIp) + $files
-        Start-Process $exePath -ArgumentList $argsList
+    try {
+        Add-Type -AssemblyName System.Windows.Forms
+        $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
+        $dlg.Description = "Select a folder to send to Android"
+        $result = $dlg.ShowDialog()
+        if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+            $targetIp = (Get-ItemProperty "HKCU:\Software\DeX" -Name "LastIp" -ErrorAction SilentlyContinue).LastIp
+            if ([string]::IsNullOrEmpty($targetIp)) { $targetIp = "127.0.0.1" }
+            $files = Get-ChildItem -Path $dlg.SelectedPath -File -Recurse | Select-Object -ExpandProperty FullName
+            if ($files.Count -eq 0) { return }
+            $exePath = Join-Path $PSScriptRoot "..\DeXShareTarget.exe"
+            $argsList = @("-IP", $targetIp) + $files
+            Start-Process $exePath -ArgumentList $argsList
+        }
+    } finally {
+        $btn = $script:wpfWindow.FindName("btnPushFolder")
+        if ($btn) { $btn.IsChecked = $false }
     }
 }
 

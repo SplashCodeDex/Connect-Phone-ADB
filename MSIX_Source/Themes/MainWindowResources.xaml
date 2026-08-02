@@ -313,6 +313,7 @@
                 </Border.Triggers>
             </Border>
         </DataTemplate>
+
         <Style x:Key="SpatialListItem" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
