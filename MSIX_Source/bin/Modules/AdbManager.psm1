@@ -79,10 +79,11 @@ function Start-MdnsDiscovery {
         param($adbPath, $computerName, $queue)
         
         try {
-            # 1. Setup UDP Multicast Listener & Sender
-            $udpClient = New-Object System.Net.Sockets.UdpClient
-            [void]$udpClient.Client.SetSocketOption([System.Net.Sockets.SocketOptionLevel]::Socket, [System.Net.Sockets.SocketOptionName]::ReuseAddress, $true)
-            [void]$udpClient.Client.Bind([System.Net.IPEndPoint]::new([System.Net.IPAddress]::Any, 53317))
+            # Start the UDP client bound to any IP, port 53317 (stateful unified socket)
+            $udpClient = [System.Net.Sockets.UdpClient]::new()
+            $udpClient.Client.SetSocketOption([System.Net.Sockets.SocketOptionLevel]::Socket, [System.Net.Sockets.SocketOptionName]::ReuseAddress, $true)
+            $bindEp = [System.Net.IPEndPoint]::new([System.Net.IPAddress]::Any, 53317)
+            $udpClient.Client.Bind($bindEp)
             $mcastIp = [System.Net.IPAddress]::Parse("224.0.0.167")
             [void]$udpClient.JoinMulticastGroup($mcastIp)
             
