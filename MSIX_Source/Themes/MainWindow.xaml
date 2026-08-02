@@ -558,8 +558,8 @@
             </Grid.RenderTransform>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
             <Grid Grid.Row="0" Margin="0,0,0,15">
@@ -601,25 +601,7 @@
                 </Button>
             </Grid>
             
-            <StackPanel Grid.Row="1" Margin="0,0,0,10">
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <Button Name="btnPushFiles" Style="{StaticResource SpatialListItem}" Margin="0,0,15,0" Padding="15,10" Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8E5;" FontSize="22" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Send Files" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" FontWeight="Medium"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Name="btnPushFolder" Style="{StaticResource SpatialListItem}" Padding="15,10" Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" FontSize="22" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Send Folders" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" FontWeight="Medium"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-                <Separator Background="{DynamicResource AccentBrush}" Height="1" />
-            </StackPanel>
-            
-            <ListBox Name="lbFiles" Grid.Row="2" SelectionMode="Extended" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" Padding="0,0,10,0">
+            <ListBox Name="lbFiles" Grid.Row="1" SelectionMode="Extended" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" Padding="0,0,10,0">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Background" Value="Transparent"/>
@@ -664,9 +646,24 @@
             </ListBox>
             
             <!-- Empty Folder State Overlay -->
-            <StackPanel Name="emptyFolderState" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" Opacity="0">
+            <StackPanel Name="emptyFolderState" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" Opacity="0">
                 <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="48" HorizontalAlignment="Center" Opacity="0.4" Margin="0,0,0,10"/>
                 <TextBlock Text="This folder is empty" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="Medium" HorizontalAlignment="Center" Opacity="0.6"/>
+            </StackPanel>
+            
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,15,0,0">
+                <Button Name="btnPushFiles" Style="{StaticResource SpatialListItem}" Margin="0,0,15,0" Padding="15,10" Cursor="Hand">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8E5;" FontSize="22" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Send Files" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+                <Button Name="btnPushFolder" Style="{StaticResource SpatialListItem}" Padding="15,10" Cursor="Hand">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" FontSize="22" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Send Folders" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
             
             <!-- Subtle Floating Dock for Download Status & Location Change -->
