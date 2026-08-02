@@ -318,7 +318,16 @@ $mdnsTimer.Add_Tick({
                     $udpRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/devices" -ErrorAction Stop
                     if ($udpRes) {
                         $icUdp = $script:wpfWindow.FindName("icUdpPeers")
-                        if ($icUdp) { $icUdp.ItemsSource = $udpRes }
+                        if ($icUdp) {
+                            $liveUdp = @()
+                            foreach ($p in $udpRes.psobject.properties.Value) {
+                                $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
+                                if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
+                                    $liveUdp += $p
+                                }
+                            }
+                            $icUdp.ItemsSource = $liveUdp
+                        }
                     }
                 } catch { }
                 
