@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
     
     // Start the DeX networking service
     val serviceIntent = android.content.Intent(this, com.example.dex.network.DexService::class.java)
-    startService(serviceIntent)
+    startForegroundService(serviceIntent)
 
     enableEdgeToEdge()
     setContent {

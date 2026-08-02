@@ -201,9 +201,7 @@ $script:omniPeers = @{}
 
 
 
-if ($script:AutoConnectEnabled) {
-    $script:mdnsJob = Start-MdnsDiscovery -Queue $script:mdnsQueue
-}
+$script:mdnsJob = Start-MdnsDiscovery -Queue $script:mdnsQueue
 
 $mdnsTimer = New-Object System.Windows.Threading.DispatcherTimer
 $mdnsTimer.Interval = [TimeSpan]::FromSeconds(2)

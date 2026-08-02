@@ -1,7 +1,10 @@
 # Changelog
 
-### [fix] Hotspot Multicast UDP Isolation Bypass (v4.10.1.0)
-- **[fix]** Resolved an issue where Android devices acting as a Hotspot dropped multicast discovery packets. Replaced separate UDP sender with the unified multicast listener socket in `AdbManager.psm1` to establish a stateful Windows Firewall mapping, and updated the Android `DiscoveryEngine.kt` to mirror unicast replies back to the dynamic source port.
+### [minor] Always-On Device Discovery & Samsung Freeze Fix (v4.11.0.0)
+- **[fix]** Desktop UDP discovery (OmniMesh beacons) now starts unconditionally instead of being gated behind the Auto-Connect toggle. Auto-Connect still only gates automatic ADB connections — the PC is now always visible on the local network.
+- **[fix]** Changed Android `MainActivity` to use `startForegroundService()` instead of `startService()`, preventing Samsung's `FreecessHandler` from freezing the DeX companion process when backgrounded.
+- **[fix]** Added unicast UDP reply in `DiscoveryEngine.kt` to bypass Android Hotspot AP client isolation that drops multicast responses.
+- **[fix]** Unified the PC's UDP sender and listener into a single socket in `AdbManager.psm1` for cleaner resource management.
 
 ### [minor] Dynamic UDP Device UI & Hotspot Bypass (v4.10.0.0)
 - **[minor]** Bridged the robust UDP discovery backend (`LocalSendServer.cs`) with the PowerShell UI (`Connect-Engine.ps1`) to dynamically render newly discovered local devices.

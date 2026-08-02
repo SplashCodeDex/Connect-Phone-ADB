@@ -169,7 +169,6 @@ function Start-MdnsDiscovery {
                 $udpClient.Close()
                 $udpClient.Dispose()
             }
-            if ($sendUdp) { $sendUdp.Dispose() }
         }
     }
     
