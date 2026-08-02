@@ -28,6 +28,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.dex.network.DiscoveredDevice
 import com.example.dex.network.DexAppContainer
 import kotlinx.coroutines.launch
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +47,16 @@ fun MainScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedDevice by remember { mutableStateOf<DiscoveredDevice?>(null) }
 
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ -> }
+
+    LaunchedEffect(Unit) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     // Modern Android Photo/File Picker
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments()
@@ -49,60 +65,33 @@ fun MainScreen(
         selectedDevice?.let { device ->
             Toast.makeText(context, "Sending ${uris.size} files to ${device.info.alias}...", Toast.LENGTH_SHORT).show()
             
-            scope.launch {
-                val fileData = uris.associate { uri ->
-                    try {
-                        context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    } catch (e: SecurityException) { /* Ignored */ }
-                    
-                    var name = "shared_file"
-                    var size = 0L
-                    context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                        if (cursor.moveToFirst()) {
-                            val nameIdx = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
-                            val sizeIdx = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
-                            if (nameIdx >= 0) name = cursor.getString(nameIdx) ?: name
-                            if (sizeIdx >= 0) size = cursor.getLong(sizeIdx)
-                        }
-                    }
-                    java.util.UUID.randomUUID().toString() to Triple(uri, name, size)
-                }
-
-                val prepareRequest = com.example.dex.network.PrepareUploadRequestDto(
-                    info = com.example.dex.network.RegisterDto(
-                        alias = "DeX", version = "2.0", deviceModel = "Android",
-                        deviceType = "mobile", fingerprint = "dex-fingerprint",
-                        port = 53317, protocol = "https", download = true
-                    ),
-                    files = fileData.mapValues { (id, d) -> com.example.dex.network.FileDto(id, d.second, d.third, "application/octet-stream") }
-                )
-                
-                val response = DexAppContainer.clientEngine.prepareUpload(device.ip, device.info.port, prepareRequest)
-                if (response != null) {
-                    Log.i("DeX", "UI: Transfer Prepared! SessionId: ${response.sessionId}")
-                    var successCount = 0
-                    fileData.forEach { (id, d) ->
-                        val token = response.files[id] ?: return@forEach
-                        context.contentResolver.openInputStream(d.first)?.use { stream ->
-                            if (DexAppContainer.clientEngine.uploadFile(device.ip, device.info.port, response.sessionId, id, token, stream, d.third)) {
-                                successCount++
-                            }
-                        }
-                    }
-                    if (successCount > 0) {
-                        Toast.makeText(context, "Uploaded $successCount/${uris.size} files successfully!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Upload failed for all files.", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Log.e("DeX", "UI Error: Transfer preparation failed.")
-                    Toast.makeText(context, "Transfer preparation failed.", Toast.LENGTH_SHORT).show()
-                }
+            DexAppContainer.clientEngine.resetUploadState()
+            
+            val urisJson = try {
+                Json.encodeToString(uris.map { it.toString() })
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return@let
             }
+            
+            val inputData = workDataOf(
+                "ip" to device.ip,
+                "port" to device.info.port,
+                "uris" to urisJson
+            )
+            
+            val workRequest = OneTimeWorkRequestBuilder<com.example.dex.network.UploadWorker>()
+                .setInputData(inputData)
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .build()
+                
+            DexAppContainer.clientEngine.activeWorkId = workRequest.id
+            WorkManager.getInstance(context).enqueue(workRequest)
         }
     }
 
     val downloadState by com.example.dex.network.TcpDownloadService.downloadState.collectAsStateWithLifecycle()
+    val uploadState by DexAppContainer.clientEngine.uploadState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -127,7 +116,18 @@ fun MainScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Downloading ${downloadState.fileName}...", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Downloading...", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                            TextButton(onClick = { com.example.dex.network.TcpDownloadService.cancelDownload(context) }) {
+                                Text("Cancel", color = MaterialTheme.colorScheme.error)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(downloadState.fileName, style = MaterialTheme.typography.bodySmall, maxLines = 1)
                         Spacer(modifier = Modifier.height(8.dp))
                         LinearProgressIndicator(
                             progress = { downloadState.progress },
@@ -138,6 +138,7 @@ fun MainScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text("${(downloadState.progress * 100).toInt()}%", style = MaterialTheme.typography.bodySmall)
                     }
+
                 }
             } else if (downloadState.isSuccess) {
                 Surface(
@@ -157,6 +158,58 @@ fun MainScreen(
                 ) {
                     Text(
                         "Download Failed: ${downloadState.error}", 
+                        modifier = Modifier.padding(16.dp), 
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+            } else if (uploadState.isUploading) {
+                Surface(
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Uploading ${uploadState.currentFileIndex} of ${uploadState.totalFiles} files...", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                            TextButton(onClick = { DexAppContainer.clientEngine.cancelUpload(context) }) {
+                                Text("Cancel", color = MaterialTheme.colorScheme.error)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(uploadState.fileName, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LinearProgressIndicator(
+                            progress = { uploadState.aggregateProgress },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("${(uploadState.aggregateProgress * 100).toInt()}% Total", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            } else if (uploadState.isSuccess) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Successfully Uploaded ${uploadState.fileName}", 
+                        modifier = Modifier.padding(16.dp), 
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            } else if (uploadState.error != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Upload Failed: ${uploadState.error}", 
                         modifier = Modifier.padding(16.dp), 
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )

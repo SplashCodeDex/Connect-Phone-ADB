@@ -402,7 +402,7 @@
             <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="21,12"/>
+            <Setter Property="Padding" Value="18,10"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
@@ -786,14 +786,14 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <ToggleButton Name="btnPushFiles" Style="{DynamicResource PushBtnStyle}" Margin="0,0,30,0" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8E5;" FontSize="23" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBlock Text="Send Files" FontSize="16" VerticalAlignment="Center" FontWeight="Medium"/>
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8E5;" FontSize="19" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="Send Files" FontSize="13" VerticalAlignment="Center" FontWeight="Medium"/>
                         </StackPanel>
                     </ToggleButton>
                     <ToggleButton Name="btnPushFolder" Style="{DynamicResource PushBtnStyle}" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" FontSize="23" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBlock Text="Send Folders" FontSize="16" VerticalAlignment="Center" FontWeight="Medium"/>
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8B7;" FontSize="19" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="Send Folders" FontSize="13" VerticalAlignment="Center" FontWeight="Medium"/>
                         </StackPanel>
                     </ToggleButton>
                 </StackPanel>
@@ -1004,6 +1004,19 @@
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Text="DeX" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
                                         <TextBlock Text="Version 1.0.0" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                            <Button Name="btnSettingsResetIdentity" Style="{StaticResource SpatialListItem}" Margin="0,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="&#xE106;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="#FF4444" VerticalAlignment="Center" Margin="0,0,14,0" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Reset Identity &amp; Trust" FontSize="14" Foreground="#FF4444" />
+                                        <TextBlock Text="Revokes all devices and restarts" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                                     </StackPanel>
                                 </Grid>
                             </Button>

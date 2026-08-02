@@ -38,6 +38,13 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 
 class ShareTargetActivity : ComponentActivity() {
 
@@ -46,6 +53,13 @@ class ShareTargetActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val notificationPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { _ -> }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
         
         // Handle incoming intent
         when (intent?.action) {
@@ -80,6 +94,7 @@ class ShareTargetActivity : ComponentActivity() {
                 val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 var showSheet by remember { mutableStateOf(true) }
                 val discoveredDevices by DexAppContainer.discoveryEngine.devices.collectAsState()
+                val uploadState by DexAppContainer.clientEngine.uploadState.collectAsState()
 
                 if (showSheet) {
                     ModalBottomSheet(
@@ -89,17 +104,21 @@ class ShareTargetActivity : ComponentActivity() {
                         },
                         sheetState = sheetState
                     ) {
-                        ShareTargetScreen(
-                            devices = discoveredDevices.values.toList(),
-                            onSaveToSandbox = {
-                                saveToSandbox()
-                                showSheet = false
-                            },
-                            onSendToDevice = { device ->
-                                pushToDevice(device)
-                                showSheet = false
-                            }
-                        )
+                        if (uploadState.isUploading || uploadState.isSuccess || uploadState.error != null) {
+                            UploadProgressScreen(uploadState)
+                        } else {
+                            ShareTargetScreen(
+                                devices = discoveredDevices.values.toList(),
+                                onSaveToSandbox = {
+                                    saveToSandbox()
+                                    showSheet = false
+                                },
+                                onSendToDevice = { device ->
+                                    DexAppContainer.clientEngine.resetUploadState()
+                                    pushToDevice(device)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -217,6 +236,52 @@ class ShareTargetActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    fun UploadProgressScreen(uploadState: UploadState) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp, start = 16.dp, end = 16.dp)
+        ) {
+            if (uploadState.isUploading) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Uploading ${uploadState.currentFileIndex} of ${uploadState.totalFiles} files...", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+                    TextButton(onClick = { DexAppContainer.clientEngine.cancelUpload(this@ShareTargetActivity) }) {
+                        Text("Cancel", color = MaterialTheme.colorScheme.error)
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(uploadState.fileName, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                Spacer(modifier = Modifier.height(16.dp))
+                LinearProgressIndicator(
+                    progress = { uploadState.aggregateProgress },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("${(uploadState.aggregateProgress * 100).toInt()}% Total", style = MaterialTheme.typography.bodySmall, modifier = Modifier.align(Alignment.End))
+            } else if (uploadState.isSuccess) {
+                Text(
+                    "Successfully Uploaded ${uploadState.fileName}", 
+                    style = MaterialTheme.typography.bodyLarge, 
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else if (uploadState.error != null) {
+                Text(
+                    "Upload Failed: ${uploadState.error}", 
+                    style = MaterialTheme.typography.bodyLarge, 
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+    }
+
     private fun saveToSandbox() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
@@ -262,77 +327,29 @@ class ShareTargetActivity : ComponentActivity() {
 
     private fun pushToDevice(device: DiscoveredDevice) {
         Toast.makeText(this, "Pushing to ${device.info.alias}...", Toast.LENGTH_SHORT).show()
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    val client = DexAppContainer.clientEngine
-                    val filesMap = mutableMapOf<String, FileDto>()
-                    val uriMap = mutableMapOf<String, Uri>()
-                    
-                    sharedUris.forEach { uri ->
-                        val fileId = UUID.randomUUID().toString()
-                        val fileName = getFileName(uri)
-                        val fileSize = getFileSize(uri)
-                        filesMap[fileId] = FileDto(
-                            id = fileId,
-                            fileName = fileName,
-                            size = fileSize,
-                            fileType = contentResolver.getType(uri) ?: "application/octet-stream"
-                        )
-                        uriMap[fileId] = uri
-                    }
-
-                    val req = PrepareUploadRequestDto(
-                        info = RegisterDto(
-                            alias = "DeX Android",
-                            version = "2.0",
-                            deviceModel = android.os.Build.MODEL,
-                            deviceType = "mobile",
-                            fingerprint = DexAppContainer.fingerprint,
-                            port = 53317,
-                            protocol = "https",
-                            download = true,
-                            identityHash = DexAppContainer.identityHash
-                        ),
-                        files = filesMap
-                    )
-
-                    val res = client.prepareUpload(device.ip, device.info.port, req)
-                    if (res != null) {
-                        var successCount = 0
-                        res.files.forEach { (reqFileId, token) ->
-                            val uri = uriMap[reqFileId]
-                            val fileMeta = filesMap[reqFileId]
-                            if (uri != null && fileMeta != null) {
-                                contentResolver.openInputStream(uri)?.let { stream ->
-                                    val success = client.uploadFile(
-                                        ip = device.ip,
-                                        port = device.info.port,
-                                        sessionId = res.sessionId,
-                                        fileId = reqFileId,
-                                        token = token,
-                                        stream = stream,
-                                        fileSize = fileMeta.size
-                                    )
-                                    if (success) successCount++
-                                }
-                            }
-                        }
-                        
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@ShareTargetActivity, "Sent $successCount of ${sharedUris.size} files", Toast.LENGTH_LONG).show()
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@ShareTargetActivity, "Transfer rejected or failed", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-            finish()
+        
+        DexAppContainer.clientEngine.resetUploadState()
+        
+        val urisJson = try {
+            Json.encodeToString(sharedUris.map { it.toString() })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return
         }
+        
+        val inputData = workDataOf(
+            "ip" to device.ip,
+            "port" to device.info.port,
+            "uris" to urisJson
+        )
+        
+        val workRequest = OneTimeWorkRequestBuilder<com.example.dex.network.UploadWorker>()
+            .setInputData(inputData)
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .build()
+            
+        DexAppContainer.clientEngine.activeWorkId = workRequest.id
+        WorkManager.getInstance(this).enqueue(workRequest)
     }
 
     private fun getFileName(uri: Uri): String {

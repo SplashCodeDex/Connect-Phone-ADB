@@ -279,6 +279,18 @@ if ($btnSettingsAbout) {
     })
 }
 
+# Reset Identity & Trust button in settings
+$btnSettingsResetIdentity = $script:wpfWindow.FindName("btnSettingsResetIdentity")
+if ($btnSettingsResetIdentity) {
+    $btnSettingsResetIdentity.Add_Click({
+        Remove-Item "$env:LOCALAPPDATA\DeX\identity.json" -Force -ErrorAction SilentlyContinue
+        [System.Windows.MessageBox]::Show("Trust identity reset. DeX will now restart.", "DeX", 'OK', 'Information') | Out-Null
+        $script:notifyIcon.Visible = $false
+        $script:notifyIcon.Dispose()
+        [System.Windows.Forms.Application]::Exit()
+    })
+}
+
 # Edge Case 11 & 14: lbFiles KeyDown for Ctrl+A (visible only), Escape deselect, and Enter key execution
 $script:lbFiles.Add_KeyDown({
     param($sender, $e)

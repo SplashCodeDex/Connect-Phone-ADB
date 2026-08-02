@@ -83,11 +83,11 @@ namespace DeXShareTarget
 
     public class RegisterDto
     {
-        [JsonPropertyName("alias")] public string Alias { get; set; } = "DeXDesktop";
+        [JsonPropertyName("alias")] public string Alias { get; set; } = Environment.MachineName;
         [JsonPropertyName("version")] public string Version { get; set; } = "2.0";
         [JsonPropertyName("deviceModel")] public string DeviceModel { get; set; } = "Windows PC";
         [JsonPropertyName("deviceType")] public string DeviceType { get; set; } = "desktop";
-        [JsonPropertyName("fingerprint")] public string Fingerprint { get; set; } = "dexdesktop-fingerprint";
+        [JsonPropertyName("fingerprint")] public string Fingerprint { get; set; } = IdentityManager.Fingerprint;
         [JsonPropertyName("port")] public int Port { get; set; } = 53317;
         [JsonPropertyName("protocol")] public string Protocol { get; set; } = "https";
         [JsonPropertyName("download")] public bool Download { get; set; } = true;
@@ -133,7 +133,7 @@ namespace DeXShareTarget
             };
 
             using var mdns = new Makaretu.Dns.MulticastService();
-            var service = new Makaretu.Dns.ServiceProfile("DeXDesktop", "_dex._udp", (ushort)53317);
+            var service = new Makaretu.Dns.ServiceProfile(myInfo.Alias, "_dex._udp", (ushort)53317);
             service.AddProperty("alias", myInfo.Alias);
             service.AddProperty("fingerprint", myInfo.Fingerprint);
             service.AddProperty("identityHash", myInfo.IdentityHash);
@@ -281,17 +281,22 @@ namespace DeXShareTarget
             var activeSessions = new ConcurrentDictionary<string, PrepareUploadRequestDto>();
             HostedFiles = new ConcurrentDictionary<string, string>();
 
-            App.MapPost("/api/localsend/v2/prepare-upload", (PrepareUploadRequestDto req) =>
+            App.MapPost("/api/localsend/v2/prepare-upload", async (PrepareUploadRequestDto req) =>
             {
-                var res = System.Windows.MessageBox.Show(
-                    $"Incoming transfer: {req.Files.Count} files. Accept?", 
-                    "DeX", 
-                    System.Windows.MessageBoxButton.YesNo,
-                    System.Windows.MessageBoxImage.Question, 
-                    System.Windows.MessageBoxResult.No,
-                    System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                    
-                if (res != System.Windows.MessageBoxResult.Yes) return Results.StatusCode(403);
+                var tcs = new TaskCompletionSource<bool>();
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var senderAlias = req.Info.Alias ?? "Unknown Device";
+                    var win = new ReceivePromptWindow(senderAlias, req.Files.Count);
+                    win.Show();
+                    _ = win.WaitForResponseAsync().ContinueWith(t => 
+                    {
+                        tcs.TrySetResult(t.Result);
+                    });
+                });
+
+                bool res = await tcs.Task;
+                if (!res) return Results.StatusCode(403);
                 
                 var sessionId = Guid.NewGuid().ToString();
                 activeSessions[sessionId] = req;
@@ -299,7 +304,9 @@ namespace DeXShareTarget
                 string downloadsFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
                 foreach (var kvp in req.Files)
                 {
-                    string destPath = Path.Combine(downloadsFolder, kvp.Value.FileName);
+                    string safeFileName = Path.GetFileName(kvp.Value.FileName);
+                    if (string.IsNullOrEmpty(safeFileName)) safeFileName = "unnamed_file";
+                    string destPath = Path.Combine(downloadsFolder, safeFileName);
                     if (File.Exists(destPath) && new FileInfo(destPath).Length == kvp.Value.Size) continue;
                     resFiles[kvp.Key] = Guid.NewGuid().ToString(); // Token for the file
                 }
@@ -315,14 +322,17 @@ namespace DeXShareTarget
                 if (!activeSessions.TryGetValue(sessionId, out var sessionReq)) return Results.BadRequest();
                 if (!sessionReq.Files.TryGetValue(fileId, out var fileMeta)) return Results.BadRequest();
 
+                string safeFileName = Path.GetFileName(fileMeta.FileName);
+                if (string.IsNullOrEmpty(safeFileName)) safeFileName = "unnamed_file";
+                
                 string downloadsFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-                string destPath = Path.Combine(downloadsFolder, fileMeta.FileName);
+                string destPath = Path.Combine(downloadsFolder, safeFileName);
 
                 int counter = 1;
                 while (File.Exists(destPath))
                 {
-                    string nameNoExt = Path.GetFileNameWithoutExtension(fileMeta.FileName);
-                    string ext = Path.GetExtension(fileMeta.FileName);
+                    string nameNoExt = Path.GetFileNameWithoutExtension(safeFileName);
+                    string ext = Path.GetExtension(safeFileName);
                     destPath = Path.Combine(downloadsFolder, $"{nameNoExt} ({counter}){ext}");
                     counter++;
                 }

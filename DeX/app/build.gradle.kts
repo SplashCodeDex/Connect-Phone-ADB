@@ -103,4 +103,7 @@ dependencies {
   // BouncyCastle
   implementation(libs.bouncycastle.bcprov)
   implementation(libs.bouncycastle.bcpkix)
+
+  // WorkManager
+  implementation(libs.androidx.work.runtime.ktx)
 }
