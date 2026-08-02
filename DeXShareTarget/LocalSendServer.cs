@@ -261,14 +261,11 @@ namespace DeXShareTarget
                 var targetEp = new IPEndPoint(multicastAddress, 53317);
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    try
+                    try { await udp.SendAsync(myBytes, myBytes.Length, targetEp); } catch { }
+                    foreach (var ep in GetDirectedBroadcasts(53317))
                     {
-                        await udp.SendAsync(myBytes, myBytes.Length, targetEp);
-                        foreach (var ep in GetDirectedBroadcasts(53317))
-                        {
-                            await udp.SendAsync(myBytes, myBytes.Length, ep);
-                        }
-                    } catch { }
+                        try { await udp.SendAsync(myBytes, myBytes.Length, ep); } catch { }
+                    }
                     await Task.Delay(2000, stoppingToken);
                 }
             }, stoppingToken);

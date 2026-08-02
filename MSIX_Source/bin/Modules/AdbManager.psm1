@@ -79,71 +79,12 @@ function Start-MdnsDiscovery {
         param($adbPath, $computerName, $queue)
         
         try {
-            # Start the UDP client bound to any IP, port 53317 (stateful unified socket)
-            $udpClient = [System.Net.Sockets.UdpClient]::new()
-            $udpClient.Client.SetSocketOption([System.Net.Sockets.SocketOptionLevel]::Socket, [System.Net.Sockets.SocketOptionName]::ReuseAddress, $true)
-            $bindEp = [System.Net.IPEndPoint]::new([System.Net.IPAddress]::Any, 53317)
-            $udpClient.Client.Bind($bindEp)
-            $mcastIp = [System.Net.IPAddress]::Parse("224.0.0.167")
-            [void]$udpClient.JoinMulticastGroup($mcastIp)
-            
-            # 2. Setup Target Endpoints
-            $targetEp = [System.Net.IPEndPoint]::new($mcastIp, 53317)
-            $payloadString = "{ `"id`": `"$computerName`", `"type`": `"pc`", `"identityHash`": `"dex_static_placeholder_hash_123`" }"
-            $payload = [System.Text.Encoding]::UTF8.GetBytes($payloadString)
-            
             $lastMdns = [datetime]::MinValue
-            $lastBroadcast = [datetime]::MinValue
 
             while ($true) {
                 $now = Get-Date
 
-                # A. Listen for incoming Omni-Mesh packets (non-blocking)
-                while ($udpClient.Available -gt 0) {
-                    $remoteEp = $null
-                    $bytes = $udpClient.Receive([ref]$remoteEp)
-                    $msg = [System.Text.Encoding]::UTF8.GetString($bytes)
-                    
-                    if ($msg -match '"(?:deviceType|type)"\s*:\s*"(pc|phone|mobile|desktop)"') {
-                        $devType = $matches[1]
-                        $devId = "Unknown"
-                        if ($msg -match '"(?:alias|id)"\s*:\s*"([^"]+)"') { $devId = $matches[1] }
-                        $devModel = $null
-                        if ($msg -match '"deviceModel"\s*:\s*"([^"]+)"') { $devModel = $matches[1] }
-                        
-                        $devHash = $null
-                        if ($msg -match '"identityHash"\s*:\s*"([^"]+)"') { $devHash = $matches[1] }
-                        
-                        $ip = $remoteEp.Address.ToString()
-                        
-                        [void]$queue.Enqueue(@{
-                            Type         = 'OmniMesh'
-                            IPPort       = "${ip}:53317"
-                            DeviceType   = $devType
-                            Name         = $devId
-                            Model        = $devModel
-                            Battery      = $null
-                            IdentityHash = $devHash
-                        })
-                    }
-                }
-
-                # B. Broadcast Omni-Mesh beacon (every 5 seconds)
-                if ($now - $lastBroadcast -gt [timespan]::FromSeconds(5)) {
-                    # Multicast LAN
-                    [void]$udpClient.Send($payload, $payload.Length, $targetEp)
-                    
-                    # Hotspot Piercer: Direct Unicast to Gateway
-                    $gw = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Where-Object NextHop -match '^[0-9\.]+$' | Select-Object -First 1).NextHop
-                    if ($gw -and $gw -ne '0.0.0.0') {
-                        $gwEp = [System.Net.IPEndPoint]::new([System.Net.IPAddress]::Parse($gw), 53317)
-                        [void]$udpClient.Send($payload, $payload.Length, $gwEp)
-                    }
-                    
-                    $lastBroadcast = $now
-                }
-                
-                # C. ADB mDNS Services polling (every 15 seconds)
+                # A. ADB mDNS Services polling (every 15 seconds)
                 if ($now - $lastMdns -gt [timespan]::FromSeconds(15)) {
                     $output = & $adbPath mdns services 2>&1
                     if ($null -ne $output) {
@@ -163,13 +104,7 @@ function Start-MdnsDiscovery {
                 Start-Sleep -Milliseconds 100
             }
         } catch {
-            $queue.Enqueue([pscustomobject]@{ Type = 'Error'; Message = "mDNS port 53317 error: $_" })
-        } finally {
-            if ($udpClient) {
-                [void]$udpClient.DropMulticastGroup($mcastIp)
-                $udpClient.Close()
-                $udpClient.Dispose()
-            }
+            $queue.Enqueue([pscustomobject]@{ Type = 'Error'; Message = "mDNS polling error: $_" })
         }
     }
     

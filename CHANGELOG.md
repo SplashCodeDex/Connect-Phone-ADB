@@ -1,6 +1,6 @@
 # Changelog
 
-### [minor] Always-On Device Discovery (v4.11.4.0)
+### [major] Unified UDP Discovery & Hotspot Piercer (v4.11.5.0)
 - **[fix]** Desktop UDP discovery (OmniMesh beacons) now starts unconditionally instead of being gated behind the Auto-Connect toggle. Auto-Connect still only gates automatic ADB connections — the PC is now always visible on the local network.
 - **[fix]** Changed Android `MainActivity` to use `startForegroundService()` instead of `startService()`, preventing Samsung's `FreecessHandler` from freezing the DeX companion process when backgrounded.
 - **[fix]** Added unicast UDP reply in `DiscoveryEngine.kt` to bypass Android Hotspot AP client isolation that drops multicast responses.
