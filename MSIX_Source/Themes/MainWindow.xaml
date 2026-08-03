@@ -1311,7 +1311,7 @@
                                                     <BeginStoryboard>
                                                         <Storyboard>
                                                             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5" />
-                                                            <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="42" Duration="0:0:0.3" >
+                                                            <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="64" Duration="0:0:0.3" >
                                                                 <DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
                                                             </DoubleAnimation>
                                                         </Storyboard>

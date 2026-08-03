@@ -1,4 +1,6 @@
 # Changelog
+### [patch] Fix Discovered Devices Clipping (v5.3.4.0)
+- **[patch]** Increased the load height animation target for discovered UDP peers from `42` to `64` to prevent clipping the device icon and model name text.
 ### [patch] Clarify ADB Status UI (v5.3.3.0)
 - **[patch]** Renamed 'Status' and 'Connected' text in the quick actions menu to 'ADB Status' to unambiguously clarify it represents the ADB connection state.
 ### [minor] PC-Initiated Guest Pairing (v5.3.1.0)
