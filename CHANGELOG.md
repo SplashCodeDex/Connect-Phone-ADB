@@ -1,4 +1,8 @@
 # Changelog
+### [minor] PC-Initiated Guest Pairing (v5.3.1.0)
+- **[feature]** Added a /local/pair-initiate endpoint to the LocalSend C# server to allow the PC to initiate outbound pairing requests to discovered guest devices on the LAN.
+- **[feature]** Rewrote the Windows Tray UI (icUdpPeers) click handler. Clicking an untrusted discovered device now automatically generates a PIN, drops down the sleek XAML PIN overlay ("Waiting for remote acceptance..."), and seamlessly transmits the PIN to the target device via the LocalSend V2 protocol.
+
 
 ### [patch] Robustify Pairing & Identity Concurrency (v4.15.2.0)
 - **[fix]** Hardened `IdentityManager` local JSON storage against `IOException` (Sharing Violations) during concurrent `SavePairedDevice` invocations by implementing a static reader/writer lock.

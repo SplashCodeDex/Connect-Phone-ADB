@@ -667,6 +667,46 @@ namespace DeXShareTarget
                 return Results.BadRequest();
             });
 
+            App.MapPost("/local/pair-initiate", async (HttpRequest request) => 
+            {
+                var targetIp = request.Query["ip"].ToString();
+                var targetFp = request.Query["fingerprint"].ToString();
+                
+                if (string.IsNullOrEmpty(targetIp) || string.IsNullOrEmpty(targetFp))
+                    return Results.BadRequest();
+
+                var pin = new Random().Next(100000, 999999).ToString();
+                var reqDto = new PairRequestDto
+                {
+                    Alias = Environment.MachineName,
+                    Fingerprint = IdentityManager.Fingerprint,
+                    Pin = pin
+                };
+
+                // Fire and forget pairing request
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        var handler = new System.Net.Http.HttpClientHandler
+                        {
+                            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                        };
+                        using var client = new System.Net.Http.HttpClient(handler);
+                        var content = new System.Net.Http.StringContent(JsonSerializer.Serialize(reqDto, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }), System.Text.Encoding.UTF8, "application/json");
+                        var response = await client.PostAsync($"https://{targetIp}:53317/api/localsend/v2/pair-prompt", content);
+                        
+                        if (response.IsSuccessStatusCode)
+                        {
+                            IdentityManager.SavePairedDevice(targetFp);
+                        }
+                    }
+                    catch { }
+                });
+
+                return Results.Json(new { pin });
+            });
+
             App.MapPost("/local/alias", (HttpRequest request) => 
             {
                 var fp = request.Query["fingerprint"].ToString();

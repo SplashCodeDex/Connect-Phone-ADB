@@ -96,51 +96,45 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
         if ($element.Tag -and $element.Tag -match '^\d+\.\d+\.\d+\.\d+') {
             $ip = $element.Tag -replace ':.*', ''
             
-            # Check Identity and Pairing status
-            $trustLevel = if ($script:omniPeers[$ip]) { $script:omniPeers[$ip].TrustLevel } else { "Guest" }
-            $wasPreviouslyPaired = $trustLevel -eq "Auto-Trusted"
-            if ($trustLevel -eq "Guest") {
-                $settingsPath = Join-Path $PSScriptRoot "..\appsettings.json"
-                $tokens = @{}
-                if (Test-Path $settingsPath) { try { $tokens = Get-Content $settingsPath -Raw | ConvertFrom-Json -AsHashtable } catch {} }
-                
-                if ($tokens[$ip]) {
-                    # Previously paired — token already exists
-                    $wasPreviouslyPaired = $true
-                } else {
-                    try {
-                        [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
-                        [void](Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/request" -Method Post -TimeoutSec 3 -ErrorAction Stop)
+            # Check if this device is in the Discovered Devices (Guest) list
+            $icUdpPeers = $script:wpfWindow.FindName("icUdpPeers")
+            $targetPeer = $null
+            if ($icUdpPeers -and $icUdpPeers.ItemsSource) {
+                $targetPeer = $icUdpPeers.ItemsSource | Where-Object { $_.Ip -eq $ip } | Select-Object -First 1
+            }
+            $isGuest = ($targetPeer -ne $null)
+
+            if ($isGuest) {
+                try {
+                    $fp = $targetPeer.Fingerprint
+                    $initRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-initiate?ip=${ip}&fingerprint=${fp}" -Method Post -TimeoutSec 5 -ErrorAction Stop
+                    $pin = $initRes.pin
+
+                    if ($pin) {
+                        $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing with $($targetPeer.Alias)"
+                        $script:wpfWindow.FindName("txtPinSubtitle").Text = "Verify this code on the target device"
+                        $script:wpfWindow.FindName("txtPinCode").Text = $pin
+                        $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for remote acceptance..."
                         
-                        Add-Type -AssemblyName Microsoft.VisualBasic
-                        $pin = [Microsoft.VisualBasic.Interaction]::InputBox("Enter the 6-digit PIN shown on the target phone:", "DeX Guest Pairing")
-                        if ($pin) {
-                            $verifyRes = Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/verify" -Method Post -Body (@{ pin = $pin } | ConvertTo-Json -Depth 2) -ContentType "application/json" -TimeoutSec 3 -ErrorAction Stop
-                            $tokens[$ip] = $verifyRes.token
-                            $tokens | ConvertTo-Json -Depth 2 | Set-Content $settingsPath
-                        } else {
-                            $e.Handled = $true
-                            return
-                        }
-                    } catch {
-                        Show-Toast -Title "Pairing Failed" -Message $_.Exception.Message
+                        $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
+                        $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
+                        $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
+                        $script:wpfWindow.FindName("pinOverlay").Visibility = 'Visible'
+                        
                         $e.Handled = $true
                         return
                     }
+                } catch {
+                    Show-Toast -Title "Pairing Failed" -Message $_.Exception.Message
+                    $e.Handled = $true
+                    return
                 }
             }
 
-
+            # If not a guest (already in Live Peers), connect ADB
             $res = Invoke-AdbConnect -Target $ip
             if ($res.Success) {
-                if ($wasPreviouslyPaired) {
-                    # Trusted device — auto-expand Transfers panel
-                    Invoke-MenuAction $actionPull
-                } else {
-                    # Just paired for the first time — toast confirmation, don't auto-expand
-                    Show-Toast -Title "Paired & Connected" -Message "Successfully paired with $ip"
-                    Update-WpfUI
-                }
+                Invoke-MenuAction $actionPull
             } else {
                 Show-Toast -Title "Connection Failed" -Message $res.Message
             }
