@@ -344,7 +344,12 @@ $mdnsTimer.Add_Tick({
                                 }
                             }
                         }
-                        $icUdp.ItemsSource = $liveUdp
+                        # Only update UI when the device set actually changes (prevents re-triggering Loaded animation)
+                        $newFingerprint = ($liveUdp | ForEach-Object { $_['Ip'] } | Sort-Object) -join ','
+                        if ($newFingerprint -ne $script:lastUdpFingerprint) {
+                            $icUdp.ItemsSource = $liveUdp
+                            $script:lastUdpFingerprint = $newFingerprint
+                        }
                     }
                 }
             } catch { }
