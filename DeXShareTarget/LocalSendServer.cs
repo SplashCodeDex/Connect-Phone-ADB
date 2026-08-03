@@ -96,6 +96,19 @@ namespace DeXShareTarget
             }
         }
 
+        public static void RemovePairedDevice(string fp)
+        {
+            if (PairedFingerprints.Remove(fp))
+            {
+                var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+                var file = Path.Combine(dir, "paired_devices.json");
+                lock (_fileLock)
+                {
+                    File.WriteAllText(file, JsonSerializer.Serialize(PairedFingerprints.ToList()));
+                }
+            }
+        }
+
         public static Dictionary<string, string> DeviceAliases { get; set; } = new();
 
         public static void SetDeviceAlias(string fp, string alias)
@@ -348,13 +361,16 @@ namespace DeXShareTarget
         }
     }
 
+    public enum PairResult { Reject, AcceptPermanent, AcceptGuest }
+
     public static class LocalSendServer
     {
         public static WebApplication? App;
         public static ConcurrentDictionary<string, string> HostedFiles = new();
         public static ConcurrentDictionary<string, PairRequestDto> PendingPairs = new();
         public static bool IsDndEnabled { get; set; } = false;
-        public static ConcurrentDictionary<string, TaskCompletionSource<bool>> PairTcs = new();
+        public static ConcurrentDictionary<string, TaskCompletionSource<PairResult>> PairTcs = new();
+        public static ConcurrentDictionary<string, DateTime> GuestFingerprints = new();
 
         public static async Task StartAsync()
         {
@@ -423,11 +439,13 @@ namespace DeXShareTarget
 
                 bool isAutoTrusted = !string.IsNullOrEmpty(req.Info.IdentityHash) && req.Info.IdentityHash == IdentityManager.IdentityHash;
                 bool isPaired = IdentityManager.PairedFingerprints.Contains(req.Info.Fingerprint);
+                bool isGuest = GuestFingerprints.ContainsKey(req.Info.Fingerprint);
                 
-                if (!isAutoTrusted && !isPaired)
+                if (!isAutoTrusted && !isPaired && !isGuest)
                 {
                     return Results.StatusCode(403);
                 }
+                if (isGuest) GuestFingerprints.TryRemove(req.Info.Fingerprint, out _);
 
                 var tcs = new TaskCompletionSource<bool>();
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -540,7 +558,7 @@ namespace DeXShareTarget
                     oldTcs.TrySetCanceled();
                 }
 
-                var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var tcs = new TaskCompletionSource<PairResult>(TaskCreationOptions.RunContinuationsAsynchronously);
                 PairTcs[req.Fingerprint] = tcs;
                 
                 // Tie the TCS to the client disconnect token
@@ -549,9 +567,10 @@ namespace DeXShareTarget
                     try 
                     {
                         var res = await tcs.Task;
-                        if (!res) return Results.StatusCode(403);
+                        if (res == PairResult.Reject) return Results.StatusCode(403);
                         
-                        IdentityManager.SavePairedDevice(req.Fingerprint);
+                        if (res == PairResult.AcceptPermanent) IdentityManager.SavePairedDevice(req.Fingerprint);
+                        if (res == PairResult.AcceptGuest) GuestFingerprints[req.Fingerprint] = DateTime.UtcNow;
                         return Results.Ok();
                     }
                     catch (TaskCanceledException)
@@ -567,13 +586,19 @@ namespace DeXShareTarget
             {
                 var fp = request.Query["fingerprint"].ToString();
                 var accept = request.Query["accept"].ToString() == "true";
+                var guest = request.Query["guest"].ToString() == "true";
+                var result = accept ? (guest ? PairResult.AcceptGuest : PairResult.AcceptPermanent) : PairResult.Reject;
+
                 if (PairTcs.TryGetValue(fp, out var tcs))
                 {
-                    tcs.TrySetResult(accept);
+                    tcs.TrySetResult(result);
                     PairTcs.TryRemove(fp, out _);
                 }
                 PendingPairs.TryRemove(fp, out _);
-                if (accept) IdentityManager.SavePairedDevice(fp);
+                
+                if (result == PairResult.AcceptPermanent) IdentityManager.SavePairedDevice(fp);
+                if (result == PairResult.AcceptGuest) GuestFingerprints[fp] = DateTime.UtcNow;
+                
                 return Results.Ok();
             });
 
@@ -609,7 +634,7 @@ namespace DeXShareTarget
                     {
                         var json = await response.Content.ReadAsStringAsync();
                         var root = JsonDocument.Parse(json).RootElement;
-                        var info = new DeviceInfoDto
+                        var info = new RegisterDto
                         {
                             Alias = root.TryGetProperty("alias", out var a) ? a.GetString() : "Unknown",
                             DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? dm.GetString() : "Device",
@@ -652,6 +677,20 @@ namespace DeXShareTarget
                     return Results.Ok();
                 }
                 return Results.BadRequest();
+            });
+
+            App.MapGet("/local/qr", (HttpRequest request) => 
+            {
+                var ip = request.Query["ip"].ToString();
+                if (string.IsNullOrEmpty(ip)) return Results.BadRequest();
+
+                string payload = $"http://{ip}:53317";
+                using var qrGenerator = new QRCoder.QRCodeGenerator();
+                using var qrCodeData = qrGenerator.CreateQrCode(payload, QRCoder.QRCodeGenerator.ECCLevel.M);
+                using var qrCode = new QRCoder.PngByteQRCode(qrCodeData);
+                var qrCodeImage = qrCode.GetGraphic(10); // 10 pixels per module
+                
+                return Results.File(qrCodeImage, "image/png");
             });
 
             App.MapPost("/local/dnd", (HttpRequest request) => 

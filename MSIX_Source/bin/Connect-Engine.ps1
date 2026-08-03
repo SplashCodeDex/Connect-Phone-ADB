@@ -338,6 +338,7 @@ $mdnsTimer.Add_Tick({
                         $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for you to accept..."
                         
                         $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Visible'
+                        $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Visible'
                         $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
                         $script:wpfWindow.FindName("pinOverlay").Visibility = 'Visible'
                         

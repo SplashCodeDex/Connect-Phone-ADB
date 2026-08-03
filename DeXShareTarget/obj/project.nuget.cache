@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "JWtxMJcw1Sw=",
+  "dgSpecHash": "na/JOwMsAkU=",
   "success": true,
   "projectFilePath": "W:\\CodeDeX\\DeX\\DeXShareTarget\\DeXShareTarget.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,7 @@
     "C:\\Users\\NicoDex\\.nuget\\packages\\makaretu.dns.multicast\\0.27.0\\makaretu.dns.multicast.0.27.0.nupkg.sha512",
     "C:\\Users\\NicoDex\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\NicoDex\\.nuget\\packages\\netstandard.library\\1.6.1\\netstandard.library.1.6.1.nupkg.sha512",
+    "C:\\Users\\NicoDex\\.nuget\\packages\\qrcoder\\1.8.0\\qrcoder.1.8.0.nupkg.sha512",
     "C:\\Users\\NicoDex\\.nuget\\packages\\simplebase\\1.3.1\\simplebase.1.3.1.nupkg.sha512",
     "C:\\Users\\NicoDex\\.nuget\\packages\\tmds.libc\\0.2.0\\tmds.libc.0.2.0.nupkg.sha512",
     "C:\\Users\\NicoDex\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.22000.57\\microsoft.windows.sdk.net.ref.10.0.22000.57.nupkg.sha512"

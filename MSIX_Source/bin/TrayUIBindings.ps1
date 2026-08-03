@@ -248,7 +248,63 @@ if ($btnSettingsAutoConnect) {
 # Connect Now button in settings
 $btnSettingsConnectNow = $script:wpfWindow.FindName("btnSettingsConnectNow")
 if ($btnSettingsConnectNow) {
-    $btnSettingsConnectNow.Add_Click({ Invoke-MenuAction $actionConnect })
+    $btnSettingsConnectNow.Add_Click({
+        Invoke-MenuAction $actionConnect
+    })
+}
+
+# QR Code button in settings
+$btnSettingsQrCode = $script:wpfWindow.FindName("btnSettingsQrCode")
+if ($btnSettingsQrCode) {
+    $btnSettingsQrCode.Add_Click({
+        $ip = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
+        if ($ip) {
+            $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
+            if ($imgQrCode) {
+                $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
+                $bitmap.BeginInit()
+                $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$ip")
+                $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
+                $bitmap.EndInit()
+                $imgQrCode.Source = $bitmap
+            }
+            $script:wpfWindow.FindName("qrOverlay").Visibility = 'Visible'
+            Invoke-MenuAction $actionConnect # to dismiss settings panel
+        } else {
+            Show-Toast -Title "Network Error" -Message "Could not determine local IP address."
+        }
+    })
+}
+
+$btnQrClose = $script:wpfWindow.FindName("btnQrClose")
+if ($btnQrClose) {
+    $btnQrClose.Add_Click({
+        $script:wpfWindow.FindName("qrOverlay").Visibility = 'Collapsed'
+    })
+}
+
+# DND toggle in settings
+$script:isDndEnabled = $false
+$btnSettingsDnd = $script:wpfWindow.FindName("btnSettingsDnd")
+if ($btnSettingsDnd) {
+    $btnSettingsDnd.Add_Click({
+        $script:isDndEnabled = -not $script:isDndEnabled
+        $stateStr = if ($script:isDndEnabled) { "true" } else { "false" }
+        try { Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/dnd?enabled=$stateStr" -Method Post } catch {}
+        
+        $txtBadge = $script:wpfWindow.FindName("txtBadgeDnd")
+        $badge = $script:wpfWindow.FindName("badgeDnd")
+        if ($txtBadge -and $badge) {
+            $txtBadge.Text = if ($script:isDndEnabled) { "ON" } else { "OFF" }
+            if ($script:isDndEnabled) {
+                $badge.Background = $script:wpfWindow.FindResource("DangerBrush")
+                $txtBadge.Foreground = [System.Windows.Media.Brushes]::White
+            } else {
+                $badge.Background = $script:wpfWindow.FindResource("AccentBrush")
+                $txtBadge.Foreground = $script:wpfWindow.FindResource("SecondaryTextBrush")
+            }
+        }
+    })
 }
 
 # Theme toggle in settings
@@ -973,6 +1029,16 @@ $script:wpfWindow.FindName("btnPinCancel").Add_Click({
     $script:wpfWindow.FindName("pinOverlay").Visibility = 'Collapsed'
 })
 
+$script:wpfWindow.FindName("btnPinAcceptOnce").Add_Click({
+    if ($script:activePairRequest) {
+        try { Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pairing-resolve?fingerprint=$($script:activePairRequest.fingerprint)&accept=true&guest=true" -Method Post } catch {}
+        $script:activePairRequest = $null
+        Show-Toast -Title "Guest Device Added" -Message "Device trusted for a single transfer."
+    }
+    if ($script:pairWaitTimer) { $script:pairWaitTimer.Stop() }
+    $script:wpfWindow.FindName("pinOverlay").Visibility = 'Collapsed'
+})
+
 $script:wpfWindow.FindName("btnPinAccept").Add_Click({
     if ($script:activePairRequest) {
         try { Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pairing-resolve?fingerprint=$($script:activePairRequest.fingerprint)&accept=true" -Method Post } catch {}
@@ -986,7 +1052,31 @@ $script:wpfWindow.FindName("btnPinAccept").Add_Click({
 $script:wpfWindow.Add_Click({
     param($sender, $e)
     $src = $e.OriginalSource
-    if ($src -is [System.Windows.Controls.Button]) {
+    if ($src -is [System.Windows.Controls.MenuItem]) {
+        $menuItem = $src
+        if ($menuItem.Name -eq "menuRename") {
+            $fp = $menuItem.Tag
+            if ($fp) {
+                Add-Type -AssemblyName Microsoft.VisualBasic
+                $alias = [Microsoft.VisualBasic.Interaction]::InputBox("Enter new alias for this device:", "Rename Device", "")
+                if (![string]::IsNullOrWhiteSpace($alias)) {
+                    try { Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/alias?fingerprint=$fp&alias=$alias" -Method Post } catch {}
+                    Show-Toast -Title "Device Renamed" -Message "New alias saved."
+                }
+            }
+        }
+        elseif ($menuItem.Name -eq "menuForget") {
+            $fp = $menuItem.Tag
+            if ($fp) {
+                try { Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/unpair?fingerprint=$fp" -Method Post } catch {}
+                Show-Toast -Title "Device Forgotten" -Message "Device has been unpaired."
+            }
+        }
+        $e.Handled = $true
+        return
+    }
+    
+    if ($src -is [System.Windows.Controls.Button] -or $src -is [System.Windows.Controls.RadioButton]) {
         $dc = $src.DataContext
         if ($null -ne $dc -and $dc -is [System.Collections.Hashtable] -and $dc.Contains("Fingerprint") -and $dc.Contains("Alias") -and $dc.Contains("Ip")) {
             # Discovered Device Clicked -> Initiate Pairing
@@ -999,6 +1089,7 @@ $script:wpfWindow.Add_Click({
             
             # Hide Cancel/Accept buttons when WE initiate
             $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
+            $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
             $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Collapsed'
             
             $targetIp = $dc.Ip

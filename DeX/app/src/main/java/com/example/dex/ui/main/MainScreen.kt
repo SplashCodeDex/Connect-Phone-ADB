@@ -236,7 +236,7 @@ fun MainScreen(
                 }
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(devices) { device ->
+                    items(devices, key = { it.info.fingerprint }) { device ->
                         DeviceCard(device = device, onClick = {
                             selectedDevice = device
                             // Open native document picker (Filters to all files)

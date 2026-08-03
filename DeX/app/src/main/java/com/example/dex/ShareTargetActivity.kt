@@ -174,7 +174,7 @@ class ShareTargetActivity : ComponentActivity() {
                 )
             } else {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    items(devices) { device ->
+                    items(devices, key = { it.info.fingerprint }) { device ->
                         DeviceItem(
                             name = device.info.alias,
                             icon = if (device.info.deviceType == "desktop") Icons.Default.Computer else Icons.Default.Smartphone,
