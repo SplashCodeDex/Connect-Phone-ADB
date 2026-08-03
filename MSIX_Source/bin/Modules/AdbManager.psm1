@@ -31,8 +31,16 @@ function Invoke-AdbConnect {
         
         $Target = "${GatewayIP}:5555"
     } else {
-        if ($Target -match '^([0-9\.]+):') {
+        if ($Target -match '^([0-9\.]+):(\d+)$') {
             $GatewayIP = $Matches[1]
+            $TargetPort = [int]$Matches[2]
+        } elseif ($Target -match '^([0-9\.]+)$') {
+            $GatewayIP = $Target
+            $TargetPort = 5555
+            $Target = "${Target}:5555"
+        } else {
+            $GatewayIP = $Target -replace ':.*', ''
+            $TargetPort = 5555
         }
     }
     
@@ -43,6 +51,24 @@ function Invoke-AdbConnect {
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $devName }
     } elseif ($devices -match ([regex]::Escape($target) + "\s+device")) {
         return @{ Success = $true; Target = $target; IP = $GatewayIP; Name = $target }
+    }
+
+    # Fast TCP Ping to prevent 21-second adb freeze on unreachable IP
+    if ($GatewayIP -and $TargetPort) {
+        try {
+            $client = [System.Net.Sockets.TcpClient]::new()
+            $task = $client.ConnectAsync($GatewayIP, $TargetPort)
+            if (-not $task.Wait(500)) {
+                return @{ Success = $false; Message = "Device unreachable (TCP Ping timeout)." }
+            }
+        } catch {
+            return @{ Success = $false; Message = "Device unreachable (TCP Ping failed)." }
+        } finally {
+            if ($client) {
+                $client.Close()
+                $client.Dispose()
+            }
+        }
     }
 
     # Not connected, try to connect
@@ -125,7 +151,32 @@ function Invoke-AdbPair {
         [Parameter(Mandatory=$true)][string]$Target,
         [Parameter(Mandatory=$true)][string]$Pin
     )
+    $GatewayIP = $null
+    $TargetPort = $null
+    if ($Target -match '^([0-9\.]+):(\d+)$') {
+        $GatewayIP = $Matches[1]
+        $TargetPort = [int]$Matches[2]
+    }
     
+    if ($GatewayIP -and $TargetPort) {
+        try {
+            $client = [System.Net.Sockets.TcpClient]::new()
+            $task = $client.ConnectAsync($GatewayIP, $TargetPort)
+            if (-not $task.Wait(500)) {
+                Write-Trace "Pairing failed: Device unreachable (TCP Ping timeout)."
+                return $false
+            }
+        } catch {
+            Write-Trace "Pairing failed: Device unreachable (TCP Ping failed)."
+            return $false
+        } finally {
+            if ($client) {
+                $client.Close()
+                $client.Dispose()
+            }
+        }
+    }
+
     $null = adb start-server 2>&1
     $result = adb pair $Target $Pin 2>&1
     
