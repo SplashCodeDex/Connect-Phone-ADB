@@ -58,12 +58,12 @@ $actionConnect = {
         $script:currentTarget = $res.Target
         $script:notifyIcon.Icon = $iconGreen
         $script:notifyIcon.Text = "Connected: $($res.Name)"
-        $script:txtStatus.Text = "Connected: $($res.Name)"
+        $script:txtStatus.Text = "ADB Status: $($res.Name)"
         Show-Toast -Title "ADB Connected" -Message "Successfully connected to $($res.Name)"
     } else {
         $script:notifyIcon.Icon = $iconRed
         $script:notifyIcon.Text = "Disconnected"
-        $script:txtStatus.Text = "Status: $($res.Message)"
+        $script:txtStatus.Text = "ADB Status: $($res.Message)"
         Show-Toast -Title "Connection Failed" -Message $res.Message
     }
     Update-WpfUI
@@ -72,7 +72,7 @@ $actionDisconnect = {
     $null = adb disconnect 2>&1
     $script:notifyIcon.Icon = $iconRed
     $script:notifyIcon.Text = "Connect ADB: Disconnected"
-    $script:txtStatus.Text = "Status: Disconnected"
+    $script:txtStatus.Text = "ADB Status: Disconnected"
     Show-Toast -Title "ADB Disconnected" -Message "Severed all wireless connections."
     Update-WpfUI
 }

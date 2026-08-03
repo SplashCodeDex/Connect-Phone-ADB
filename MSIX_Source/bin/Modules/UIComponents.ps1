@@ -244,14 +244,14 @@ function Update-WpfUI {
         $script:currentTarget = $target
         $script:notifyIcon.Icon = $iconGreen
         $script:notifyIcon.Text = "Connected: $devName"
-        $script:txtStatus.Text = "Connected: $devName"
+        $script:txtStatus.Text = "ADB Status: $devName"
         $btnQAConnect = $script:wpfWindow.FindName("btnQAConnect")
         if ($null -ne $btnQAConnect) { $btnQAConnect.IsChecked = $true }
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
     } else {
         $script:notifyIcon.Icon = $iconRed
         $script:notifyIcon.Text = "Disconnected"
-        $script:txtStatus.Text = "Status: Disconnected"
+        $script:txtStatus.Text = "ADB Status: Disconnected"
         $btnQAConnect = $script:wpfWindow.FindName("btnQAConnect")
         if ($null -ne $btnQAConnect) { $btnQAConnect.IsChecked = $false }
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'

@@ -1264,7 +1264,7 @@
                 
                 <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="16,0" />
                 <StackPanel Orientation="Horizontal" Margin="24,10,24,10">
-                    <TextBlock Name="txtStatus" Text="Status: Initializing..." Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
+                    <TextBlock Name="txtStatus" Text="ADB Status: Initializing..." Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
                     <Button Name="btnCopyIP" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Copy IP:Port" Cursor="Hand" Visibility="Collapsed" VerticalAlignment="Center" Margin="6,0,0,0">
                         <TextBlock Text="&#xE8C8;" />
                         <Button.Template>
