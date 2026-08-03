@@ -1300,11 +1300,11 @@
                                                 </Grid>
                                                 
                                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Alias}" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                                    <TextBlock Text="{Binding DeviceModel}" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                    <TextBlock Text="{Binding [Alias]}" FontSize="15" FontFamily="Segoe UI" FontWeight="Medium" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBlock Text="{Binding [DeviceModel]}" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                                                 </StackPanel>
                                                 
-                                                <TextBlock Grid.Column="2" Text="{Binding Ip}" FontFamily="Segoe UI" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                <TextBlock Grid.Column="2" Text="{Binding [Ip]}" FontFamily="Segoe UI" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0" />
                                             </Grid>
                                         </Button>
                                     </DataTemplate>

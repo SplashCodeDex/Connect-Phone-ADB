@@ -333,7 +333,7 @@ $mdnsTimer.Add_Tick({
                             foreach ($p in $udpRes) {
                                 $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
                                 if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
-                                    $liveUdp += [PSCustomObject]@{
+                                    $liveUdp += @{
                                         Ip = $p.ip
                                         Alias = $p.info.alias
                                         DeviceModel = $p.info.deviceModel
