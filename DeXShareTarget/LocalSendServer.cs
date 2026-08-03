@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace DeXShareTarget
 {
@@ -289,6 +290,9 @@ namespace DeXShareTarget
         {
             IdentityManager.Initialize();
             var builder = WebApplication.CreateBuilder();
+            
+            // Silence Kestrel verbose logs
+            builder.Logging.SetMinimumLevel(LogLevel.Warning);
 
             // Self-signed certificate for TLS
             using var rsa = RSA.Create(2048);

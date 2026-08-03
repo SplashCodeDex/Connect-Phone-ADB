@@ -145,7 +145,7 @@ function Load-Directory($dirPath) {
                 $headers = @{}
                 if ($token) { $headers["Authorization"] = "Bearer $token" }
                 
-                $res = Invoke-RestMethod -Uri $uri -Method Get -Headers $headers -ErrorAction Stop
+                $res = Invoke-RestMethod -Uri $uri -Method Get -Headers $headers -TimeoutSec 3 -ErrorAction Stop
                 
                 $lines = @()
                 if ($res) {

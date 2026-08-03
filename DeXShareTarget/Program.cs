@@ -19,22 +19,19 @@ namespace DeXShareTarget
         [STAThread]
         static void Main(string[] args)
         {
-            File.WriteAllText(Path.Combine(Path.GetTempPath(), "DeXArgs.txt"), $"Args Length: {args.Length}, Args: {string.Join(" | ", args)}");
             try 
             {
                 var program = new Program();
                 program.Run(args);
             }
-            catch (Exception ex)
+            catch
             {
-                File.WriteAllText(Path.Combine(Path.GetTempPath(), $"DeXCrash_Main_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), ex.ToString());
+                // Silent catch in production
             }
         }
 
         public void Run(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += (s, e) => File.WriteAllText(Path.Combine(Path.GetTempPath(), $"DeXCrash_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), e.ExceptionObject.ToString());
-            
             Windows.ApplicationModel.Activation.IActivatedEventArgs? activatedArgs = null;
             try { activatedArgs = AppInstance.GetActivatedEventArgs(); } catch { }
             
@@ -99,24 +96,11 @@ namespace DeXShareTarget
             {
                 string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                 string ps1Path = Path.Combine(exeDir, "bin", "Connect-Engine.ps1");
-                string logPath = Path.Combine(Path.GetTempPath(), "DeXEngine_Errors.txt");
-                
-                // Rotate the stderr log so it stays forensically useful (keep last 500 lines when > 512 KB)
-                try
-                {
-                    if (File.Exists(logPath) && new FileInfo(logPath).Length > 512 * 1024)
-                    {
-                        var lines = File.ReadAllLines(logPath);
-                        File.WriteAllLines(logPath, lines.Skip(Math.Max(0, lines.Length - 500)));
-                    }
-                }
-                catch { }
-                
                 string extraArgs = (activatedArgs != null && activatedArgs.Kind == ActivationKind.StartupTask) ? " -Background" : "";
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "powershell.exe",
-                    Arguments = $"-STA -ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -Command \"& '{ps1Path}'{extraArgs} 2>> '{logPath}'\"",
+                    Arguments = $"-STA -ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -Command \"& '{ps1Path}'{extraArgs}\"",
                     CreateNoWindow = true,
                     UseShellExecute = false
                 };
@@ -130,9 +114,9 @@ namespace DeXShareTarget
                     {
                         LocalSendServer.StartAsync();
                     } 
-                    catch (Exception ex) 
+                    catch 
                     {
-                        File.WriteAllText(Path.Combine(Path.GetTempPath(), "LocalSendServerCrash.txt"), ex.ToString());
+                        // Ignore server start failures in production
                     }
                 };
                 app.Run();

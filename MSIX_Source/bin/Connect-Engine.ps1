@@ -328,7 +328,7 @@ $mdnsTimer.Add_Tick({
             # Poll robust UDP devices (LocalSendServer Gateway Unicast fallback)
             # This runs INDEPENDENTLY of mDNS — every tick, unconditionally.
             try {
-                $udpRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/devices" -ErrorAction Stop
+                $udpRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/devices" -TimeoutSec 2 -ErrorAction Stop
                 if ($udpRes) {
                     $icUdp = $script:wpfWindow.FindName("icUdpPeers")
                     if ($icUdp) {
@@ -336,16 +336,18 @@ $mdnsTimer.Add_Tick({
                         foreach ($p in $udpRes) {
                             $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
                             if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
-                                $liveUdp += @{
-                                    Ip = $p.ip
-                                    Alias = $p.info.alias
-                                    DeviceModel = $p.info.deviceModel
-                                    DeviceType = $p.info.deviceType
+                                if (-not $script:omniPeers.Contains($p.ip)) {
+                                    $liveUdp += @{
+                                        Ip = $p.ip
+                                        Alias = $p.info.alias
+                                        DeviceModel = $p.info.deviceModel
+                                        DeviceType = $p.info.deviceType
+                                    }
                                 }
                             }
                         }
                         # Only update UI when the device set actually changes (prevents re-triggering Loaded animation)
-                        $newFingerprint = ($liveUdp | ForEach-Object { $_['Ip'] } | Sort-Object) -join ','
+                        $newFingerprint = ($liveUdp | ForEach-Object { "$($_['Ip']):$($_['Alias'])" } | Sort-Object) -join ','
                         if ($newFingerprint -ne $script:lastUdpFingerprint) {
                             $icUdp.ItemsSource = $liveUdp
                             $script:lastUdpFingerprint = $newFingerprint

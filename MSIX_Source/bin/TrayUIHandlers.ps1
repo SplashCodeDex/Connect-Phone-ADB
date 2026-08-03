@@ -110,12 +110,12 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
                 } else {
                     try {
                         [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
-                        [void](Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/request" -Method Post -ErrorAction Stop)
+                        [void](Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/request" -Method Post -TimeoutSec 3 -ErrorAction Stop)
                         
                         Add-Type -AssemblyName Microsoft.VisualBasic
                         $pin = [Microsoft.VisualBasic.Interaction]::InputBox("Enter the 6-digit PIN shown on the target phone:", "DeX Guest Pairing")
                         if ($pin) {
-                            $verifyRes = Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/verify" -Method Post -Body (@{ pin = $pin } | ConvertTo-Json -Depth 2) -ContentType "application/json" -ErrorAction Stop
+                            $verifyRes = Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/pair/verify" -Method Post -Body (@{ pin = $pin } | ConvertTo-Json -Depth 2) -ContentType "application/json" -TimeoutSec 3 -ErrorAction Stop
                             $tokens[$ip] = $verifyRes.token
                             $tokens | ConvertTo-Json -Depth 2 | Set-Content $settingsPath
                         } else {
