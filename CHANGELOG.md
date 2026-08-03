@@ -1,5 +1,8 @@
 # Changelog
 
+### [patch] Enforce Device Trust on File Transfers (v4.15.1.0)
+- **[patch]** Updated `/api/localsend/v2/prepare-upload` API to forcefully reject (`403 Forbidden`) inbound transfer requests originating from fingerprints that are neither Paired nor Auto-Trusted. This effectively blocks untrusted guests from interrupting the user with file drop prompts.
+
 ### [minor] Implement Device PIN Pairing Workflow (v4.15.0.0)
 - **[minor]** Added PIN pairing system: clicking an untrusted "Discovered Device" generates a random 6-digit PIN and initiates a pairing request to the target device.
 - **[minor]** Renamed "Nearby Users" section to "Your Devices" in the main UI to separate trusted vs untrusted devices.

@@ -388,6 +388,14 @@ namespace DeXShareTarget
 
             App.MapPost("/api/localsend/v2/prepare-upload", async (PrepareUploadRequestDto req) =>
             {
+                bool isAutoTrusted = !string.IsNullOrEmpty(req.Info.IdentityHash) && req.Info.IdentityHash == IdentityManager.IdentityHash;
+                bool isPaired = IdentityManager.PairedFingerprints.Contains(req.Info.Fingerprint);
+                
+                if (!isAutoTrusted && !isPaired)
+                {
+                    return Results.StatusCode(403);
+                }
+
                 var tcs = new TaskCompletionSource<bool>();
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
