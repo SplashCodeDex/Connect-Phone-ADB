@@ -16,9 +16,18 @@ namespace DeXShareTarget
 {
     class Program
     {
+        private static Mutex? _instanceMutex;
+
         [STAThread]
         static void Main(string[] args)
         {
+            _instanceMutex = new Mutex(true, "DeXShareTarget_SingleInstance_Mutex", out bool isNewInstance);
+            if (!isNewInstance && (args == null || args.Length == 0))
+            {
+                // Another background instance is already running
+                return;
+            }
+
             try 
             {
                 var program = new Program();

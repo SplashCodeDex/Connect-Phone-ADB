@@ -77,7 +77,9 @@ namespace DeXShareTarget
             if (File.Exists(file))
             {
                 try {
-                    var list = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(file));
+                    string json;
+                    lock (_fileLock) { json = File.ReadAllText(file); }
+                    var list = JsonSerializer.Deserialize<List<string>>(json);
                     if (list != null) PairedFingerprints = new HashSet<string>(list);
                 } catch {}
             }
@@ -92,6 +94,24 @@ namespace DeXShareTarget
             {
                 File.WriteAllText(file, JsonSerializer.Serialize(PairedFingerprints.ToList()));
             }
+        }
+
+        public static Dictionary<string, string> DeviceAliases { get; set; } = new();
+
+        public static void SetDeviceAlias(string fp, string alias)
+        {
+            DeviceAliases[fp] = alias;
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+            var file = Path.Combine(dir, "paired_aliases.json");
+            lock (_fileLock)
+            {
+                File.WriteAllText(file, JsonSerializer.Serialize(DeviceAliases));
+            }
+        }
+
+        public static string GetDeviceAlias(string fp)
+        {
+            return DeviceAliases.TryGetValue(fp, out var a) ? a : "";
         }
 
         public static void SetEmail(string email)
@@ -333,6 +353,7 @@ namespace DeXShareTarget
         public static WebApplication? App;
         public static ConcurrentDictionary<string, string> HostedFiles = new();
         public static ConcurrentDictionary<string, PairRequestDto> PendingPairs = new();
+        public static bool IsDndEnabled { get; set; } = false;
         public static ConcurrentDictionary<string, TaskCompletionSource<bool>> PairTcs = new();
 
         public static async Task StartAsync()
@@ -398,6 +419,8 @@ namespace DeXShareTarget
 
             App.MapPost("/api/localsend/v2/prepare-upload", async (PrepareUploadRequestDto req) =>
             {
+                if (IsDndEnabled) return Results.StatusCode(403);
+
                 bool isAutoTrusted = !string.IsNullOrEmpty(req.Info.IdentityHash) && req.Info.IdentityHash == IdentityManager.IdentityHash;
                 bool isPaired = IdentityManager.PairedFingerprints.Contains(req.Info.Fingerprint);
                 
@@ -497,9 +520,18 @@ namespace DeXShareTarget
                 }
             });
 
+            var rateLimits = new ConcurrentDictionary<string, DateTime>();
+
             App.MapPost("/api/localsend/v2/pair-prompt", async (PairRequestDto req, CancellationToken ct) =>
             {
+                if (IsDndEnabled) return Results.StatusCode(403);
                 if (string.IsNullOrEmpty(req.Fingerprint)) return Results.BadRequest();
+                if (rateLimits.TryGetValue(req.Fingerprint, out var lastTime) && DateTime.UtcNow - lastTime < TimeSpan.FromSeconds(3))
+                {
+                    return Results.StatusCode(429); // Rate limited
+                }
+                rateLimits[req.Fingerprint] = DateTime.UtcNow;
+
                 PendingPairs[req.Fingerprint] = req;
                 
                 // Cancel any orphaned task for this fingerprint to avoid leaks
@@ -556,6 +588,77 @@ namespace DeXShareTarget
                         DiscoveryBackgroundService.Devices.TryRemove(k, out _);
                 }
                 return Results.Json(DiscoveryBackgroundService.Devices.Values);
+            });
+
+            App.MapGet("/local/devices/ping", async (string ip) =>
+            {
+                if (string.IsNullOrEmpty(ip)) return Results.BadRequest();
+                try
+                {
+                    using var handler = new System.Net.Http.HttpClientHandler();
+                    handler.ServerCertificateCustomValidationCallback = (m, c, ch, e) => true;
+                    using var http = new System.Net.Http.HttpClient(handler) { Timeout = TimeSpan.FromSeconds(2) };
+                    
+                    var response = await http.GetAsync($"https://{ip}:53317/api/localsend/v2/info");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        response = await http.GetAsync($"http://{ip}:53317/api/localsend/v2/info");
+                    }
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        var root = JsonDocument.Parse(json).RootElement;
+                        var info = new DeviceInfoDto
+                        {
+                            Alias = root.TryGetProperty("alias", out var a) ? a.GetString() : "Unknown",
+                            DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? dm.GetString() : "Device",
+                            DeviceType = root.TryGetProperty("deviceType", out var dt) ? dt.GetString() : "desktop",
+                            Fingerprint = root.TryGetProperty("fingerprint", out var fp) ? fp.GetString() : Guid.NewGuid().ToString()
+                        };
+
+                        var dev = new DiscoveredDevice
+                        {
+                            Ip = ip,
+                            Info = info,
+                            LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                        };
+                        DiscoveryBackgroundService.Devices[ip] = dev;
+                        return Results.Ok(dev);
+                    }
+                }
+                catch { }
+                return Results.NotFound();
+            });
+
+            App.MapPost("/local/unpair", (HttpRequest request) => 
+            {
+                var fp = request.Query["fingerprint"].ToString();
+                if (!string.IsNullOrEmpty(fp))
+                {
+                    IdentityManager.RemovePairedDevice(fp);
+                    return Results.Ok();
+                }
+                return Results.BadRequest();
+            });
+
+            App.MapPost("/local/alias", (HttpRequest request) => 
+            {
+                var fp = request.Query["fingerprint"].ToString();
+                var alias = request.Query["alias"].ToString();
+                if (!string.IsNullOrEmpty(fp) && !string.IsNullOrEmpty(alias))
+                {
+                    IdentityManager.SetDeviceAlias(fp, alias);
+                    return Results.Ok();
+                }
+                return Results.BadRequest();
+            });
+
+            App.MapPost("/local/dnd", (HttpRequest request) => 
+            {
+                var enabled = request.Query["enabled"].ToString() == "true";
+                IsDndEnabled = enabled;
+                return Results.Ok(new { dnd = IsDndEnabled });
             });
 
             App.MapPost("/local/settings/email", async (HttpRequest req) => 
