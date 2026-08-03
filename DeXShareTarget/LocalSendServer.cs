@@ -29,6 +29,7 @@ namespace DeXShareTarget
         public static string Fingerprint { get; set; } = "";
         public static string IdentityHash { get; set; } = "";
         public static string Email { get; set; } = "";
+        public static HashSet<string> PairedFingerprints { get; set; } = new();
         
         public static void Initialize()
         {
@@ -61,6 +62,29 @@ namespace DeXShareTarget
             Fingerprint = Guid.NewGuid().ToString();
             IdentityHash = Guid.NewGuid().ToString();
             File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
+            
+            LoadPairedDevices();
+        }
+
+        private static void LoadPairedDevices()
+        {
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+            var file = Path.Combine(dir, "paired_devices.json");
+            if (File.Exists(file))
+            {
+                try {
+                    var list = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(file));
+                    if (list != null) PairedFingerprints = new HashSet<string>(list);
+                } catch {}
+            }
+        }
+
+        public static void SavePairedDevice(string fp)
+        {
+            PairedFingerprints.Add(fp);
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+            var file = Path.Combine(dir, "paired_devices.json");
+            File.WriteAllText(file, JsonSerializer.Serialize(PairedFingerprints.ToList()));
         }
 
         public static void SetEmail(string email)
@@ -116,11 +140,20 @@ namespace DeXShareTarget
         [JsonPropertyName("files")] public Dictionary<string, string> Files { get; set; } = new();
     }
 
+    public class PairRequestDto
+    {
+        [JsonPropertyName("alias")] public string Alias { get; set; } = "";
+        [JsonPropertyName("fingerprint")] public string Fingerprint { get; set; } = "";
+        [JsonPropertyName("pin")] public string Pin { get; set; } = "";
+    }
+
     public class DiscoveredDevice
     {
         public string Ip { get; set; } = "";
         public RegisterDto Info { get; set; } = new();
         public long LastSeen { get; set; }
+        public bool IsPaired { get; set; }
+        public bool IsAutoTrusted { get; set; }
     }
 
     public class DiscoveryBackgroundService : BackgroundService
@@ -204,7 +237,9 @@ namespace DeXShareTarget
                                 {
                                     Ip = a.Address.ToString(),
                                     Info = dto,
-                                    LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                                    LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                                    IsPaired = IdentityManager.PairedFingerprints.Contains(fp),
+                                    IsAutoTrusted = false // Can't easily tell from mDNS without querying, fallback to UDP
                                 };
                             }
                         }
@@ -250,7 +285,9 @@ namespace DeXShareTarget
                             {
                                 Ip = result.RemoteEndPoint.Address.ToString(),
                                 Info = dto,
-                                LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                                LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                                IsPaired = IdentityManager.PairedFingerprints.Contains(fp),
+                                IsAutoTrusted = !string.IsNullOrEmpty(dto.IdentityHash) && dto.IdentityHash == myInfo.IdentityHash
                             };
                         }
                     } catch { }
@@ -285,6 +322,8 @@ namespace DeXShareTarget
     {
         public static WebApplication? App;
         public static ConcurrentDictionary<string, string> HostedFiles = new();
+        public static ConcurrentDictionary<string, PairRequestDto> PendingPairs = new();
+        public static ConcurrentDictionary<string, TaskCompletionSource<bool>> PairTcs = new();
 
         public static async Task StartAsync()
         {
@@ -438,6 +477,36 @@ namespace DeXShareTarget
                 {
                     context.Response.StatusCode = 404;
                 }
+            });
+
+            App.MapPost("/api/localsend/v2/pair-prompt", async (PairRequestDto req) =>
+            {
+                if (string.IsNullOrEmpty(req.Fingerprint)) return Results.BadRequest();
+                PendingPairs[req.Fingerprint] = req;
+                var tcs = new TaskCompletionSource<bool>();
+                PairTcs[req.Fingerprint] = tcs;
+                
+                var res = await tcs.Task;
+                if (!res) return Results.StatusCode(403);
+                
+                IdentityManager.SavePairedDevice(req.Fingerprint);
+                return Results.Ok();
+            });
+
+            App.MapGet("/local/pairing-requests", () => Results.Json(PendingPairs.Values));
+
+            App.MapPost("/local/pairing-resolve", async (HttpRequest request) =>
+            {
+                var fp = request.Query["fingerprint"].ToString();
+                var accept = request.Query["accept"].ToString() == "true";
+                if (PairTcs.TryGetValue(fp, out var tcs))
+                {
+                    tcs.TrySetResult(accept);
+                    PairTcs.TryRemove(fp, out _);
+                }
+                PendingPairs.TryRemove(fp, out _);
+                if (accept) IdentityManager.SavePairedDevice(fp);
+                return Results.Ok();
             });
 
             // Local API for PowerShell to read discovered devices

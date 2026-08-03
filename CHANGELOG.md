@@ -1,5 +1,13 @@
 # Changelog
 
+### [minor] Implement Device PIN Pairing Workflow (v4.15.0.0)
+- **[minor]** Added PIN pairing system: clicking an untrusted "Discovered Device" generates a random 6-digit PIN and initiates a pairing request to the target device.
+- **[minor]** Renamed "Nearby Users" section to "Your Devices" in the main UI to separate trusted vs untrusted devices.
+- **[minor]** Implemented `/api/localsend/v2/pair-prompt` and `/api/localsend/v2/pair-verify` logic in C# `LocalSendServer`.
+- **[minor]** Added a polished overlay dialog for PIN pairing (both for incoming requests and outgoing verification).
+- **[minor]** Discovered Devices (UDP poll) are now automatically filtered out and moved to "Your Devices" once paired or auto-trusted.
+- **[minor]** Persists pairing trust natively via `paired_devices.json` fingerprint hashing.
+
 ### [minor] Fix Device Discovery: UDP Poll Gated Behind mDNS (v4.12.2.0)
 - **[fix]** **ROOT CAUSE**: The UDP `/local/devices` poll was nested inside `if ($received.Count -gt 0)` — the mDNS results guard. On a phone hotspot where `adb mdns services` returns nothing, `$received` is always empty, so the UDP discovery block **never executed**. Moved it outside the guard so it runs every 2s tick unconditionally.
 - **[fix]** Changed `$liveUdp` items from `[PSCustomObject]` to `Hashtable` and updated WPF XAML bindings to use indexer syntax (`{Binding [Alias]}`). Verified working via standalone WPF ItemsControl test.

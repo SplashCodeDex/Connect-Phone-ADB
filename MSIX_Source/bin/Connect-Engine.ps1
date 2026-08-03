@@ -325,6 +325,27 @@ $mdnsTimer.Add_Tick({
                 
             }
 
+            # Poll Pairing Requests
+            try {
+                $pairReqs = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pairing-requests" -TimeoutSec 1 -ErrorAction Stop
+                if ($pairReqs -and $pairReqs.Count -gt 0) {
+                    $req = $pairReqs[0]
+                    # Show PIN UI overlay if not already showing
+                    if ($script:wpfWindow.FindName("pinOverlay").Visibility -ne 'Visible') {
+                        $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing Request"
+                        $script:wpfWindow.FindName("txtPinSubtitle").Text = "from $($req.alias)"
+                        $script:wpfWindow.FindName("txtPinCode").Text = $req.pin
+                        $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for you to accept..."
+                        
+                        $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Visible'
+                        $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
+                        $script:wpfWindow.FindName("pinOverlay").Visibility = 'Visible'
+                        
+                        $script:activePairRequest = $req
+                    }
+                }
+            } catch { }
+
             # Poll robust UDP devices (LocalSendServer Gateway Unicast fallback)
             # This runs INDEPENDENTLY of mDNS — every tick, unconditionally.
             try {
@@ -333,19 +354,39 @@ $mdnsTimer.Add_Tick({
                     $icUdp = $script:wpfWindow.FindName("icUdpPeers")
                     if ($icUdp) {
                         $liveUdp = @()
+                        $updatedLivePeers = $false
                         foreach ($p in $udpRes) {
                             $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
                             if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
-                                if (-not $script:omniPeers.Contains($p.ip)) {
-                                    $liveUdp += @{
-                                        Ip = $p.ip
-                                        Alias = $p.info.alias
-                                        DeviceModel = $p.info.deviceModel
-                                        DeviceType = $p.info.deviceType
+                                if ($p.isPaired -or $p.isAutoTrusted) {
+                                    if (-not $script:omniPeers.Contains($p.ip)) {
+                                        $livePeers += @{
+                                            Name      = $p.info.alias
+                                            SubText   = "$([char]0xE8EA) $($p.info.deviceModel)"
+                                            IconGlyph = "$([char]0xE8EA)"
+                                            IP        = $p.ip
+                                        }
+                                        $updatedLivePeers = $true
+                                    }
+                                } else {
+                                    if (-not $script:omniPeers.Contains($p.ip)) {
+                                        $liveUdp += @{
+                                            Ip = $p.ip
+                                            Alias = $p.info.alias
+                                            DeviceModel = $p.info.deviceModel
+                                            DeviceType = $p.info.deviceType
+                                            Fingerprint = $p.info.fingerprint
+                                        }
                                     }
                                 }
                             }
                         }
+                        
+                        if ($updatedLivePeers) {
+                            $ic = $script:wpfWindow.FindName("icLivePeers")
+                            if ($ic) { $ic.ItemsSource = $livePeers }
+                        }
+                        
                         # Only update UI when the device set actually changes (prevents re-triggering Loaded animation)
                         $newFingerprint = ($liveUdp | ForEach-Object { "$($_['Ip']):$($_['Alias'])" } | Sort-Object) -join ','
                         if ($newFingerprint -ne $script:lastUdpFingerprint) {

@@ -1253,7 +1253,7 @@
                 <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="16,0" />
                     </StackPanel>
                 
-                    <!-- Nearby Users Section -->
+                    <!-- Your Devices Section -->
                     <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly">
                         <StackPanel Margin="0,0,0,8">
                             <!-- Dynamic UDP Discovered Devices -->
@@ -1311,7 +1311,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                             
-                            <TextBlock Text="Nearby Users" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
+                            <TextBlock Text="Your Devices" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4" />
                             
                 <!-- User Joe (always visible when contracted) -->
                 <Button x:Name="btnUserJoe" Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
@@ -1511,6 +1511,56 @@
                 </DockPanel>
         </Border>
         </Border>
+        
+        <!-- PIN Pairing Overlay -->
+        <Grid x:Name="pinOverlay" Visibility="Collapsed" Background="#AA000000" Margin="0" Panel.ZIndex="100">
+            <Border Background="{DynamicResource PrimaryBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="16" Width="320" Height="240" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="30" ShadowDepth="10" Opacity="0.5" />
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock x:Name="txtPinTitle" Grid.Row="0" Text="Pairing Request" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="16,20,16,0" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="txtPinSubtitle" Grid.Row="0" Text="from Galaxy S21" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" Margin="16,46,16,0" HorizontalAlignment="Center" />
+                    
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock x:Name="txtPinCode" Text="123456" FontSize="42" FontFamily="Segoe UI" FontWeight="Bold" Foreground="{DynamicResource SecondaryForegroundBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
+                        <TextBlock x:Name="txtPinStatus" Text="Waiting for acceptance..." FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" />
+                    </StackPanel>
+                    
+                    <Grid Grid.Row="2" Margin="20,0,20,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="btnPinCancel" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="12">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <Button x:Name="btnPinAccept" Grid.Column="2" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="12">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
         <Popup x:Name="popAvatar" StaysOpen="False" AllowsTransparency="True" Placement="Mouse" PopupAnimation="Fade">
             <Border Background="{DynamicResource AccentBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="10">
                 <StackPanel MinWidth="190">
