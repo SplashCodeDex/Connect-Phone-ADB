@@ -499,20 +499,6 @@ $script:wpfWindow.Add_KeyDown({
 
 $script:lastDeactivated = [DateTime]::MinValue
 
-$script:wpfWindow.Add_MouseLeftButtonDown({
-    if ($_.ButtonState -eq [System.Windows.Input.MouseButtonState]::Pressed) {
-        $script:hasBeenDragged = $true
-        try { $this.DragMove() } catch {}
-        
-        $dragPillAccent = $this.FindName("dragPillAccent")
-        if ($dragPillAccent) {
-            $anim = New-Object System.Windows.Media.Animation.DoubleAnimation
-            $anim.To = 0
-            $anim.Duration = [TimeSpan]::FromSeconds(0.15)
-            $dragPillAccent.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $anim)
-        }
-    }
-})
 
 $script:dragPill = $script:wpfWindow.FindName("dragPill")
 $script:btnToggleTopmost = $script:wpfWindow.FindName("btnToggleTopmost")
@@ -579,6 +565,18 @@ if ($script:dragPill) {
             if (-not $script:isLocationPinned) {
                 $script:pinTimer.Stop()
                 $script:pinTimer.Start()
+            }
+            
+            if ($_.ButtonState -eq [System.Windows.Input.MouseButtonState]::Pressed) {
+                $script:hasBeenDragged = $true
+                try { $script:wpfWindow.DragMove() } catch {}
+                
+                if ($dragPillAccent) {
+                    $anim2 = New-Object System.Windows.Media.Animation.DoubleAnimation
+                    $anim2.To = 0
+                    $anim2.Duration = [TimeSpan]::FromSeconds(0.15)
+                    $dragPillAccent.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $anim2)
+                }
             }
         }
     })

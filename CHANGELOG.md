@@ -1,5 +1,8 @@
 # Changelog
 
+### [patch] Constrain Drag Area to Pill Indicator (v4.15.2.0)
+- **[patch]** Constrained window drag handle to only the pill indicator to prevent accidental dragging from the rest of the window.
+
 ### [patch] Enforce Device Trust on File Transfers (v4.15.1.0)
 - **[patch]** Updated `/api/localsend/v2/prepare-upload` API to forcefully reject (`403 Forbidden`) inbound transfer requests originating from fingerprints that are neither Paired nor Auto-Trusted. This effectively blocks untrusted guests from interrupting the user with file drop prompts.
 
