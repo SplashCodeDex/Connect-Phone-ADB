@@ -35,7 +35,8 @@ namespace DeXShareTarget
         {
             AppDomain.CurrentDomain.UnhandledException += (s, e) => File.WriteAllText(Path.Combine(Path.GetTempPath(), $"DeXCrash_{DateTime.Now:yyyyMMdd_HHmmss}.txt"), e.ExceptionObject.ToString());
             
-            var activatedArgs = AppInstance.GetActivatedEventArgs();
+            Windows.ApplicationModel.Activation.IActivatedEventArgs? activatedArgs = null;
+            try { activatedArgs = AppInstance.GetActivatedEventArgs(); } catch { }
             
             // 1. Direct CLI invocation (e.g. from UI)
             if (args != null && args.Length >= 3 && args[0].Equals("-IP", StringComparison.OrdinalIgnoreCase))

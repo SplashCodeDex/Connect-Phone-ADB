@@ -201,11 +201,9 @@ if ($script:AutoConnectEnabled) {
     Set-AutoConnectStatus -Enable $true
 }
 
-# Start Omni-Mesh Transfer Server
+# Transfer notifications queue (file received events from C# LocalSendServer)
 $script:transferQueue = [System.Collections.Concurrent.ConcurrentQueue[object]]::new()
 $script:mdnsQueue = [System.Collections.Concurrent.ConcurrentQueue[object]]::new()
-
-$script:transferJob = Start-OmniTransferServer -Queue $script:transferQueue
 
 # Start mDNS & Omni-Mesh auto-discovery
 $script:mdnsJob = $null
@@ -335,7 +333,12 @@ $mdnsTimer.Add_Tick({
                             foreach ($p in $udpRes) {
                                 $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
                                 if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
-                                    $liveUdp += $p
+                                    $liveUdp += [PSCustomObject]@{
+                                        Ip = $p.ip
+                                        Alias = $p.info.alias
+                                        DeviceModel = $p.info.deviceModel
+                                        DeviceType = $p.info.deviceType
+                                    }
                                 }
                             }
                             $icUdp.ItemsSource = $liveUdp
@@ -375,10 +378,7 @@ if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null
         Write-Trace "Disposing mDNS Runspace..."
         $script:mdnsJob.PowerShell.Dispose()
     }
-    if ($script:transferJob -and $script:transferJob.PowerShell) {
-        Write-Trace "Disposing Transfer Runspace..."
-        $script:transferJob.PowerShell.Dispose()
-    }
+    # Transfer server is hosted by DeXShareTarget.exe (C# LocalSendServer) — no PS runspace to dispose
 })
 
 [System.Windows.Forms.Application]::Run()

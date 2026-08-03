@@ -1,7 +1,12 @@
 # Changelog
 
-### [fix] OmniMesh Discovery Hotspot Fallback (v4.11.12.0)
-- **[fix]** Restored robust OmniMesh discovery for devices acting as Wi-Fi Hotspots by integrating a `/ponytail` fallback that reads active ADB connected devices and injects them directly into the Spatial UI's peer list, bypassing flaky UDP Multicast filtering on Android Hotspots.
+### [minor] Fix Device Discovery: Port Conflict & DeXShareTarget Crash (v4.12.0.0)
+- **[fix]** `DeXShareTarget.exe` crashed immediately on startup with `COMException 0xD0000225` at `AppInstance.GetActivatedEventArgs()` when launched outside an MSIX package context. Wrapped in try-catch so it degrades gracefully and always reaches `LocalSendServer.StartAsync()`.
+- **[fix]** Removed `Start-OmniTransferServer` from `AdbManager.psm1` and its call in `Connect-Engine.ps1`. This PowerShell raw-TCP listener was binding port 53318 before `DeXShareTarget.exe` started, causing `LocalSendServer`'s HTTP API (`/local/devices`) to fail with "address already in use" — the API that powers the Discovered Devices UI list.
+- **[fix]** Moved `icUdpPeers` `ItemsControl` inside the `ScrollViewer` to render correctly within the spatial menu layout.
+- **[fix]** Added a "Discovered Devices" header that auto-hides when the list is empty.
+- **[fix]** Flattened PSCustomObject property names (`Alias`, `DeviceModel`, `Ip`) to match XAML `{Binding}` paths exactly (WPF binding is case-sensitive on PSCustomObject).
+
 ### [fix] Enable HTTP/3 (QUIC) without Blocking Discovery (v4.11.8.0)
 - **[fix]** Restored HTTP/3 capabilities on the Kestrel server without compromising background discovery. Split the Kestrel endpoints to host HTTP/1.1 and HTTP/2 on TCP 53317, while hosting HTTP/3 (QUIC) on UDP 53316.
 - **[fix]** Injected a custom middleware to rewrite the `Alt-Svc` HTTP header to advertise the dedicated HTTP/3 port (53316) to compliant clients. This resolves the `WSAEACCES` socket conflict with the OmniMesh UDP multicast beacon logic on port 53317.

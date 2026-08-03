@@ -98,27 +98,6 @@ function Start-MdnsDiscovery {
                             }
                         }
                     }
-                    
-                    # B. /ponytail: Fallback to active ADB devices for robust Hotspot discovery
-                    $devOut = & $adbPath devices -l 2>&1
-                    if ($null -ne $devOut) {
-                        $dLines = $devOut -split '`r?`n'
-                        foreach ($line in $dLines) {
-                            if ($line -match '^([0-9\.]+):[0-9]+\s+device.*?model:([^\s]+)') {
-                                $ip = $matches[1]
-                                $model = $matches[2] -replace '_', ' '
-                                [void]$queue.Enqueue(@{ 
-                                    Type = 'OmniMesh'
-                                    IPPort = "$ip:5555"
-                                    Name = $model
-                                    DeviceType = "mobile"
-                                    Model = $model
-                                    IdentityHash = "dex_static_placeholder_hash_123" # Auto-trust adb connected
-                                })
-                            }
-                        }
-                    }
-                    
                     $lastMdns = $now
                 }
                 
@@ -159,78 +138,3 @@ function Invoke-AdbPair {
 }
 Export-ModuleMember -Function Invoke-AdbPair
 
-function Start-OmniTransferServer {
-    param(
-        [Parameter(Mandatory=$true)]
-        [System.Collections.Concurrent.ConcurrentQueue[object]]$Queue,
-        [string]$DownloadPath = "$env:USERPROFILE\Downloads\dex"
-    )
-    
-    Write-Trace "Starting Omni-Mesh Transfer Runspace on port 53318..."
-    
-    $iss = [management.automation.runspaces.initialsessionstate]::CreateDefault2()
-    $ps = [powershell]::Create($iss)
-    
-    $script = {
-        param($dlPath, $queue)
-        
-        try {
-            $port = 53318
-            $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, $port)
-            $listener.Start()
-            
-            while ($true) {
-                if ($listener.Pending()) {
-                    $client = $listener.AcceptTcpClient()
-                    $stream = $client.GetStream()
-                    
-                    try {
-                        # BinaryReader prevents buffer read-ahead corruption
-                        $br = [System.IO.BinaryReader]::new($stream)
-                        
-                        # 1. Read Int32 (Header Length)
-                        $headerLen = $br.ReadInt32()
-                        if ($headerLen -gt 0 -and $headerLen -lt 1048576) {
-                            # 2. Read JSON Header
-                            $headerBytes = $br.ReadBytes($headerLen)
-                            $headerJson = [System.Text.Encoding]::UTF8.GetString($headerBytes)
-                            $header = $headerJson | ConvertFrom-Json
-                            
-                            if ($header.filename) {
-                                $safeName = [System.IO.Path]::GetFileName($header.filename)
-                                $outPath = Join-Path $dlPath $safeName
-                                
-                                # 3. Stream raw file bytes to disk
-                                $fs = [System.IO.File]::Create($outPath)
-                                $stream.CopyTo($fs)
-                                $fs.Close()
-                                
-                                [void]$queue.Enqueue(@{ Type = 'TransferComplete'; File = $outPath; From = $client.Client.RemoteEndPoint.ToString() })
-                            }
-                        }
-                    } catch {
-                        $null # Ignore client errors
-                    } finally {
-                        if ($client) { $client.Close() }
-                    }
-                } else {
-                    Start-Sleep -Milliseconds 100
-                }
-            }
-        } catch {
-            $queue.Enqueue([pscustomobject]@{ Type = 'Error'; Message = "OmniTransfer port 53318 error: $_" })
-        } finally {
-            if ($listener) { $listener.Stop() }
-        }
-    }
-    
-    [void]$ps.AddScript($script).AddArgument($DownloadPath).AddArgument($Queue)
-    
-    $asyncResult = $ps.BeginInvoke()
-    
-    return [PSCustomObject]@{
-        PowerShell = $ps
-        AsyncResult = $asyncResult
-    }
-}
-Export-ModuleMember -Function Start-OmniTransferServer
