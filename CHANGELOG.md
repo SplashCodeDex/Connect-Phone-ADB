@@ -1,5 +1,11 @@
 # Changelog
 
+### [patch] Robustify Pairing & Identity Concurrency (v4.15.2.0)
+- **[fix]** Hardened `IdentityManager` local JSON storage against `IOException` (Sharing Violations) during concurrent `SavePairedDevice` invocations by implementing a static reader/writer lock.
+- **[fix]** Addressed orphaned task leaks in the `/api/localsend/v2/pair-prompt` endpoint: incoming pairing requests now properly cancel any pre-existing dangling `TaskCompletionSource` objects tied to the same fingerprint.
+- **[fix]** Improved long-polling resilience by linking the pairing TCS to `HttpContext.RequestAborted`, ensuring resources are freed immediately if the initiating device disconnects prematurely.
+- **[fix]** Enforced `TaskCreationOptions.RunContinuationsAsynchronously` to prevent synchronous blocking on background thread resolution.
+
 ### [patch] Constrain Drag Area to Pill Indicator (v4.15.2.0)
 - **[patch]** Constrained window drag handle to only the pill indicator to prevent accidental dragging from the rest of the window.
 

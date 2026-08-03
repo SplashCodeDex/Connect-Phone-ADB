@@ -30,6 +30,7 @@ namespace DeXShareTarget
         public static string IdentityHash { get; set; } = "";
         public static string Email { get; set; } = "";
         public static HashSet<string> PairedFingerprints { get; set; } = new();
+        private static readonly object _fileLock = new object();
         
         public static void Initialize()
         {
@@ -61,7 +62,10 @@ namespace DeXShareTarget
             
             Fingerprint = Guid.NewGuid().ToString();
             IdentityHash = Guid.NewGuid().ToString();
-            File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
+            lock (_fileLock)
+            {
+                File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
+            }
             
             LoadPairedDevices();
         }
@@ -84,7 +88,10 @@ namespace DeXShareTarget
             PairedFingerprints.Add(fp);
             var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
             var file = Path.Combine(dir, "paired_devices.json");
-            File.WriteAllText(file, JsonSerializer.Serialize(PairedFingerprints.ToList()));
+            lock (_fileLock)
+            {
+                File.WriteAllText(file, JsonSerializer.Serialize(PairedFingerprints.ToList()));
+            }
         }
 
         public static void SetEmail(string email)
@@ -103,7 +110,10 @@ namespace DeXShareTarget
             
             var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
             var file = Path.Combine(dir, "identity.json");
-            File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
+            lock (_fileLock)
+            {
+                File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
+            }
         }
     }
 
@@ -487,18 +497,36 @@ namespace DeXShareTarget
                 }
             });
 
-            App.MapPost("/api/localsend/v2/pair-prompt", async (PairRequestDto req) =>
+            App.MapPost("/api/localsend/v2/pair-prompt", async (PairRequestDto req, CancellationToken ct) =>
             {
                 if (string.IsNullOrEmpty(req.Fingerprint)) return Results.BadRequest();
                 PendingPairs[req.Fingerprint] = req;
-                var tcs = new TaskCompletionSource<bool>();
+                
+                // Cancel any orphaned task for this fingerprint to avoid leaks
+                if (PairTcs.TryGetValue(req.Fingerprint, out var oldTcs))
+                {
+                    oldTcs.TrySetCanceled();
+                }
+
+                var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                 PairTcs[req.Fingerprint] = tcs;
                 
-                var res = await tcs.Task;
-                if (!res) return Results.StatusCode(403);
-                
-                IdentityManager.SavePairedDevice(req.Fingerprint);
-                return Results.Ok();
+                // Tie the TCS to the client disconnect token
+                using (ct.Register(() => tcs.TrySetCanceled()))
+                {
+                    try 
+                    {
+                        var res = await tcs.Task;
+                        if (!res) return Results.StatusCode(403);
+                        
+                        IdentityManager.SavePairedDevice(req.Fingerprint);
+                        return Results.Ok();
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        return Results.StatusCode(499); // Client Closed Request
+                    }
+                }
             });
 
             App.MapGet("/local/pairing-requests", () => Results.Json(PendingPairs.Values));
