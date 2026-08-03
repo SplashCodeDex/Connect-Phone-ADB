@@ -87,11 +87,11 @@ $script:wpfWindow.FindName("btnQAConnect").Add_Click({
 $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
     param($sender, $e)
     $element = $e.OriginalSource
-    while ($element -and $element -isnot [System.Windows.Controls.Button]) {
+    while ($element -and $element -isnot [System.Windows.Controls.Primitives.ButtonBase]) {
         $element = [System.Windows.Media.VisualTreeHelper]::GetParent($element)
     }
     
-    if ($element -and $element -is [System.Windows.Controls.Button]) {
+    if ($element -and $element -is [System.Windows.Controls.Primitives.ButtonBase]) {
         # Check if the Button has an IP Tag (Omni-Mesh device)
         if ($element.Tag -and $element.Tag -match '^\d+\.\d+\.\d+\.\d+') {
             $ip = $element.Tag -replace ':.*', ''

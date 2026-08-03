@@ -1273,7 +1273,7 @@
                             <ItemsControl x:Name="icUdpPeers">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Style="{StaticResource SpatialListItem}" Margin="0,2,0,2">
+                                        <Button Style="{StaticResource SpatialListItem}" Margin="0,2,0,2" Tag="{Binding [Ip]}">
                                             <Button.Triggers>
                                                 <EventTrigger RoutedEvent="Loaded">
                                                     <BeginStoryboard>
