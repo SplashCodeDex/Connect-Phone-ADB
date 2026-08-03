@@ -323,30 +323,31 @@ $mdnsTimer.Add_Tick({
                 $ic = $script:wpfWindow.FindName("icLivePeers")
                 if ($ic) { $ic.ItemsSource = $livePeers }
                 
-                # Poll robust UDP devices (LocalSendServer Gateway Unicast fallback)
-                try {
-                    $udpRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/devices" -ErrorAction Stop
-                    if ($udpRes) {
-                        $icUdp = $script:wpfWindow.FindName("icUdpPeers")
-                        if ($icUdp) {
-                            $liveUdp = @()
-                            foreach ($p in $udpRes) {
-                                $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
-                                if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
-                                    $liveUdp += @{
-                                        Ip = $p.ip
-                                        Alias = $p.info.alias
-                                        DeviceModel = $p.info.deviceModel
-                                        DeviceType = $p.info.deviceType
-                                    }
+            }
+
+            # Poll robust UDP devices (LocalSendServer Gateway Unicast fallback)
+            # This runs INDEPENDENTLY of mDNS — every tick, unconditionally.
+            try {
+                $udpRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/devices" -ErrorAction Stop
+                if ($udpRes) {
+                    $icUdp = $script:wpfWindow.FindName("icUdpPeers")
+                    if ($icUdp) {
+                        $liveUdp = @()
+                        foreach ($p in $udpRes) {
+                            $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
+                            if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
+                                $liveUdp += @{
+                                    Ip = $p.ip
+                                    Alias = $p.info.alias
+                                    DeviceModel = $p.info.deviceModel
+                                    DeviceType = $p.info.deviceType
                                 }
                             }
-                            $icUdp.ItemsSource = $liveUdp
                         }
+                        $icUdp.ItemsSource = $liveUdp
                     }
-                } catch { }
-                
-            }
+                }
+            } catch { }
     })
     $mdnsTimer.Start()
 
@@ -382,3 +383,6 @@ if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null
 })
 
 [System.Windows.Forms.Application]::Run()
+
+
+

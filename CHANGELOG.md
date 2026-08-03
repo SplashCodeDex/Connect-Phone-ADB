@@ -1,7 +1,8 @@
 # Changelog
 
-### [minor] Fix Device Discovery: Port Conflict, Crash, & Binding Syntax (v4.12.1.0)
-- **[fix]** Changed `$liveUdp` items from `[PSCustomObject]` to `Hashtable` and updated WPF XAML bindings to use indexer syntax (e.g. `{Binding [Alias]}`). WPF in PowerShell cannot natively bind dynamically generated properties on `PSCustomObject` without type descriptors, which was causing the "Discovered Devices" UI to stay empty even when the C# backend successfully discovered devices.
+### [minor] Fix Device Discovery: UDP Poll Gated Behind mDNS (v4.12.2.0)
+- **[fix]** **ROOT CAUSE**: The UDP `/local/devices` poll was nested inside `if ($received.Count -gt 0)` — the mDNS results guard. On a phone hotspot where `adb mdns services` returns nothing, `$received` is always empty, so the UDP discovery block **never executed**. Moved it outside the guard so it runs every 2s tick unconditionally.
+- **[fix]** Changed `$liveUdp` items from `[PSCustomObject]` to `Hashtable` and updated WPF XAML bindings to use indexer syntax (`{Binding [Alias]}`). Verified working via standalone WPF ItemsControl test.
 - **[fix]** `DeXShareTarget.exe` crashed immediately on startup with `COMException 0xD0000225` at `AppInstance.GetActivatedEventArgs()` when launched outside an MSIX package context. Wrapped in try-catch so it degrades gracefully and always reaches `LocalSendServer.StartAsync()`.
 - **[fix]** Removed `Start-OmniTransferServer` from `AdbManager.psm1` and its call in `Connect-Engine.ps1`. This PowerShell raw-TCP listener was binding port 53318 before `DeXShareTarget.exe` started, causing `LocalSendServer`'s HTTP API (`/local/devices`) to fail with "address already in use" — the API that powers the Discovered Devices UI list.
 - **[fix]** Moved `icUdpPeers` `ItemsControl` inside the `ScrollViewer` to render correctly within the spatial menu layout.
