@@ -1288,7 +1288,7 @@
                     </StackPanel>
                 
                     <!-- Your Devices Section -->
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly" Height="300">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly" MaxHeight="270">
                         <StackPanel Margin="0,0,0,8">
                             <!-- Dynamic UDP Discovered Devices -->
                             <TextBlock Text="Discovered Devices" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4">

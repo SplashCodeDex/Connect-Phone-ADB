@@ -1,4 +1,6 @@
 # Changelog
+### [patch] UI Refinements (v5.3.5.1)
+- **[patch]** Switched ScrollViewer Height to MaxHeight to eliminate empty space below devices while keeping the list area scrollable when new devices are discovered.
 ### [patch] UI Refinements (v5.3.5.0)
 - **[patch]** Hid the ADB status row by default to declutter the spatial menu, now only displaying when an ADB connection is active or attempted.
 - **[patch]** Constrained the spatial menu's device list ScrollViewer to a fixed height (300px) so the menu's overall height no longer incorrectly expands when a new 'Discovered Device' appears.
