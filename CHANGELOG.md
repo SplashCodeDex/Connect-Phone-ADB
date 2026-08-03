@@ -1,4 +1,7 @@
 # Changelog
+### [patch] UI Refinements (v5.3.5.0)
+- **[patch]** Hid the ADB status row by default to declutter the spatial menu, now only displaying when an ADB connection is active or attempted.
+- **[patch]** Constrained the spatial menu's device list ScrollViewer to a fixed height (300px) so the menu's overall height no longer incorrectly expands when a new 'Discovered Device' appears.
 ### [patch] Fix Discovered Devices Clipping (v5.3.4.0)
 - **[patch]** Increased the load height animation target for discovered UDP peers from `42` to `64` to prevent clipping the device icon and model name text.
 ### [patch] Clarify ADB Status UI (v5.3.3.0)

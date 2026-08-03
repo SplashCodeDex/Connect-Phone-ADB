@@ -1,5 +1,6 @@
 . "$PSScriptRoot\TrayUIHandlers.ps1"
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
+$script:pnlAdbStatus = $script:wpfWindow.FindName("pnlAdbStatus")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
 $script:lbFiles = $script:wpfWindow.FindName("lbFiles")

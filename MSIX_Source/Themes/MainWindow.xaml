@@ -1262,31 +1262,33 @@
                     </Button>
                 </StackPanel>
                 
-                <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="16,0" />
-                <StackPanel Orientation="Horizontal" Margin="24,10,24,10">
-                    <TextBlock Name="txtStatus" Text="ADB Status: Initializing..." Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
-                    <Button Name="btnCopyIP" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Copy IP:Port" Cursor="Hand" Visibility="Collapsed" VerticalAlignment="Center" Margin="6,0,0,0">
-                        <TextBlock Text="&#xE8C8;" />
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border x:Name="border" Background="Transparent" CornerRadius="4" Padding="4">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrush}"/>
-                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
+                <StackPanel Name="pnlAdbStatus" Visibility="Collapsed">
+                    <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="16,0" />
+                    <StackPanel Orientation="Horizontal" Margin="24,10,24,10">
+                        <TextBlock Name="txtStatus" Text="ADB Status: Initializing..." Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
+                        <Button Name="btnCopyIP" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" ToolTip="Copy IP:Port" Cursor="Hand" Visibility="Collapsed" VerticalAlignment="Center" Margin="6,0,0,0">
+                            <TextBlock Text="&#xE8C8;" />
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="border" Background="Transparent" CornerRadius="4" Padding="4">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
                 <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="16,0" />
                     </StackPanel>
                 
                     <!-- Your Devices Section -->
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly" Height="300">
                         <StackPanel Margin="0,0,0,8">
                             <!-- Dynamic UDP Discovered Devices -->
                             <TextBlock Text="Discovered Devices" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4">
