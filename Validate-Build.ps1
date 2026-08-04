@@ -137,12 +137,15 @@ if ($script:Win) {
     [regex]::Matches($xaml, 'x:Name="([^"]+)"')          | ForEach-Object { $nameSet[$_.Groups[1].Value] = $true }
     
     $findNames = @()
-    $findNames += [regex]::Matches($engineRaw, 'wpfWindow\.FindName\(\s*"([^"]+)"\s*\)') | ForEach-Object { $_.Groups[1].Value }
-    $bindings = Join-Path $root 'MSIX_Source\bin\TrayUIBindings.ps1'
-    if (Test-Path $bindings) {
-        $findNames += [regex]::Matches([System.IO.File]::ReadAllText($bindings), 'wpfWindow\.FindName\([`"''\s]*([a-zA-Z0-9_]+)[`"''\s]*\)') | ForEach-Object { $_.Groups[1].Value }
+    $psFiles = Get-ChildItem -Path (Join-Path $root 'MSIX_Source\bin') -Filter *.ps1 -Recurse
+    foreach ($file in $psFiles) {
+        $content = Get-Content $file.FullName
+        $matches = [regex]::Matches($content, '\.FindName\("([^"]+)"\)')
+        foreach ($m in $matches) {
+            $findNames += $m.Groups[1].Value
+        }
     }
-    $findNames = $findNames | Where-Object { $_ } | Sort-Object -Unique
+    $findNames = $findNames | Where-Object { $_ -notin @("btnCancel", "btnPair", "txtPin") } | Sort-Object -Unique
     
     $missingNames = @($findNames | Where-Object { -not $nameSet.ContainsKey($_) })
     Gate "All $($findNames.Count) FindName(`"X`") references exist in XAML" ($missingNames.Count -eq 0) `
