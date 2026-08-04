@@ -28,7 +28,7 @@ android {
     buildFeatures {
       compose = true
       aidl = false
-      buildConfig = false
+      buildConfig = true
       shaders = false
     }
 
@@ -99,6 +99,12 @@ dependencies {
     implementation(libs.ktor.server.cio)
     implementation(libs.ktor.server.content.negotiation)
   implementation(libs.ktor.serialization.kotlinx.json)
+
+    // Storage
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // Logging
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
   // Ktor Client
   implementation(libs.ktor.client.core)

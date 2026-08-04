@@ -2,7 +2,7 @@ package com.example.dex.network
 
 import android.content.Context
 import android.net.wifi.WifiManager
-import android.util.Log
+import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -53,7 +53,7 @@ class UdpMulticastManager(
                     udpSocket?.receive(packet)
                     handleIncomingPacket(packet)
                 }
-            }.onFailure { Log.e("UdpManager", "Multicast loop failed", it) }
+            }.onFailure { Timber.e(it, "Multicast loop failed") }
         }
     }
 

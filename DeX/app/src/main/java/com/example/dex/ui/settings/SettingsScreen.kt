@@ -23,8 +23,8 @@ fun SettingsScreen(
     deviceConfig: DeviceConfig = koinInject(),
     discoveryEngine: DiscoveryEngine = koinInject()
 ) {
-    var emailText by remember { mutableStateOf(deviceConfig.email) }
-    var hashPreview by remember { mutableStateOf(deviceConfig.identityHash) }
+    val emailText by deviceConfig.emailFlow.collectAsState()
+    val hashPreview by deviceConfig.identityHashFlow.collectAsState()
 
     Scaffold(
         topBar = {
@@ -64,9 +64,7 @@ fun SettingsScreen(
             OutlinedTextField(
                 value = emailText,
                 onValueChange = { 
-                    emailText = it
                     deviceConfig.email = it
-                    hashPreview = deviceConfig.identityHash
                     discoveryEngine.stopDiscovery()
                     discoveryEngine.startDiscovery()
                 },

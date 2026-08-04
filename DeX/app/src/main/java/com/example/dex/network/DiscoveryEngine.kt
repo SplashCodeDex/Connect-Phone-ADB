@@ -15,6 +15,7 @@ import org.json.JSONObject
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import timber.log.Timber
 
 class DiscoveryEngine(
     private val deviceConfig: DeviceConfig,
@@ -43,8 +44,12 @@ class DiscoveryEngine(
         )
 
     fun startDiscovery() {
+        Timber.i("Starting DiscoveryEngine (NSD + UDP Multicast)...")
         val onDeviceFound: (DiscoveredDevice) -> Unit = { newDevice ->
             _devices.update { map ->
+                if (!map.containsKey(newDevice.info.fingerprint)) {
+                    Timber.d("New device discovered: %s (%s)", newDevice.info.alias, newDevice.ip)
+                }
                 map.toMutableMap().apply { put(newDevice.info.fingerprint, newDevice) }
             }
         }
@@ -64,6 +69,7 @@ class DiscoveryEngine(
     }
 
     fun stopDiscovery() {
+        Timber.i("Stopping DiscoveryEngine...")
         nsdManagerHelper?.stop()
         udpManager?.stop()
         cleanupJob?.cancel()

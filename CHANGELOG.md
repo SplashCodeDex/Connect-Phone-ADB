@@ -1,4 +1,7 @@
 # Changelog
+### [minor] DataStore & Structured Logging Migration
+- **[minor]** Migrated legacy SharedPreferences to modern Jetpack Preferences DataStore for asynchronous, non-blocking storage.
+- **[minor]** Integrated Timber structured logging globally, replacing legacy Log dumps across all network and UI tiers.
 ### [major] Android App Architecture Modernization
 - **[major]** Refactored DeX Android App to decouple networking and UI utilizing Koin (Dependency Injection) and Ktor (HTTP client).
 - **[feature]** Extracted hardcoded Android UI strings into robust localized resources (strings.xml).
