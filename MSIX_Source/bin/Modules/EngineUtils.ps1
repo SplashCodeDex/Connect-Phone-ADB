@@ -1,4 +1,4 @@
-if (-not ("ThumbHelper" -as [type])) {
+﻿if (-not ("ThumbHelper" -as [type])) {
     $thumbCode = @"
 using System;
 using System.Runtime.InteropServices;

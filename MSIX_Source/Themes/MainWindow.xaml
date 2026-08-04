@@ -6,6 +6,48 @@
         Width="1420" Height="760"
         ResizeMode="NoResize">
     <Window.Resources>
+        <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
+        
+        <Storyboard x:Key="SlideInQrAnim">
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="SlideOutQrAnim">
+            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="SwitchQrToPinAnim">
+            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="SlideOutPinAnim">
+            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="SlideInPinAnim">
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
+        </Storyboard>
             <!-- Minimal Spatial ScrollBar Style -->
             <Style TargetType="ScrollBar">
                 <Setter Property="Background" Value="Transparent"/>
@@ -70,7 +112,6 @@
         
         <BackEase x:Key="HoverEase" Amplitude="1.22" EasingMode="EaseOut" />
         <BackEase x:Key="PopInEase" Amplitude="3.53" EasingMode="EaseOut" />
-        <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
         <CubicEase x:Key="SmoothEase" EasingMode="EaseOut" />
         <Storyboard x:Key="ExpandMenu">
             <!-- Window Size Expansion with ElasticEase (reduced 35% from original) -->
@@ -1156,11 +1197,23 @@
                     </Grid>
                 </StackPanel>
                 
-                <!-- Main content fills remaining space -->
-                <DockPanel x:Name="menuContentPanel" LastChildFill="True" MaxHeight="352">
-                    <DockPanel.RenderTransform>
-                        <TranslateTransform x:Name="menuContentTrans" Y="0" />
-                    </DockPanel.RenderTransform>
+                <!-- Main content holding all views -->
+                <Grid x:Name="menuViewsContainer" ClipToBounds="True">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="MaxHeight" Value="352" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Visibility, ElementName=FileExplorer}" Value="Visible">
+                                    <Setter Property="MaxHeight" Value="Infinity" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    
+                    <DockPanel x:Name="menuContentPanel" LastChildFill="True">
+                        <DockPanel.RenderTransform>
+                            <TranslateTransform x:Name="menuContentTrans" X="0" Y="0" />
+                        </DockPanel.RenderTransform>
                     <StackPanel x:Name="TopActionsPanel" DockPanel.Dock="Top">
                         <StackPanel.Resources>
                             <Storyboard x:Key="ShowPinAnim">
@@ -1558,108 +1611,107 @@
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>
+                    
+                    <!-- QR Code View -->
+                    <Grid x:Name="qrViewPanel" Visibility="Collapsed" Opacity="0" Margin="16">
+                        <Grid.RenderTransform>
+                            <TranslateTransform x:Name="qrViewTrans" X="300" />
+                        </Grid.RenderTransform>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Pairing QR Code" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,8,0,0" HorizontalAlignment="Center" />
+                        <TextBlock Grid.Row="0" Text="Scan with LocalSend mobile app" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,34,0,0" HorizontalAlignment="Center" />
+                        
+                        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="12" Margin="16,16,16,16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image x:Name="imgQrCode" Width="180" Height="180" Stretch="Uniform" />
+                        </Border>
+                        
+                        <Grid Grid.Row="2" Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnQrClose" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button x:Name="btnSwitchToPin" Grid.Column="2" Content="Request PIN" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    
+                    <!-- PIN View -->
+                    <Grid x:Name="pinViewPanel" Visibility="Collapsed" Opacity="0" Margin="16">
+                        <Grid.RenderTransform>
+                            <TranslateTransform x:Name="pinViewTrans" X="300" />
+                        </Grid.RenderTransform>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="txtPinTitle" Grid.Row="0" Text="Pairing Request" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,8,0,0" HorizontalAlignment="Center" />
+                        <TextBlock x:Name="txtPinSubtitle" Grid.Row="0" Text="from Galaxy S21" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,34,0,0" HorizontalAlignment="Center" />
+                        
+                        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock x:Name="txtPinCode" Text="123456" FontSize="42" FontFamily="Segoe UI" FontWeight="Bold" Foreground="{DynamicResource SecondaryForegroundBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
+                            <TextBlock x:Name="txtPinStatus" Text="Waiting for acceptance..." FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" />
+                            <ProgressBar x:Name="pbPinTimeout" Value="100" Maximum="100" Height="4" Margin="20,8,20,0" Foreground="{DynamicResource AccentBrush}" Background="Transparent" BorderThickness="0" />
+                        </StackPanel>
+                        
+                        <Grid Grid.Row="2" Margin="0,0,0,8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnPinCancel" Grid.Row="0" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button x:Name="btnPinAccept" Grid.Row="0" Grid.Column="2" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button x:Name="btnPinAcceptOnce" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" Cursor="Hand" FontFamily="Segoe UI" FontSize="13" FontWeight="Medium">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
                 
                 </DockPanel>
         </Border>
         </Border>
         
-        <!-- PIN Pairing Overlay -->
-        <Grid x:Name="pinOverlay" Visibility="Collapsed" Background="#AA000000" Margin="0" Panel.ZIndex="100">
-            <Border Background="{DynamicResource PrimaryBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="16" Width="320" Height="280" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="30" ShadowDepth="10" Opacity="0.5" />
-                </Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    
-                    <TextBlock x:Name="txtPinTitle" Grid.Row="0" Text="Pairing Request" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="16,20,16,0" HorizontalAlignment="Center" />
-                    <TextBlock x:Name="txtPinSubtitle" Grid.Row="0" Text="from Galaxy S21" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" Margin="16,46,16,0" HorizontalAlignment="Center" />
-                    
-                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock x:Name="txtPinCode" Text="123456" FontSize="42" FontFamily="Segoe UI" FontWeight="Bold" Foreground="{DynamicResource SecondaryForegroundBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
-                        <TextBlock x:Name="txtPinStatus" Text="Waiting for acceptance..." FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" />
-                        <ProgressBar x:Name="pbPinTimeout" Value="100" Maximum="100" Height="4" Margin="30,8,30,0" Foreground="{DynamicResource AccentBrush}" Background="Transparent" BorderThickness="0" />
-                    </StackPanel>
-                    
-                    <Grid Grid.Row="2" Margin="20,0,20,20">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="8" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="12" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Button x:Name="btnPinCancel" Grid.Row="0" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" CornerRadius="12">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                        <Button x:Name="btnPinAccept" Grid.Row="0" Grid.Column="2" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" CornerRadius="12">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                        <Button x:Name="btnPinAcceptOnce" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" Cursor="Hand" FontFamily="Segoe UI" FontSize="13" FontWeight="Medium">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Border>
-        </Grid>
-        
-        <!-- QR Code Overlay -->
-        <Grid x:Name="qrOverlay" Visibility="Collapsed" Background="#AA000000" Margin="0" Panel.ZIndex="100">
-            <Border Background="{DynamicResource PrimaryBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="16" Width="320" Height="360" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="30" ShadowDepth="10" Opacity="0.5" />
-                </Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    
-                    <TextBlock Grid.Row="0" Text="Pairing QR Code" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="16,20,16,0" HorizontalAlignment="Center" />
-                    <TextBlock Grid.Row="0" Text="Scan with LocalSend mobile app" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" Margin="16,46,16,0" HorizontalAlignment="Center" />
-                    
-                    <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="12" Margin="30,16,30,16" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Image x:Name="imgQrCode" Width="200" Height="200" Stretch="Uniform" />
-                    </Border>
-                    
-                    <Button x:Name="btnQrClose" Grid.Row="2" Content="Close" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" BorderThickness="0" Padding="0,10" Margin="20,0,20,20" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" CornerRadius="12">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </Grid>
-            </Border>
-        </Grid>
+
         <Popup x:Name="popAvatar" StaysOpen="False" AllowsTransparency="True" Placement="Mouse" PopupAnimation="Fade">
             <Border Background="{DynamicResource AccentBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="10">
                 <StackPanel MinWidth="190">

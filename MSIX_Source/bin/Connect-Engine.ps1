@@ -331,7 +331,7 @@ $mdnsTimer.Add_Tick({
                 if ($pairReqs -and $pairReqs.Count -gt 0) {
                     $req = $pairReqs[0]
                     # Show PIN UI overlay if not already showing
-                    if ($script:wpfWindow.FindName("pinOverlay").Visibility -ne 'Visible') {
+                    if ($script:wpfWindow.FindName("pinViewPanel").Visibility -ne 'Visible') {
                         $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing Request"
                         $script:wpfWindow.FindName("txtPinSubtitle").Text = "from $($req.alias)"
                         $script:wpfWindow.FindName("txtPinCode").Text = $req.pin
@@ -340,7 +340,7 @@ $mdnsTimer.Add_Tick({
                         $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Visible'
                         $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Visible'
                         $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
-                        $script:wpfWindow.FindName("pinOverlay").Visibility = 'Visible'
+                        try { $script:wpfWindow.Dispatcher.Invoke({ $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) }) } catch {}
                         
                         $script:activePairRequest = $req
                     }
@@ -432,6 +432,7 @@ if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null
 })
 
 [System.Windows.Forms.Application]::Run()
+
 
 
 

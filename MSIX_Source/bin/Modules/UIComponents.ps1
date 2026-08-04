@@ -1,4 +1,4 @@
-
+﻿
 function Create-StatusIcon([System.Drawing.Color]$Color) {
     $binRoot = Split-Path $PSScriptRoot -Parent
     $iconPath = Join-Path $binRoot "app-icon.ico"

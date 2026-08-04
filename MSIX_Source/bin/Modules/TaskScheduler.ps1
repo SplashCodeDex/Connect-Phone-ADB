@@ -1,4 +1,4 @@
-
+﻿
 function Get-AutoConnectStatus {
     try {
         $service = New-Object -ComObject Schedule.Service

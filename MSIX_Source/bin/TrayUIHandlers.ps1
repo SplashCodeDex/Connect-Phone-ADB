@@ -1,4 +1,4 @@
-. "$PSScriptRoot\Modules\UIComponents.ps1"
+﻿. "$PSScriptRoot\Modules\UIComponents.ps1"
 function Reset-SpatialPanels {
     try {
         $script:wpfWindow.FindResource("ExpandMenu").Stop($script:wpfWindow)
@@ -122,7 +122,7 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
                         $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
                         $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
                         $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
-                        $script:wpfWindow.FindName("pinOverlay").Visibility = 'Visible'
+                        try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
                         
                         $e.Handled = $true
                         return
@@ -483,3 +483,4 @@ if ($fileExplorerPanel) {
         $e.Handled = $true
     })
 }
+
