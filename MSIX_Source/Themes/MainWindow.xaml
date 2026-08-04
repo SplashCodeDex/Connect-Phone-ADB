@@ -1074,19 +1074,7 @@
                                 </Grid>
                             </Button>
                             
-                            <Button Name="btnSettingsQrCode" Style="{StaticResource SpatialListItem}" Margin="0,2">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="&#xE765;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="Show QR Code" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
-                                        <TextBlock Text="Pair with a mobile device via camera" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
+
                             
                             <Button Name="btnSettingsDnd" Style="{StaticResource SpatialListItem}" Margin="0,2">
                                 <Grid>
@@ -1731,13 +1719,16 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="btnPinCancel" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
-                            <Button x:Name="btnPinAccept" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="2" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" />
-                            <Button x:Name="btnPinAcceptOnce" Style="{StaticResource AnimatedActionBtn}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" FontSize="13" />
+                            <Button x:Name="btnSettingsQrCode" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="0" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Content="&#xE765;" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" ToolTip="Show QR Code" Width="40" />
+                            <Button x:Name="btnPinCancel" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="2" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
+                            <Button x:Name="btnPinAccept" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="4" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" />
+                            <Button x:Name="btnPinAcceptOnce" Style="{StaticResource AnimatedActionBtn}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" FontSize="13" />
                         </Grid>
                     </Grid>
                 </Grid>

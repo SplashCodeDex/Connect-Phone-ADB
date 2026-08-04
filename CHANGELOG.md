@@ -1,4 +1,6 @@
 # Changelog
+### [patch] UI Refinements (v5.4.1.0)
+- **[patch]** Moved the QR Code pairing button from the settings menu to the PIN code overlay next to the 'Cancel' button.
 ### [minor] Seamless Bi-Directional Clipboard Sync (v5.4.0.0)
 - **[feature]** Implemented PC -> Android clipboard sync over ADB Broadcast intents via the existing \tnQAClipboard\ in the Tray UI.
 - **[feature]** Implemented Android -> PC clipboard sync by extending the PC LocalSend server with a lightweight \/api/dex/clipboard\ endpoint that leverages PowerShell to set the Windows clipboard without extra C# dependencies.
