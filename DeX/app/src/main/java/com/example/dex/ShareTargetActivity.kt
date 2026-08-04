@@ -49,6 +49,8 @@ import androidx.work.Data
 import com.example.dex.network.DiscoveryEngine
 import com.example.dex.network.ClientEngine
 import org.koin.android.ext.android.inject
+import androidx.compose.ui.res.stringResource
+import com.example.dex.R
 
 class ShareTargetActivity : ComponentActivity() {
 
@@ -70,15 +72,27 @@ class ShareTargetActivity : ComponentActivity() {
         // Handle incoming intent
         when (intent?.action) {
             Intent.ACTION_SEND -> {
-                (intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM))?.let { sharedUris.add(it) }
+                val uri = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+                }
+                uri?.let { sharedUris.add(it) }
             }
             Intent.ACTION_SEND_MULTIPLE -> {
-                intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)?.let { sharedUris.addAll(it) }
+                val uris = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
+                }
+                uris?.let { sharedUris.addAll(it) }
             }
         }
 
         if (sharedUris.isEmpty()) {
-            Toast.makeText(this, "No files to share", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.share_no_files), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -89,7 +103,7 @@ class ShareTargetActivity : ComponentActivity() {
             if (device != null) {
                 sendUrisToDevice(device, sharedUris)
             } else {
-                Toast.makeText(this, "PC offline. Saved to Sandbox instead.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.share_pc_offline), Toast.LENGTH_LONG).show()
                 saveToSandbox()
             }
             return
@@ -256,9 +270,9 @@ class ShareTargetActivity : ComponentActivity() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Uploading ${uploadState.currentFileIndex} of ${uploadState.totalFiles} files...", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.uploading_progress, uploadState.currentFileIndex, uploadState.totalFiles), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                     TextButton(onClick = { clientEngine.cancelUpload(this@ShareTargetActivity) }) {
-                        Text("Cancel", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
                     }
                 }
                 Spacer(modifier = Modifier.height(4.dp))

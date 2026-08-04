@@ -7,6 +7,10 @@
     <string name="email_address">Email Address</string>
     <string name="email_placeholder">you@example.com</string>
     <string name="current_identity_hash">Current Identity Hash:</string>
+    <!-- Share Target -->
+    <string name="share_no_files">No files to share</string>
+    <string name="share_pc_offline">PC offline. Saved to Sandbox instead.</string>
+
     <!-- Main Screen -->
     <string name="scan_qr">Scan QR</string>
     <string name="settings">Settings</string>
