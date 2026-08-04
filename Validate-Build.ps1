@@ -1,4 +1,4 @@
-﻿<#
+<#
   $allScripts = Get-ChildItem -Path MSIX_Source\bin -Include *.ps1,*.psm1 -Recurse
   foreach ($s in $allScripts) {
       $errors = $null
@@ -91,9 +91,9 @@ $($PSScriptRoot -replace '\\', '/')
     $xaml = $xaml.Replace($needle, $binFwd)
     $loadErr = $null
     try {
-        $reader = New-Object System.Xml.XmlNodeReader ([xml]$xaml)
-        $script:Win = [System.Windows.Markup.XamlReader]::Load($reader)
-        $reader.Close()
+        $pc = New-Object System.Windows.Markup.ParserContext
+        $pc.BaseUri = New-Object System.Uri("file:///$($xamlPath.Replace('\', '/'))")
+        $script:Win = [System.Windows.Markup.XamlReader]::Parse($xaml, $pc)
     } catch { $loadErr = $_ }
     Gate "Engine XAML parses & loads via XamlReader" ($null -ne $script:Win) `
         $(if ($loadErr) { $loadErr.Exception.Message } else { "" })

@@ -72,8 +72,19 @@ function Set-AppTheme {
         $xmlReader = [System.Xml.XmlReader]::Create($themePath)
         $newDict = [System.Windows.Markup.XamlReader]::Load($xmlReader)
         $xmlReader.Close()
+        
+        $appStylesPath = Join-Path $binRoot "..\Themes\AppStyles.xaml"
+        $appStylesDict = $null
+        if (Test-Path $appStylesPath) {
+            $xmlReader2 = [System.Xml.XmlReader]::Create($appStylesPath)
+            $appStylesDict = [System.Windows.Markup.XamlReader]::Load($xmlReader2)
+            $xmlReader2.Close()
+        }
 
         $script:wpfWindow.Resources.MergedDictionaries.Clear()
+        if ($appStylesDict) {
+            $script:wpfWindow.Resources.MergedDictionaries.Add($appStylesDict)
+        }
         $script:wpfWindow.Resources.MergedDictionaries.Add($newDict)
         $global:CurrentTheme = $ThemeName
 
@@ -260,4 +271,5 @@ function Update-WpfUI {
     }
 }
 #Export-ModuleMember -Function Update-WpfUI
+
 

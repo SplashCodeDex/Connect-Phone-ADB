@@ -74,10 +74,10 @@ $script:notifyIcon.Visible = $true
 # Fail fast: if the XAML fails to parse/load, $script:wpfWindow stays null and the tray icon
 # would keep running as a zombie that silently ignores every click. Exit loudly instead.
 try {
-    $reader = New-Object System.Xml.XmlNodeReader ([xml]$xaml)
-    $script:wpfWindow = [System.Windows.Markup.XamlReader]::Load($reader)
+    $pc = New-Object System.Windows.Markup.ParserContext
+    $pc.BaseUri = New-Object System.Uri("file:///$($xamlPath.Replace('\', '/'))")
+    $script:wpfWindow = [System.Windows.Markup.XamlReader]::Parse($xaml, $pc)
     if ($null -eq $script:wpfWindow) { throw "XamlReader returned a null window." }
-    $reader.Close()
 } catch {
     $script:wpfWindow = $null
     $script:WindowLoadError = $_.Exception.Message
@@ -435,6 +435,7 @@ if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null
 })
 
 [System.Windows.Forms.Application]::Run()
+
 
 
 
