@@ -121,6 +121,7 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
                         
                         $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
                         $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
+                        $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Visible'
                         $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
                         try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
                         

@@ -339,6 +339,7 @@ $mdnsTimer.Add_Tick({
                         
                         $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Visible'
                         $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Visible'
+                        $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Collapsed'
                         $btnPinCancel = $script:wpfWindow.FindName("btnPinCancel")
                         $btnPinCancel.Visibility = 'Visible'
                         $btnPinCancel.Content = "Cancel"

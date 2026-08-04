@@ -267,7 +267,7 @@ if ($btnSettingsQrCode) {
         if ($qrCodeContent.Visibility -eq 'Visible') {
             $qrCodeContent.Visibility = 'Collapsed'
             $pinCodeContent.Visibility = 'Visible'
-            $txtQrBtnIcon.Text = [char]0xE765
+            $txtQrBtnIcon.Text = [char]0xED14
             $txtQrBtnText.Text = "QR CODE"
         } else {
             $ip = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
@@ -283,7 +283,7 @@ if ($btnSettingsQrCode) {
                 }
                 $pinCodeContent.Visibility = 'Collapsed'
                 $qrCodeContent.Visibility = 'Visible'
-                $txtQrBtnIcon.Text = [char]0xE338
+                $txtQrBtnIcon.Text = [char]0xE765
                 $txtQrBtnText.Text = "Request PIN"
             } else {
                 Show-Toast -Title "Network Error" -Message "Could not determine local IP address."
@@ -1105,6 +1105,7 @@ $script:wpfWindow.Add_Click({
             # Hide Cancel/Accept buttons when WE initiate
             $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
             $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
+            $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Visible'
             $btnPinCancel = $script:wpfWindow.FindName("btnPinCancel")
             $btnPinCancel.Visibility = 'Visible'
             $btnPinCancel.Content = "Cancel Request"

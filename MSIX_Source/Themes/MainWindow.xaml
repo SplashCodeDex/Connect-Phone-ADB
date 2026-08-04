@@ -1698,20 +1698,22 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="8" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="btnPinCancel" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
-                            <Button x:Name="btnSettingsQrCode" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="2" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock x:Name="txtQrBtnIcon" Text="&#xE765;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <Button x:Name="btnPinCancel" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="1" MinWidth="110" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
+                            <Button x:Name="btnSettingsQrCode" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="3" MinWidth="110" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}">
+                                <StackPanel Orientation="Horizontal" Margin="0,-2">
+                                    <TextBlock x:Name="txtQrBtnIcon" Text="&#xED14;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,6,0" />
                                     <TextBlock x:Name="txtQrBtnText" Text="QR CODE" VerticalAlignment="Center" />
                                 </StackPanel>
                             </Button>
-                            <Button x:Name="btnPinAccept" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="4" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" />
-                            <Button x:Name="btnPinAcceptOnce" Style="{StaticResource AnimatedActionBtn}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" FontSize="13" />
+                            <Button x:Name="btnPinAccept" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="5" MinWidth="110" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" />
+                            <Button x:Name="btnPinAcceptOnce" Style="{StaticResource AnimatedActionBtn}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" MinWidth="110" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" FontSize="13" />
                         </Grid>
                     </Grid>
                 </Grid>
