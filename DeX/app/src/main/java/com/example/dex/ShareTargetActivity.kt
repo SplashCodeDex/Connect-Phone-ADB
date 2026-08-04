@@ -45,10 +45,16 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
+import androidx.work.Data
+import com.example.dex.network.DiscoveryEngine
+import com.example.dex.network.ClientEngine
+import org.koin.android.ext.android.inject
 
 class ShareTargetActivity : ComponentActivity() {
 
     private val sharedUris = mutableListOf<Uri>()
+    private val discoveryEngine: DiscoveryEngine by inject()
+    private val clientEngine: ClientEngine by inject()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,9 +85,9 @@ class ShareTargetActivity : ComponentActivity() {
 
         val targetFingerprint = intent?.getStringExtra("EXTRA_TARGET_FINGERPRINT")
         if (targetFingerprint != null) {
-            val device = DexAppContainer.discoveryEngine.devices.value[targetFingerprint]
+            val device = discoveryEngine.devices.value[targetFingerprint]
             if (device != null) {
-                pushToDevice(device)
+                sendUrisToDevice(device, sharedUris)
             } else {
                 Toast.makeText(this, "PC offline. Saved to Sandbox instead.", Toast.LENGTH_LONG).show()
                 saveToSandbox()
@@ -93,8 +99,8 @@ class ShareTargetActivity : ComponentActivity() {
             MaterialTheme {
                 val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 var showSheet by remember { mutableStateOf(true) }
-                val discoveredDevices by DexAppContainer.discoveryEngine.devices.collectAsState()
-                val uploadState by DexAppContainer.clientEngine.uploadState.collectAsState()
+                val discoveredDevices by discoveryEngine.devices.collectAsState()
+                val uploadState by clientEngine.uploadState.collectAsState()
 
                 if (showSheet) {
                     ModalBottomSheet(
@@ -114,8 +120,9 @@ class ShareTargetActivity : ComponentActivity() {
                                     showSheet = false
                                 },
                                 onSendToDevice = { device ->
-                                    DexAppContainer.clientEngine.resetUploadState()
-                                    pushToDevice(device)
+                                    sendUrisToDevice(device, sharedUris)
+                                    clientEngine.resetUploadState()
+                                    startActivity(Intent(this@ShareTargetActivity, MainActivity::class.java))
                                 }
                             )
                         }
@@ -249,8 +256,8 @@ class ShareTargetActivity : ComponentActivity() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Uploading ${uploadState.currentFileIndex} of ${uploadState.totalFiles} files...", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-                    TextButton(onClick = { DexAppContainer.clientEngine.cancelUpload(this@ShareTargetActivity) }) {
+                    Text("Uploading ${uploadState.currentFileIndex} of ${uploadState.totalFiles} files...", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                    TextButton(onClick = { clientEngine.cancelUpload(this@ShareTargetActivity) }) {
                         Text("Cancel", color = MaterialTheme.colorScheme.error)
                     }
                 }
@@ -325,10 +332,8 @@ class ShareTargetActivity : ComponentActivity() {
         }
     }
 
-    private fun pushToDevice(device: DiscoveredDevice) {
-        Toast.makeText(this, "Pushing to ${device.info.alias}...", Toast.LENGTH_SHORT).show()
-        
-        DexAppContainer.clientEngine.resetUploadState()
+    private fun sendUrisToDevice(device: com.example.dex.network.DiscoveredDevice, uris: List<Uri>) {
+        clientEngine.resetUploadState()
         
         val urisJson = try {
             Json.encodeToString(sharedUris.map { it.toString() })
@@ -348,7 +353,7 @@ class ShareTargetActivity : ComponentActivity() {
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
             
-        DexAppContainer.clientEngine.activeWorkId = workRequest.id
+        clientEngine.activeWorkId = workRequest.id
         WorkManager.getInstance(this).enqueue(workRequest)
     }
 

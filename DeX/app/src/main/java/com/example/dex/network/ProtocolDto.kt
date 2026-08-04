@@ -44,3 +44,10 @@ data class BrowseFileDto(
     val size: Long,
     val path: String
 )
+
+data class DiscoveredDevice(
+    val ip: String,
+    val info: RegisterDto,
+    val lastSeenTimestamp: Long = System.currentTimeMillis(),
+    val trustLevel: String = "Guest"
+)

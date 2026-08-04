@@ -23,6 +23,11 @@ data class DownloadState(
 object TcpDownloadService {
     private val _downloadState = MutableStateFlow(DownloadState())
     val downloadState = _downloadState.asStateFlow()
+
+    fun resetDownloadState() {
+        _downloadState.value = DownloadState()
+    }
+
     var activeWorkId: UUID? = null
 
     fun updateState(state: DownloadState) {

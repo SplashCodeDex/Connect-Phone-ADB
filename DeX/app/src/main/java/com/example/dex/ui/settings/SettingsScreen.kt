@@ -2,30 +2,37 @@ package com.example.dex.ui.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.dex.network.DexAppContainer
+import com.example.dex.R
+import com.example.dex.network.DeviceConfig
+import com.example.dex.network.DiscoveryEngine
+import org.koin.compose.koinInject
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    deviceConfig: DeviceConfig = koinInject(),
+    discoveryEngine: DiscoveryEngine = koinInject()
 ) {
-    var emailText by remember { mutableStateOf(DexAppContainer.email) }
-    var hashPreview by remember { mutableStateOf(DexAppContainer.identityHash) }
+    var emailText by remember { mutableStateOf(deviceConfig.email) }
+    var hashPreview by remember { mutableStateOf(deviceConfig.identityHash) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -43,13 +50,13 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                "Trust & Identity",
+                stringResource(R.string.trust_identity_title),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
             
             Text(
-                "Devices sharing the same email address will automatically trust each other. Leave blank to use a random per-device UUID.",
+                stringResource(R.string.trust_identity_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -58,11 +65,13 @@ fun SettingsScreen(
                 value = emailText,
                 onValueChange = { 
                     emailText = it
-                    DexAppContainer.setEmail(it)
-                    hashPreview = DexAppContainer.identityHash
+                    deviceConfig.email = it
+                    hashPreview = deviceConfig.identityHash
+                    discoveryEngine.stopDiscovery()
+                    discoveryEngine.startDiscovery()
                 },
-                label = { Text("Email Address") },
-                placeholder = { Text("you@example.com") },
+                label = { Text(stringResource(R.string.email_address)) },
+                placeholder = { Text(stringResource(R.string.email_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -70,7 +79,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                "Current Identity Hash:",
+                stringResource(R.string.current_identity_hash),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold
             )

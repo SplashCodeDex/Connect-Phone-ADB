@@ -5,22 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.IBinder
-
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.os.Build
-import androidx.core.app.NotificationCompat
-import android.content.pm.ServiceInfo
+import org.koin.android.ext.android.inject
 
 class DexService : Service() {
-    private val restServerEngine = DexAppContainer.restServerEngine
-    private val discoveryEngine = DexAppContainer.discoveryEngine
+    private val restServerEngine: RestServerEngine by inject()
+    private val discoveryEngine: DiscoveryEngine by inject()
+    private val notificationHelper: NotificationHelper by inject()
+    
     private var multicastLock: WifiManager.MulticastLock? = null
 
     override fun onCreate() {
         super.onCreate()
-        DexAppContainer.initialize(this)
-        startForegroundServiceNotification()
+        
+        startForeground(1, notificationHelper.getForegroundServiceNotification())
         
         // Acquire Multicast lock to ensure UDP broadcasts are received
         val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
@@ -29,7 +26,7 @@ class DexService : Service() {
         multicastLock?.acquire()
 
         restServerEngine.startServer()
-        discoveryEngine.startDiscovery(this)
+        discoveryEngine.startDiscovery()
     }
 
     override fun onDestroy() {
@@ -50,30 +47,5 @@ class DexService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
-    }
-
-    private fun startForegroundServiceNotification() {
-        val channelId = "dex_service_channel"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "DeX Background Service",
-                NotificationManager.IMPORTANCE_LOW
-            )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager?.createNotificationChannel(channel)
-        }
-
-        val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("DeX is running")
-            .setContentText("Listening for PC connections...")
-            .setSmallIcon(android.R.drawable.ic_menu_share)
-            .build()
-
-        if (Build.VERSION.SDK_INT >= 34) {
-            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
-        } else {
-            startForeground(1, notification)
-        }
     }
 }

@@ -11,12 +11,15 @@ import androidx.work.WorkerParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.UUID
+import com.example.dex.R
 
 class UploadWorker(
-    private val context: Context,
-    params: WorkerParameters
-) : CoroutineWorker(context, params) {
+    appContext: Context,
+    workerParams: WorkerParameters
+) : CoroutineWorker(appContext, workerParams), KoinComponent {
 
     private val notificationId = 1001
     private val channelId = "upload_channel"
@@ -27,6 +30,8 @@ class UploadWorker(
         if (port == -1) return@withContext Result.failure()
         val urisJson = inputData.getString("uris") ?: return@withContext Result.failure()
 
+        val client by inject<ClientEngine>()
+
         val uriStrings = try {
             Json.decodeFromString<List<String>>(urisJson)
         } catch (e: Exception) {
@@ -36,16 +41,16 @@ class UploadWorker(
         val uris = uriStrings.map { Uri.parse(it) }
 
         // Initial foreground notification
-        setForeground(createForegroundInfo(0, "Preparing upload..."))
+        setForeground(createForegroundInfo(0, applicationContext.getString(R.string.upload_worker_preparing)))
 
         val fileData = uris.associate { uri ->
             try {
-                context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                applicationContext.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
             } catch (e: SecurityException) { /* Ignored */ }
             
             var name = "shared_file"
             var size = 0L
-            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            applicationContext.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
                 if (cursor.moveToFirst()) {
                     val nameIdx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                     val sizeIdx = cursor.getColumnIndex(OpenableColumns.SIZE)
@@ -64,10 +69,9 @@ class UploadWorker(
                 deviceType = "mobile", fingerprint = "dex-fingerprint",
                 port = 53317, protocol = "https", download = true
             ),
-            files = fileData.mapValues { (id, d) -> FileDto(id, d.second, d.third, context.contentResolver.getType(d.first) ?: "application/octet-stream") }
+            files = fileData.mapValues { (id, d) -> FileDto(id, d.second, d.third, applicationContext.contentResolver.getType(d.first) ?: "application/octet-stream") }
         )
 
-        val client = DexAppContainer.clientEngine
         client.resetUploadState()
 
         val response = client.prepareUpload(ip, port, prepareRequest)
@@ -80,14 +84,14 @@ class UploadWorker(
                 if (isStopped) return@withContext Result.failure()
                 
                 val token = response.files[id] ?: return@forEach
-                context.contentResolver.openInputStream(d.first)?.use { stream ->
+                applicationContext.contentResolver.openInputStream(d.first)?.use { stream ->
                     val success = client.uploadFile(
                         ip, port, response.sessionId, id, d.second, token, stream, d.third,
                         fileIndex = index, totalFiles = fileData.size, previousBatchBytes = previousBytes, totalBatchSize = totalBatchSize
                     ) { aggregateProgress ->
                         // The callback provides aggregate progress so we can update the notification
                         val progressInt = (aggregateProgress * 100).toInt()
-                        setForeground(createForegroundInfo(progressInt, "Uploading $index of ${fileData.size}: ${d.second}"))
+                        setForeground(createForegroundInfo(progressInt, applicationContext.getString(R.string.upload_worker_progress, index, fileData.size, d.second)))
                     }
                     if (success) {
                         successCount++
@@ -113,7 +117,7 @@ class UploadWorker(
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             val channel = android.app.NotificationChannel(
                 channelId,
-                "File Uploads",
+                applicationContext.getString(R.string.upload_worker_channel),
                 android.app.NotificationManager.IMPORTANCE_LOW
             )
             val manager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager

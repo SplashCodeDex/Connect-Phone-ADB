@@ -1,4 +1,8 @@
 # Changelog
+### [major] Android App Architecture Modernization
+- **[major]** Refactored DeX Android App to decouple networking and UI utilizing Koin (Dependency Injection) and Ktor (HTTP client).
+- **[feature]** Extracted hardcoded Android UI strings into robust localized resources (strings.xml).
+- **[feature]** Handled networking edge-cases on Android with modernized Compose Error Dialogs and resilient state resets.
 ### [patch] UI Refinements (v5.4.1.0)
 - **[patch]** Moved the QR Code pairing button from the settings menu to the PIN code overlay next to the 'Cancel' button.
 ### [minor] Seamless Bi-Directional Clipboard Sync (v5.4.0.0)

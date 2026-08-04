@@ -7,17 +7,14 @@ import android.app.NotificationManager
 import kotlinx.coroutines.CompletableDeferred
 import java.util.concurrent.ConcurrentHashMap
 
-object TransferPromptState {
-    val pendingPrompts = ConcurrentHashMap<String, CompletableDeferred<Boolean>>()
-    val activeSessions = ConcurrentHashMap<String, PrepareUploadRequestDto>()
-}
+// Removed TransferPromptState object
 
 class FileTransferReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val sessionId = intent.getStringExtra("SESSION_ID") ?: return
         val action = intent.action
         
-        val deferred = TransferPromptState.pendingPrompts.remove(sessionId)
+        val deferred = TransferState.pendingPrompts.remove(sessionId)
         if (deferred != null) {
             deferred.complete(action == "com.example.dex.ACCEPT_TRANSFER")
         }

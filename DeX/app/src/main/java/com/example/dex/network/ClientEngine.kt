@@ -16,9 +16,10 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.X509TrustManager
 
 import kotlinx.coroutines.Job
+import io.ktor.client.engine.*
 import io.ktor.client.plugins.onUpload
 
-class ClientEngine {
+class ClientEngine(engine: HttpClientEngine? = null) {
     // LocalSend uses self-signed certificates, so we must trust all certificates on the local network
     private val trustAllManager = object : X509TrustManager {
         override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
@@ -26,14 +27,13 @@ class ClientEngine {
         override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
     }
 
-    private val client = HttpClient(CIO) {
+    private val client = HttpClient(engine ?: CIO.create {
+        https {
+            trustManager = trustAllManager
+        }
+    }) {
         install(ContentNegotiation) {
             json()
-        }
-        engine {
-            https {
-                trustManager = trustAllManager
-            }
         }
     }
 
@@ -163,6 +163,19 @@ class ClientEngine {
         } catch (e: Exception) {
             e.printStackTrace()
             _uploadState.value = _uploadState.value.copy(error = e.message)
+            false
+        }
+    }
+
+    suspend fun sendClipboard(ip: String, port: Int, text: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val response = client.post("https://$ip:$port/api/dex/clipboard") {
+                contentType(ContentType.Text.Plain)
+                setBody(text)
+            }
+            response.status.isSuccess()
+        } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }

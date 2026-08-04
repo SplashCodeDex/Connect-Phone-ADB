@@ -61,6 +61,7 @@ dependencies {
 
   // Compose
   implementation(libs.androidx.compose.ui)
+  implementation(libs.koin.androidx.compose)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material.icons.extended)
@@ -73,12 +74,16 @@ dependencies {
   // Local tests: jUnit, coroutines, Android runner
   testImplementation(libs.junit)
   testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.mockk)
+  testImplementation(libs.koin.test.junit4)
+  testImplementation(libs.ktor.client.mock)
 
   // Instrumented tests: jUnit rules and runners
   androidTestImplementation(libs.androidx.test.core)
   androidTestImplementation(libs.androidx.test.ext.junit)
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.androidx.test.espresso.core)
+  androidTestImplementation(libs.mockk.android)
 
   // Navigation
   implementation(libs.androidx.navigation3.ui)
@@ -106,6 +111,9 @@ dependencies {
 
   // WorkManager
   implementation(libs.androidx.work.runtime.ktx)
+
+  // Koin
+  implementation(libs.koin.android)
 
   // QR Scanner
   implementation(libs.play.services.code.scanner)

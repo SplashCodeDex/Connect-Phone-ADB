@@ -1,27 +1,28 @@
 package com.example.dex.ui.main
 
-import com.example.dex.data.DataRepository
-import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import com.example.dex.network.ClientEngine
+import com.example.dex.network.DiscoveryEngine
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class MainScreenViewModelTest {
-  @Test
-  fun uiState_initiallyLoading() = runTest {
-    val viewModel = MainScreenViewModel()
-    // Test logic for the actual ViewModel state
-  }
 
-  @Test
-  fun uiState_onItemSaved_isDisplayed() = runTest {
-    val viewModel = MainScreenViewModel()
-    // Test logic for the actual ViewModel state
-  }
-}
+    @Test
+    fun `uiState initially loading`() = runTest {
+        val mockDiscovery = mockk<DiscoveryEngine>()
+        val mockClient = mockk<ClientEngine>()
+        
+        every { mockDiscovery.devices } returns MutableStateFlow(emptyMap())
 
-private class FakeMyModelRepository : DataRepository {
-  override val data: Flow<List<String>> = flow { emit(listOf("Sample")) }
+        val viewModel = MainScreenViewModel(mockDiscovery, mockClient)
+        
+        // At start it could be loading or immediately evaluate to success if flow returns instantly
+        // In this architecture, an empty map gives an empty success state
+        val state = viewModel.uiState.value
+        assertEquals(MainScreenUiState.Loading, state)
+    }
 }
