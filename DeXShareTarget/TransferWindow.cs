@@ -1,4 +1,7 @@
 using System;
+using DeXShareTarget.Models;
+using DeXShareTarget.Services;
+using DeXShareTarget.Endpoints;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -146,7 +149,7 @@ namespace DeXShareTarget
                 var fileId = Guid.NewGuid().ToString();
                 
                 // 1. Host the file in Kestrel
-                LocalSendServer.HostedFiles[fileId] = f;
+                LocalSendEndpoints.HostedFiles[fileId] = f;
 
                 txtStatus.Text = $"Notifying Android to pull {fi.Name}...";
 
@@ -182,7 +185,7 @@ namespace DeXShareTarget
             // Clean up hosted files memory after a while so we don't leak memory (not deleting the physical file)
             _ = Task.Run(async () => {
                 await Task.Delay(TimeSpan.FromMinutes(5));
-                LocalSendServer.HostedFiles.Clear();
+                LocalSendEndpoints.HostedFiles.Clear();
             });
         }
 
