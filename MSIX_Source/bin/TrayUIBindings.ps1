@@ -2,10 +2,6 @@
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:pnlAdbStatus = $script:wpfWindow.FindName("pnlAdbStatus")
 $script:topActionsPanel = $script:wpfWindow.FindName("TopActionsPanel")
-$script:menuViewsContainer = $script:wpfWindow.FindName("menuViewsContainer")
-$script:qrViewPanel = $script:wpfWindow.FindName("qrViewPanel")
-$script:pinViewPanel = $script:wpfWindow.FindName("pinViewPanel")
-$script:btnSwitchToPin = $script:wpfWindow.FindName("btnSwitchToPin")
 $script:txtQAAuto = $script:wpfWindow.FindName("txtQAAuto")
 
 $script:lbFiles = $script:wpfWindow.FindName("lbFiles")
@@ -274,7 +270,7 @@ if ($btnSettingsQrCode) {
                 $bitmap.EndInit()
                 $imgQrCode.Source = $bitmap
             }
-            try { $script:menuViewsContainer.FindResource("SlideInQrAnim").Begin($script:wpfWindow) } catch {}
+            try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInQrAnim").Begin($script:wpfWindow) } catch {}
             Invoke-MenuAction $actionConnect # to dismiss settings panel
         } else {
             Show-Toast -Title "Network Error" -Message "Could not determine local IP address."
@@ -285,7 +281,7 @@ if ($btnSettingsQrCode) {
 $btnQrClose = $script:wpfWindow.FindName("btnQrClose")
 if ($btnQrClose) {
     $btnQrClose.Add_Click({
-        try { $script:menuViewsContainer.FindResource("SlideOutQrAnim").Begin($script:wpfWindow) } catch {}
+        try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutQrAnim").Begin($script:wpfWindow) } catch {}
     })
 }
 
@@ -1032,7 +1028,13 @@ $script:wpfWindow.FindName("btnPinCancel").Add_Click({
         $script:activePairRequest = $null
     }
     if ($script:pairWaitTimer) { $script:pairWaitTimer.Stop() }
-    try { $script:menuViewsContainer.FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+    if ($script:isOutgoingPairRequest -and $script:activeOutgoingPairJob) {
+        $script:activeOutgoingPairJob | Stop-Job
+        $script:activeOutgoingPairJob | Remove-Job
+        $script:activeOutgoingPairJob = $null
+        $script:isOutgoingPairRequest = $false
+    }
+    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
 })
 
 $script:wpfWindow.FindName("btnPinAcceptOnce").Add_Click({
@@ -1042,7 +1044,7 @@ $script:wpfWindow.FindName("btnPinAcceptOnce").Add_Click({
         Show-Toast -Title "Guest Device Added" -Message "Device trusted for a single transfer."
     }
     if ($script:pairWaitTimer) { $script:pairWaitTimer.Stop() }
-    try { $script:menuViewsContainer.FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
 })
 
 $script:wpfWindow.FindName("btnPinAccept").Add_Click({
@@ -1052,7 +1054,7 @@ $script:wpfWindow.FindName("btnPinAccept").Add_Click({
         Show-Toast -Title "Pairing Successful" -Message "Device trusted and added to Your Devices."
     }
     if ($script:pairWaitTimer) { $script:pairWaitTimer.Stop() }
-    try { $script:menuViewsContainer.FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
 })
 
 $script:wpfWindow.Add_Click({
@@ -1085,41 +1087,20 @@ $script:wpfWindow.Add_Click({
     if ($src -is [System.Windows.Controls.Button] -or $src -is [System.Windows.Controls.RadioButton]) {
         $dc = $src.DataContext
         if ($null -ne $dc -and $dc -is [System.Collections.Hashtable] -and $dc.Contains("Fingerprint") -and $dc.Contains("Alias") -and $dc.Contains("Ip")) {
-            # Discovered Device Clicked -> Show QR First
-            $script:pendingPairTarget = $dc
-            
-            $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
-            $ip = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
-            if ($imgQrCode -and $ip) {
-                $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-                $bitmap.BeginInit()
-                $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$ip")
-                $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
-                $bitmap.EndInit()
-                $imgQrCode.Source = $bitmap
-            }
-            try { $script:menuViewsContainer.FindResource("SlideInQrAnim").Begin($script:wpfWindow) } catch {}
-        }
-    }
-})
-
-if ($script:btnSwitchToPin) {
-    $script:btnSwitchToPin.Add_Click({
-        if ($script:pendingPairTarget) {
-            $dc = $script:pendingPairTarget
-            try { $script:menuViewsContainer.FindResource("SwitchQrToPinAnim").Begin($script:wpfWindow) } catch {}
-            
-            # Initiate PIN Pairing
+            # Discovered Device Clicked -> Initiate Pairing
             $pin = (Get-Random -Minimum 100000 -Maximum 999999).ToString()
             $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing with $($dc.Alias)"
             $script:wpfWindow.FindName("txtPinSubtitle").Text = "Ensure they see PIN:"
             $script:wpfWindow.FindName("txtPinCode").Text = $pin
             $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for remote acceptance..."
+            try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
             
             # Hide Cancel/Accept buttons when WE initiate
             $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
             $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
-            $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Collapsed'
+            $btnPinCancel = $script:wpfWindow.FindName("btnPinCancel")
+            $btnPinCancel.Visibility = 'Visible'
+            $btnPinCancel.Content = "Cancel Request"
             
             $targetIp = $dc.Ip
             $myAlias = [Environment]::MachineName
@@ -1141,26 +1122,29 @@ if ($script:btnSwitchToPin) {
                 } catch { return $false }
             }
             $job = Start-Job -ScriptBlock $bgJob -ArgumentList $targetIp, $myAlias, $myFp, $pin
+            $script:activeOutgoingPairJob = $job
+            $script:isOutgoingPairRequest = $true
             
             $script:pairWaitTimer = New-Object System.Windows.Threading.DispatcherTimer
             $script:pairWaitTimer.Interval = [TimeSpan]::FromMilliseconds(500)
             $script:pairWaitTimer.Add_Tick({
                 if ($job.State -eq 'Completed') {
-                    $res = Receive-Job $job
-                    if ($res) {
-                        Show-Toast -Title "Pairing Successful" -Message "Trusted $($dc.Alias)."
-                        try { Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pairing-resolve?fingerprint=$($dc.Fingerprint)&accept=true" -Method Post } catch {}
-                    } else {
-                        Show-Toast -Title "Pairing Failed" -Message "The request was rejected or timed out."
+                                        $res = Receive-Job -Job $job
+                    if ($res -ne "success") {
+                        Show-Toast -Title "Pairing Failed" -Message "The remote device rejected or timed out."
                     }
+                    $script:isOutgoingPairRequest = $false
+                    $script:activeOutgoingPairJob = $null
                     $script:pairWaitTimer.Stop()
-                    try { $script:menuViewsContainer.FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+                    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
                 } elseif ($job.State -ne 'Running') {
                     $script:pairWaitTimer.Stop()
-                    try { $script:menuViewsContainer.FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+                    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
                 }
             })
             $script:pairWaitTimer.Start()
         }
-    })
-}
+    }
+})
+
+

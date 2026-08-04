@@ -308,7 +308,7 @@ $mdnsTimer.Add_Tick({
                         } elseif ($peer.Model) {
                             "$([char]0xE8EA) $($peer.Model)"
                         } else {
-                            "OmniMesh ($ip)"
+                            "OmniMesh"
                         }
                         
                         $livePeers += @{
@@ -339,7 +339,9 @@ $mdnsTimer.Add_Tick({
                         
                         $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Visible'
                         $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Visible'
-                        $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
+                        $btnPinCancel = $script:wpfWindow.FindName("btnPinCancel")
+                        $btnPinCancel.Visibility = 'Visible'
+                        $btnPinCancel.Content = "Cancel"
                         try { $script:wpfWindow.Dispatcher.Invoke({ $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) }) } catch {}
                         
                         $script:activePairRequest = $req

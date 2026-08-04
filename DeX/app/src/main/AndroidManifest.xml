@@ -43,6 +43,12 @@
                 <action android:name="com.example.dex.REJECT_TRANSFER" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".network.ClipboardReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.dex.SET_CLIPBOARD" />
+            </intent-filter>
+        </receiver>
         
         <activity
             android:name=".ShareTargetActivity"

@@ -1,4 +1,4 @@
-﻿. "$PSScriptRoot\Modules\UIComponents.ps1"
+. "$PSScriptRoot\Modules\UIComponents.ps1"
 function Reset-SpatialPanels {
     try {
         $script:wpfWindow.FindResource("ExpandMenu").Stop($script:wpfWindow)
@@ -218,6 +218,30 @@ $actionPull = {
     $script:wpfWindow.Dispatcher.InvokeAsync([Action]{ Load-Directory $outDir }) | Out-Null
 }
 $script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
+
+$actionClipboard = {
+    $text = Get-Clipboard -Raw -ErrorAction Ignore
+    if ([string]::IsNullOrWhiteSpace($text)) {
+        Show-Toast -Title "Clipboard Empty" -Message "Nothing to sync."
+        return
+    }
+    
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($text)
+    $b64 = [Convert]::ToBase64String($bytes)
+    
+    # Broadcast to Android app via ADB
+    $res = adb shell am broadcast -a com.example.dex.SET_CLIPBOARD -e text_b64 "$b64" 2>&1
+    
+    if ($res -match "Broadcast completed") {
+        Show-Toast -Title "Clipboard Synced" -Message "Sent to phone."
+    } else {
+        Show-Toast -Title "Clipboard Sync Failed" -Message "Is the phone connected via ADB?"
+    }
+    
+    $btnQAClipboard = $script:wpfWindow.FindName("btnQAClipboard")
+    if ($btnQAClipboard) { $btnQAClipboard.IsChecked = $false }
+}
+$script:wpfWindow.FindName("btnQAClipboard").Add_Click({ Invoke-MenuAction $actionClipboard })
 
 $actionAuto = {
     $newState = -not (Get-AutoConnectStatus)

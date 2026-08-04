@@ -1,4 +1,8 @@
 # Changelog
+### [minor] Seamless Bi-Directional Clipboard Sync (v5.4.0.0)
+- **[feature]** Implemented PC -> Android clipboard sync over ADB Broadcast intents via the existing \tnQAClipboard\ in the Tray UI.
+- **[feature]** Implemented Android -> PC clipboard sync by extending the PC LocalSend server with a lightweight \/api/dex/clipboard\ endpoint that leverages PowerShell to set the Windows clipboard without extra C# dependencies.
+- **[feature]** Added a dedicated Clipboard send button to discovered Android devices in the Android App UI.
 ### [patch] UI Refinements (v5.3.5.2)
 - **[patch]** Added smooth expand/collapse animations for the ADB status row, utilizing the existing animation engine to smoothly push the device list down without increasing the spatial menu's overall height.
 - **[patch]** Removed the IP address display from Discovered Devices on the UI to keep the list clean.
@@ -803,6 +807,7 @@
 - **Persistent Spatial Menu**: Removed auto-hiding behavior on `Connect`, `Disconnect`, `Phone Files`, and `Auto-Connect` menu actions so the menu stays open for interactive use.
 - **Dynamic UI State Sync**: Added immediate `Update-WpfUI` triggers on menu actions to update connect/disconnect states and auto-connect highlights live.
 - **Project Rule Protocol**: Configured workspace rules enforcing `/ponytail` ladder, deep edge-case resolution, MSIX build & signing pipelines, and automated release commits.
+
 
 
 

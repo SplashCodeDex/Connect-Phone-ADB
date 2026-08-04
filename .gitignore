@@ -2,3 +2,5 @@
 DeXShareTarget/bin/
 DeXShareTarget/obj/
 *.appx
+
+MSIX_Source/win-x64/

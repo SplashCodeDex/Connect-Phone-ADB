@@ -106,4 +106,7 @@ dependencies {
 
   // WorkManager
   implementation(libs.androidx.work.runtime.ktx)
+
+  // QR Scanner
+  implementation(libs.play.services.code.scanner)
 }

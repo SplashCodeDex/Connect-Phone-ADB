@@ -425,6 +425,27 @@ namespace DeXShareTarget
 
             App.MapGet("/api/localsend/v2/info", () => Results.Json(new RegisterDto()));
             
+            App.MapPost("/api/dex/clipboard", async (HttpRequest request) =>
+            {
+                using var reader = new StreamReader(request.Body);
+                var text = await reader.ReadToEndAsync();
+                
+                var psi = new System.Diagnostics.ProcessStartInfo("powershell", "-NoProfile -Command \"$input | Set-Clipboard\"")
+                {
+                    RedirectStandardInput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                var p = System.Diagnostics.Process.Start(psi);
+                if (p != null)
+                {
+                    await p.StandardInput.WriteAsync(text);
+                    p.StandardInput.Close();
+                }
+                
+                return Results.Ok();
+            });
+
             App.MapPost("/api/localsend/v2/register", (RegisterDto req) => 
             {
                 return Results.Json(new { sessionId = Guid.NewGuid().ToString() });

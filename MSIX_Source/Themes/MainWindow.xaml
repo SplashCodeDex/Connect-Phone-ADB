@@ -6,44 +6,42 @@
         Width="1420" Height="760"
         ResizeMode="NoResize">
     <Window.Resources>
-        <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
-        
         <Storyboard x:Key="SlideInQrAnim">
-            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
-            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="SlideOutQrAnim">
-            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="300" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
-            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="SwitchQrToPinAnim">
-            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="qrViewTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
-            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="qrViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="SlideOutPinAnim">
-            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="300" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
-            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="SlideInPinAnim">
-            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="menuContentTrans" Storyboard.TargetProperty="X" To="-300" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
-            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.4" EasingFunction="{StaticResource BouncyEase}" />
+            <DoubleAnimation Storyboard.TargetName="pinViewTrans" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.3"><DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinViewPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" /></ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="menuContentPanel" Storyboard.TargetProperty="Visibility"><DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" /></ObjectAnimationUsingKeyFrames>
@@ -112,6 +110,7 @@
         
         <BackEase x:Key="HoverEase" Amplitude="1.22" EasingMode="EaseOut" />
         <BackEase x:Key="PopInEase" Amplitude="3.53" EasingMode="EaseOut" />
+        <ElasticEase x:Key="BouncyEase" Oscillations="1" Springiness="7" EasingMode="EaseOut" />
         <CubicEase x:Key="SmoothEase" EasingMode="EaseOut" />
         <Storyboard x:Key="ExpandMenu">
             <!-- Window Size Expansion with ElasticEase (reduced 35% from original) -->
@@ -757,6 +756,69 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="AnimatedActionBtn" TargetType="Button">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" x:Name="btnScale" />
+                                </TransformGroup>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.65"/>
+                            </Trigger>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="PreviewMouseDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="0.95" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="0.95" Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="PreviewMouseUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                        <DoubleAnimation Storyboard.TargetName="btnScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.3" EasingFunction="{StaticResource HoverEase}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Border x:Name="mainBorder" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="34" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Background="{DynamicResource PrimaryBrush}" RenderTransformOrigin="0.5,1" Margin="25">
         <Border.Effect>
@@ -1206,6 +1268,9 @@
                                 <DataTrigger Binding="{Binding Visibility, ElementName=FileExplorer}" Value="Visible">
                                     <Setter Property="MaxHeight" Value="Infinity" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding Visibility, ElementName=SettingsPanel}" Value="Visible">
+                                    <Setter Property="MaxHeight" Value="Infinity" />
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
@@ -1635,20 +1700,8 @@
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="btnQrClose" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <Button x:Name="btnSwitchToPin" Grid.Column="2" Content="Request PIN" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
+                            <Button x:Name="btnQrClose" Style="{StaticResource AnimatedActionBtn}" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
+                            <Button x:Name="btnSwitchToPin" Style="{StaticResource AnimatedActionBtn}" Grid.Column="2" Content="Request PIN" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" />
                         </Grid>
                     </Grid>
                     
@@ -1666,9 +1719,9 @@
                         <TextBlock x:Name="txtPinSubtitle" Grid.Row="0" Text="from Galaxy S21" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,34,0,0" HorizontalAlignment="Center" />
                         
                         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock x:Name="txtPinCode" Text="123456" FontSize="42" FontFamily="Segoe UI" FontWeight="Bold" Foreground="{DynamicResource SecondaryForegroundBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
+                            <TextBlock x:Name="txtPinCode" Text="123456" FontSize="42" FontFamily="Segoe UI" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
                             <TextBlock x:Name="txtPinStatus" Text="Waiting for acceptance..." FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" />
-                            <ProgressBar x:Name="pbPinTimeout" Value="100" Maximum="100" Height="4" Margin="20,8,20,0" Foreground="{DynamicResource AccentBrush}" Background="Transparent" BorderThickness="0" />
+                            <ProgressBar x:Name="pbPinTimeout" Value="100" Maximum="100" Height="4" Margin="20,12,20,0" Foreground="{DynamicResource SecondaryBrush}" Background="Transparent" BorderThickness="0" />
                         </StackPanel>
                         
                         <Grid Grid.Row="2" Margin="0,0,0,8">
@@ -1682,27 +1735,9 @@
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="btnPinCancel" Grid.Row="0" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <Button x:Name="btnPinAccept" Grid.Row="0" Grid.Column="2" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" BorderThickness="0" Padding="0,10" Cursor="Hand" FontFamily="Segoe UI" FontSize="14" FontWeight="Medium">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <Button x:Name="btnPinAcceptOnce" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" Cursor="Hand" FontFamily="Segoe UI" FontSize="13" FontWeight="Medium">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
+                            <Button x:Name="btnPinCancel" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
+                            <Button x:Name="btnPinAccept" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="2" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" />
+                            <Button x:Name="btnPinAcceptOnce" Style="{StaticResource AnimatedActionBtn}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" FontSize="13" />
                         </Grid>
                     </Grid>
                 </Grid>

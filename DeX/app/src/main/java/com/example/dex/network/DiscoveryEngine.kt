@@ -328,4 +328,27 @@ class DiscoveryEngine {
         } catch (e: Exception) { e.printStackTrace() }
         udpSocket?.close()
     }
+
+    fun sendManualDiscovery(ip: String) {
+        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val replyJson = org.json.JSONObject().apply {
+                    put("alias", localSendInfo.alias)
+                    put("version", localSendInfo.version)
+                    put("deviceModel", localSendInfo.deviceModel)
+                    put("deviceType", localSendInfo.deviceType)
+                    put("fingerprint", localSendInfo.fingerprint)
+                    put("port", localSendInfo.port)
+                    put("protocol", localSendInfo.protocol)
+                    put("download", localSendInfo.download)
+                    put("identityHash", localSendInfo.identityHash)
+                }
+                val replyData = replyJson.toString().toByteArray(Charsets.UTF_8)
+                val packet = java.net.DatagramPacket(replyData, replyData.size, java.net.InetAddress.getByName(ip), 53317)
+                java.net.DatagramSocket().use { ds -> ds.send(packet) }
+            } catch (e: Exception) {
+                android.util.Log.e("DeXDiscovery", "Failed to send manual discovery: ${e.message}")
+            }
+        }
+    }
 }

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -98,6 +99,30 @@ fun MainScreen(
             TopAppBar(
                 title = { Text("DeX", fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = {
+                        val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
+                            .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_QR_CODE)
+                            .enableAutoZoom()
+                            .build()
+                        val scanner = com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(context, options)
+                        scanner.startScan()
+                            .addOnSuccessListener { barcode ->
+                                val rawValue = barcode.rawValue
+                                if (rawValue != null && rawValue.startsWith("http://")) {
+                                    val uri = Uri.parse(rawValue)
+                                    val ip = uri.host
+                                    if (ip != null) {
+                                        Toast.makeText(context, "Scanned PC IP: $ip, searching...", Toast.LENGTH_SHORT).show()
+                                        DexAppContainer.discoveryEngine.sendManualDiscovery(ip)
+                                    }
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(context, "Scan failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }) {
+                        Icon(Icons.Default.Computer, contentDescription = "Scan QR")
+                    }
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
@@ -251,6 +276,10 @@ fun MainScreen(
 
 @Composable
 fun DeviceCard(device: DiscoveredDevice, onClick: () -> Unit) {
+    val context = LocalContext.current
+    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+    val scope = rememberCoroutineScope()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -280,11 +309,46 @@ fun DeviceCard(device: DiscoveredDevice, onClick: () -> Unit) {
                 Text(text = device.info.alias, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
                 Text(text = "${device.ip}:${device.info.port}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            IconButton(onClick = {
+                val text = clipboardManager.getText()?.text
+                if (!text.isNullOrEmpty()) {
+                    scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                        try {
+                            val url = java.net.URL("http://${device.ip}:${device.info.port}/api/dex/clipboard")
+                            val conn = url.openConnection() as java.net.HttpURLConnection
+                            conn.requestMethod = "POST"
+                            conn.doOutput = true
+                            conn.outputStream.write(text.toByteArray())
+                            val code = conn.responseCode
+                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                if (code == 200) {
+                                    Toast.makeText(context, "Clipboard sent!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Failed: $code", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(context, "Clipboard is empty", Toast.LENGTH_SHORT).show()
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.Default.ContentPaste,
+                    contentDescription = "Send Clipboard",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
             @Suppress("DEPRECATION")
             Icon(
                 imageVector = Icons.Default.Send,
                 contentDescription = "Send File",
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
