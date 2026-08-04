@@ -259,29 +259,36 @@ if ($btnSettingsConnectNow) {
 $btnSettingsQrCode = $script:wpfWindow.FindName("btnSettingsQrCode")
 if ($btnSettingsQrCode) {
     $btnSettingsQrCode.Add_Click({
-        $ip = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
-        if ($ip) {
-            $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
-            if ($imgQrCode) {
-                $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-                $bitmap.BeginInit()
-                $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$ip")
-                $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
-                $bitmap.EndInit()
-                $imgQrCode.Source = $bitmap
-            }
-            try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInQrAnim").Begin($script:wpfWindow) } catch {}
-            Invoke-MenuAction $actionConnect # to dismiss settings panel
-        } else {
-            Show-Toast -Title "Network Error" -Message "Could not determine local IP address."
-        }
-    })
-}
+        $pinCodeContent = $script:wpfWindow.FindName("pinCodeContent")
+        $qrCodeContent = $script:wpfWindow.FindName("qrCodeContent")
+        $txtQrBtnIcon = $script:wpfWindow.FindName("txtQrBtnIcon")
+        $txtQrBtnText = $script:wpfWindow.FindName("txtQrBtnText")
 
-$btnQrClose = $script:wpfWindow.FindName("btnQrClose")
-if ($btnQrClose) {
-    $btnQrClose.Add_Click({
-        try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutQrAnim").Begin($script:wpfWindow) } catch {}
+        if ($qrCodeContent.Visibility -eq 'Visible') {
+            $qrCodeContent.Visibility = 'Collapsed'
+            $pinCodeContent.Visibility = 'Visible'
+            $txtQrBtnIcon.Text = [char]0xE765
+            $txtQrBtnText.Text = "QR CODE"
+        } else {
+            $ip = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
+            if ($ip) {
+                $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
+                if ($imgQrCode) {
+                    $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
+                    $bitmap.BeginInit()
+                    $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$ip")
+                    $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
+                    $bitmap.EndInit()
+                    $imgQrCode.Source = $bitmap
+                }
+                $pinCodeContent.Visibility = 'Collapsed'
+                $qrCodeContent.Visibility = 'Visible'
+                $txtQrBtnIcon.Text = [char]0xE338
+                $txtQrBtnText.Text = "Request PIN"
+            } else {
+                Show-Toast -Title "Network Error" -Message "Could not determine local IP address."
+            }
+        }
     })
 }
 

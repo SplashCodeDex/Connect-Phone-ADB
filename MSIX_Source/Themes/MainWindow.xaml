@@ -1665,34 +1665,7 @@
                     </ScrollViewer>
                 </DockPanel>
                     
-                    <!-- QR Code View -->
-                    <Grid x:Name="qrViewPanel" Visibility="Collapsed" Opacity="0" Margin="16">
-                        <Grid.RenderTransform>
-                            <TranslateTransform x:Name="qrViewTrans" X="300" />
-                        </Grid.RenderTransform>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="Pairing QR Code" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,8,0,0" HorizontalAlignment="Center" />
-                        <TextBlock Grid.Row="0" Text="Scan with LocalSend mobile app" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,34,0,0" HorizontalAlignment="Center" />
-                        
-                        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="12" Margin="16,16,16,16" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image x:Name="imgQrCode" Width="180" Height="180" Stretch="Uniform" />
-                        </Border>
-                        
-                        <Grid Grid.Row="2" Margin="0,0,0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="8" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button x:Name="btnQrClose" Style="{StaticResource AnimatedActionBtn}" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
-                            <Button x:Name="btnSwitchToPin" Style="{StaticResource AnimatedActionBtn}" Grid.Column="2" Content="Request PIN" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" />
-                        </Grid>
-                    </Grid>
-                    
+
                     <!-- PIN View -->
                     <Grid x:Name="pinViewPanel" Visibility="Collapsed" Opacity="0" Margin="16">
                         <Grid.RenderTransform>
@@ -1706,11 +1679,16 @@
                         <TextBlock x:Name="txtPinTitle" Grid.Row="0" Text="Pairing Request" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,8,0,0" HorizontalAlignment="Center" />
                         <TextBlock x:Name="txtPinSubtitle" Grid.Row="0" Text="from Galaxy S21" FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,34,0,0" HorizontalAlignment="Center" />
                         
-                        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock x:Name="txtPinCode" Text="123456" FontSize="42" FontFamily="Segoe UI" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
-                            <TextBlock x:Name="txtPinStatus" Text="Waiting for acceptance..." FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" />
-                            <ProgressBar x:Name="pbPinTimeout" Value="100" Maximum="100" Height="4" Margin="20,12,20,0" Foreground="{DynamicResource SecondaryBrush}" Background="Transparent" BorderThickness="0" />
-                        </StackPanel>
+                        <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <StackPanel x:Name="pinCodeContent" Visibility="Visible">
+                                <TextBlock x:Name="txtPinCode" Text="123456" FontSize="42" FontFamily="Segoe UI" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
+                                <TextBlock x:Name="txtPinStatus" Text="Waiting for acceptance..." FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" />
+                                <ProgressBar x:Name="pbPinTimeout" Value="100" Maximum="100" Height="4" Margin="20,12,20,0" Foreground="{DynamicResource SecondaryBrush}" Background="Transparent" BorderThickness="0" />
+                            </StackPanel>
+                            <Border x:Name="qrCodeContent" Visibility="Collapsed" Background="White" CornerRadius="8" Padding="12" Margin="16,0">
+                                <Image x:Name="imgQrCode" Width="140" Height="140" Stretch="Uniform" />
+                            </Border>
+                        </Grid>
                         
                         <Grid Grid.Row="2" Margin="0,0,0,8">
                             <Grid.RowDefinitions>
@@ -1719,14 +1697,19 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="btnSettingsQrCode" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="0" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Content="&#xE765;" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" ToolTip="Show QR Code" Width="40" />
-                            <Button x:Name="btnPinCancel" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="2" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
+                            <Button x:Name="btnPinCancel" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="0" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
+                            <Button x:Name="btnSettingsQrCode" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="2" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="txtQrBtnIcon" Text="&#xE765;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                    <TextBlock x:Name="txtQrBtnText" Text="QR CODE" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
                             <Button x:Name="btnPinAccept" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="4" Content="Accept" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}" />
                             <Button x:Name="btnPinAcceptOnce" Style="{StaticResource AnimatedActionBtn}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Content="Accept Once (Guest)" Foreground="{DynamicResource SecondaryTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Padding="0,8" FontSize="13" />
                         </Grid>
