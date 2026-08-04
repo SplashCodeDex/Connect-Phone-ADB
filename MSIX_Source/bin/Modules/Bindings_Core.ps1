@@ -1,4 +1,4 @@
-
+﻿
 $script:txtStatus = $script:wpfWindow.FindName("txtStatus")
 $script:pnlAdbStatus = $script:wpfWindow.FindName("pnlAdbStatus")
 $script:topActionsPanel = $script:wpfWindow.FindName("TopActionsPanel")
@@ -46,3 +46,13 @@ if ($ctxMenu) {
     })
 }
 
+$script:wpfWindow.FindName("btnQAConnect").Add_Click({
+    if ($this.IsChecked) {
+        Invoke-MenuAction $actionConnect
+    } else {
+        Invoke-MenuAction $actionDisconnect
+    }
+})
+$script:wpfWindow.FindName("btnQAMirror").Add_Click({ Invoke-MenuAction $actionMirror })
+$script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
+$script:wpfWindow.FindName("btnQAClipboard").Add_Click({ Invoke-MenuAction $actionClipboard })

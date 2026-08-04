@@ -165,3 +165,40 @@ $script:lbFiles.Add_KeyDown({
         $e.Handled = $true
     }
 })
+$script:wpfWindow.FindName("btnPushFiles").Add_Click({ Invoke-MenuAction $actionPushFiles })
+$script:wpfWindow.FindName("btnPushFolder").Add_Click({ Invoke-MenuAction $actionPushFolder })
+    $fileExplorerPanel.Add_PreviewDragOver({
+        $e = $args[1]
+        if ($e.Data.GetDataPresent([System.Windows.DataFormats]::FileDrop)) {
+            $e.Effects = [System.Windows.DragDropEffects]::Copy
+        } else {
+            $e.Effects = [System.Windows.DragDropEffects]::None
+        }
+        $e.Handled = $true
+    })
+    $fileExplorerPanel.Add_PreviewDrop({
+        $e = $args[1]
+        if ($e.Data.GetDataPresent([System.Windows.DataFormats]::FileDrop)) {
+            $droppedFiles = $e.Data.GetData([System.Windows.DataFormats]::FileDrop)
+            if ($droppedFiles -and $droppedFiles.Count -gt 0) {
+                $targetIp = (Get-ItemProperty "HKCU:\Software\DeX" -Name "LastIp" -ErrorAction SilentlyContinue).LastIp
+                if ([string]::IsNullOrEmpty($targetIp)) { $targetIp = "127.0.0.1" }
+                
+                $allFiles = @()
+                foreach ($path in $droppedFiles) {
+                    if (Test-Path $path -PathType Container) {
+                        $allFiles += (Get-ChildItem -Path $path -File -Recurse | Select-Object -ExpandProperty FullName)
+                    } else {
+                        $allFiles += $path
+                    }
+                }
+                
+                if ($allFiles.Count -gt 0) {
+                    $exePath = Join-Path $PSScriptRoot "..\DeXShareTarget.exe"
+                    $argsList = @("-IP", $targetIp) + $allFiles
+                    Start-Process $exePath -ArgumentList $argsList
+                }
+            }
+        }
+        $e.Handled = $true
+    })

@@ -316,3 +316,63 @@ $script:wpfWindow.FindName("btnCloseMenu").Add_Click({
     $script:lastDeactivated = [DateTime]::Now
     Reset-SpatialPanels
 })
+$script:wpfWindow.Add_PreviewMouseLeftButtonUp({
+    param($sender, $e)
+    $element = $e.OriginalSource
+    while ($element -and $element -isnot [System.Windows.Controls.Primitives.ButtonBase]) {
+        $element = [System.Windows.Media.VisualTreeHelper]::GetParent($element)
+    }
+    
+    if ($element -and $element -is [System.Windows.Controls.Primitives.ButtonBase]) {
+        # Check if the Button has an IP Tag (Omni-Mesh device)
+        if ($element.Tag -and $element.Tag -match '^\d+\.\d+\.\d+\.\d+') {
+            $ip = $element.Tag -replace ':.*', ''
+            
+            # Check if this device is in the Discovered Devices (Guest) list
+            $icUdpPeers = $script:wpfWindow.FindName("icUdpPeers")
+            $targetPeer = $null
+            if ($icUdpPeers -and $icUdpPeers.ItemsSource) {
+                $targetPeer = $icUdpPeers.ItemsSource | Where-Object { $_.Ip -eq $ip } | Select-Object -First 1
+            }
+            $isGuest = ($targetPeer -ne $null)
+
+            if ($isGuest) {
+                try {
+                    $fp = $targetPeer.Fingerprint
+                    $initRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-initiate?ip=${ip}&fingerprint=${fp}" -Method Post -TimeoutSec 5 -ErrorAction Stop
+                    $pin = $initRes.pin
+
+                    if ($pin) {
+                        $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing with $($targetPeer.Alias)"
+                        $script:wpfWindow.FindName("txtPinSubtitle").Text = "Verify this code on the target device"
+                        $script:wpfWindow.FindName("txtPinCode").Text = $pin
+                        $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for remote acceptance..."
+                        
+                        $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
+                        $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
+                        $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Visible'
+                        $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
+                        try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
+                        
+                        $e.Handled = $true
+                        return
+                    }
+                } catch {
+                    Show-Toast -Title "Pairing Failed" -Message $_.Exception.Message
+                    $e.Handled = $true
+                    return
+                }
+            }
+
+            # If not a guest (already in Live Peers), connect ADB
+            $res = Invoke-AdbConnect -Target $ip
+            if ($res.Success) {
+                Invoke-MenuAction $actionPull
+            } else {
+                Show-Toast -Title "Connection Failed" -Message $res.Message
+            }
+            
+            $e.Handled = $true
+        }
+    }
+})

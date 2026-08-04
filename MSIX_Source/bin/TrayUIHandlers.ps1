@@ -1,4 +1,4 @@
-. "$PSScriptRoot\Modules\UIComponents.ps1"
+﻿. "$PSScriptRoot\Modules\UIComponents.ps1"
 function Reset-SpatialPanels {
     try {
         $script:wpfWindow.FindResource("ExpandMenu").Stop($script:wpfWindow)
@@ -79,74 +79,7 @@ $actionDisconnect = {
     Show-Toast -Title "ADB Disconnected" -Message "Severed all wireless connections."
     Update-WpfUI
 }
-$script:wpfWindow.FindName("btnQAConnect").Add_Click({
-    if ($this.IsChecked) {
-        Invoke-MenuAction $actionConnect
-    } else {
-        Invoke-MenuAction $actionDisconnect
-    }
-})
 
-$script:wpfWindow.Add_PreviewMouseLeftButtonUp({
-    param($sender, $e)
-    $element = $e.OriginalSource
-    while ($element -and $element -isnot [System.Windows.Controls.Primitives.ButtonBase]) {
-        $element = [System.Windows.Media.VisualTreeHelper]::GetParent($element)
-    }
-    
-    if ($element -and $element -is [System.Windows.Controls.Primitives.ButtonBase]) {
-        # Check if the Button has an IP Tag (Omni-Mesh device)
-        if ($element.Tag -and $element.Tag -match '^\d+\.\d+\.\d+\.\d+') {
-            $ip = $element.Tag -replace ':.*', ''
-            
-            # Check if this device is in the Discovered Devices (Guest) list
-            $icUdpPeers = $script:wpfWindow.FindName("icUdpPeers")
-            $targetPeer = $null
-            if ($icUdpPeers -and $icUdpPeers.ItemsSource) {
-                $targetPeer = $icUdpPeers.ItemsSource | Where-Object { $_.Ip -eq $ip } | Select-Object -First 1
-            }
-            $isGuest = ($targetPeer -ne $null)
-
-            if ($isGuest) {
-                try {
-                    $fp = $targetPeer.Fingerprint
-                    $initRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-initiate?ip=${ip}&fingerprint=${fp}" -Method Post -TimeoutSec 5 -ErrorAction Stop
-                    $pin = $initRes.pin
-
-                    if ($pin) {
-                        $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing with $($targetPeer.Alias)"
-                        $script:wpfWindow.FindName("txtPinSubtitle").Text = "Verify this code on the target device"
-                        $script:wpfWindow.FindName("txtPinCode").Text = $pin
-                        $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for remote acceptance..."
-                        
-                        $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
-                        $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
-                        $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Visible'
-                        $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
-                        try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
-                        
-                        $e.Handled = $true
-                        return
-                    }
-                } catch {
-                    Show-Toast -Title "Pairing Failed" -Message $_.Exception.Message
-                    $e.Handled = $true
-                    return
-                }
-            }
-
-            # If not a guest (already in Live Peers), connect ADB
-            $res = Invoke-AdbConnect -Target $ip
-            if ($res.Success) {
-                Invoke-MenuAction $actionPull
-            } else {
-                Show-Toast -Title "Connection Failed" -Message $res.Message
-            }
-            
-            $e.Handled = $true
-        }
-    }
-})
 
 $actionMirror = {
         $target = Get-ConnectedDeviceTarget
@@ -170,7 +103,6 @@ $actionMirror = {
     }
     Update-WpfUI
 }
-$script:wpfWindow.FindName("btnQAMirror").Add_Click({ Invoke-MenuAction $actionMirror })
 
 $actionPull = {
     
@@ -218,7 +150,6 @@ $actionPull = {
     if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
     $script:wpfWindow.Dispatcher.InvokeAsync([Action]{ Load-Directory $outDir }) | Out-Null
 }
-$script:wpfWindow.FindName("btnQAPull").Add_Click({ Invoke-MenuAction $actionPull })
 
 $actionClipboard = {
     $text = Get-Clipboard -Raw -ErrorAction Ignore
@@ -242,7 +173,6 @@ $actionClipboard = {
     $btnQAClipboard = $script:wpfWindow.FindName("btnQAClipboard")
     if ($btnQAClipboard) { $btnQAClipboard.IsChecked = $false }
 }
-$script:wpfWindow.FindName("btnQAClipboard").Add_Click({ Invoke-MenuAction $actionClipboard })
 
 $actionAuto = {
     $newState = -not (Get-AutoConnectStatus)
@@ -336,9 +266,6 @@ $btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
 $btnProfileTopSettings = $script:wpfWindow.FindName("btnProfileTopSettings")
 
 # Avatar clicks now open the settings panel instead of the popup
-if ($btnTopProfile) { $btnTopProfile.Add_Click({ Invoke-MenuAction $actionSettings }) }
-if ($btnProfileBottom) { $btnProfileBottom.Add_Click({ Invoke-MenuAction $actionSettings }) }
-if ($btnProfileTopSettings) { $btnProfileTopSettings.Add_Click({ Invoke-MenuAction $actionSettings }) }
 
 function Show-PairingPrompt {
     param([string]$IPPort)
@@ -466,46 +393,9 @@ $actionPushFolder = {
     }
 }
 
-$script:wpfWindow.FindName("btnPushFiles").Add_Click({ Invoke-MenuAction $actionPushFiles })
-$script:wpfWindow.FindName("btnPushFolder").Add_Click({ Invoke-MenuAction $actionPushFolder })
 
 $fileExplorerPanel = $script:wpfWindow.FindName("FileExplorer")
 if ($fileExplorerPanel) {
-    $fileExplorerPanel.Add_PreviewDragOver({
-        $e = $args[1]
-        if ($e.Data.GetDataPresent([System.Windows.DataFormats]::FileDrop)) {
-            $e.Effects = [System.Windows.DragDropEffects]::Copy
-        } else {
-            $e.Effects = [System.Windows.DragDropEffects]::None
-        }
-        $e.Handled = $true
-    })
 
-    $fileExplorerPanel.Add_PreviewDrop({
-        $e = $args[1]
-        if ($e.Data.GetDataPresent([System.Windows.DataFormats]::FileDrop)) {
-            $droppedFiles = $e.Data.GetData([System.Windows.DataFormats]::FileDrop)
-            if ($droppedFiles -and $droppedFiles.Count -gt 0) {
-                $targetIp = (Get-ItemProperty "HKCU:\Software\DeX" -Name "LastIp" -ErrorAction SilentlyContinue).LastIp
-                if ([string]::IsNullOrEmpty($targetIp)) { $targetIp = "127.0.0.1" }
-                
-                $allFiles = @()
-                foreach ($path in $droppedFiles) {
-                    if (Test-Path $path -PathType Container) {
-                        $allFiles += (Get-ChildItem -Path $path -File -Recurse | Select-Object -ExpandProperty FullName)
-                    } else {
-                        $allFiles += $path
-                    }
-                }
-                
-                if ($allFiles.Count -gt 0) {
-                    $exePath = Join-Path $PSScriptRoot "..\DeXShareTarget.exe"
-                    $argsList = @("-IP", $targetIp) + $allFiles
-                    Start-Process $exePath -ArgumentList $argsList
-                }
-            }
-        }
-        $e.Handled = $true
-    })
 }
 
