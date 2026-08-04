@@ -1157,7 +1157,7 @@
                 </StackPanel>
                 
                 <!-- Main content fills remaining space -->
-                <DockPanel x:Name="menuContentPanel" LastChildFill="True">
+                <DockPanel x:Name="menuContentPanel" LastChildFill="True" MaxHeight="352">
                     <DockPanel.RenderTransform>
                         <TranslateTransform x:Name="menuContentTrans" Y="0" />
                     </DockPanel.RenderTransform>
@@ -1180,6 +1180,18 @@
                                 <ThicknessAnimation Storyboard.TargetName="btnToggleTopmost" Storyboard.TargetProperty="Margin" To="0,0,0,0" Duration="0:0:0.2">
                                     <ThicknessAnimation.EasingFunction><CubicEase EasingMode="EaseIn"/></ThicknessAnimation.EasingFunction>
                                 </ThicknessAnimation>
+                            </Storyboard>
+                            <Storyboard x:Key="ShowAdbAnim">
+                                <DoubleAnimation Storyboard.TargetName="pnlAdbStatus" Storyboard.TargetProperty="Height" To="39" Duration="0:0:0.25">
+                                    <DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="pnlAdbStatus" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                            </Storyboard>
+                            <Storyboard x:Key="HideAdbAnim">
+                                <DoubleAnimation Storyboard.TargetName="pnlAdbStatus" Storyboard.TargetProperty="Height" To="0" Duration="0:0:0.2">
+                                    <DoubleAnimation.EasingFunction><PowerEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="pnlAdbStatus" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
                             </Storyboard>
                         </StackPanel.Resources>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14">
@@ -1262,7 +1274,7 @@
                     </Button>
                 </StackPanel>
                 
-                <StackPanel Name="pnlAdbStatus" Visibility="Collapsed">
+                <StackPanel Name="pnlAdbStatus" Height="0" Opacity="0" ClipToBounds="True">
                     <Separator Background="{DynamicResource AccentBrush}" Height="1" Margin="16,0" />
                     <StackPanel Orientation="Horizontal" Margin="24,10,24,10">
                         <TextBlock Name="txtStatus" Text="ADB Status: Initializing..." Foreground="{DynamicResource SecondaryTextBrush}" FontSize="13" FontFamily="Segoe UI" VerticalAlignment="Center" />
@@ -1288,7 +1300,7 @@
                     </StackPanel>
                 
                     <!-- Your Devices Section -->
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly" MaxHeight="270">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="VerticalOnly">
                         <StackPanel Margin="0,0,0,8">
                             <!-- Dynamic UDP Discovered Devices -->
                             <TextBlock Text="Discovered Devices" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontWeight="SemiBold" Margin="12,12,0,4">
@@ -1338,7 +1350,6 @@
                                                     <TextBlock Text="{Binding [DeviceModel]}" FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" />
                                                 </StackPanel>
                                                 
-                                                <TextBlock Grid.Column="2" Text="{Binding [Ip]}" FontFamily="Segoe UI" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0" />
                                             </Grid>
                                         </Button>
                                     </DataTemplate>

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<AppInstaller Uri="https://SplashCodeDex.github.io/DeX/DeX.appinstaller" Version="5.3.5.1" xmlns="http://schemas.microsoft.com/appx/appinstaller/2018">
-  <MainPackage Name="CodeDeX.DeX" Publisher="CN=CodeDeX" Version="5.3.5.1" ProcessorArchitecture="x64" Uri="https://github.com/SplashCodeDex/DeX/releases/latest/download/DeX.msix" />
+<AppInstaller Uri="https://SplashCodeDex.github.io/DeX/DeX.appinstaller" Version="5.3.5.2" xmlns="http://schemas.microsoft.com/appx/appinstaller/2018">
+  <MainPackage Name="CodeDeX.DeX" Publisher="CN=CodeDeX" Version="5.3.5.2" ProcessorArchitecture="x64" Uri="https://github.com/SplashCodeDex/DeX/releases/latest/download/DeX.msix" />
   <UpdateSettings>
     <OnLaunch HoursBetweenUpdateChecks="12" ShowPrompt="false" UpdateBlocksActivation="false" />
   </UpdateSettings>

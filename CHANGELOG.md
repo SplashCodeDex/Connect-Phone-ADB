@@ -1,4 +1,7 @@
 # Changelog
+### [patch] UI Refinements (v5.3.5.2)
+- **[patch]** Added smooth expand/collapse animations for the ADB status row, utilizing the existing animation engine to smoothly push the device list down without increasing the spatial menu's overall height.
+- **[patch]** Removed the IP address display from Discovered Devices on the UI to keep the list clean.
 ### [patch] UI Refinements (v5.3.5.1)
 - **[patch]** Switched ScrollViewer Height to MaxHeight to eliminate empty space below devices while keeping the list area scrollable when new devices are discovered.
 ### [patch] UI Refinements (v5.3.5.0)

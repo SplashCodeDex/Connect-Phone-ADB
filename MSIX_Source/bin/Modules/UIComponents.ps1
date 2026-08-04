@@ -245,7 +245,7 @@ function Update-WpfUI {
         $script:notifyIcon.Icon = $iconGreen
         $script:notifyIcon.Text = "Connected: $devName"
         $script:txtStatus.Text = "ADB Status: $devName"
-        $script:pnlAdbStatus.Visibility = 'Visible'
+        try { $script:topActionsPanel.FindResource("ShowAdbAnim").Begin($script:wpfWindow) } catch {}
         $btnQAConnect = $script:wpfWindow.FindName("btnQAConnect")
         if ($null -ne $btnQAConnect) { $btnQAConnect.IsChecked = $true }
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Visible'
@@ -253,7 +253,7 @@ function Update-WpfUI {
         $script:notifyIcon.Icon = $iconRed
         $script:notifyIcon.Text = "Disconnected"
         $script:txtStatus.Text = "ADB Status: Disconnected"
-        $script:pnlAdbStatus.Visibility = 'Collapsed'
+        try { $script:topActionsPanel.FindResource("HideAdbAnim").Begin($script:wpfWindow) } catch {}
         $btnQAConnect = $script:wpfWindow.FindName("btnQAConnect")
         if ($null -ne $btnQAConnect) { $btnQAConnect.IsChecked = $false }
         $script:wpfWindow.FindName("btnCopyIP").Visibility = 'Collapsed'
