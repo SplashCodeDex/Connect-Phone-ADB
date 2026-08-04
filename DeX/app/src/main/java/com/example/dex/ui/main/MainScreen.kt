@@ -35,6 +35,9 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +59,31 @@ fun MainScreen(
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
         }
+    }
+    
+    val currentPairingPin by com.example.dex.network.AuthState.currentPairingPin.collectAsStateWithLifecycle()
+
+    val launchQrScanner = {
+        val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+        val scanner = com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(context, options)
+        scanner.startScan()
+            .addOnSuccessListener { barcode ->
+                val rawValue = barcode.rawValue
+                if (rawValue != null && rawValue.startsWith("http://")) {
+                    val uri = Uri.parse(rawValue)
+                    val ip = uri.host
+                    if (ip != null) {
+                        Toast.makeText(context, "Scanned PC IP: $ip, searching...", Toast.LENGTH_SHORT).show()
+                        DexAppContainer.discoveryEngine.sendManualDiscovery(ip)
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Scan failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 
     // Modern Android Photo/File Picker
@@ -99,28 +127,7 @@ fun MainScreen(
             TopAppBar(
                 title = { Text("DeX", fontWeight = FontWeight.Bold) },
                 actions = {
-                    IconButton(onClick = {
-                        val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
-                            .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_QR_CODE)
-                            .enableAutoZoom()
-                            .build()
-                        val scanner = com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(context, options)
-                        scanner.startScan()
-                            .addOnSuccessListener { barcode ->
-                                val rawValue = barcode.rawValue
-                                if (rawValue != null && rawValue.startsWith("http://")) {
-                                    val uri = Uri.parse(rawValue)
-                                    val ip = uri.host
-                                    if (ip != null) {
-                                        Toast.makeText(context, "Scanned PC IP: $ip, searching...", Toast.LENGTH_SHORT).show()
-                                        DexAppContainer.discoveryEngine.sendManualDiscovery(ip)
-                                    }
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(context, "Scan failed: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }) {
+                    IconButton(onClick = { launchQrScanner() }) {
                         Icon(Icons.Default.Computer, contentDescription = "Scan QR")
                     }
                     IconButton(onClick = onNavigateToSettings) {
@@ -267,6 +274,69 @@ fun MainScreen(
                             // Open native document picker (Filters to all files)
                             filePickerLauncher.launch(arrayOf("*/*")) 
                         })
+                    }
+                }
+            }
+        }
+    }
+    
+    currentPairingPin?.let { pin ->
+        BasicAlertDialog(
+            onDismissRequest = { com.example.dex.network.AuthState.currentPairingPin.value = null },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Surface(
+                modifier = Modifier.wrapContentSize(),
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 6.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Pairing Request",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "Verify this PIN on your PC:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = pin,
+                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+                            style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 4.sp),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    Button(
+                        onClick = { launchQrScanner() },
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(12.dp)
+                    ) {
+                        Icon(Icons.Default.QrCodeScanner, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Scan QR Code Instead")
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    TextButton(
+                        onClick = { com.example.dex.network.AuthState.currentPairingPin.value = null },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Cancel", color = MaterialTheme.colorScheme.error)
                     }
                 }
             }

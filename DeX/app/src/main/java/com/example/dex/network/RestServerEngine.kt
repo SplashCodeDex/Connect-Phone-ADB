@@ -21,7 +21,7 @@ import io.ktor.server.netty.NettyApplicationEngine
 
 object AuthState {
     val guestTokens = mutableSetOf<String>()
-    var currentPairingPin: String? = null
+    val currentPairingPin = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
 }
 
 class RestServerEngine {
@@ -207,21 +207,21 @@ class RestServerEngine {
                     }
                     post("/api/dex/pair/request") {
                         val pin = (100000..999999).random().toString()
-                        AuthState.currentPairingPin = pin
+                        AuthState.currentPairingPin.value = pin
                         val ctx = DexAppContainer.context!!
                         val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
                         mainHandler.post {
-                            android.widget.Toast.makeText(ctx, "DeX Pairing PIN: $pin", android.widget.Toast.LENGTH_LONG).show()
+                            // android.widget.Toast.makeText(ctx, "DeX Pairing PIN: $pin", android.widget.Toast.LENGTH_LONG).show()
                         }
                         call.respond(io.ktor.http.HttpStatusCode.OK, "PIN generated")
                     }
                     post("/api/dex/pair/verify") {
                         val request = call.receive<Map<String, String>>()
                         val pin = request["pin"]
-                        if (pin != null && pin == AuthState.currentPairingPin) {
+                        if (pin != null && pin == AuthState.currentPairingPin.value) {
                             val token = UUID.randomUUID().toString()
                             AuthState.guestTokens.add(token)
-                            AuthState.currentPairingPin = null
+                            AuthState.currentPairingPin.value = null
                             call.respond(mapOf("token" to token))
                         } else {
                             call.respond(io.ktor.http.HttpStatusCode.Forbidden, "Invalid PIN")
