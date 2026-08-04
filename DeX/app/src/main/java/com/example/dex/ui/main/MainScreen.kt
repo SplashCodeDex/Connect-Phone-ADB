@@ -41,6 +41,10 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.ui.unit.sp
 
 import org.koin.androidx.compose.koinViewModel
+import com.example.dex.ui.components.DeviceListItem
+import com.example.dex.ui.components.NetworkErrorDialog
+import com.example.dex.ui.components.PairingRequestDialog
+import com.example.dex.ui.components.TransferProgressOverlay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,90 +148,12 @@ fun MainScreen(
             )
         },
         bottomBar = {
-            if (downloadState.isDownloading) {
-                Surface(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(stringResource(R.string.downloading), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                            TextButton(onClick = { com.example.dex.network.TcpDownloadService.cancelDownload(context) }) {
-                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(downloadState.fileName, style = MaterialTheme.typography.bodySmall, maxLines = 1)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        LinearProgressIndicator(
-                            progress = { downloadState.progress },
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text("${(downloadState.progress * 100).toInt()}%", style = MaterialTheme.typography.bodySmall)
-                    }
-
-                }
-            } else if (downloadState.isSuccess) {
-                Surface(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        stringResource(R.string.download_success, downloadState.fileName), 
-                        modifier = Modifier.padding(16.dp), 
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            } else if (uploadState.isUploading) {
-                Surface(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(stringResource(R.string.uploading_progress, uploadState.currentFileIndex, uploadState.totalFiles), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                            TextButton(onClick = { viewModel.clientEngine.cancelUpload(context) }) {
-                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(uploadState.fileName, style = MaterialTheme.typography.bodySmall, maxLines = 1)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        LinearProgressIndicator(
-                            progress = { uploadState.aggregateProgress },
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(stringResource(R.string.toast_percent_total, (uploadState.aggregateProgress * 100).toInt()), style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            } else if (uploadState.isSuccess) {
-                Surface(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        stringResource(R.string.upload_success, uploadState.fileName), 
-                        modifier = Modifier.padding(16.dp), 
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+            TransferProgressOverlay(
+                downloadState = downloadState,
+                uploadState = uploadState,
+                onCancelDownload = { com.example.dex.network.TcpDownloadService.cancelDownload(context) },
+                onCancelUpload = { viewModel.clientEngine.cancelUpload(context) }
+            )
         }
     ) { padding ->
         Column(
@@ -250,10 +176,14 @@ fun MainScreen(
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(devices, key = { it.info.fingerprint }) { device ->
-                        DeviceCard(device = device, onClick = {
-                            selectedDevice = device
-                            filePickerLauncher.launch(arrayOf("*/*")) 
-                        }, onSendClipboard = { text ->
+                        DeviceListItem(
+                            modifier = Modifier.animateItem(),
+                            device = device, 
+                            onClick = {
+                                selectedDevice = device
+                                filePickerLauncher.launch(arrayOf("*/*")) 
+                            }, 
+                            onSendClipboard = { text ->
                             viewModel.sendClipboard(device, text) { success ->
                                 if (success) Toast.makeText(context, context.getString(R.string.clipboard_sent_success), Toast.LENGTH_SHORT).show()
                                 else Toast.makeText(context, context.getString(R.string.clipboard_sent_failed), Toast.LENGTH_SHORT).show()
@@ -266,175 +196,26 @@ fun MainScreen(
     }
     
     if (uploadState.error != null) {
-        BasicAlertDialog(
-            onDismissRequest = { viewModel.clientEngine.resetUploadState() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Surface(
-                modifier = Modifier.wrapContentSize(),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 6.dp
-            ) {
-                Column(modifier = Modifier.padding(24.dp)) {
-                    Text(stringResource(R.string.error_network_title), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.error)
-                    Spacer(Modifier.height(16.dp))
-                    Text(stringResource(R.string.upload_failed, uploadState.error ?: ""))
-                    Spacer(Modifier.height(24.dp))
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        TextButton(onClick = { viewModel.clientEngine.resetUploadState() }) {
-                            Text(stringResource(R.string.dismiss))
-                        }
-                    }
-                }
-            }
-        }
+        NetworkErrorDialog(
+            error = stringResource(R.string.upload_failed, uploadState.error ?: ""),
+            onDismiss = { viewModel.clientEngine.resetUploadState() }
+        )
     }
     
     if (downloadState.error != null) {
-        BasicAlertDialog(
-            onDismissRequest = { com.example.dex.network.TcpDownloadService.resetDownloadState() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Surface(
-                modifier = Modifier.wrapContentSize(),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 6.dp
-            ) {
-                Column(modifier = Modifier.padding(24.dp)) {
-                    Text(stringResource(R.string.error_network_title), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.error)
-                    Spacer(Modifier.height(16.dp))
-                    Text(stringResource(R.string.download_failed, downloadState.error ?: ""))
-                    Spacer(Modifier.height(24.dp))
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        TextButton(onClick = { com.example.dex.network.TcpDownloadService.resetDownloadState() }) {
-                            Text(stringResource(R.string.dismiss))
-                        }
-                    }
-                }
-            }
-        }
+        NetworkErrorDialog(
+            error = stringResource(R.string.download_failed, downloadState.error ?: ""),
+            onDismiss = { com.example.dex.network.TcpDownloadService.resetDownloadState() }
+        )
     }
     
     currentPairingPin?.let { pin ->
-        BasicAlertDialog(
-            onDismissRequest = { com.example.dex.network.AuthState.currentPairingPin.value = null },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Surface(
-                modifier = Modifier.wrapContentSize(),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 6.dp
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        stringResource(R.string.pairing_request),
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        stringResource(R.string.verify_pin),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = pin,
-                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
-                            style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 4.sp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-                    
-                    Button(
-                        onClick = { launchQrScanner() },
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(12.dp)
-                    ) {
-                        Icon(Icons.Default.QrCodeScanner, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(R.string.scan_qr_instead))
-                    }
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    TextButton(
-                        onClick = { com.example.dex.network.AuthState.currentPairingPin.value = null },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
-                    }
-                }
-            }
-        }
+        PairingRequestDialog(
+            pin = pin,
+            onDismiss = { com.example.dex.network.AuthState.currentPairingPin.value = null },
+            onScanInstead = { launchQrScanner() }
+        )
     }
 }
 
-@Composable
-fun DeviceCard(device: DiscoveredDevice, onClick: () -> Unit, onSendClipboard: (String) -> Unit) {
-    val context = LocalContext.current
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Computer,
-                    contentDescription = stringResource(R.string.device_icon),
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = device.info.alias, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
-                Text(text = "${device.ip}:${device.info.port}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            IconButton(onClick = {
-                val text = clipboardManager.getText()?.text
-                if (!text.isNullOrEmpty()) {
-                    onSendClipboard(text)
-                } else {
-                    Toast.makeText(context, context.getString(R.string.clipboard_empty), Toast.LENGTH_SHORT).show()
-                }
-            }) {
-                Icon(
-                    imageVector = Icons.Default.ContentPaste,
-                    contentDescription = stringResource(R.string.send_clipboard),
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-            }
-            @Suppress("DEPRECATION")
-            Icon(
-                imageVector = Icons.Default.Send,
-                contentDescription = stringResource(R.string.send_file),
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}

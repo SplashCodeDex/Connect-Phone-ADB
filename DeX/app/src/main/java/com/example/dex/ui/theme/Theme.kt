@@ -1,4 +1,4 @@
-package com.example.dex.theme
+package com.example.dex.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -46,5 +46,10 @@ fun DeXTheme(
       else -> LightColorScheme
     }
 
-  MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
+  MaterialTheme(
+    colorScheme = colorScheme,
+    typography = Typography,
+    shapes = Shapes,
+    content = content
+  )
 }
