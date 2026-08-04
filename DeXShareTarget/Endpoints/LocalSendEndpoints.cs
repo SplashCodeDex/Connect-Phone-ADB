@@ -25,6 +25,7 @@ namespace DeXShareTarget.Endpoints
         public static bool IsDndEnabled { get; set; } = false;
         public static ConcurrentDictionary<string, TaskCompletionSource<PairResult>> PairTcs = new();
         public static ConcurrentDictionary<string, DateTime> GuestFingerprints = new();
+        public static ConcurrentDictionary<string, string> OutboundPairingStatus = new();
 
         public static void MapLocalSendEndpoints(this WebApplication app)
         {
@@ -292,6 +293,15 @@ namespace DeXShareTarget.Endpoints
                 }
                 return Results.BadRequest();
             });
+            app.MapGet("/local/pair-status", (HttpRequest request) => 
+            {
+                var ip = request.Query["ip"].ToString();
+                if (!string.IsNullOrEmpty(ip) && OutboundPairingStatus.TryGetValue(ip, out var status))
+                {
+                    return Results.Json(new { status });
+                }
+                return Results.NotFound();
+            });
 
             app.MapPost("/local/pair-initiate", async (HttpRequest request) => 
             {
@@ -301,6 +311,7 @@ namespace DeXShareTarget.Endpoints
                 if (string.IsNullOrEmpty(targetIp) || string.IsNullOrEmpty(targetFp))
                     return Results.BadRequest();
 
+                OutboundPairingStatus[targetIp] = "Pending";
                 var pin = new Random().Next(100000, 999999).ToString();
                 var reqDto = new PairRequestDto
                 {
@@ -309,7 +320,7 @@ namespace DeXShareTarget.Endpoints
                     Pin = pin
                 };
 
-                // Fire and forget pairing request
+                // Fire and forget pairing request tracking status
                 _ = Task.Run(async () =>
                 {
                     try
@@ -319,15 +330,24 @@ namespace DeXShareTarget.Endpoints
                             ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
                         };
                         using var client = new System.Net.Http.HttpClient(handler);
+                        client.Timeout = TimeSpan.FromSeconds(30);
                         var content = new System.Net.Http.StringContent(JsonSerializer.Serialize(reqDto, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }), System.Text.Encoding.UTF8, "application/json");
                         var response = await client.PostAsync($"https://{targetIp}:53317/api/localsend/v2/pair-prompt", content);
                         
                         if (response.IsSuccessStatusCode)
                         {
                             IdentityManager.SavePairedDevice(targetFp);
+                            OutboundPairingStatus[targetIp] = "Accepted";
+                        }
+                        else
+                        {
+                            OutboundPairingStatus[targetIp] = "Rejected";
                         }
                     }
-                    catch { }
+                    catch 
+                    { 
+                        OutboundPairingStatus[targetIp] = "Failed";
+                    }
                 });
 
                 return Results.Json(new { pin });

@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.IBinder
+import android.content.pm.ServiceInfo
+import androidx.core.app.ServiceCompat
 import org.koin.android.ext.android.inject
 
 class DexService : Service() {
@@ -17,7 +19,11 @@ class DexService : Service() {
     override fun onCreate() {
         super.onCreate()
         
-        startForeground(1, notificationHelper.getForegroundServiceNotification())
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ServiceCompat.startForeground(this, 1, notificationHelper.getForegroundServiceNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
+        } else {
+            startForeground(1, notificationHelper.getForegroundServiceNotification())
+        }
         
         // Acquire Multicast lock to ensure UDP broadcasts are received
         val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager

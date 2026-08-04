@@ -1,4 +1,4 @@
-﻿
+
 $script:wpfWindow.FindName("btnExit").Add_Click({
     $txtExitBtn = $script:wpfWindow.FindName("txtExitBtn")
     $btnProfileBottom = $script:wpfWindow.FindName("btnProfileBottom")
@@ -343,6 +343,7 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
                     $pin = $initRes.pin
 
                     if ($pin) {
+                        $script:activeOutboundPairIp = $ip
                         $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing with $($targetPeer.Alias)"
                         $script:wpfWindow.FindName("txtPinSubtitle").Text = "Verify this code on the target device"
                         $script:wpfWindow.FindName("txtPinCode").Text = $pin

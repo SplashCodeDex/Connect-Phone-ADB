@@ -325,6 +325,22 @@ $mdnsTimer.Add_Tick({
                 
             }
 
+            # Poll Outbound Pairing Status
+            if ($script:activeOutboundPairIp) {
+                try {
+                    $outStatus = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-status?ip=$($script:activeOutboundPairIp)" -TimeoutSec 1 -ErrorAction Stop
+                    if ($outStatus.status -eq 'Accepted') {
+                        $script:wpfWindow.FindName("pinViewPanel").Visibility = 'Collapsed'
+                        $script:activeOutboundPairIp = $null
+                        Show-Toast -Title "Pairing Successful" -Message "Device has been paired."
+                    } elseif ($outStatus.status -eq 'Failed' -or $outStatus.status -eq 'Rejected') {
+                        $script:wpfWindow.FindName("pinViewPanel").Visibility = 'Collapsed'
+                        $script:activeOutboundPairIp = $null
+                        Show-Toast -Title "Pairing Failed" -Message "Request was declined or timed out."
+                    }
+                } catch { }
+            }
+
             # Poll Pairing Requests
             try {
                 $pairReqs = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pairing-requests" -TimeoutSec 1 -ErrorAction Stop

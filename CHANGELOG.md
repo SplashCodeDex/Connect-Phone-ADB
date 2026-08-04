@@ -1,4 +1,7 @@
 # Changelog
+### [patch] Android 14+ Foreground Service Hardening
+- **[patch]** Hardened `DexService` with explicit `ServiceCompat.startForeground` typing to prevent silent API 34+ crashes.
+- **[patch]** Added dynamic Android 13 `POST_NOTIFICATIONS` permission request to guarantee transfer progress bar visibility.
 ### [minor] DataStore & Structured Logging Migration
 - **[minor]** Migrated legacy SharedPreferences to modern Jetpack Preferences DataStore for asynchronous, non-blocking storage.
 - **[minor]** Integrated Timber structured logging globally, replacing legacy Log dumps across all network and UI tiers.
