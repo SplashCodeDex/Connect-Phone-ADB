@@ -29,7 +29,7 @@ namespace DeXShareTarget
             var ephemeralCert = request.CreateSelfSigned(DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddYears(1));
             // Windows MsQuic requires the cert to be persisted/exportable, so we export to PFX and re-import
             var pfxBytes = ephemeralCert.Export(X509ContentType.Pfx, "password");
-            var cert = new X509Certificate2(pfxBytes, "password", X509KeyStorageFlags.Exportable);
+            var cert = X509CertificateLoader.LoadPkcs12(pfxBytes, "password", X509KeyStorageFlags.Exportable);
 
             builder.WebHost.ConfigureKestrel(options =>
             {

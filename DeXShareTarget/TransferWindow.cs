@@ -21,7 +21,7 @@ namespace DeXShareTarget
     public partial class TransferWindow : Window
     {
         private List<string> files;
-        public string TargetIp { get; set; }
+        public string? TargetIp { get; set; }
         private TextBlock txtStatus;
         private Border progressIndicator;
         private TextBlock txtSpeed;
@@ -229,7 +229,7 @@ namespace DeXShareTarget
             {
                 while (!proc.StandardOutput.EndOfStream)
                 {
-                    string line = proc.StandardOutput.ReadLine();
+                    string? line = proc.StandardOutput.ReadLine();
                     if (line != null && line.Contains("thru join"))
                     {
                         int idx = line.IndexOf("thru join");

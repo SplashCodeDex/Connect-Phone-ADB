@@ -153,7 +153,7 @@ namespace DeXShareTarget.Endpoints
 
             app.MapGet("/download/{fileId}", async (string fileId, HttpContext context) =>
             {
-                if (HostedFiles.TryGetValue(fileId, out string path) && File.Exists(path))
+                if (HostedFiles.TryGetValue(fileId, out string? path) && File.Exists(path))
                 {
                     context.Response.ContentType = "application/octet-stream";
                     await context.Response.SendFileAsync(path);
@@ -262,10 +262,10 @@ namespace DeXShareTarget.Endpoints
                         var root = JsonDocument.Parse(json).RootElement;
                         var info = new RegisterDto
                         {
-                            Alias = root.TryGetProperty("alias", out var a) ? a.GetString() : "Unknown",
-                            DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? dm.GetString() : "Device",
-                            DeviceType = root.TryGetProperty("deviceType", out var dt) ? dt.GetString() : "desktop",
-                            Fingerprint = root.TryGetProperty("fingerprint", out var fp) ? fp.GetString() : Guid.NewGuid().ToString()
+                            Alias = root.TryGetProperty("alias", out var a) ? (a.GetString() ?? "Unknown") : "Unknown",
+                            DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? (dm.GetString() ?? "Device") : "Device",
+                            DeviceType = root.TryGetProperty("deviceType", out var dt) ? (dt.GetString() ?? "desktop") : "desktop",
+                            Fingerprint = root.TryGetProperty("fingerprint", out var fp) ? (fp.GetString() ?? Guid.NewGuid().ToString()) : Guid.NewGuid().ToString()
                         };
 
                         var dev = new DiscoveredDevice

@@ -134,10 +134,10 @@ namespace DeXShareTarget.Services
                             var dto = new RegisterDto
                             {
                                 Fingerprint = fp,
-                                Alias = root.TryGetProperty("alias", out var a) ? a.GetString() : "Unknown",
+                                Alias = root.TryGetProperty("alias", out var a) ? (a.GetString() ?? "Unknown") : "Unknown",
                                 Port = root.TryGetProperty("port", out var p) ? p.GetInt32() : 53317,
-                                DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? dm.GetString() : "Unknown",
-                                DeviceType = root.TryGetProperty("deviceType", out var dt) ? dt.GetString() : "unknown"
+                                DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? (dm.GetString() ?? "Unknown") : "Unknown",
+                                DeviceType = root.TryGetProperty("deviceType", out var dt) ? (dt.GetString() ?? "unknown") : "unknown"
                             };
                             Devices[fp] = new DiscoveredDevice
                             {

@@ -121,7 +121,7 @@ namespace DeXShareTarget
                 {
                     try 
                     {
-                        LocalSendServer.StartAsync();
+                        _ = LocalSendServer.StartAsync();
                     } 
                     catch 
                     {
