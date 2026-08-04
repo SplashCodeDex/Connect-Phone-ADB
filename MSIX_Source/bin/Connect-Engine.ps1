@@ -75,7 +75,7 @@ $script:notifyIcon.Visible = $true
 # would keep running as a zombie that silently ignores every click. Exit loudly instead.
 try {
     $pc = New-Object System.Windows.Markup.ParserContext
-    $pc.BaseUri = New-Object System.Uri("file:///$($xamlPath.Replace('\', '/'))")
+    $pc.BaseUri = New-Object System.Uri("file:///$($xamlFile.Replace('\', '/'))")
     $script:wpfWindow = [System.Windows.Markup.XamlReader]::Parse($xaml, $pc)
     if ($null -eq $script:wpfWindow) { throw "XamlReader returned a null window." }
 } catch {
