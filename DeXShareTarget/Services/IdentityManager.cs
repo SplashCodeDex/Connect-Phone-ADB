@@ -14,6 +14,7 @@ namespace DeXShareTarget.Services
         public static string IdentityHash { get; set; } = "";
         public static string Email { get; set; } = "";
         public static HashSet<string> PairedFingerprints { get; set; } = new();
+        public static Dictionary<string, string> PairedTokens { get; set; } = new();
         private static readonly object _fileLock = new object();
         
         public static void Initialize()
@@ -40,18 +41,21 @@ namespace DeXShareTarget.Services
                     {
                         IdentityHash = doc.RootElement.TryGetProperty("identityHash", out var h) ? h.GetString() ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
                     }
-                    return;
                 } catch {}
             }
-            
-            Fingerprint = Guid.NewGuid().ToString();
-            IdentityHash = Guid.NewGuid().ToString();
-            lock (_fileLock)
+            else
             {
-                File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
+                Fingerprint = Guid.NewGuid().ToString();
+                IdentityHash = Guid.NewGuid().ToString();
+                lock (_fileLock)
+                {
+                    File.WriteAllText(file, JsonSerializer.Serialize(new { fingerprint = Fingerprint, identityHash = IdentityHash, email = Email }));
+                }
             }
             
             LoadPairedDevices();
+            LoadDeviceAliases();
+            LoadPairedTokens();
         }
 
         private static void LoadPairedDevices()
@@ -90,6 +94,56 @@ namespace DeXShareTarget.Services
                 {
                     File.WriteAllText(file, JsonSerializer.Serialize(PairedFingerprints.ToList()));
                 }
+            }
+            if (PairedTokens.Remove(fp))
+            {
+                var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+                var file = Path.Combine(dir, "paired_tokens.json");
+                lock (_fileLock)
+                {
+                    File.WriteAllText(file, JsonSerializer.Serialize(PairedTokens));
+                }
+            }
+        }
+
+        private static void LoadPairedTokens()
+        {
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+            var file = Path.Combine(dir, "paired_tokens.json");
+            if (File.Exists(file))
+            {
+                try {
+                    string json;
+                    lock (_fileLock) { json = File.ReadAllText(file); }
+                    var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+                    if (dict != null) PairedTokens = new Dictionary<string, string>(dict);
+                } catch {}
+            }
+        }
+
+        public static void SavePairedToken(string fp, string token)
+        {
+            PairedTokens[fp] = token;
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+            var file = Path.Combine(dir, "paired_tokens.json");
+            lock (_fileLock)
+            {
+                File.WriteAllText(file, JsonSerializer.Serialize(PairedTokens));
+            }
+        }
+
+        private static void LoadDeviceAliases()
+        {
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DeX");
+            var file = Path.Combine(dir, "paired_aliases.json");
+            if (File.Exists(file))
+            {
+                try {
+                    string json;
+                    lock (_fileLock) { json = File.ReadAllText(file); }
+                    var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+                    if (dict != null) DeviceAliases = new Dictionary<string, string>(dict);
+                } catch {}
             }
         }
 

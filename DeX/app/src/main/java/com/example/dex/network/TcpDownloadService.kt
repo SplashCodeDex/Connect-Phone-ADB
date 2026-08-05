@@ -1,12 +1,12 @@
 package com.example.dex.network
 
 import android.content.Context
+import android.net.Uri
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import java.io.File
 import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,7 +34,7 @@ object TcpDownloadService {
         _downloadState.value = state
     }
 
-    fun download(context: Context, ip: String, port: Int, fileId: String, fileName: String, fileSize: Long, dest: File) {
+    fun download(context: Context, ip: String, port: Int, fileId: String, fileName: String, fileSize: Long, destDirUri: Uri) {
         _downloadState.value = DownloadState(fileName = fileName, isDownloading = true)
         
         val inputData = Data.Builder()
@@ -43,7 +43,7 @@ object TcpDownloadService {
             .putString("fileId", fileId)
             .putString("fileName", fileName)
             .putLong("fileSize", fileSize)
-            .putString("destPath", dest.absolutePath)
+            .putString("destDirUri", destDirUri.toString())
             .build()
 
         val constraints = Constraints.Builder()

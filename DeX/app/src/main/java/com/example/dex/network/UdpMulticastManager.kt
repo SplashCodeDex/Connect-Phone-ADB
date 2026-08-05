@@ -78,9 +78,7 @@ class UdpMulticastManager(
                 val level = if (incomingHash != null && incomingHash == localInfo.identityHash) "Auto-Trusted" else "Guest"
                 onDeviceFound(DiscoveredDevice(packet.address.hostAddress ?: "", dto, System.currentTimeMillis(), level))
 
-                if (json.optString("type") == "pc" || json.optString("deviceType") == "desktop") {
-                    sendReply(packet)
-                }
+                sendReply(packet)
             }
         }
     }

@@ -28,7 +28,8 @@ data class FileDto(
     val size: Long,
     val fileType: String,
     val sha256: String? = null,
-    val preview: String? = null
+    val preview: String? = null,
+    val partialHash: String? = null
 )
 
 @Serializable

@@ -1,8 +1,11 @@
-﻿
+
 $script:btnUpDir = $script:wpfWindow.FindName("btnUpDir")
 $script:currentTarget = ""
 $script:currentDirPath = ""
 $script:adbLsProc = $null
+$script:explorerMode = $false
+$script:grantedFolders = @()
+$script:currentFolderUri = $null
 
 $script:isLoadingDir = $false
 $script:isShowingMenu = $false
@@ -21,6 +24,69 @@ $script:btnUpDir.Add_Click({
         }
     }
 })
+
+# Toggle between Transfer History (local Downloads\DeX) and File Explorer Mode (SAF-granted phone folders)
+$script:btnToggleExplorerMode = $script:wpfWindow.FindName("btnToggleExplorerMode")
+if ($script:btnToggleExplorerMode) {
+    $script:btnToggleExplorerMode.Add_Click({
+        $script:explorerMode = -not $script:explorerMode
+        if ($script:explorerMode) {
+            # File Explorer Mode: load granted folders from the Android device
+            $target = Get-ConnectedDeviceTarget
+            if ($target) {
+                $ip = $target.Split(':')[0]
+                try {
+                    $tokRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/token?ip=$ip" -TimeoutSec 2 -ErrorAction Stop
+                    $headers = @{}
+                    if ($tokRes.token) { $headers["Authorization"] = "Bearer $($tokRes.token)" }
+                    $script:grantedFolders = @(Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/folders" -Headers $headers -TimeoutSec 3 -ErrorAction Stop)
+                } catch {
+                    $script:grantedFolders = @()
+                }
+            } else {
+                $script:grantedFolders = @()
+            }
+            
+            if ($script:grantedFolders.Count -eq 0) {
+                # No folders granted yet — prompt the user to request access
+                $target = Get-ConnectedDeviceTarget
+                if ($target) {
+                    $ip = $target.Split(':')[0]
+                    try {
+                        $tokRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/token?ip=$ip" -TimeoutSec 2 -ErrorAction Stop
+                        $headers = @{}
+                        if ($tokRes.token) { $headers["Authorization"] = "Bearer $($tokRes.token)" }
+                        Invoke-RestMethod -Uri "https://${ip}:53317/api/dex/grant-folder?name=Downloads" -Method Post -Headers $headers -TimeoutSec 3 -ErrorAction Stop | Out-Null
+                        Show-Toast -Title "Folder Access" -Message "Grant a folder on your phone to enable File Explorer mode."
+                    } catch {}
+                }
+                $script:explorerMode = $false
+                $script:btnToggleExplorerMode.Content = "&#xE8B7;"
+                return
+            }
+            
+            # Show granted folders as the file list
+            $script:lbFiles.Items.Clear()
+            foreach ($folder in $script:grantedFolders) {
+                $item = New-Object System.Windows.Controls.ListBoxItem
+                $item.Content = [PSCustomObject]@{ Name = $folder.name; FullPath = $folder.uri; IsDir = $true; Meta = "Phone folder"; Thumb = $null; NoThumb = 'Visible' }
+                $item.ContentTemplate = $script:wpfWindow.Resources["FolderGridTemplate"]
+                $item.Tag = $folder.uri
+                $script:lbFiles.Items.Add($item)
+            }
+            $script:currentDirPath = "Phone Folders"
+            $script:btnToggleExplorerMode.Content = "&#xE8B7;"
+            $script:btnToggleExplorerMode.ToolTip = "Switch to Transfer History"
+        } else {
+            # Transfer History Mode: show local Downloads\DeX
+            $outDir = if ($script:customDownloadPath) { $script:customDownloadPath } else { Join-Path $env:USERPROFILE "Downloads\DeX" }
+            if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
+            Load-Directory $outDir
+            $script:btnToggleExplorerMode.Content = "&#xE8B7;"
+            $script:btnToggleExplorerMode.ToolTip = "Toggle File Explorer Mode"
+        }
+    })
+}
 
 $script:customDownloadPath = ""
 $script:dockTimer = $null
@@ -94,7 +160,7 @@ $script:lbFiles.Add_MouseDoubleClick({
         $outDir = if ($script:customDownloadPath) { 
             $script:customDownloadPath 
         } else { 
-            Join-Path $env:USERPROFILE "Downloads\dex" 
+            Join-Path $env:USERPROFILE "Downloads\DeX" 
         }
         
         try {
@@ -107,10 +173,14 @@ $script:lbFiles.Add_MouseDoubleClick({
         $remotePaths = $fileItems | ForEach-Object { $_.Content.FullPath }
         
         $actionBatchBg = {
-            param($remPaths, $out, $ip)
+            param($remPaths, $out, $ip, $localAppData)
             
             $wc = New-Object System.Net.WebClient
             [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+            try {
+                $tokRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/token?ip=$ip" -TimeoutSec 2 -ErrorAction Stop
+                if ($tokRes.token) { $wc.Headers.Add("Authorization", "Bearer $($tokRes.token)") }
+            } catch {}
             
             foreach ($rp in $remPaths) {
                 try {
@@ -131,13 +201,13 @@ $script:lbFiles.Add_MouseDoubleClick({
         $target = Get-ConnectedDeviceTarget
         if ($target) {
             $ip = $target.Split(':')[0]
-            Start-Job -ScriptBlock $actionBatchBg -ArgumentList $remotePaths, $outDir, $ip
+            Start-Job -ScriptBlock $actionBatchBg -ArgumentList $remotePaths, $outDir, $ip, $env:LOCALAPPDATA
         }
         
         $dispName = if ($script:customDownloadPath) { 
             [System.IO.Path]::GetFileName($script:customDownloadPath) 
         } else { 
-            "Downloads\dex" 
+            "Downloads\DeX" 
         }
         
         if ($fileItems.Count -gt 1) {

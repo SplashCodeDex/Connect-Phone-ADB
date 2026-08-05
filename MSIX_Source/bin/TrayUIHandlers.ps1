@@ -146,7 +146,7 @@ $actionPull = {
     $btnQAPull = $script:wpfWindow.FindName("btnQAPull")
     if ($btnQAPull) { $btnQAPull.IsChecked = $true }
     
-    $outDir = if ($script:customDownloadPath) { $script:customDownloadPath } else { Join-Path $env:USERPROFILE "Downloads\dex" }
+    $outDir = if ($script:customDownloadPath) { $script:customDownloadPath } else { Join-Path $env:USERPROFILE "Downloads\DeX" }
     if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }
     $script:wpfWindow.Dispatcher.InvokeAsync([Action]{ Load-Directory $outDir }) | Out-Null
 }
@@ -256,7 +256,7 @@ $actionSettings = {
     # Update download path
     $txtDlPath = $script:wpfWindow.FindName("txtSettingsDownloadPath")
     if ($txtDlPath) {
-        $path = if ($script:customDownloadPath) { $script:customDownloadPath } else { "Downloads\dex" }
+        $path = if ($script:customDownloadPath) { $script:customDownloadPath } else { "Downloads\DeX" }
         $txtDlPath.Text = $path
     }
 }

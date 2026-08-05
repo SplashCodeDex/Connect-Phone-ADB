@@ -270,7 +270,7 @@ $mdnsTimer.Add_Tick({
                 foreach ($omni in $omniTargets) {
                     $ip = $omni.IPPort -replace ':[0-9]+$',''
                     $existing = $script:omniPeers[$ip]
-                    $trustLevel = if ($omni.IdentityHash -and $omni.IdentityHash -eq "dex_static_placeholder_hash_123") { "Auto-Trusted" } else { "Guest" }
+                    $trustLevel = "Guest"
                     $script:omniPeers[$ip] = @{
                         Name         = $omni.Name
                         LastSeen     = Get-Date

@@ -143,6 +143,7 @@ namespace DeXShareTarget
                 localIp = (socket.LocalEndPoint as IPEndPoint)?.Address.ToString() ?? "127.0.0.1";
             } catch {}
 
+            var hostedIds = new List<string>();
             foreach (var f in files)
             {
                 var fi = new FileInfo(f);
@@ -150,6 +151,7 @@ namespace DeXShareTarget
                 
                 // 1. Host the file in Kestrel
                 LocalSendEndpoints.HostedFiles[fileId] = f;
+                hostedIds.Add(fileId);
 
                 txtStatus.Text = $"Notifying Android to pull {fi.Name}...";
 
@@ -185,7 +187,7 @@ namespace DeXShareTarget
             // Clean up hosted files memory after a while so we don't leak memory (not deleting the physical file)
             _ = Task.Run(async () => {
                 await Task.Delay(TimeSpan.FromMinutes(5));
-                LocalSendEndpoints.HostedFiles.Clear();
+                foreach (var id in hostedIds) LocalSendEndpoints.HostedFiles.TryRemove(id, out _);
             });
         }
 

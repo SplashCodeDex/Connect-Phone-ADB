@@ -20,7 +20,10 @@ class DexService : Service() {
         super.onCreate()
         
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            ServiceCompat.startForeground(this, 1, notificationHelper.getForegroundServiceNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
+            ServiceCompat.startForeground(
+                this, 1, notificationHelper.getForegroundServiceNotification(),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE or ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            )
         } else {
             startForeground(1, notificationHelper.getForegroundServiceNotification())
         }
@@ -49,6 +52,13 @@ class DexService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return START_STICKY
+    }
+
+    override fun onTimeout(startId: Int, fgsType: Int) {
+        // Android 15+ dataSync FGS 6-hour limit: stop gracefully to avoid ForegroundServiceDidNotStopInTimeException
+        if (fgsType and ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC != 0) {
+            stopSelf(startId)
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? {

@@ -2,14 +2,13 @@ package com.example.dex.network
 
 import android.content.Context
 import android.content.pm.ServiceInfo
+import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 import java.nio.channels.SocketChannel
@@ -28,11 +27,9 @@ class DownloadWorker(
         val fileId = inputData.getString("fileId") ?: return@withContext Result.failure()
         val fileName = inputData.getString("fileName") ?: "downloaded_file"
         val fileSize = inputData.getLong("fileSize", 100L)
-        val destPath = inputData.getString("destPath") ?: return@withContext Result.failure()
+        val destDirUri = inputData.getString("destDirUri") ?: return@withContext Result.failure()
 
         if (port == -1) return@withContext Result.failure()
-
-        val dest = File(destPath)
 
         TcpDownloadService.updateState(DownloadState(fileName = fileName, isDownloading = true))
         setForeground(createForegroundInfo(0, "Preparing download..."))
@@ -50,8 +47,12 @@ class DownloadWorker(
                 socketChannel.write(buffer)
             }
 
-            dest.parentFile?.mkdirs()
-            val fileChannel = FileOutputStream(dest).channel
+            val out = SafStorage.openOutputStream(context, Uri.parse(destDirUri), fileName)
+            if (out == null) {
+                socketChannel.close()
+                TcpDownloadService.updateState(DownloadState(fileName = fileName, error = "Cannot write to Downloads/DeX", isDownloading = false))
+                return@withContext Result.failure()
+            }
 
             var downloaded = 0L
             val ioBuffer = ByteBuffer.allocateDirect(81920)
@@ -60,9 +61,8 @@ class DownloadWorker(
 
             while (socketChannel.read(ioBuffer) != -1) {
                 if (isStopped) {
-                    fileChannel.close()
+                    out.close()
                     socketChannel.close()
-                    if (dest.exists()) dest.delete()
                     TcpDownloadService.updateState(DownloadState(fileName = fileName, error = "Download cancelled", isDownloading = false))
                     return@withContext Result.failure()
                 }
@@ -70,9 +70,9 @@ class DownloadWorker(
                 ioBuffer.flip()
                 downloaded += ioBuffer.remaining()
 
-                while (ioBuffer.hasRemaining()) {
-                    fileChannel.write(ioBuffer)
-                }
+                val bytes = ByteArray(ioBuffer.remaining())
+                ioBuffer.get(bytes)
+                out.write(bytes)
                 ioBuffer.clear()
 
                 val now = System.currentTimeMillis()
@@ -86,15 +86,14 @@ class DownloadWorker(
                             isDownloading = true
                         )
                     )
-                    // Note: use setForeground rather than setForegroundAsync for Kotlin
                     setForeground(createForegroundInfo((progress * 100).toInt(), "Downloading: $fileName"))
                     lastUpdateMillis = now
                 }
             }
 
-            fileChannel.close()
+            out.close()
             socketChannel.close()
-            println("TCP Download complete: ${dest.absolutePath}")
+            println("TCP Download complete: $fileName")
             
             TcpDownloadService.updateState(DownloadState(fileName = fileName, progress = 1f, isSuccess = true))
             

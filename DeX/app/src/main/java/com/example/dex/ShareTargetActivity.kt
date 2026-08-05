@@ -3,7 +3,6 @@ package com.example.dex
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -35,8 +34,6 @@ import com.example.dex.network.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import java.util.UUID
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.work.OneTimeWorkRequestBuilder
@@ -304,32 +301,19 @@ class ShareTargetActivity : ComponentActivity() {
     }
 
     private fun saveToSandbox() {
+        val dirUri = SafStorage.getDownloadsDexUri(this)
+        if (dirUri == null) {
+            Toast.makeText(this, "Grant Downloads/DeX folder first", Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    val sandboxDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "DeX")
-                    if (!sandboxDir.exists()) {
-                        sandboxDir.mkdirs()
-                    }
-
                     sharedUris.forEach { uri ->
                         val fileName = getFileName(uri)
-                        val destFile = File(sandboxDir, fileName)
-                        
-                        // Handle collision
-                        var finalFile = destFile
-                        var counter = 1
-                        while (finalFile.exists()) {
-                            val nameWithoutExt = fileName.substringBeforeLast(".")
-                            val ext = if (fileName.contains(".")) "." + fileName.substringAfterLast(".") else ""
-                            finalFile = File(sandboxDir, "$nameWithoutExt ($counter)$ext")
-                            counter++
-                        }
-
                         contentResolver.openInputStream(uri)?.use { input ->
-                            FileOutputStream(finalFile).use { output ->
-                                input.copyTo(output)
-                            }
+                            SafStorage.writeFile(this@ShareTargetActivity, dirUri, fileName, input)
                         }
                     }
                     withContext(Dispatchers.Main) {

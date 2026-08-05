@@ -1,4 +1,4 @@
-﻿if (-not ("ThumbHelper" -as [type])) {
+if (-not ("ThumbHelper" -as [type])) {
     $thumbCode = @"
 using System;
 using System.Runtime.InteropServices;
@@ -123,6 +123,44 @@ function Load-Directory($dirPath) {
                 $ext = if ($i % 4 -eq 0) { ".pdf" } elseif ($i % 3 -eq 0) { ".mp4" } elseif ($i % 2 -eq 0) { ".png" } else { ".jpg" }
                 $lines += "dummy_file_$i$ext"
             }
+        } elseif ($dirPath.StartsWith("content://")) {
+            # SAF File Explorer Mode: browse a granted phone folder via document URI
+            $target = Get-ConnectedDeviceTarget
+            if (-not $target) {
+                $lines = @()
+            } else {
+                $ip = $target.Split(':')[0]
+                try {
+                    $uri = "https://${ip}:53317/api/dex/browse?path=" + [uri]::EscapeDataString($dirPath)
+                    [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+                    
+                    $token = $null
+                    try {
+                        $tokRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/token?ip=$ip" -TimeoutSec 2 -ErrorAction Stop
+                        if ($tokRes.token) { $token = $tokRes.token }
+                    } catch {}
+                    
+                    $headers = @{}
+                    if ($token) { $headers["Authorization"] = "Bearer $token" }
+                    
+                    $res = Invoke-RestMethod -Uri $uri -Method Get -Headers $headers -TimeoutSec 3 -ErrorAction Stop
+                    
+                    $lines = @()
+                    if ($res) {
+                        foreach ($f in $res) {
+                            $name = $f.name
+                            if ($f.isDirectory) {
+                                $lines += "$name/"
+                            } else {
+                                $lines += $name
+                            }
+                        }
+                    }
+                } catch {
+                    Write-Trace "Browse Error: $_"
+                    $lines = @()
+                }
+            }
         } elseif (-not $target) {
             $lines = @()
         } else {
@@ -132,15 +170,10 @@ function Load-Directory($dirPath) {
                 [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
                 
                 $token = $null
-                $trustLevel = if ($script:omniPeers -and $script:omniPeers[$ip]) { $script:omniPeers[$ip].TrustLevel } else { "Guest" }
-                if ($trustLevel -eq "Auto-Trusted") {
-                    $token = "dex_static_placeholder_hash_123"
-                } else {
-                    $settingsPath = Join-Path $PSScriptRoot "..\..\appsettings.json"
-                    if (Test-Path $settingsPath) {
-                        try { $token = (Get-Content $settingsPath -Raw | ConvertFrom-Json -AsHashtable)[$ip] } catch {}
-                    }
-                }
+                try {
+                    $tokRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/token?ip=$ip" -TimeoutSec 2 -ErrorAction Stop
+                    if ($tokRes.token) { $token = $tokRes.token }
+                } catch {}
                 
                 $headers = @{}
                 if ($token) { $headers["Authorization"] = "Bearer $token" }

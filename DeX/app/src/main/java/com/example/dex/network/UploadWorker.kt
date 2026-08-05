@@ -31,6 +31,7 @@ class UploadWorker(
         val urisJson = inputData.getString("uris") ?: return@withContext Result.failure()
 
         val client by inject<ClientEngine>()
+        val deviceConfig by inject<DeviceConfig>()
 
         val uriStrings = try {
             Json.decodeFromString<List<String>>(urisJson)
@@ -66,16 +67,21 @@ class UploadWorker(
         val prepareRequest = PrepareUploadRequestDto(
             info = RegisterDto(
                 alias = "DeX", version = "2.0", deviceModel = "Android",
-                deviceType = "mobile", fingerprint = "dex-fingerprint",
-                port = 53317, protocol = "https", download = true
+                deviceType = "mobile", fingerprint = deviceConfig.fingerprint,
+                port = 53317, protocol = "https", download = true,
+                identityHash = deviceConfig.identityHash
             ),
-            files = fileData.mapValues { (id, d) -> FileDto(id, d.second, d.third, applicationContext.contentResolver.getType(d.first) ?: "application/octet-stream") }
+            files = fileData.mapValues { (id, d) -> 
+                val partial = HashUtils.computePartialHash(applicationContext, d.first, d.third)
+                FileDto(id, d.second, d.third, applicationContext.contentResolver.getType(d.first) ?: "application/octet-stream", partialHash = partial) 
+            }
         )
 
         client.resetUploadState()
 
         val response = client.prepareUpload(ip, port, prepareRequest)
         if (response != null) {
+            
             var successCount = 0
             var previousBytes = 0L
             var index = 1
@@ -84,17 +90,21 @@ class UploadWorker(
                 if (isStopped) return@withContext Result.failure()
                 
                 val token = response.files[id] ?: return@forEach
-                applicationContext.contentResolver.openInputStream(d.first)?.use { stream ->
-                    val success = client.uploadFile(
-                        ip, port, response.sessionId, id, d.second, token, stream, d.third,
-                        fileIndex = index, totalFiles = fileData.size, previousBatchBytes = previousBytes, totalBatchSize = totalBatchSize
-                    ) { aggregateProgress ->
-                        // The callback provides aggregate progress so we can update the notification
-                        val progressInt = (aggregateProgress * 100).toInt()
-                        setForeground(createForegroundInfo(progressInt, applicationContext.getString(R.string.upload_worker_progress, index, fileData.size, d.second)))
-                    }
-                    if (success) {
-                        successCount++
+                if (token == "[SKIP]") {
+                    successCount++
+                } else {
+                    applicationContext.contentResolver.openInputStream(d.first)?.use { stream ->
+                        val success = client.uploadFile(
+                            ip, port, response.sessionId, id, d.second, token, stream, d.third,
+                            fileIndex = index, totalFiles = fileData.size, previousBatchBytes = previousBytes, totalBatchSize = totalBatchSize
+                        ) { aggregateProgress ->
+                            // The callback provides aggregate progress so we can update the notification
+                            val progressInt = (aggregateProgress * 100).toInt()
+                            setForeground(createForegroundInfo(progressInt, applicationContext.getString(R.string.upload_worker_progress, index, fileData.size, d.second)))
+                        }
+                        if (success) {
+                            successCount++
+                        }
                     }
                 }
                 previousBytes += d.third

@@ -1,4 +1,29 @@
 # Changelog
+### [major] Play-Store-Compliant SAF Storage + Trust Overhaul (v6.5.0.0)
+- **[major]** Removed `MANAGE_EXTERNAL_STORAGE` from Android — DeX is now Play-Store compliant. All incoming transfers write to a user-granted `Downloads/DeX` folder via SAF with persisted URI permissions.
+- **[feature]** Added SAF storage layer (`SafStorage.kt`) with persisted `Downloads/DeX` folder grant + opt-in file-explorer folder grants (DCIM, Pictures, Downloads, etc.) via the system folder picker.
+- **[feature]** Reworked `/api/dex/browse` + `/api/dex/pull` to be SAF-backed — the desktop can only browse/pull within folders the Android user explicitly granted.
+- **[feature]** Desktop explorer panel now shows **transfer history** (local `Downloads\DeX` files) by default, with a new toggle button beside the search bar to switch into File Explorer mode (SAF-granted phone folders).
+- **[feature]** Unified all DeX transfer destinations to `Downloads/DeX` on both PC and Android (was `Downloads` root on PC, `Downloads\dex` lowercase in PowerShell).
+- **[fix]** Fixed hardcoded `"dex-fingerprint"` in `UploadWorker.kt` — Android now sends its real fingerprint + identityHash, unbreaking Android→PC transfers.
+- **[fix]** Fixed `IdentityManager.Initialize()` early-return that forgot all paired devices + aliases on every restart.
+- **[fix]** Fixed desktop auto-trust: UDP/mDNS discovery now parses `identityHash` (was always false), and `/info` now includes it on both sides.
+- **[fix]** Fixed Android `DeviceConfig` email-clear bug that regenerated a new identity hash, breaking trust.
+- **[fix]** Fixed Android `notify-download` writing to tmp dir — now goes to `Downloads/DeX`.
+- **[fix]** Fixed Android `pair-prompt` single-slot race + infinite await (added busy rejection + 60s timeout).
+- **[fix]** Fixed desktop `pair-prompt` TCS/PendingPairs leak on client disconnect.
+- **[fix]** Fixed PC→PC transfer: added missing `/notify-download` endpoint to the desktop server.
+- **[fix]** Fixed Android `verifyToken` vulnerability — the publicly-advertised fingerprint is no longer accepted as a Bearer token; replaced with per-pairing shared secrets.
+- **[fix]** Added auth to desktop `/api/dex/clipboard` (was open to any LAN device).
+- **[fix]** Removed hardcoded OmniMesh trust hash `"dex_static_placeholder_hash_123"`.
+- **[fix]** Fixed Android→Android UDP discovery (Android now replies to all devices, not just desktops).
+- **[fix]** Fixed desktop device-list duplicate keys (ping stored by IP, discovery by fingerprint).
+- **[fix]** Fixed `HostedFiles.Clear()` breaking in-progress transfers (now removes only this window's fileIds).
+- **[fix]** Fixed Android `prepare-upload` infinite await + never-expiring sessions (60s timeout + 10min cleanup).
+- **[fix]** Android 15 `dataSync` FGS 6-hour timeout: added `onTimeout()` + `stopSelf()` in `DexService`.
+- **[fix]** Android 14 FGS type enforcement: combined `connectedDevice|dataSync` types + `tools:node="merge"` on WorkManager's `SystemForegroundService`.
+- **[fix]** Added `NEARBY_WIFI_DEVICES` (neverForLocation) + `ACCESS_FINE_LOCATION` (maxSdk 32) permissions with runtime requests.
+- **[upgrade]** Ktor 3.0.1 → 3.5.1, kotlinx.coroutines 1.10.2 → 1.11.0, WorkManager 2.10.0 → 2.11.2, DataStore 1.1.1 → 1.2.1, Compose BOM 2026.03.01 → 2026.06.01, Lifecycle 2.10.0 → 2.11.0.
 ### [patch] Android 14+ Foreground Service Hardening
 - **[patch]** Hardened `DexService` with explicit `ServiceCompat.startForeground` typing to prevent silent API 34+ crashes.
 - **[patch]** Added dynamic Android 13 `POST_NOTIFICATIONS` permission request to guarantee transfer progress bar visibility.

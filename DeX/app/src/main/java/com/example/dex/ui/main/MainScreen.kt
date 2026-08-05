@@ -68,7 +68,7 @@ fun MainScreen(
         }
     }
     
-    val currentPairingPin by com.example.dex.network.AuthState.currentPairingPin.collectAsStateWithLifecycle()
+    val incomingPairRequest by com.example.dex.network.AuthState.incomingPairRequest.collectAsStateWithLifecycle()
 
     val launchQrScanner = {
         val options = com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
@@ -209,11 +209,18 @@ fun MainScreen(
         )
     }
     
-    currentPairingPin?.let { pin ->
+    incomingPairRequest?.let { req ->
         PairingRequestDialog(
-            pin = pin,
-            onDismiss = { com.example.dex.network.AuthState.currentPairingPin.value = null },
-            onScanInstead = { launchQrScanner() }
+            alias = req.alias,
+            pin = req.pin,
+            onAccept = { 
+                req.deferred.complete(true)
+                com.example.dex.network.AuthState.incomingPairRequest.value = null
+            },
+            onReject = { 
+                req.deferred.complete(false)
+                com.example.dex.network.AuthState.incomingPairRequest.value = null
+            }
         )
     }
 }

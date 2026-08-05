@@ -167,10 +167,12 @@ class ClientEngine(engine: HttpClientEngine? = null) {
         }
     }
 
-    suspend fun sendClipboard(ip: String, port: Int, text: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun sendClipboard(ip: String, port: Int, text: String, targetFingerprint: String? = null): Boolean = withContext(Dispatchers.IO) {
         try {
+            val token = targetFingerprint?.let { AuthState.pairedTokens[it] }
             val response = client.post("https://$ip:$port/api/dex/clipboard") {
                 contentType(ContentType.Text.Plain)
+                if (!token.isNullOrEmpty()) header(HttpHeaders.Authorization, "Bearer $token")
                 setBody(text)
             }
             response.status.isSuccess()

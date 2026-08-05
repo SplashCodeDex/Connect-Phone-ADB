@@ -101,7 +101,7 @@ dependencies {
   implementation(libs.ktor.serialization.kotlinx.json)
 
     // Storage
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
 
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")

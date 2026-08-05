@@ -44,9 +44,9 @@ fun NetworkErrorDialog(error: String, onDismiss: () -> Unit, title: String = str
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PairingRequestDialog(pin: String, onDismiss: () -> Unit, onScanInstead: () -> Unit) {
+fun PairingRequestDialog(alias: String, pin: String, onAccept: () -> Unit, onReject: () -> Unit) {
     BasicAlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onReject,
         modifier = Modifier.fillMaxWidth()
     ) {
         Surface(
@@ -66,6 +66,12 @@ fun PairingRequestDialog(pin: String, onDismiss: () -> Unit, onScanInstead: () -
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
+                    "From: $alias",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
                     stringResource(R.string.verify_pin),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -84,23 +90,19 @@ fun PairingRequestDialog(pin: String, onDismiss: () -> Unit, onScanInstead: () -
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Button(
-                    onClick = onScanInstead,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(12.dp)
-                ) {
-                    Icon(Icons.Default.QrCodeScanner, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.scan_qr_instead))
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                TextButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    OutlinedButton(
+                        onClick = onReject,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
+                    }
+                    Button(
+                        onClick = onAccept,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Accept")
+                    }
                 }
             }
         }

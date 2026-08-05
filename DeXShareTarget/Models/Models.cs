@@ -30,6 +30,7 @@ namespace DeXShareTarget.Models
         [JsonPropertyName("fileName")] public string FileName { get; set; } = "";
         [JsonPropertyName("size")] public long Size { get; set; }
         [JsonPropertyName("fileType")] public string FileType { get; set; } = "";
+        [JsonPropertyName("partialHash")] public string? PartialHash { get; set; }
     }
 
     public class PrepareUploadResponseDto
@@ -43,6 +44,7 @@ namespace DeXShareTarget.Models
         [JsonPropertyName("alias")] public string Alias { get; set; } = "";
         [JsonPropertyName("fingerprint")] public string Fingerprint { get; set; } = "";
         [JsonPropertyName("pin")] public string Pin { get; set; } = "";
+        [JsonPropertyName("token")] public string? Token { get; set; }
     }
 
     public class DiscoveredDevice

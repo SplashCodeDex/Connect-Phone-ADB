@@ -19,6 +19,7 @@ class RestServerEngine(
     private var server: EmbeddedServer<*, *>? = null
 
     fun startServer() {
+        DeviceManager.init(context)
         CoroutineScope(Dispatchers.IO).launch {
             val keyStorePassword = "localsend".toCharArray()
             val keyStore = SecurityProvider.generateKeyStore(keyStorePassword)

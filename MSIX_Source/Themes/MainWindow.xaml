@@ -74,6 +74,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 
                 <Button Name="btnUpDir" Grid.Column="0" Background="{DynamicResource AccentBrush}" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Content="&#xE898;" Cursor="Hand" ToolTip="Up Directory" Margin="0,0,12,0" VerticalAlignment="Center" Padding="12" Visibility="Collapsed">
@@ -97,7 +98,17 @@
                     </Grid>
                 </Border>
                 
-                <Button Name="btnProfileTop" Grid.Column="2" Style="{StaticResource SpatialListItem}" Margin="12,0,12,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
+                <Button Name="btnToggleExplorerMode" Grid.Column="2" Background="{DynamicResource AccentBrush}" BorderThickness="0" Foreground="{DynamicResource PrimaryTextBrush}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Content="&#xE8B7;" Cursor="Hand" ToolTip="Toggle File Explorer Mode" Margin="12,0,0,0" VerticalAlignment="Center" Padding="12">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="18">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Name="btnProfileTop" Grid.Column="3" Style="{StaticResource SpatialListItem}" Margin="12,0,12,0" ToolTip="Settings" VerticalAlignment="Center" Padding="0" Visibility="Collapsed" Opacity="0">
                     <Grid>
                         <Ellipse Width="34" Height="34">
                             <Ellipse.Fill>
@@ -186,7 +197,7 @@
                 </Border.RenderTransform>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8F4;" Foreground="{DynamicResource SecondaryBrush}" FontSize="14" VerticalAlignment="Center" Margin="0,0,8,0" />
-                    <TextBlock Name="txtDownloadToast" Text="Saved to Downloads\dex" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center" Margin="0,0,12,0" />
+                    <TextBlock Name="txtDownloadToast" Text="Saved to Downloads\DeX" FontSize="13" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Medium" VerticalAlignment="Center" Margin="0,0,12,0" />
                     <Button Name="btnChangeDownloadPath" Content="Change" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryBrush}" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>
@@ -378,7 +389,7 @@
                                     <TextBlock Text="&#xE8F4;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,14,0" />
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Text="Download Location" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}" />
-                                        <TextBlock Name="txtSettingsDownloadPath" Text="Downloads\dex" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        <TextBlock Name="txtSettingsDownloadPath" Text="Downloads\DeX" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
                                     </StackPanel>
                                     <TextBlock Grid.Column="2" Text="&#xE76B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
                                 </Grid>

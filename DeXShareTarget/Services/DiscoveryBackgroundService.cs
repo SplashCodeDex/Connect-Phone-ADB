@@ -87,17 +87,18 @@ namespace DeXShareTarget.Services
                         {
                             var fp = txt.Strings.FirstOrDefault(x => x.StartsWith("fingerprint="))?.Split('=')[1];
                             var alias = txt.Strings.FirstOrDefault(x => x.StartsWith("alias="))?.Split('=')[1];
+                            var identityHash = txt.Strings.FirstOrDefault(x => x.StartsWith("identityHash="))?.Split('=')[1];
                             
                             if (!string.IsNullOrEmpty(fp) && fp != myInfo.Fingerprint)
                             {
-                                var dto = new RegisterDto { Fingerprint = fp, Alias = alias ?? "Unknown", Port = srv.Port };
+                                var dto = new RegisterDto { Fingerprint = fp, Alias = alias ?? "Unknown", Port = srv.Port, IdentityHash = identityHash };
                                 Devices[fp] = new DiscoveredDevice
                                 {
                                     Ip = a.Address.ToString(),
                                     Info = dto,
                                     LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                                     IsPaired = IdentityManager.PairedFingerprints.Contains(fp),
-                                    IsAutoTrusted = false // Can't easily tell from mDNS without querying, fallback to UDP
+                                    IsAutoTrusted = !string.IsNullOrEmpty(identityHash) && identityHash == myInfo.IdentityHash
                                 };
                             }
                         }
@@ -137,7 +138,8 @@ namespace DeXShareTarget.Services
                                 Alias = root.TryGetProperty("alias", out var a) ? (a.GetString() ?? "Unknown") : "Unknown",
                                 Port = root.TryGetProperty("port", out var p) ? p.GetInt32() : 53317,
                                 DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? (dm.GetString() ?? "Unknown") : "Unknown",
-                                DeviceType = root.TryGetProperty("deviceType", out var dt) ? (dt.GetString() ?? "unknown") : "unknown"
+                                DeviceType = root.TryGetProperty("deviceType", out var dt) ? (dt.GetString() ?? "unknown") : "unknown",
+                                IdentityHash = root.TryGetProperty("identityHash", out var ih) ? ih.GetString() : null
                             };
                             Devices[fp] = new DiscoveredDevice
                             {

@@ -28,7 +28,7 @@ class MainScreenViewModel(
   
   fun sendClipboard(device: DiscoveredDevice, text: String, onResult: (Boolean) -> Unit) {
       viewModelScope.launch {
-          val success = clientEngine.sendClipboard(device.ip, device.info.port, text)
+          val success = clientEngine.sendClipboard(device.ip, device.info.port, text, device.info.fingerprint)
           onResult(success)
       }
   }

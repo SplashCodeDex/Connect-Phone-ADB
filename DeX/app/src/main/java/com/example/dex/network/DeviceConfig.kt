@@ -95,7 +95,7 @@ class DeviceConfig(private val context: Context) {
             _identityHashFlow.value = newHash
             context.dataStore.edit { it[IDENTITY_HASH_KEY] = newHash }
         } else {
-            val newHash = if (savedHash != null && savedHash.contains("-")) {
+            val newHash = if (savedHash != null) {
                 savedHash
             } else {
                 val generated = UUID.randomUUID().toString()
