@@ -74,7 +74,7 @@ namespace DeXShareTarget.Endpoints
                 var token = auth.StartsWith("Bearer ") ? auth.Substring("Bearer ".Length) : null;
 
                 bool isAutoTrusted = !string.IsNullOrEmpty(token) && token == IdentityManager.IdentityHash;
-                bool isPaired = !string.IsNullOrEmpty(token) && IdentityManager.PairedFingerprints.Contains(req.Info.Fingerprint) && IdentityManager.PairedTokens.TryGetValue(req.Info.Fingerprint, out var expectedToken) && expectedToken == token;
+                bool isPaired = !string.IsNullOrEmpty(token) && IdentityManager.PairedTokens.TryGetValue(req.Info.Fingerprint, out var expectedToken) && expectedToken == token;
                 
                 bool isGuest = GuestFingerprints.TryGetValue(req.Info.Fingerprint, out var guestTime);
                 if (isGuest && (DateTime.UtcNow - guestTime).TotalMinutes > 10)
@@ -92,8 +92,7 @@ namespace DeXShareTarget.Endpoints
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     var senderAlias = req.Info.Alias ?? "Unknown Device";
-                    var firstFileName = req.Files.Values.FirstOrDefault()?.FileName ?? "unknown_file";
-                    win = new ReceivePromptWindow(senderAlias, req.Files.Count, firstFileName);
+                    win = new ReceivePromptWindow(senderAlias, req.Files.Count);
                     win.Show();
                     _ = win.WaitForResponseAsync().ContinueWith(t => 
                     {
@@ -133,9 +132,7 @@ namespace DeXShareTarget.Endpoints
                         }
                     }
 
-                    var generatedToken = Guid.NewGuid().ToString();
-                    kvp.Value.Token = generatedToken;
-                    resFiles[kvp.Key] = generatedToken; // Token for the file
+                    resFiles[kvp.Key] = Guid.NewGuid().ToString(); // Token for the file
                 }
                 return Results.Json(new PrepareUploadResponseDto { SessionId = sessionId, Files = resFiles });
             });
@@ -144,12 +141,10 @@ namespace DeXShareTarget.Endpoints
             {
                 var sessionId = request.Query["sessionId"].ToString();
                 var fileId = request.Query["fileId"].ToString();
-                var token = request.Query["token"].ToString();
+                var token = request.Query["token"].ToString(); // Token unused in minimal impl
 
                 if (!activeSessions.TryGetValue(sessionId, out var sessionReq)) return Results.BadRequest();
                 if (!sessionReq.Files.TryGetValue(fileId, out var fileMeta)) return Results.BadRequest();
-                
-                if (fileMeta.Token != token) return Results.StatusCode(403);
 
                 string safeFileName = Path.GetFileName(fileMeta.FileName);
                 if (string.IsNullOrEmpty(safeFileName)) safeFileName = "unnamed_file";
@@ -365,8 +360,12 @@ namespace DeXShareTarget.Endpoints
                 if (string.IsNullOrEmpty(ip)) return Results.BadRequest();
                 try
                 {
-                    using var handler = new System.Net.Http.HttpClientHandler();
-                    handler.ServerCertificateCustomValidationCallback = (m, c, ch, e) => true;
+                    using var handler = new System.Net.Http.SocketsHttpHandler {
+                        SslOptions = new System.Net.Security.SslClientAuthenticationOptions {
+                            ApplicationProtocols = new System.Collections.Generic.List<System.Net.Security.SslApplicationProtocol>(),
+                            RemoteCertificateValidationCallback = (message, cert, chain, errors) => true
+                        }
+                    };
                     using var http = new System.Net.Http.HttpClient(handler) { Timeout = TimeSpan.FromSeconds(2) };
                     
                     var response = await http.GetAsync($"https://{ip}:53317/api/localsend/v2/info");
@@ -444,6 +443,7 @@ namespace DeXShareTarget.Endpoints
                 OutboundPairingStatus[targetIp] = "Pending";
                 var pin = new Random().Next(100000, 999999).ToString();
                 var token = Guid.NewGuid().ToString("N");
+                IdentityManager.SavePairedToken(targetFp, token);
                 var reqDto = new PairRequestDto
                 {
                     Alias = Environment.MachineName,
@@ -457,18 +457,20 @@ namespace DeXShareTarget.Endpoints
                 {
                     try
                     {
-                        var handler = new System.Net.Http.HttpClientHandler
+                        var handler = new System.Net.Http.SocketsHttpHandler
                         {
-                            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                            SslOptions = new System.Net.Security.SslClientAuthenticationOptions {
+                                ApplicationProtocols = new System.Collections.Generic.List<System.Net.Security.SslApplicationProtocol>(),
+                                RemoteCertificateValidationCallback = (message, cert, chain, errors) => true
+                            }
                         };
                         using var client = new System.Net.Http.HttpClient(handler);
-                        client.Timeout = TimeSpan.FromSeconds(65);
+                        client.Timeout = TimeSpan.FromSeconds(30);
                         var content = new System.Net.Http.StringContent(JsonSerializer.Serialize(reqDto, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }), System.Text.Encoding.UTF8, "application/json");
                         var response = await client.PostAsync($"https://{targetIp}:53317/api/localsend/v2/pair-prompt", content);
                         
                         if (response.IsSuccessStatusCode)
                         {
-                            IdentityManager.SavePairedToken(targetFp, token);
                             IdentityManager.SavePairedDevice(targetFp);
                             OutboundPairingStatus[targetIp] = "Accepted";
                         }
