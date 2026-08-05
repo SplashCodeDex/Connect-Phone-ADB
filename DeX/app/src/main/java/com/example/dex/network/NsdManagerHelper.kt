@@ -33,6 +33,8 @@ class NsdManagerHelper(
             setAttribute("alias", localInfo.alias)
             setAttribute("fingerprint", localInfo.fingerprint)
             setAttribute("identityHash", localInfo.identityHash)
+            setAttribute("deviceModel", localInfo.deviceModel)
+            setAttribute("deviceType", localInfo.deviceType)
         }
         
         registrationListener = object : NsdManager.RegistrationListener {
@@ -92,12 +94,14 @@ class NsdManagerHelper(
         
         val alias = serviceInfo.attributes["alias"]?.let { String(it) } ?: "Unknown"
         val incomingHash = serviceInfo.attributes["identityHash"]?.let { String(it) }
+        val deviceModel = serviceInfo.attributes["deviceModel"]?.let { String(it) } ?: "Unknown"
+        val deviceType = serviceInfo.attributes["deviceType"]?.let { String(it) } ?: "unknown"
         
         val dto = RegisterDto(
             alias = alias,
             version = "2.0",
-            deviceModel = "Unknown",
-            deviceType = "unknown",
+            deviceModel = deviceModel,
+            deviceType = deviceType,
             fingerprint = fp,
             port = serviceInfo.port,
             protocol = "https",

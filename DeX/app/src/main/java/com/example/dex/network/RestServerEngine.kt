@@ -38,7 +38,7 @@ class RestServerEngine(
                     json()
                 }
                 routing {
-                    deviceRoutes(deviceConfig)
+                    deviceRoutes(deviceConfig, context)
                     fileTransferRoutes(context, deviceConfig, notificationHelper)
                 }
             }.start(wait = true)

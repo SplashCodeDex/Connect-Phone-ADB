@@ -57,16 +57,40 @@ namespace DeXShareTarget.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+          try
+          {
             var myInfo = new RegisterDto { 
                 Fingerprint = IdentityManager.Fingerprint,
-                IdentityHash = IdentityManager.IdentityHash
+                IdentityHash = IdentityManager.IdentityHash,
+                DeviceModel = "Windows PC",
+                DeviceType = "desktop"
             };
+
+            // Cache local IPs for self-discovery filtering
+            var localIPs = new HashSet<string>();
+            try {
+                foreach (var iface in NetworkInterface.GetAllNetworkInterfaces()) {
+                    if (iface.OperationalStatus != OperationalStatus.Up) continue;
+                    foreach (var addr in iface.GetIPProperties().UnicastAddresses) {
+                        if (addr.Address.AddressFamily == AddressFamily.InterNetwork)
+                            localIPs.Add(addr.Address.ToString());
+                    }
+                }
+            } catch { }
+
+            bool IsSelf(string? fp, string? alias, string? senderIp = null) {
+                if (!string.IsNullOrEmpty(fp) && fp == myInfo.Fingerprint) return true;
+                if (!string.IsNullOrEmpty(alias) && alias == myInfo.Alias && !string.IsNullOrEmpty(senderIp) && localIPs.Contains(senderIp)) return true;
+                return false;
+            }
 
             using var mdns = new Makaretu.Dns.MulticastService();
             var service = new Makaretu.Dns.ServiceProfile(myInfo.Alias, "_dex._udp", (ushort)53317);
             service.AddProperty("alias", myInfo.Alias);
             service.AddProperty("fingerprint", myInfo.Fingerprint);
             service.AddProperty("identityHash", myInfo.IdentityHash);
+            service.AddProperty("deviceModel", myInfo.DeviceModel);
+            service.AddProperty("deviceType", myInfo.DeviceType);
             
             var sd = new Makaretu.Dns.ServiceDiscovery(mdns);
             sd.Advertise(service);
@@ -88,13 +112,16 @@ namespace DeXShareTarget.Services
                             var fp = txt.Strings.FirstOrDefault(x => x.StartsWith("fingerprint="))?.Split('=')[1];
                             var alias = txt.Strings.FirstOrDefault(x => x.StartsWith("alias="))?.Split('=')[1];
                             var identityHash = txt.Strings.FirstOrDefault(x => x.StartsWith("identityHash="))?.Split('=')[1];
+                            var deviceModel = txt.Strings.FirstOrDefault(x => x.StartsWith("deviceModel="))?.Split('=')[1] ?? "Unknown";
+                            var deviceType = txt.Strings.FirstOrDefault(x => x.StartsWith("deviceType="))?.Split('=')[1] ?? "unknown";
+                            var senderIp = a.Address.ToString();
                             
-                            if (!string.IsNullOrEmpty(fp) && fp != myInfo.Fingerprint)
+                            if (!string.IsNullOrEmpty(fp) && !IsSelf(fp, alias, senderIp))
                             {
-                                var dto = new RegisterDto { Fingerprint = fp, Alias = alias ?? "Unknown", Port = srv.Port, IdentityHash = identityHash };
+                                var dto = new RegisterDto { Fingerprint = fp, Alias = alias ?? "Unknown", Port = srv.Port, IdentityHash = identityHash, DeviceModel = deviceModel, DeviceType = deviceType };
                                 Devices[fp] = new DiscoveredDevice
                                 {
-                                    Ip = a.Address.ToString(),
+                                    Ip = senderIp,
                                     Info = dto,
                                     LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                                     IsPaired = IdentityManager.PairedFingerprints.Contains(fp),
@@ -130,12 +157,14 @@ namespace DeXShareTarget.Services
                         var doc = JsonDocument.Parse(msg);
                         var root = doc.RootElement;
                         var fp = root.TryGetProperty("fingerprint", out var f) ? f.GetString() : "";
-                        if (!string.IsNullOrEmpty(fp) && fp != myInfo.Fingerprint)
+                        var senderIp = result.RemoteEndPoint.Address.ToString();
+                        var alias = root.TryGetProperty("alias", out var al) ? al.GetString() : null;
+                        if (!string.IsNullOrEmpty(fp) && !IsSelf(fp, alias, senderIp))
                         {
                             var dto = new RegisterDto
                             {
                                 Fingerprint = fp,
-                                Alias = root.TryGetProperty("alias", out var a) ? (a.GetString() ?? "Unknown") : "Unknown",
+                                Alias = alias ?? "Unknown",
                                 Port = root.TryGetProperty("port", out var p) ? p.GetInt32() : 53317,
                                 DeviceModel = root.TryGetProperty("deviceModel", out var dm) ? (dm.GetString() ?? "Unknown") : "Unknown",
                                 DeviceType = root.TryGetProperty("deviceType", out var dt) ? (dt.GetString() ?? "unknown") : "unknown",
@@ -143,38 +172,45 @@ namespace DeXShareTarget.Services
                             };
                             Devices[fp] = new DiscoveredDevice
                             {
-                                Ip = result.RemoteEndPoint.Address.ToString(),
+                                Ip = senderIp,
                                 Info = dto,
                                 LastSeen = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                                 IsPaired = IdentityManager.PairedFingerprints.Contains(fp),
                                 IsAutoTrusted = !string.IsNullOrEmpty(dto.IdentityHash) && dto.IdentityHash == myInfo.IdentityHash
                             };
                         }
-                    } catch { }
+                    } catch (OperationCanceledException) { break; } catch { }
                 }
             }, stoppingToken);
 
             _ = Task.Run(async () =>
             {
-                var targetEp = new IPEndPoint(multicastAddress, 53317);
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    try { await udp.SendAsync(myBytes, myBytes.Length, targetEp); } catch { }
+                  try
+                  {
+                    myInfo.IdentityHash = IdentityManager.IdentityHash;
+                    var dynamicJson = JsonSerializer.Serialize(myInfo);
+                    var dynamicBytes = Encoding.UTF8.GetBytes(dynamicJson);
+
+                    try { await udp.SendAsync(dynamicBytes, dynamicBytes.Length, new IPEndPoint(multicastAddress, 53317)); } catch { }
                     foreach (var ep in GetDirectedBroadcasts(53317))
                     {
-                        try { await udp.SendAsync(myBytes, myBytes.Length, ep); } catch { }
+                        try { await udp.SendAsync(dynamicBytes, dynamicBytes.Length, ep); } catch { }
                     }
                     await Task.Delay(2000, stoppingToken);
+                  } catch (OperationCanceledException) { break; } catch { }
                 }
             }, stoppingToken);
             
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(2000, stoppingToken);
+                try { await Task.Delay(2000, stoppingToken); } catch (OperationCanceledException) { break; }
             }
             
             sd.Unadvertise(service);
             mdns.Stop();
+          } catch (OperationCanceledException) { /* normal shutdown */ } catch { /* prevent host crash */ }
         }
     }
 }

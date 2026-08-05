@@ -66,7 +66,7 @@ class UploadWorker(
 
         val prepareRequest = PrepareUploadRequestDto(
             info = RegisterDto(
-                alias = "DeX", version = "2.0", deviceModel = "Android",
+                alias = getDeviceName(applicationContext), version = "2.0", deviceModel = android.os.Build.MODEL ?: "Android",
                 deviceType = "mobile", fingerprint = deviceConfig.fingerprint,
                 port = 53317, protocol = "https", download = true,
                 identityHash = deviceConfig.identityHash
@@ -79,7 +79,9 @@ class UploadWorker(
 
         client.resetUploadState()
 
-        val response = client.prepareUpload(ip, port, prepareRequest)
+        val targetFingerprint = inputData.getString("targetFingerprint")
+        val token = targetFingerprint?.let { AuthState.pairedTokens[it] }
+        val response = client.prepareUpload(ip, port, prepareRequest, token)
         if (response != null) {
             
             var successCount = 0

@@ -158,6 +158,19 @@ if ($global:AppThemeMode -eq "System") {
 
     # Load UI Bindings in current scope
     . "$PSScriptRoot\TrayUIBindings.ps1"
+
+[System.Net.NetworkInformation.NetworkAddressChangedEventHandler]$script:networkChangeHandler = {
+    param($sender, $e)
+    # Ping the C# host to flush its UDP list cache
+    try { Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:53318/local/devices/flush" -TimeoutSec 1 } catch { }
+    if ($script:wpfWindow -and $script:wpfWindow.Dispatcher) {
+        $script:wpfWindow.Dispatcher.Invoke([Action]{
+            $icUdp = $script:wpfWindow.FindName("icUdpPeers")
+            if ($icUdp) { $icUdp.ItemsSource = @() }
+        })
+    }
+}
+[System.Net.NetworkInformation.NetworkChange]::add_NetworkAddressChanged($script:networkChangeHandler)
 # Passive sync initial state on startup
 $script:AutoConnectEnabled = Get-AutoConnectStatus
 Update-WpfUI
@@ -216,6 +229,7 @@ $script:mdnsJob = Start-MdnsDiscovery -Queue $script:mdnsQueue
 $mdnsTimer = New-Object System.Windows.Threading.DispatcherTimer
 $mdnsTimer.Interval = [TimeSpan]::FromSeconds(2)
 $mdnsTimer.Add_Tick({
+  try {
     # 1. Check Transfer Server Job
         $t = $null
         while ($script:transferQueue.TryDequeue([ref]$t)) {
@@ -231,6 +245,7 @@ $mdnsTimer.Add_Tick({
         }
         
         # 2. Check Discovery Job
+        $livePeers = @()
         $received = @()
         $m = $null
         while ($script:mdnsQueue.TryDequeue([ref]$m)) {
@@ -320,8 +335,42 @@ $mdnsTimer.Add_Tick({
                     }
                 }
                 
-                $ic = $script:wpfWindow.FindName("icLivePeers")
-                if ($ic) { $ic.ItemsSource = $livePeers }
+                # Only update icLivePeers when the device set actually changes
+                $newLiveFP = ($livePeers | ForEach-Object { "$($_['IP']):$($_['Name'])" } | Sort-Object) -join ','
+                if ($newLiveFP -ne $script:lastLivePeersFingerprint) {
+                    $ic = $script:wpfWindow.FindName("icLivePeers")
+                    if ($ic) {
+                        # Animate out departing items before swapping
+                        $oldIPs = @()
+                        if ($ic.ItemsSource) { $oldIPs = @($ic.ItemsSource | ForEach-Object { $_['IP'] }) }
+                        $newIPs = @($livePeers | ForEach-Object { $_['IP'] })
+                        $departing = @($oldIPs | Where-Object { $_ -notin $newIPs })
+                        if ($departing.Count -gt 0) {
+                            foreach ($container in @(0..($ic.Items.Count - 1) | ForEach-Object { $ic.ItemContainerGenerator.ContainerFromIndex($_) } | Where-Object { $_ })) {
+                                $item = $ic.ItemContainerGenerator.ItemFromContainer($container)
+                                if ($item -and $item['IP'] -and $departing -contains $item['IP']) {
+                                    $fadeOut = New-Object System.Windows.Media.Animation.DoubleAnimation
+                                    $fadeOut.To = 0; $fadeOut.Duration = [TimeSpan]::FromMilliseconds(300)
+                                    $container.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeOut)
+                                }
+                            }
+                            # Schedule the actual swap after fade-out completes
+                            $timer = New-Object System.Windows.Threading.DispatcherTimer
+                            $timer.Interval = [TimeSpan]::FromMilliseconds(320)
+                            $capturedPeers = $livePeers
+                            $capturedIc = $ic
+                            $timer.Add_Tick({
+                                param($s, $e)
+                                $capturedIc.ItemsSource = $capturedPeers
+                                $s.Stop()
+                            }.GetNewClosure())
+                            $timer.Start()
+                        } else {
+                            $ic.ItemsSource = $livePeers
+                        }
+                    }
+                    $script:lastLivePeersFingerprint = $newLiveFP
+                }
                 
             }
 
@@ -350,8 +399,10 @@ $mdnsTimer.Add_Tick({
                     if ($script:wpfWindow.FindName("pinViewPanel").Visibility -ne 'Visible') {
                         $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing Request"
                         $script:wpfWindow.FindName("txtPinSubtitle").Text = "from $($req.alias)"
-                        $script:wpfWindow.FindName("txtPinCode").Text = $req.pin
-                        $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for you to accept..."
+                        $script:wpfWindow.FindName("txtPinCode").Visibility = 'Collapsed'
+                        $script:wpfWindow.FindName("txtPinInput").Visibility = 'Visible'
+                        $script:wpfWindow.FindName("txtPinInput").Text = ""
+                        $script:wpfWindow.FindName("txtPinStatus").Text = "Enter the PIN shown on their screen:"
                         
                         $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Visible'
                         $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Visible'
@@ -370,14 +421,13 @@ $mdnsTimer.Add_Tick({
             # This runs INDEPENDENTLY of mDNS — every tick, unconditionally.
             try {
                 $udpRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/devices" -TimeoutSec 2 -ErrorAction Stop
-                if ($udpRes) {
+                if ($null -ne $udpRes) {
                     $icUdp = $script:wpfWindow.FindName("icUdpPeers")
                     if ($icUdp) {
                         $liveUdp = @()
-                        $updatedLivePeers = $false
                         foreach ($p in $udpRes) {
                             $dt = [datetimeOffset]::FromUnixTimeMilliseconds($p.lastSeen).UtcDateTime
-                            if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(30)) {
+                            if (([datetime]::UtcNow) - $dt -lt [timespan]::FromSeconds(10)) {
                                 if ($p.isPaired -or $p.isAutoTrusted) {
                                     if (-not $script:omniPeers.Contains($p.ip)) {
                                         $livePeers += @{
@@ -386,7 +436,6 @@ $mdnsTimer.Add_Tick({
                                             IconGlyph = "$([char]0xE8EA)"
                                             IP        = $p.ip
                                         }
-                                        $updatedLivePeers = $true
                                     }
                                 } else {
                                     if (-not $script:omniPeers.Contains($p.ip)) {
@@ -402,20 +451,54 @@ $mdnsTimer.Add_Tick({
                             }
                         }
                         
-                        if ($updatedLivePeers) {
+                        
+                        # Trigger the fingerprint-diffed update with animation at the next tick
+                        $newLiveFP = ($livePeers | ForEach-Object { "$($_['IP']):$($_['Name'])" } | Sort-Object) -join ','
+                        if ($newLiveFP -ne $script:lastLivePeersFingerprint) {
                             $ic = $script:wpfWindow.FindName("icLivePeers")
-                            if ($ic) { $ic.ItemsSource = $livePeers }
+                            if ($ic) {
+                                $ic.ItemsSource = $livePeers
+                            }
+                            $script:lastLivePeersFingerprint = $newLiveFP
                         }
                         
                         # Only update UI when the device set actually changes (prevents re-triggering Loaded animation)
                         $newFingerprint = ($liveUdp | ForEach-Object { "$($_['Ip']):$($_['Alias'])" } | Sort-Object) -join ','
                         if ($newFingerprint -ne $script:lastUdpFingerprint) {
-                            $icUdp.ItemsSource = $liveUdp
+                            # Animate out departing items before swapping
+                            $oldUdpIPs = @()
+                            if ($icUdp.ItemsSource) { $oldUdpIPs = @($icUdp.ItemsSource | ForEach-Object { $_['Ip'] }) }
+                            $newUdpIPs = @($liveUdp | ForEach-Object { $_['Ip'] })
+                            $departingUdp = @($oldUdpIPs | Where-Object { $_ -notin $newUdpIPs })
+                            if ($departingUdp.Count -gt 0) {
+                                foreach ($container in @(0..($icUdp.Items.Count - 1) | ForEach-Object { $icUdp.ItemContainerGenerator.ContainerFromIndex($_) } | Where-Object { $_ })) {
+                                    $item = $icUdp.ItemContainerGenerator.ItemFromContainer($container)
+                                    if ($item -and $item['Ip'] -and $departingUdp -contains $item['Ip']) {
+                                        $fadeOut = New-Object System.Windows.Media.Animation.DoubleAnimation
+                                        $fadeOut.To = 0; $fadeOut.Duration = [TimeSpan]::FromMilliseconds(300)
+                                        $container.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $fadeOut)
+                                    }
+                                }
+                                # Schedule the actual swap after fade-out completes
+                                $timer2 = New-Object System.Windows.Threading.DispatcherTimer
+                                $timer2.Interval = [TimeSpan]::FromMilliseconds(320)
+                                $capturedUdp = $liveUdp
+                                $capturedIcUdp = $icUdp
+                                $timer2.Add_Tick({
+                                    param($s, $e)
+                                    $capturedIcUdp.ItemsSource = $capturedUdp
+                                    $s.Stop()
+                                }.GetNewClosure())
+                                $timer2.Start()
+                            } else {
+                                $icUdp.ItemsSource = $liveUdp
+                            }
                             $script:lastUdpFingerprint = $newFingerprint
                         }
                     }
                 }
             } catch { }
+  } catch { }
     })
     $mdnsTimer.Start()
 
@@ -446,6 +529,9 @@ if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null
     if ($script:mdnsJob -and $script:mdnsJob.PowerShell) {
         Write-Trace "Disposing mDNS Runspace..."
         $script:mdnsJob.PowerShell.Dispose()
+    }
+    if ($script:networkChangeHandler) {
+        try { [System.Net.NetworkInformation.NetworkChange]::remove_NetworkAddressChanged($script:networkChangeHandler) } catch {}
     }
     # Transfer server is hosted by DeXShareTarget.exe (C# LocalSendServer) — no PS runspace to dispose
 })

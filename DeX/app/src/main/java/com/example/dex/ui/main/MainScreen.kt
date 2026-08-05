@@ -113,7 +113,8 @@ fun MainScreen(
             val inputData = workDataOf(
                 "ip" to device.ip,
                 "port" to device.info.port,
-                "uris" to urisJson
+                "uris" to urisJson,
+                "targetFingerprint" to device.info.fingerprint
             )
             
             val workRequest = OneTimeWorkRequestBuilder<com.example.dex.network.UploadWorker>()
@@ -213,12 +214,12 @@ fun MainScreen(
         PairingRequestDialog(
             alias = req.alias,
             pin = req.pin,
-            onAccept = { 
-                req.deferred.complete(true)
+            onAccept = { enteredPin -> 
+                req.deferred.complete(enteredPin)
                 com.example.dex.network.AuthState.incomingPairRequest.value = null
             },
             onReject = { 
-                req.deferred.complete(false)
+                req.deferred.complete("")
                 com.example.dex.network.AuthState.incomingPairRequest.value = null
             }
         )

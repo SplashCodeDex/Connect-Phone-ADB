@@ -12,8 +12,15 @@ namespace DeXShareTarget
         private bool _isClosing = false;
 
         
-        public ReceivePromptWindow(string senderAlias, int fileCount)
+        public ReceivePromptWindow(string senderAlias, int fileCount, string firstFileName = "")
         {
+            string msg = fileCount == 1 
+                ? $"{senderAlias} wants to send '{firstFileName}'." 
+                : $"{senderAlias} wants to send '{firstFileName}' and {fileCount - 1} other file(s).";
+            if (fileCount == 0) msg = $"{senderAlias} wants to send 0 files.";
+            
+            // Escape for XAML to prevent UI injection via filename
+            msg = msg.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("'", "&apos;");
             Title = "DeX - Receive";
             Width = 420;
             Height = 160;
@@ -112,7 +119,7 @@ namespace DeXShareTarget
                     
                     <TextBlock Text=""Incoming Transfer"" FontSize=""16"" FontWeight=""Bold"" Foreground=""{{DynamicResource PrimaryTextBrush}}"" Grid.Row=""0"" Margin=""0,0,0,5""/>
                     
-                    <TextBlock Text=""{senderAlias} wants to send {fileCount} file(s)."" FontSize=""14"" Foreground=""{{DynamicResource SecondaryTextBrush}}"" Grid.Row=""1"" Margin=""0,0,0,15"" TextTrimming=""CharacterEllipsis""/>
+                    <TextBlock Text=""{msg}"" FontSize=""14"" Foreground=""{{DynamicResource SecondaryTextBrush}}"" Grid.Row=""1"" Margin=""0,0,0,15"" TextTrimming=""CharacterEllipsis""/>
                     
                     <StackPanel Grid.Row=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"">
                         <Button x:Name=""btnDecline"" Content=""Decline"" Width=""80"" Height=""32"" Margin=""0,0,12,0"" FontSize=""14""

@@ -12,7 +12,7 @@ data class PairRequestInfo(
     val alias: String,
     val fingerprint: String,
     val pin: String,
-    val deferred: CompletableDeferred<Boolean>
+    val deferred: CompletableDeferred<String>
 )
 
 object AuthState {

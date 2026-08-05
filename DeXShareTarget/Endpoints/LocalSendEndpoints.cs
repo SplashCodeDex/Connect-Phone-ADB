@@ -66,13 +66,22 @@ namespace DeXShareTarget.Endpoints
             var activeSessionsProgress = new ConcurrentDictionary<string, int>();
             HostedFiles = new ConcurrentDictionary<string, string>();
 
-            app.MapPost("/api/localsend/v2/prepare-upload", async (PrepareUploadRequestDto req, CancellationToken ct) =>
+            app.MapPost("/api/localsend/v2/prepare-upload", async (HttpRequest request, PrepareUploadRequestDto req, CancellationToken ct) =>
             {
                 if (IsDndEnabled) return Results.StatusCode(403);
 
-                bool isAutoTrusted = !string.IsNullOrEmpty(req.Info.IdentityHash) && req.Info.IdentityHash == IdentityManager.IdentityHash;
-                bool isPaired = IdentityManager.PairedFingerprints.Contains(req.Info.Fingerprint);
-                bool isGuest = GuestFingerprints.ContainsKey(req.Info.Fingerprint);
+                var auth = request.Headers.Authorization.ToString();
+                var token = auth.StartsWith("Bearer ") ? auth.Substring("Bearer ".Length) : null;
+
+                bool isAutoTrusted = !string.IsNullOrEmpty(token) && token == IdentityManager.IdentityHash;
+                bool isPaired = !string.IsNullOrEmpty(token) && IdentityManager.PairedFingerprints.Contains(req.Info.Fingerprint) && IdentityManager.PairedTokens.TryGetValue(req.Info.Fingerprint, out var expectedToken) && expectedToken == token;
+                
+                bool isGuest = GuestFingerprints.TryGetValue(req.Info.Fingerprint, out var guestTime);
+                if (isGuest && (DateTime.UtcNow - guestTime).TotalMinutes > 10)
+                {
+                    GuestFingerprints.TryRemove(req.Info.Fingerprint, out _);
+                    isGuest = false;
+                }
                 
                 if (!isAutoTrusted && !isPaired && !isGuest)
                 {
@@ -83,7 +92,8 @@ namespace DeXShareTarget.Endpoints
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     var senderAlias = req.Info.Alias ?? "Unknown Device";
-                    win = new ReceivePromptWindow(senderAlias, req.Files.Count);
+                    var firstFileName = req.Files.Values.FirstOrDefault()?.FileName ?? "unknown_file";
+                    win = new ReceivePromptWindow(senderAlias, req.Files.Count, firstFileName);
                     win.Show();
                     _ = win.WaitForResponseAsync().ContinueWith(t => 
                     {
@@ -123,7 +133,9 @@ namespace DeXShareTarget.Endpoints
                         }
                     }
 
-                    resFiles[kvp.Key] = Guid.NewGuid().ToString(); // Token for the file
+                    var generatedToken = Guid.NewGuid().ToString();
+                    kvp.Value.Token = generatedToken;
+                    resFiles[kvp.Key] = generatedToken; // Token for the file
                 }
                 return Results.Json(new PrepareUploadResponseDto { SessionId = sessionId, Files = resFiles });
             });
@@ -132,10 +144,12 @@ namespace DeXShareTarget.Endpoints
             {
                 var sessionId = request.Query["sessionId"].ToString();
                 var fileId = request.Query["fileId"].ToString();
-                var token = request.Query["token"].ToString(); // Token unused in minimal impl
+                var token = request.Query["token"].ToString();
 
                 if (!activeSessions.TryGetValue(sessionId, out var sessionReq)) return Results.BadRequest();
                 if (!sessionReq.Files.TryGetValue(fileId, out var fileMeta)) return Results.BadRequest();
+                
+                if (fileMeta.Token != token) return Results.StatusCode(403);
 
                 string safeFileName = Path.GetFileName(fileMeta.FileName);
                 if (string.IsNullOrEmpty(safeFileName)) safeFileName = "unnamed_file";
@@ -186,6 +200,16 @@ namespace DeXShareTarget.Endpoints
 
             app.MapPost("/notify-download", async (HttpRequest request) =>
             {
+                var auth = request.Headers.Authorization.ToString();
+                var token = auth.StartsWith("Bearer ") ? auth.Substring("Bearer ".Length) : null;
+                // For notify-download, we only verify if the provided token is among the trusted ones.
+                bool isTrusted = false;
+                if (!string.IsNullOrEmpty(token)) {
+                    if (token == IdentityManager.IdentityHash) isTrusted = true;
+                    else if (IdentityManager.PairedTokens.Values.Contains(token)) isTrusted = true;
+                }
+                
+                if (!isTrusted) return Results.StatusCode(403);
                 using var reader = new StreamReader(request.Body);
                 var body = await reader.ReadToEndAsync();
                 var doc = JsonDocument.Parse(body);
@@ -324,10 +348,16 @@ namespace DeXShareTarget.Endpoints
                 var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 foreach (var k in DiscoveryBackgroundService.Devices.Keys)
                 {
-                    if (now - DiscoveryBackgroundService.Devices[k].LastSeen > 20000)
+                    if (now - DiscoveryBackgroundService.Devices[k].LastSeen > 10000)
                         DiscoveryBackgroundService.Devices.TryRemove(k, out _);
                 }
                 return Results.Json(DiscoveryBackgroundService.Devices.Values);
+            });
+
+            app.MapPost("/local/devices/flush", () => 
+            {
+                DiscoveryBackgroundService.Devices.Clear();
+                return Results.Ok();
             });
 
             app.MapGet("/local/devices/ping", async (string ip) =>
@@ -414,7 +444,6 @@ namespace DeXShareTarget.Endpoints
                 OutboundPairingStatus[targetIp] = "Pending";
                 var pin = new Random().Next(100000, 999999).ToString();
                 var token = Guid.NewGuid().ToString("N");
-                IdentityManager.SavePairedToken(targetFp, token);
                 var reqDto = new PairRequestDto
                 {
                     Alias = Environment.MachineName,
@@ -433,12 +462,13 @@ namespace DeXShareTarget.Endpoints
                             ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
                         };
                         using var client = new System.Net.Http.HttpClient(handler);
-                        client.Timeout = TimeSpan.FromSeconds(30);
+                        client.Timeout = TimeSpan.FromSeconds(65);
                         var content = new System.Net.Http.StringContent(JsonSerializer.Serialize(reqDto, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }), System.Text.Encoding.UTF8, "application/json");
                         var response = await client.PostAsync($"https://{targetIp}:53317/api/localsend/v2/pair-prompt", content);
                         
                         if (response.IsSuccessStatusCode)
                         {
+                            IdentityManager.SavePairedToken(targetFp, token);
                             IdentityManager.SavePairedDevice(targetFp);
                             OutboundPairingStatus[targetIp] = "Accepted";
                         }

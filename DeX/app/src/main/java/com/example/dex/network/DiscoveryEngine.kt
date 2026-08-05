@@ -30,9 +30,16 @@ class DiscoveryEngine(
     private var nsdManagerHelper: NsdManagerHelper? = null
     private var udpManager: UdpMulticastManager? = null
 
+    private fun getDeviceName(): String {
+        return runCatching {
+            android.provider.Settings.Global.getString(context.contentResolver, android.provider.Settings.Global.DEVICE_NAME) 
+                ?: android.provider.Settings.Secure.getString(context.contentResolver, "bluetooth_name")
+        }.getOrNull() ?: android.os.Build.MODEL ?: "Android Device"
+    }
+
     private val localInfo: RegisterDto
         get() = RegisterDto(
-            alias = "DeX",
+            alias = getDeviceName(),
             version = "2.0",
             deviceModel = android.os.Build.MODEL ?: "Android",
             deviceType = "mobile",

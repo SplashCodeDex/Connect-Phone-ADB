@@ -2,14 +2,16 @@ package com.example.dex.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dex.R
@@ -44,7 +46,8 @@ fun NetworkErrorDialog(error: String, onDismiss: () -> Unit, title: String = str
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PairingRequestDialog(alias: String, pin: String, onAccept: () -> Unit, onReject: () -> Unit) {
+fun PairingRequestDialog(alias: String, pin: String, onAccept: (String) -> Unit, onReject: () -> Unit) {
+    var enteredPin by remember { mutableStateOf("") }
     BasicAlertDialog(
         onDismissRequest = onReject,
         modifier = Modifier.fillMaxWidth()
@@ -72,22 +75,21 @@ fun PairingRequestDialog(alias: String, pin: String, onAccept: () -> Unit, onRej
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    stringResource(R.string.verify_pin),
+                    "Enter the PIN shown on the device",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Surface(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = pin,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
-                        style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 4.sp),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
+                
+                OutlinedTextField(
+                    value = enteredPin,
+                    onValueChange = { if (it.length <= 6) enteredPin = it },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    textStyle = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 4.sp),
+                    modifier = Modifier.fillMaxWidth(0.8f)
+                )
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -98,8 +100,9 @@ fun PairingRequestDialog(alias: String, pin: String, onAccept: () -> Unit, onRej
                         Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
                     }
                     Button(
-                        onClick = onAccept,
-                        modifier = Modifier.weight(1f)
+                        onClick = { onAccept(enteredPin) },
+                        modifier = Modifier.weight(1f),
+                        enabled = enteredPin.length == 6
                     ) {
                         Text("Accept")
                     }
@@ -108,3 +111,4 @@ fun PairingRequestDialog(alias: String, pin: String, onAccept: () -> Unit, onRej
         }
     }
 }
+

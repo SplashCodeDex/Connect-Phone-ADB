@@ -85,10 +85,11 @@ class ClientEngine(engine: HttpClientEngine? = null) {
         }
     }
     
-    suspend fun prepareUpload(ip: String, port: Int, request: PrepareUploadRequestDto): PrepareUploadResponseDto? = withContext(Dispatchers.IO) {
+    suspend fun prepareUpload(ip: String, port: Int, request: PrepareUploadRequestDto, token: String? = null): PrepareUploadResponseDto? = withContext(Dispatchers.IO) {
         try {
             val response = client.post("https://$ip:$port/api/localsend/v2/prepare-upload") {
                 contentType(ContentType.Application.Json)
+                if (!token.isNullOrEmpty()) header(HttpHeaders.Authorization, "Bearer $token")
                 setBody(request)
             }
             if (response.status.isSuccess()) {

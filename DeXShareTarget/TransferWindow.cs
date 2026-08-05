@@ -131,6 +131,11 @@ namespace DeXShareTarget
             };
             using var http = new HttpClient(handler);
             http.Timeout = TimeSpan.FromSeconds(15);
+            if (IdentityManager.PairedTokens.TryGetValue(device.Info.Fingerprint, out var token)) {
+                http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            } else {
+                http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", IdentityManager.IdentityHash);
+            }
 
             var baseUrl = $"https://{device.Ip}:{device.Info.Port}";
             

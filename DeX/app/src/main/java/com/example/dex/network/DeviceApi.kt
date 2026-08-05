@@ -7,11 +7,11 @@ import io.ktor.server.routing.*
 import io.ktor.http.HttpStatusCode
 import java.util.UUID
 
-fun Route.deviceRoutes(deviceConfig: DeviceConfig) {
+fun Route.deviceRoutes(deviceConfig: DeviceConfig, context: android.content.Context) {
     get("/api/localsend/v2/info") {
         call.respond(
             RegisterDto(
-                alias = "DeX",
+                alias = getDeviceName(context),
                 version = "2.0",
                 deviceModel = android.os.Build.MODEL ?: "Android",
                 deviceType = "mobile",
@@ -42,17 +42,17 @@ fun Route.deviceRoutes(deviceConfig: DeviceConfig) {
                 call.respond(HttpStatusCode.TooManyRequests, "A pairing request is already pending")
                 return@post
             }
-            val deferred = kotlinx.coroutines.CompletableDeferred<Boolean>()
+            val deferred = kotlinx.coroutines.CompletableDeferred<String>()
             AuthState.incomingPairRequest.value = PairRequestInfo(alias, fingerprint, pin, deferred)
             
-            val accepted = kotlinx.coroutines.withTimeoutOrNull(60_000) { deferred.await() }
+            val enteredPin = kotlinx.coroutines.withTimeoutOrNull(60_000) { deferred.await() }
             AuthState.incomingPairRequest.value = null
-            if (accepted == true) {
+            if (enteredPin != null && enteredPin == pin) {
                 DeviceManager.savePairedFingerprint(fingerprint)
                 if (!token.isNullOrEmpty()) DeviceManager.savePairedToken(fingerprint, token)
                 call.respond(HttpStatusCode.OK)
             } else {
-                call.respond(HttpStatusCode.Forbidden, "Pairing rejected or timed out")
+                call.respond(HttpStatusCode.Forbidden, "Pairing rejected, timed out, or PIN mismatch")
             }
         } else {
             call.respond(HttpStatusCode.BadRequest, "Missing fingerprint or pin")

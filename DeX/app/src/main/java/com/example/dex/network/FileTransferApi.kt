@@ -104,6 +104,10 @@ fun Route.fileTransferRoutes(
     }
 
     post("/notify-download") {
+        if (!verifyToken(call, deviceConfig)) {
+            call.respond(HttpStatusCode.Unauthorized)
+            return@post
+        }
         val request = call.receive<Map<String, String>>()
         val ip = request["ip"]
         val portStr = request["port"]

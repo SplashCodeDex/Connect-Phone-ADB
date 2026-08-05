@@ -9,8 +9,8 @@ namespace DeXShareTarget.Models
     {
         [JsonPropertyName("alias")] public string Alias { get; set; } = Environment.MachineName;
         [JsonPropertyName("version")] public string Version { get; set; } = "2.0";
-        [JsonPropertyName("deviceModel")] public string DeviceModel { get; set; } = "Windows PC";
-        [JsonPropertyName("deviceType")] public string DeviceType { get; set; } = "desktop";
+        [JsonPropertyName("deviceModel")] public string DeviceModel { get; set; } = "Unknown";
+        [JsonPropertyName("deviceType")] public string DeviceType { get; set; } = "unknown";
         [JsonPropertyName("fingerprint")] public string Fingerprint { get; set; } = IdentityManager.Fingerprint;
         [JsonPropertyName("port")] public int Port { get; set; } = 53317;
         [JsonPropertyName("protocol")] public string Protocol { get; set; } = "https";
@@ -31,6 +31,7 @@ namespace DeXShareTarget.Models
         [JsonPropertyName("size")] public long Size { get; set; }
         [JsonPropertyName("fileType")] public string FileType { get; set; } = "";
         [JsonPropertyName("partialHash")] public string? PartialHash { get; set; }
+        [JsonIgnore] public string? Token { get; set; }
     }
 
     public class PrepareUploadResponseDto
