@@ -353,6 +353,27 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
                         $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
                         $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Visible'
                         $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
+                        
+                        # Show QR Code initially instead of PIN
+                        $localIp = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
+                        if ($localIp) {
+                            $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
+                            if ($imgQrCode) {
+                                $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
+                                $bitmap.BeginInit()
+                                $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$localIp")
+                                $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
+                                $bitmap.EndInit()
+                                $imgQrCode.Source = $bitmap
+                            }
+                            $script:wpfWindow.FindName("pinCodeContent").Visibility = 'Collapsed'
+                            $script:wpfWindow.FindName("qrCodeContent").Visibility = 'Visible'
+                            
+                            $txtQrBtnIcon = $script:wpfWindow.FindName("txtQrBtnIcon")
+                            if ($txtQrBtnIcon) { $txtQrBtnIcon.Visibility = 'Collapsed' }
+                            $txtQrBtnText = $script:wpfWindow.FindName("txtQrBtnText")
+                            if ($txtQrBtnText) { $txtQrBtnText.Text = "Request PIN" }
+                        }
                         try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
                         
                         $e.Handled = $true
