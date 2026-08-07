@@ -1,4 +1,6 @@
 # Changelog
+### [patch] HTTP/2 ALPN Pairing Fix (v6.6.56.0)
+- **[fix]** Forced HTTP/1.1 for outbound pairing requests in the C# `LocalSendEndpoints.cs` to prevent Ktor Netty on Android from crashing during ALPN negotiation when attempting to use HTTP/2.
 ### [patch] Android Plurals & Dependency Hardening (v6.6.55.0)
 - **[patch]** Bumped Gradle wrapper to 9.7.0 and consolidated dependency versions in `libs.versions.toml`. Separated BouncyCastle `bcpkix-jdk18on` and `bcprov-jdk18on` versions to correctly pull the latest artifacts and resolve Gradle configuration failures.
 - **[patch]** Fixed duplicate `META-INF/LICENSE.md` build failure caused by BouncyCastle by adding a `packaging` block exclusion in `app/build.gradle.kts`.
