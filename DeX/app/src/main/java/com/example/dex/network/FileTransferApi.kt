@@ -108,12 +108,12 @@ fun Route.fileTransferRoutes(
             call.respond(HttpStatusCode.Unauthorized)
             return@post
         }
-        val request = call.receive<Map<String, String>>()
-        val ip = request["ip"]
-        val portStr = request["port"]
-        val fileId = request["fileId"]
-        val fileName = request["fileName"] ?: "downloaded_file"
-        val fileSize = request["fileSize"]?.toLongOrNull() ?: 100L
+        val request = call.receive<NotifyDownloadDto>()
+        val ip = request.ip
+        val portStr = request.port
+        val fileId = request.fileId
+        val fileName = request.fileName ?: "downloaded_file"
+        val fileSize = request.fileSize?.toLongOrNull() ?: 100L
         
         if (ip != null && portStr != null && fileId != null) {
             println("Received TCP download signal: $ip:$portStr for file $fileId")

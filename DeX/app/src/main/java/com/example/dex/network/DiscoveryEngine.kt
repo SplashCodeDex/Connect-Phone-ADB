@@ -52,17 +52,8 @@ class DiscoveryEngine(
 
     fun startDiscovery() {
         Timber.i("Starting DiscoveryEngine (NSD + UDP Multicast)...")
-        val onDeviceFound: (DiscoveredDevice) -> Unit = { newDevice ->
-            _devices.update { map ->
-                if (!map.containsKey(newDevice.info.fingerprint)) {
-                    Timber.d("New device discovered: %s (%s)", newDevice.info.alias, newDevice.ip)
-                }
-                map.toMutableMap().apply { put(newDevice.info.fingerprint, newDevice) }
-            }
-        }
-
-        nsdManagerHelper = NsdManagerHelper(context, localInfo, onDeviceFound).apply { start() }
-        udpManager = UdpMulticastManager(context, localInfo, onDeviceFound).apply { start() }
+        nsdManagerHelper = NsdManagerHelper(context, localInfo).apply { start() }
+        udpManager = UdpMulticastManager(context, localInfo).apply { start() }
 
         cleanupJob = scope.launch {
             while (isActive) {

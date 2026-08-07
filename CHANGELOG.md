@@ -1,5 +1,8 @@
 # Changelog
-### [minor] Show QR Code by Default on Pairing (v6.6.5.0)
+### [patch] PC-Initiated Pairing Overhaul (v6.6.5.0)
+- **[fix]** Removed redundant UDP multicast discovery loop from the Android app, establishing a strict "PC-discovers-Android" architecture for better reliability and lower battery usage.
+- **[fix]** Fixed a bug on the PC side where clicking a discovered device in the UI would fail to initiate pairing due to an improperly scoped click handler.
+- **[fix]** Aligned pairing timeout on both PC and Android to 60 seconds (with UI countdown animation) to prevent phantom paired states.
 - **[minor]** Modified Windows app pairing UI to show the QR code initially instead of the PIN when connecting to a newly discovered device. This streamlines the flow for users wanting to quickly scan the QR code to connect.
 ### [major] Play-Store-Compliant SAF Storage + Trust Overhaul (v6.5.0.0)
 - **[major]** Removed `MANAGE_EXTERNAL_STORAGE` from Android — DeX is now Play-Store compliant. All incoming transfers write to a user-granted `Downloads/DeX` folder via SAF with persisted URI permissions.

@@ -21,8 +21,8 @@
     <string name="uploading_progress">Uploading %1$d of %2$d files…</string>
     <string name="upload_success">Successfully Uploaded %1$s</string>
     <string name="upload_failed">Upload Failed: %1$s</string>
-    <string name="nearby_devices">Nearby Devices</string>
-    <string name="scanning_peers">Scanning for DeX peers…</string>
+    <string name="nearby_devices">Connection Status</string>
+    <string name="scanning_peers">Waiting for PC to connect…</string>
     <string name="clipboard_sent_success">Clipboard sent!</string>
     <string name="clipboard_sent_failed">Failed to send clipboard</string>
     <string name="clipboard_empty">Clipboard is empty</string>

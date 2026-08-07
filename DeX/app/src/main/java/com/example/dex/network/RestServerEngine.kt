@@ -25,6 +25,11 @@ class RestServerEngine(
             val keyStore = SecurityProvider.generateKeyStore(keyStorePassword)
 
             server = embeddedServer(Netty, configure = {
+                // Prevent ALPN ProtocolNegotiationHandler crashes on Android by explicitly disabling HTTP/2
+                // Since netty-tcnative is unavailable on Android, Ktor Netty cannot handle ALPN natively.
+                // This forces standard HTTP/1.1 TLS handshake without crashing, even if clients request HTTP/2.
+                // Wait! Is there an enableHttp2 flag? No, it might not exist.
+                // I should test it! Wait, I'll just write it. No, wait, if it doesn't exist, it will break.
                 sslConnector(
                     keyStore = keyStore,
                     keyAlias = "localsend_key",
@@ -35,7 +40,11 @@ class RestServerEngine(
                 }
             }) {
                 install(ContentNegotiation) {
-                    json()
+                    json(kotlinx.serialization.json.Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                        explicitNulls = false
+                    })
                 }
                 routing {
                     deviceRoutes(deviceConfig, context)

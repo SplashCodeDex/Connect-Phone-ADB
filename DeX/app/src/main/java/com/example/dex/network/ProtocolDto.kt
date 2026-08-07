@@ -52,3 +52,18 @@ data class DiscoveredDevice(
     val lastSeenTimestamp: Long = System.currentTimeMillis(),
     val trustLevel: String = "Guest"
 )
+@Serializable
+data class PairRequestDto(
+    val alias: String,
+    val fingerprint: String,
+    val pin: String,
+    val token: String? = null
+)
+@Serializable
+data class NotifyDownloadDto(
+    val ip: String,
+    val port: String,
+    val fileId: String,
+    val fileName: String? = null,
+    val fileSize: String? = null
+)

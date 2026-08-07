@@ -12,10 +12,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Computer
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.rounded.Computer
+import androidx.compose.material.icons.rounded.Send
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ContentPaste
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import com.example.dex.R
@@ -37,7 +37,7 @@ import androidx.work.workDataOf
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.ui.unit.sp
 
 import org.koin.androidx.compose.koinViewModel
@@ -45,11 +45,12 @@ import com.example.dex.ui.components.DeviceListItem
 import com.example.dex.ui.components.NetworkErrorDialog
 import com.example.dex.ui.components.PairingRequestDialog
 import com.example.dex.ui.components.TransferProgressOverlay
+import com.kashif_e.backdrop.Backdrop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    onNavigateToSettings: () -> Unit = {},
+    backdrop: Backdrop,
     viewModel: MainScreenViewModel = koinViewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -131,20 +132,18 @@ fun MainScreen(
     val uploadState by viewModel.clientEngine.uploadState.collectAsStateWithLifecycle()
 
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name), fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = { launchQrScanner() }) {
-                        Icon(Icons.Default.Computer, contentDescription = stringResource(R.string.scan_qr))
-                    }
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings))
+                        Icon(Icons.Rounded.Computer, contentDescription = stringResource(R.string.scan_qr))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
@@ -180,6 +179,7 @@ fun MainScreen(
                         DeviceListItem(
                             modifier = Modifier.animateItem(),
                             device = device, 
+                            backdrop = backdrop,
                             onClick = {
                                 selectedDevice = device
                                 filePickerLauncher.launch(arrayOf("*/*")) 
@@ -198,6 +198,7 @@ fun MainScreen(
     
     if (uploadState.error != null) {
         NetworkErrorDialog(
+            backdrop = backdrop,
             error = stringResource(R.string.upload_failed, uploadState.error ?: ""),
             onDismiss = { viewModel.clientEngine.resetUploadState() }
         )
@@ -205,6 +206,7 @@ fun MainScreen(
     
     if (downloadState.error != null) {
         NetworkErrorDialog(
+            backdrop = backdrop,
             error = stringResource(R.string.download_failed, downloadState.error ?: ""),
             onDismiss = { com.example.dex.network.TcpDownloadService.resetDownloadState() }
         )
@@ -212,6 +214,7 @@ fun MainScreen(
     
     incomingPairRequest?.let { req ->
         PairingRequestDialog(
+            backdrop = backdrop,
             alias = req.alias,
             pin = req.pin,
             onAccept = { enteredPin -> 

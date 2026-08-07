@@ -31,11 +31,11 @@ fun Route.deviceRoutes(deviceConfig: DeviceConfig, context: android.content.Cont
     }
     
     post("/api/localsend/v2/pair-prompt") {
-        val request = call.receive<Map<String, String>>()
-        val alias = request["alias"] ?: "Unknown Device"
-        val fingerprint = request["fingerprint"]
-        val pin = request["pin"]
-        val token = request["token"]
+        val request = call.receive<PairRequestDto>()
+        val alias = request.alias
+        val fingerprint = request.fingerprint
+        val pin = request.pin
+        val token = request.token
 
         if (fingerprint != null && pin != null) {
             if (AuthState.incomingPairRequest.value != null) {

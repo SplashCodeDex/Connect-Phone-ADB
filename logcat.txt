@@ -1,0 +1,529 @@
+--------- beginning of main
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.998 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:58.999 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 E/SemApTrafficData( 1754): Empty traffic data
+08-06 19:45:59.000 D/SemWifiApServiceDetector( 1754): Calculate stats
+08-06 19:45:59.000 D/SemWifiApServiceDetector( 1754): Calculate stats
+08-06 19:45:59.005 I/MhsAiService(29128): predictL1ServiceType, l1Inp length is: 60
+08-06 19:45:59.005 I/MhsAiService(29128): NSD+ cache prediction: Convo: 10.16.50.100_172.217.116.4 --- inp: [0.04823767, 0.0028822583, 10.333333, 7.5, 252.66667, 486.0, 469.47852, 44.5, 18.0, 19.884615, 0.0, 17.833334, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.00920673, 2.6706373E-5, 213.55557, 116.58333, 289152.9, 472397.3, 441520.0, 6067.25, 648.0, 801.4512, 0.0, 640.1389, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.26158455, 0.014149014, 31.0, 26.0, 1454.0, 1462.0, 1454.258, 213.0, 54.0, 65.30769, 0.0, 57.0] --- prediction: 1;
+08-06 19:45:59.005 I/MhsAiService(29128): predictL1ServiceType, l1Inp length is: 60
+08-06 19:45:59.005 I/MhsAiService(29128): NSD+ cache prediction: Convo: 10.16.50.100_10.16.50.207 --- inp: [0.124612026, 0.10320187, 1.6666666, 1.6666666, 67.5, 80.0, 74.44444, 273.0, 73.0, 173.3889, 2.3333333, 1.0, 0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 2.0, 0.0, 0.02104871, 0.0138335405, 0.5555556, 0.5555556, 156.25, 0.0, 32.79297, 186245.0, 49.0, 45820.977, 0.5555558, 1.0, 0.0, 0.0, 1.0, 1.0, 55.0, 80.0, 67.5, 80.0, 66.0, 73.0, 2.0, 0.0, 0.3466362, 0.2977024, 3.0, 3.0, 80.0, 80.0, 80.0, 1238.0, 80.0, 652.0, 4.0, 2.0] --- prediction: 0;
+08-06 19:45:59.007 I/SemWifiApServiceDetector( 1754): Current convo-service pred: {1681002506_74766764=1, 1681002506_-818802678=0}
+08-06 19:45:59.016 I/SemWifiApServiceDetector( 1754): Convo Buffer Map: {1681002506_74766764=Convo Key: 1681002506_74766764: [1, 1, 1, 1, 1] --- ser: 1; , 1681002506_-818802678=Convo Key: 1681002506_-818802678: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] --- ser: 0; }
+08-06 19:45:59.016 I/SemWifiApServiceDetector( 1754): Real-time --- v4: {1681002506_-818802678=7} --- v6: {}
+08-06 19:45:59.019 I/SemWifiApServiceDetector( 1754): Convo-ser map: Convo key 1681002506_74766764: {Convo Key: 1681002506_74766764: [1, 1, 1, 1, 1] --- ser: 1; }; Convo key 1681002506_-818802678: {Convo Key: 1681002506_-818802678: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] --- ser: 0; }; 
+08-06 19:45:59.040 I/NSLocationMonitor( 1754): getGPSUsingApps() called
+08-06 19:45:59.041 I/NSLocationManager_FLP( 3557): getGPSUsingApps, No change
+--------- beginning of system
+08-06 19:45:59.074 D/MARs:ActiveTrafficFilter( 1754): filter : com.dexify.dexdo(0)
+08-06 19:45:59.074 D/FreecessHandler( 1754): freeze com.dexify.dexdo(10341) result : 8
+08-06 19:45:59.166 D/SemWifiTrafficPoller( 1754): getSoftApTotalTrafficInBytes:460418676
+08-06 19:45:59.222 I/AudioPathManager(22875): loadAudioPath() : loaded audio path is bluetooth (2)
+08-06 19:45:59.222 I/EffectManager(22875): isSupportDolbyAtmosOnThisAudioPath() : path is bluetooth (2)
+08-06 19:45:59.222 I/UHQUpscalerManager(22875): isUHQCompatibleBluetooth() : support is 0, mode is 1
+08-06 19:45:59.222 I/AudioPathManager(22875): loadAudioPath() : loaded audio path is bluetooth (2)
+08-06 19:45:59.223 I/EffectManager(22875): isSupportVolumeNormalizationOnCurrentAudioPath() : path is bluetooth (2)
+08-06 19:45:59.223 I/DVFSHelper(22875): isNecessaryToBoostCPU() : isDolbyOn? false, isUHQUpscalerOn? false, isVoiceBoostOn? false, isVolumeNormalizationOn? false
+08-06 19:45:59.275 D/BufferPoolAccessor2.0(25277): bufferpool2 0xb4000077f26774f8 : 5(40960 size) total buffers - 1(8192 size) used buffers - 171/176 (recycle/alloc) - 5/175 (fetch/transfer)
+08-06 19:45:59.282 D/BufferPoolAccessor2.0( 1543): bufferpool2 0xb40000797e9aac48 : 5(20480 size) total buffers - 1(4096 size) used buffers - 167/172 (recycle/alloc) - 5/171 (fetch/transfer)
+08-06 19:45:59.282 D/SemWifiApTrafficPoller( 1754): received START_TPUT_LOG
+08-06 19:45:59.350 I/Finsky  (25294): [190] Successfully collected the device disk space info.
+08-06 19:45:59.384 I/NowBrief.SecWeatherApi( 4901): getHourlyWeather, ret: false
+08-06 19:45:59.385 I/ScanController( 2437): onScanResult to scannerId: 5- eventType=0x10, addressType=1, address=XX:XX:XX:XX:36:1A, primaryPhy=1, secondaryPhy=0, advertisingSid=0xff, txPower=127, rssi=-57, periodicAdvInt=0x0
+08-06 19:45:59.430 D/SatelliteController( 2307): isInCarrierRoamingNbIotNtn: satellite is disabled
+08-06 19:45:59.500 I/ScanController( 2437): onScanResult to scannerId: 5- eventType=0x10, addressType=1, address=XX:XX:XX:XX:36:1A, primaryPhy=1, secondaryPhy=0, advertisingSid=0xff, txPower=127, rssi=-58, periodicAdvInt=0x0
+08-06 19:45:59.501 I/SemWifiApServiceDetector( 1754): Service update poll status --- isMlLibraryReady: true --- mSoftApEnabled: true --- mServiceUpdateActivated: true
+08-06 19:45:59.505 D/SemWifiApServiceDetector( 1754): TrafficMap: {1681002506_-818802678= [key=1681002506_-818802678, sport=7167, dport=62619, ipv4Address=10.16.50.207, ipv6Address=[0, 0, 0, 0], ipv4sAddress=10.16.50.100, ipv6sAddress=[0, 0, 0, 0], ulPacketCnt=1.0, dlPacketCnt=2.0, ulPacketSizeMax=1238.0, ulPacketSizeMin=1238.0, ulPacketSizeAvg=1238.0, dlPacketSizeMax=80.0, dlPacketSizeMin=80.0, dlPacketSizeAvg=80.0, interTimeMax=0.0, interTimeMin=0.05, interTimeAvg=0.0, interTimeDLMax1=0.4009823, interTimeDLMax2=0.0, tcpPacketCnt=0.0, udpPacketCnt=3.0, cliMacAddr=4C:5F:70:C7:E9:99]}
+08-06 19:45:59.506 I/SemWifiApServiceDetector( 1754): Cache traffic:  --- [1681002506_-818802678] [key=1681002506_-818802678, sport=7167, dport=62619, ipv4Address=10.16.50.207, ipv6Address=[0, 0, 0, 0], ipv4sAddress=10.16.50.100, ipv6sAddress=[0, 0, 0, 0], ulPacketCnt=1.0, dlPacketCnt=2.0, ulPacketSizeMax=1238.0, ulPacketSizeMin=1238.0, ulPacketSizeAvg=1238.0, dlPacketSizeMax=80.0, dlPacketSizeMin=80.0, dlPacketSizeAvg=80.0, interTimeMax=0.0, interTimeMin=0.05, interTimeAvg=0.0, interTimeDLMax1=0.4009823, interTimeDLMax2=0.0, tcpPacketCnt=0.0, udpPacketCnt=3.0, cliMacAddr=4C:5F:70:C7:E9:99]
+08-06 19:45:59.508 I/SemWifiApServiceDetector( 1754): Cache data poll: Convo: [1681002506_-818802678] --- Buffer content: [[0.2977024, 0.2977024, 2.0, 2.0, 55.0, 80.0, 67.5, 80.0, 66.0, 73.0, 0.05, 0.120460555, 0.0, 2.0, 2.0]; [0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 0.05, 0.0, 0.0, 0.0, 2.0]; [0.3466362, 0.2181753, 3.0, 3.0, 55.0, 80.0, 71.666664, 80.0, 66.0, 75.333336, 0.05, 0.2749127, 0.12548237, 2.0, 4.0]; [0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 0.05, 0.0, 0.0, 0.0, 2.0]; [0.10333351, 0.10333351, 2.0, 2.0, 55.0, 80.0, 67.5, 1238.0, 66.0, 652.0, 0.05, 0.04227362, 0.0, 2.0, 2.0]; [0.0, 0.0, 1.0, 2.0, 1238.0, 1238.0, 1238.0, 80.0, 80.0, 80.0, 0.05, 0.4009823, 0.0, 0.0, 3.0]];end 
+08-06 19:45:59.514 D/SemWifiApServiceDetector( 1754): Calculate stats
+08-06 19:45:59.518 I/MhsAiService(29128): predictL1ServiceType, l1Inp length is: 60
+08-06 19:45:59.518 I/MhsAiService(29128): NSD+ cache prediction: Convo: 10.16.50.100_10.16.50.207 --- inp: [0.124612026, 0.10320187, 1.6666666, 1.8333334, 260.5, 273.0, 267.44443, 273.0, 73.0, 173.3889, 2.5, 1.0, 0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 2.0, 0.0, 0.02104871, 0.0138335405, 0.5555556, 0.4722221, 191226.25, 186245.0, 188422.25, 186245.0, 49.0, 45820.977, 0.5833335, 1.0, 0.0, 0.0, 1.0, 1.0, 55.0, 80.0, 67.5, 80.0, 66.0, 73.0, 2.0, 0.0, 0.3466362, 0.2977024, 3.0, 3.0, 1238.0, 1238.0, 1238.0, 1238.0, 80.0, 652.0, 4.0, 2.0] --- prediction: 0;
+08-06 19:45:59.520 I/SemWifiApServiceDetector( 1754): Current convo-service pred: {1681002506_-818802678=0}
+08-06 19:45:59.523 I/SemWifiApServiceDetector( 1754): Convo Buffer Map: {1681002506_-818802678=Convo Key: 1681002506_-818802678: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] --- ser: 0; }
+08-06 19:45:59.523 I/SemWifiApServiceDetector( 1754): Real-time --- v4: {1681002506_-818802678=7} --- v6: {}
+08-06 19:45:59.524 I/SemWifiApServiceDetector( 1754): Convo-ser map: Convo key 1681002506_-818802678: {Convo Key: 1681002506_-818802678: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] --- ser: 0; }; 
+08-06 19:45:59.557 D/BufferPoolAccessor2.0(25277): bufferpool2 0xb4000077f2691098 : 5(36700160 size) total buffers - 4(29360128 size) used buffers - 127/133 (recycle/alloc) - 9/133 (fetch/transfer)
+08-06 19:45:59.661 D/SemNativeCarrierFeature_vendor( 1541): getInstance
+08-06 19:45:59.680 D/Am      ( 2307): Broadcasting: Intent { act=com.sec.intent.action.CP_CHAN_INFO flg=0x1000000 (has extras) }
+08-06 19:45:59.683 E/HeatmapThread( 1327): ECT Thread time in milliseconds: 1786045559
+08-06 19:45:59.684 D/HeatmapThread( 1327): !@ batteryplugType : 0
+08-06 19:45:59.686 D/HeatmapThread( 1327): !@ batteryLevel : 0  batteryTemperature : 0 
+08-06 19:45:59.687 D/HeatmapThread( 1327): !@ Heatmap currtime: 29767425
+08-06 19:45:59.687 D/HeatmapThread( 1327): !@ Heatmap prevtime: 29767407
+08-06 19:45:59.687 D/HeatmapThread( 1327): !@ Heatmap plugstarttime: 35791394
+08-06 19:45:59.687 D/HeatmapThread( 1327): !@ Heatmap prevv_dsoh_update_time: 29767047
+08-06 19:45:59.687 E/HeatmapThread( 1327): !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+08-06 19:45:59.687 E/HeatmapThread( 1327): !@ CAM Could not access BSOH EFS
+08-06 19:45:59.687 E/HeatmapThread( 1327): !@ CAM New BSOH: 0
+08-06 19:45:59.698 I/EPDG -- SIM1 IwlanNetworkService( 2991): requestNetworkRegistrationInfo for domain 2
+08-06 19:45:59.700 I/EPDG -- SIM1 IwlanNetworkService( 2991): Calling onRequestNetworkRegistrationInfoComplete.resultCode = 0, netState = NetworkRegistrationInfo{ domain=PS transportType=WLAN registrationState=UNKNOWN networkRegistrationState=UNKNOWN roamingType=NOT_ROAMING accessNetworkTechnology=IWLAN rejectCause=0 emergencyEnabled=false availableServices=[] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=null nrState=**** rRplmn= isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}
+08-06 19:45:59.709 D/SemNativeCarrierFeature_vendor( 1541): getInstance
+08-06 19:45:59.709 D/Am      ( 2307): Broadcast completed: result=0
+08-06 19:45:59.727 D/SemNativeCarrierFeature_vendor( 1541): getInstance
+08-06 19:45:59.735 E/GlobalSettingsRepoBase( 2459): globalgcsettings No matched key : support_ssac_nr
+08-06 19:45:59.735 I/VolteServiceModule( 2459): onBarringInfoChanged: barringInfo BarringInfo {mCellIdentity=CellIdentityLte:{ mCi=1****86 mPci=365 mTac=5***4 mEarfcn=3198 mBands=[7] mBandwidth=0 mMcc=620 mMnc=01 mAlphaLong= mAlphaShort= mAdditionalPlmns={} mCsgInfo=null}, mBarringServiceInfos={3=BarringServiceInfo {mBarringType=NONE, mIsConditionallyBarred=false, mConditionalBarringFactor=0, mConditionalBarringTimeSeconds=0}, 4=BarringServiceInfo {mBarringType=NONE, mIsConditionallyBarred=false, mConditionalBarringFactor=0, mConditionalBarringTimeSeconds=0}, 6=BarringServiceInfo {mBarringType=NONE, mIsConditionallyBarred=false, mConditionalBarringFactor=0, mConditionalBarringTimeSeconds=0}, 7=BarringServiceInfo {mBarringType=NONE, mIsConditionallyBarred=false, mConditionalBarringFactor=0, mConditionalBarringTimeSeconds=0}, 8=BarringServiceInfo {mBarringType=NONE, mIsConditionallyBarred=false, mConditionalBarringFactor=0, mConditionalBarringTimeSeconds=0}}} uacConvertSsac false
+08-06 19:45:59.736 I/SsacInfo( 2459): voiceBarringInfo mConditionalBarringFactor:0 mConditionalBarringTimeSeconds:0
+08-06 19:45:59.736 I/SsacInfo( 2459): videoBarringInfo mConditionalBarringFactor:0 mConditionalBarringTimeSeconds:0
+08-06 19:45:59.736 I/SsacManager<1>( 2459): updateSSACInfo : Voice(100:0) Video(100:0)
+08-06 19:45:59.736 I/SsacManager<1>( 2459): Voice Call: updateSSACInfo : f[100], t[0]
+08-06 19:45:59.736 I/SsacManager<1>( 2459): Video Call: updateSSACInfo : f[100], t[0]
+08-06 19:45:59.740 D/SemCellularStateManager( 1754): onCellInfoChanged: cellInfoList Number of cell: 1
+08-06 19:45:59.741 D/SemCellularStateManager( 1754): onCellInfoChanged: Registered = true, mCellularCellId = 1228586
+08-06 19:45:59.743 I/TelephonyCallbackForPdnController<1>( 2459): onCellInfoChanged: xxxxx
+08-06 19:45:59.744 I/ImsCallSessionManager( 2459): onCellInfoChanged, phoneId: 1
+08-06 19:45:59.746 I/RegiMgr-Handler( 2459): handleMessage: EVENT_CELL_INFO_CHANGED
+08-06 19:45:59.749 I/RegiMgr<1>( 2459): updatePani RegisterTask[1][mProfile=MTN GHANA VOLTE, mRegistrationRat=13, mPdnType=11, mState=REGISTERED, mObject=UserAgent - :
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  total records=89
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[0]: time=08-06 19:37:04.106 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[1]: time=08-06 19:37:04.108 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[2]: time=08-06 19:37:28.639 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[3]: time=08-06 19:37:28.641 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[4]: time=08-06 19:38:05.447 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[5]: time=08-06 19:38:05.449 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[6]: time=08-06 19:38:13.108 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[7]: time=08-06 19:38:13.111 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[8]: time=08-06 19:39:11.661 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[9]: time=08-06 19:39:11.663 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[10]: time=08-06 19:39:16.768 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[11]: time=08-06 19:39:16.769 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[12]: time=08-06 19:39:47.970 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[13]: time=08-06 19:39:47.972 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[14]: time=08-06 19:39:59.145 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[15]: time=08-06 19:39:59.146 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[16]: time=08-06 19:45:41.289 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[17]: time=08-06 19:45:41.340 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[18]: time=08-06 19:45:50.629 processed=ReadyState org=RegisteredState dest=<null> what=34(0x22)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459):  rec[19]: time=08-06 19:45:50.633 processed=RegisteredState org=RegisteredState dest=<null> what=2000(0x7d0)
+08-06 19:45:59.749 I/RegiMgr<1>( 2459): curState=RegisteredState
+08-06 19:45:59.749 I/RegiMgr<1>( 2459): , mReason=, mPcscfHostname=null, mDeregiReason=41]
+08-06 19:45:59.754 I/PaniGenerator<1>( 2459): generate: subId=2, network=13, pdn=11
+08-06 19:45:59.756 I/PaniGenerator<1>( 2459): generate: network=13, fallbackPlmn=62001
+08-06 19:45:59.756 I/PdnController<1>( 2459): getAllCellInfo mNeedCellLocationUpdate : false
+08-06 19:45:59.756 I/PaniGenerator( 2459): generate: change to NW PLMN(62001)
+08-06 19:45:59.757 I/PaniGenerator( 2459): setLkcForLastPani: No Last PANI header for MTN GHANA VOLTE
+08-06 19:45:59.757 I/UserAgent<1>( 2459): updatePani
+08-06 19:45:59.759 I/SECIMSJ ( 2459): [0449]> 140
+08-06 19:45:59.759 I/RegiMgr<1>( 2459): tryRegister:
+08-06 19:45:59.759 I/[IMS6.0]( 2459): IMS_onResponse()
+08-06 19:45:59.759 I/StackIF ( 2459): processMessage 2
+08-06 19:45:59.759 I/StackIF ( 2459): Processing Response
+08-06 19:45:59.759 I/SECIMSJ ( 2459): [0449]< 600
+08-06 19:45:59.759 I/StackIF ( 2459): processResponse: reqId 600
+08-06 19:45:59.759 I/StackIF ( 2459): processResponse: handle 12541 result 0 reason 0
+08-06 19:45:59.759 I/RegiMgr<0>( 2459): RegisterTask(s): MTN GHANA VOLTE (REGISTERED, rat = 13, service = [mmtel-video, mmtel]), SamsungCMC_PD (IDLE), Global GC RCS (IDLE)
+08-06 19:45:59.760 D/SatelliteController( 2307): Satellite for carrier is not supported.
+08-06 19:45:59.762 D/SatelliteController( 2307): Satellite for carrier is not supported.
+08-06 19:45:59.763 D/SatelliteController( 2307): registerForSatelliteModemStateChanged: add Listeners for ModemState
+08-06 19:45:59.763 I/RegiMgr<1>( 2459): RegisterTask(s): MTN GHANA VOLTE (REGISTERED, rat = 13, service = [mmtel-video, mmtel]), SamsungCMC_PD (IDLE), Global GC RCS (IDLE)
+08-06 19:45:59.763 E/SatelliteController( 2307): registerForSatelliteModemStateChanged: mSatelliteSessionController is not initialized yet
+08-06 19:45:59.763 I/RcsPolicyMgr<1>( 2459): pendingRcsRegister: mActiveDataPhoneId = 1
+08-06 19:45:59.763 I/RcsPolicyMgr<1>( 2459): pendingRcsRegister: mActiveDataPhoneId = 1
+08-06 19:45:59.763 I/RegisterTask( 2459): isSuspended: mSuspended(false) mSuspendByIrat(false)
+08-06 19:45:59.763 I/RegiMgr<1>( 2459): [SamsungCMC_PD|IDLE] checkForTryRegister id: 20002
+08-06 19:45:59.770 I/PdnController( 2459): getDefaultNetworkBearer: CELLULAR
+08-06 19:45:59.772 I/RegistrationRatDecider<1>( 2459): getAvailableMobileNetwork: network=13 mobileDataType=13 => rat=13
+08-06 19:45:59.773 I/RegistrationRatDecider<1>( 2459): findBestNetwork: LTE
+08-06 19:45:59.774 I/RegiGvnBase<1>( 2459): isReadyToDualRegister: slot 0's call state: 0
+08-06 19:45:59.774 I/RegiGvnBase<1>( 2459): isReadyToDualRegister : true
+08-06 19:45:59.780 D/SatelliteController( 2307): registerForSatelliteModemStateChanged: add Listeners for ModemState
+08-06 19:45:59.780 E/SatelliteController( 2307): registerForSatelliteModemStateChanged: mSatelliteSessionController is not initialized yet
+08-06 19:45:59.783 I/NowBrief.SecWeatherApi( 4901): getWeatherForm, ret: false
+08-06 19:45:59.786 I/RegiMgr<1>( 2459): [SamsungCMC_PD|IDLE] checkInitialRegistrationIsReady: APM ON [false], Roamimg [false]
+08-06 19:45:59.786 I/RcsPolicyMgr<1>( 2459): pendingRcsRegister: mActiveDataPhoneId = 1
+08-06 19:45:59.786 I/ImsProfile( 2459): carrierId : CHO isRttSupportByCallApp false
+08-06 19:45:59.786 I/ImsProfile( 2459): ttyType : 1
+08-06 19:45:59.786 I/RegiMgr-Utils<1>( 2459): getPriorityRegiedTask : isPriority  High? true
+08-06 19:45:59.787 I/CmcAccountManager( 2459): isSupportDualSimCMC: false
+08-06 19:45:59.787 I/RegiGvnCmc<1>( 2459): isReadyToRegister: cmc WiFi preferred rat: 13, lineSlot: 0
+08-06 19:45:59.787 I/RegiMgr<1>( 2459): [SamsungCMC_PD|IDLE] checkForTryRegister: isReadyToRegister = false
+08-06 19:45:59.788 I/RcsPolicyMgr<1>( 2459): pendingRcsRegister: mActiveDataPhoneId = 1
+08-06 19:45:59.788 I/RegisterTask( 2459): isSuspended: mSuspended(false) mSuspendByIrat(false)
+08-06 19:45:59.788 I/RegiMgr<1>( 2459): [Global GC RCS|IDLE] checkForTryRegister id: 1238
+08-06 19:45:59.789 I/PdnController( 2459): getDefaultNetworkBearer: CELLULAR
+08-06 19:45:59.792 I/RegistrationRatDecider<1>( 2459): getAvailableMobileNetwork: network=13 mobileDataType=13 => rat=13
+08-06 19:45:59.792 I/RegistrationRatDecider<1>( 2459): findBestNetwork: LTE
+08-06 19:45:59.793 W/adbd    ( 3526): timed out while waiting for FUNCTIONFS_BIND, trying again
+08-06 19:45:59.793 I/adbd    ( 3526): UsbFfs: connection terminated: monitor thread finished
+08-06 19:45:59.794 D/SatelliteController( 2307): isCarrierRoamingNtnEligible: satellite access is not allowed
+08-06 19:45:59.794 D/SatelliteController( 2307): evaluateCarrierRoamingNtnEligibilityChange: isCarrierRoamingNtnEligible=false
+08-06 19:45:59.794 E/SatelliteController( 2307): notifyNtnEligibility: mSatellitePhone is null
+08-06 19:45:59.795 V/SatelliteController( 2307): getWwanIsInService: return true
+08-06 19:45:59.795 I/RegiGvnBase<1>( 2459): isReadyToDualRegister: slot 0's call state: 0
+08-06 19:45:59.795 I/RegiGvnBase<1>( 2459): isReadyToDualRegister : true
+08-06 19:45:59.795 V/SatelliteController( 2307): getWwanIsInService: return true
+08-06 19:45:59.799 D/SatelliteController( 2307): updateLastNotifiedNtnModeAndNotify: subId=1 initialized=true lastNotifiedNtnMode=false lastNotifiedNtnModePhone=false currNtnMode=false
+08-06 19:45:59.799 D/SatelliteController( 2307): isInCarrierRoamingNbIotNtn: satellite is disabled
+08-06 19:45:59.800 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.800 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.802 V/SatelliteController( 2307): getWwanIsInService: return true
+08-06 19:45:59.802 V/SatelliteController( 2307): getWwanIsInService: return true
+08-06 19:45:59.802 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.803 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.803 D/SemWifiService( 1754): onServiceStateChanged : state - 0, dataNetworkType : 13
+08-06 19:45:59.804 W/NSLocationMonitor( 1754): onServiceStateChanged, state=0 / channel=3000
+08-06 19:45:59.804 I/NSLocationMonitor( 1754): networkType[13]=LTE / nrState=false
+08-06 19:45:59.805 D/SatelliteController( 2307): updateLastNotifiedNtnModeAndNotify: subId=2 initialized=true lastNotifiedNtnMode=false lastNotifiedNtnModePhone=false currNtnMode=false
+08-06 19:45:59.805 D/SatelliteController( 2307): isInCarrierRoamingNbIotNtn: satellite is disabled
+08-06 19:45:59.806 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.807 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.807 D/GlobalActionsDialogLite( 2482): Service changed before actions created
+08-06 19:45:59.807 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.809 D/SemWifiApServiceImpl( 1754): onServiceStateChanged : 0dataNetworkType : 13,isUsingNonTerrestrialNetwork:false
+08-06 19:45:59.809 D/SemWifiApServiceImpl( 1754): serviceState.getNrFrequencyRange=0 / mPrev5GNewRadioState=0
+08-06 19:45:59.809 I/TelephonyCallbackForPdnController<1>( 2459): emcbsIndication: SUPPORTED, mobileDataNetworkType: 13
+08-06 19:45:59.811 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.812 D/SatelliteController( 2307): determineAutoConnectSystemNotification: isNtn.first = false IsNotiToShow = true mIsAutoConnectNotificationShowing = false
+08-06 19:45:59.812 D/SLocation( 1754): CellLocationManager - onServiceStateChanged 0
+08-06 19:45:59.812 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.813 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.814 D/SatelliteModeObserver( 2482): service state changed : {mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=3000, duplexMode()=1, mCellBandwidths=[20000, 20000, 15000], mOperatorAlphaLong=null, mOperatorAlphaShort=null, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=*1, mSystemId=*1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, NonCellular=false, Snap=0, PsOnly=false, SprDisplayRoam=false, OptRadioTech=0, MsimSubmode=0, IsVoiceCallAvailable=true, mIsEmergencyOnly=false, isUsingCarrierAggregation=true, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=PS transportType=WLAN registrationState=UNKNOWN networkRegistrationState=UNKNOWN roamingType=NOT_ROAMING accessNetworkTechnology=IWLAN rejectCause=0 emergencyEnabled=false availableServices=[] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=null nrState=**** rRplmn= isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}, NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=null voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=0 mSystemIsInPrl=0 mDefaultRoamingIndicator=0} dataSpecificInfo=null nrState=**** rRplmn=62001 isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA,MMS] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 16 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false mLteAttachResultType = 0 mLteAttachExtraInfo = 0 LteVopsSupportInfo :  mVopsSupport = 2 mEmcBearerSupport = 2 } nrState=**** rRplmn=62001 isUsingCarrierAggregation=true isNonTerrestrialNetwork=TERRESTRIAL}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=MTN, mOperatorAlphaShortRaw=MTN, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false, mIsUsingNonTerrestrialNetwork=false}
+08-06 19:45:59.814 D/SatelliteModeObserver( 2482): isSatelliteNetworksOn(), isUsingTerrestrialNetwork: false
+08-06 19:45:59.815 D/SatelliteModeObserver( 2482): isSatelliteNetworksOn(), isUsingTerrestrialNetwork: false
+08-06 19:45:59.815 I/NetworkUtil( 2459): Network Cap check : INTERNET : true
+08-06 19:45:59.815 W/NetworkManager_FLP( 3557): updateServiceStateChanged, serviceState=0 / isRegistered=true / channel=3000 / networkTypeName=LTE / nr=false
+08-06 19:45:59.815 D/SatelliteModeObserver( 2482): isSatelliteNetworksOn(), isUsingTerrestrialNetwork: false
+08-06 19:45:59.815 I/NetworkUtil( 2459): isConnected = true isCellularOnly : true
+08-06 19:45:59.815 I/NetworkManager_FLP( 3557): Success to update networkStatus, Service=0 / Network=LTE(band=7, ch=3000) / MobileData=true, roaming=false / WIFI=true, conn=false / BT=true, conn=false
+08-06 19:45:59.815 W/NSLocationMonitor( 1754): onServiceStateChanged, state=0 / channel=3000
+08-06 19:45:59.816 I/NSLocationMonitor( 1754): networkType[13]=LTE / nrState=false
+08-06 19:45:59.816 I/TelephonyCallbackForPdnController<1>( 2459): onServiceStateChanged: state={mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=3000, duplexMode()=1, mCellBandwidths=[20000, 20000, 15000], mOperatorAlphaLong=MTN, mOperatorAlphaShort=MTN, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=*1, mSystemId=*1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, NonCellular=false, Snap=0, PsOnly=false, SprDisplayRoam=false, OptRadioTech=0, MsimSubmode=0, IsVoiceCallAvailable=true, mIsEmergencyOnly=false, isUsingCarrierAggregation=true, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=PS transportType=WLAN registrationState=UNKNOWN networkRegistrationState=UNKNOWN roamingType=NOT_ROAMING accessNetworkTechnology=IWLAN rejectCause=0 emergencyEnabled=false availableServices=[] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=null nrState=**** rRplmn= isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}, NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=CellIdentityLte:{ mCi=1****86 mPci=365 mTac=2***4 mEarfcn=3000 mBands=[7] mBandwidth=2147483647 mMcc=620 mMnc=01 mAlphaLong=MTN mAlphaShort=MTN mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=0 mSystemIsInPrl=0 mDefaultRoamingIndicator=0} dataSpecificInfo=null nrState=**** rRplmn=62001 isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA,MMS] cellIdentity=CellIdentityLte:{ mCi=1****86 mPci=365 mTac=2***4 mEarfcn=3000 mBands=[7] mBandwidth=2147483647 mMcc=620 mMnc=01 mAlphaLong=MTN mAlphaShort=MTN mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 16 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false mLteAttachResultType = 0 mLteAttachExtraInfo = 0 LteVopsSupportInfo :  mVopsSupport = 2 mEmcBearerSupport = 2 } nrState=**** rRplmn=62001 isUsingCarrierAggregation=true isNonTerrestrialNetwork=TERRESTRIAL}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=MTN, mOperatorAlphaShortRaw=MTN, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false, mIsUsingNonTerrestrialNetwork=false}Changed=
+08-06 19:45:59.816 I/PdnController<1>( 2459): notifyDataConnectionState
+08-06 19:45:59.816 I/PdnController<1>( 2459): initialize PendedEPDGWeakSignal flag
+08-06 19:45:59.816 I/PdnController<1>( 2459): setPendedEPDGWeakSignal
+08-06 19:45:59.816 I/PdnController<1>( 2459): notifyDataConnectionState: needNotify=false networkType=13 isEpdgConnected=false dataNetType=13=>13 dataRegState=0=>0
+08-06 19:45:59.816 I/TelephonyCallbackForPdnController<1>( 2459): notifySnapshotState: snapshotState=0 old=0
+08-06 19:45:59.816 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 5010, callingPid: 15387, result: DENIED_SOFT
+08-06 19:45:59.816 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 5010, callingPid: 15387, result: DENIED_SOFT
+08-06 19:45:59.817 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10112, callingPid: 19351, result: DENIED_SOFT
+08-06 19:45:59.818 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10112, callingPid: 19351, result: DENIED_SOFT
+08-06 19:45:59.818 I/ImsIconManager<1>( 2459): onServiceStateChanged: {mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=3000, duplexMode()=1, mCellBandwidths=[20000, 20000, 15000], mOperatorAlphaLong=MTN, mOperatorAlphaShort=MTN, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=*1, mSystemId=*1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, NonCellular=false, Snap=0, PsOnly=false, SprDisplayRoam=false, OptRadioTech=0, MsimSubmode=0, IsVoiceCallAvailable=true, mIsEmergencyOnly=false, isUsingCarrierAggregation=true, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=PS transportType=WLAN registrationState=UNKNOWN networkRegistrationState=UNKNOWN roamingType=NOT_ROAMING accessNetworkTechnology=IWLAN rejectCause=0 emergencyEnabled=false availableServices=[] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=null nrState=**** rRplmn= isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}, NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=CellIdentityLte:{ mCi=1****86 mPci=365 mTac=2***4 mEarfcn=3000 mBands=[7] mBandwidth=2147483647 mMcc=620 mMnc=01 mAlphaLong=MTN mAlphaShort=MTN mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=0 mSystemIsInPrl=0 mDefaultRoamingIndicator=0} dataSpecificInfo=null nrState=**** rRplmn=62001 isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA,MMS] cellIdentity=CellIdentityLte:{ mCi=1****86 mPci=365 mTac=2***4 mEarfcn=3000 mBands=[7] mBandwidth=2147483647 mMcc=620 mMnc=01 mAlphaLong=MTN mAlphaShort=MTN mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 16 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false mLteAttachResultType = 0 mLteAttachExtraInfo = 0 LteVopsSupportInfo :  mVopsSupport = 2 mEmcBearerSupport = 2 } nrState=**** rRplmn=62001 isUsingCarrierAggregation=true isNonTerrestrialNetwork=TERRESTRIAL}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=MTN, mOperatorAlphaShortRaw=MTN, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false, mIsUsingNonTerrestrialNetwork=false}
+08-06 19:45:59.819 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10112, callingPid: 19351, result: DENIED_SOFT
+08-06 19:45:59.819 I/LocationAccessPolicy( 1754): checkLocationPermission - callingUid: 10112, callingPid: 19351, result: DENIED_SOFT
+08-06 19:45:59.820 W/NetworkManager_FLP( 3557): updateServiceStateChanged, serviceState=0 / isRegistered=true / channel=3000 / networkTypeName=LTE / nr=false
+08-06 19:45:59.820 E/GlobalSettingsRepoBase( 2459): globalgcsettings No matched key : separate_vo5g_icon
+08-06 19:45:59.821 I/ImsTelephonyStateTracker(19351): [D] onServiceStateChanged()
+08-06 19:45:59.821 I/ImsSim1Manager(19351): [D] onServiceStateChanged state : 0, old : 0
+08-06 19:45:59.821 W/ContextImpl( 1754): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:4 android.content.Context.sendBroadcastMultiplePermissions:8 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:191 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:184 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:1513 
+08-06 19:45:59.822 I/EPDG -- SIM1 [NetController]( 2991): getVoPS, vopsSupportInfo=LteVopsSupportInfo :  mVopsSupport = 2 mEmcBearerSupport = 2
+08-06 19:45:59.822 I/EPDG -- SIM1 [NetController]( 2991): WWAN Voice Regi: 0 Roaming: 0
+08-06 19:45:59.822 I/EPDG -- SIM1 [NetController]( 2991): WWAN Data Regi: 0 Rat: 13 Roaming: false
+08-06 19:45:59.822 I/ImsTelephonyStateTracker(19351): [D] onServiceStateChanged()
+08-06 19:45:59.822 I/EPDG -- SIM1 [EpdgSubscription]( 2991): getIsAirplaneMode: returning: false
+08-06 19:45:59.822 I/ImsSim2Manager(19351): [D] onServiceStateChanged state : 0, old : 0
+08-06 19:45:59.822 I/RegiMgr<1>( 2459): [Global GC RCS|IDLE] checkInitialRegistrationIsReady: APM ON [false], Roamimg [false]
+08-06 19:45:59.823 I/RcsPolicyMgr<1>( 2459): pendingRcsRegister: mActiveDataPhoneId = 1
+08-06 19:45:59.823 I/ImsProfile( 2459): carrierId : CHO isRttSupportByCallApp false
+08-06 19:45:59.823 I/ImsProfile( 2459): ttyType : 1
+08-06 19:45:59.823 I/RegiMgr-Utils<1>( 2459): getPriorityRegiedTask : isPriority  High? true
+08-06 19:45:59.824 I/RegiGvnBase( 2459): checkRegiStatus: getState()=IDLE mIsUpdateRegistering=false
+08-06 19:45:59.824 I/RegiMgr<1>( 2459): getTelephonyCallStatus:
+08-06 19:45:59.824 I/ImsSim1Manager(19351): [D] checkVoiceNetwork voice network : 13
+08-06 19:45:59.825 W/ContextImpl( 1754): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:4 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:216 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:184 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:1513 android.os.Binder.execTransactInternal:88 
+08-06 19:45:59.827 I/VolteServiceModule( 2459): onServiceStateChanged({mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=3000, duplexMode()=1, mCellBandwidths=[20000, 20000, 15000], mOperatorAlphaLong=MTN, mOperatorAlphaShort=MTN, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=*1, mSystemId=*1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, NonCellular=false, Snap=0, PsOnly=false, SprDisplayRoam=false, OptRadioTech=0, MsimSubmode=0, IsVoiceCallAvailable=true, mIsEmergencyOnly=false, isUsingCarrierAggregation=true, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=PS transportType=WLAN registrationState=UNKNOWN networkRegistrationState=UNKNOWN roamingType=NOT_ROAMING accessNetworkTechnology=IWLAN rejectCause=0 emergencyEnabled=false availableServices=[] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=null nrState=**** rRplmn= isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}, NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=CellIdentityLte:{ mCi=1****86 mPci=365 mTac=2***4 mEarfcn=3000 mBands=[7] mBandwidth=2147483647 mMcc=620 mMnc=01 mAlphaLong=MTN mAlphaShort=MTN mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=0 mSystemIsInPrl=0 mDefaultRoamingIndicator=0} dataSpecificInfo=null nrState=**** rRplmn=62001 isUsingCarrierAggregation=false isNonTerrestrialNetwork=TERRESTRIAL}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA,MMS] cellIdentity=CellIdentityLte:{ mCi=1****86 mPci=365 mTac=2***4 mEarfcn=3000 mBands=[7] mBandwidth=2147483647 mMcc=620 mMnc=01 mAlphaLong=MTN mAlphaShort=MTN mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 16 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false mLteAttachResultType = 0 mLteAttachExtraInfo = 0 LteVopsSupportInfo :  mVopsSupport = 2 mEmcBearerSupport = 2 } nrState=**** rRplmn=62001 isUsingCarrierAggregation=true isNonTerrestrialNetwork=TERRESTRIAL}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=MTN, mOperatorAlphaShortRaw=MTN, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false, mIsUsingNonTerrestrialNetwork=false})
+08-06 19:45:59.827 I/VolteServiceModule( 2459): mIsLteEpsOnlyAttached(1):false
+08-06 19:45:59.829 I/ImsSim2Manager(19351): [D] checkVoiceNetwork voice network : 13
+08-06 19:45:59.830 W/ContextImpl( 1754): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:4 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:246 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:184 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:1513 android.os.Binder.execTransactInternal:88 
+08-06 19:45:59.832 V/SemWifiBackOff.5G( 1754): checkAndSetup nrFrequencyRange=0 / prevNrFrequencyRange=0
+08-06 19:45:59.832 V/SemWifiBackOff.5G( 1754): restore back off mode, current: [NONE]
+08-06 19:45:59.835 I/adbd    ( 3526): opening control endpoint /dev/usb-ffs/adb/ep0
+08-06 19:45:59.835 W/ContextImpl( 1754): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:4 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:269 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:184 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:1513 android.os.Binder.execTransactInternal:88 
+08-06 19:45:59.839 I/EPDG -- SIM1 [NetController]( 2991): getIsRssiDisabledForProfiling: returning: false
+08-06 19:45:59.839 I/EPDG -- [SettingManager]( 2991): getVoWifiPreference[1], 2
+08-06 19:45:59.839 I/EPDG -- SIM1 [EpdgSubscription]( 2991): getIsAirplaneMode: returning: false
+08-06 19:45:59.843 D/ServiceStateProvider( 2307): subId=2
+08-06 19:45:59.845 I/ConfigProvider( 2459): query uri:xxxxx
+08-06 19:45:59.848 D/MULTISIM-PROD-REPO( 2482): onReceive() - action = android.intent.action.SERVICE_STATE
+08-06 19:45:59.848 D/Tile.AirplaneModeTile( 2482): onReceive android.intent.action.SERVICE_STATE
+08-06 19:45:59.848 D/CarrierTextController( 2482): carrierTextForSimState(1)-(order: 0) : MTN, MTN
+08-06 19:45:59.848 D/CarrierTextController( 2482): carrierTextForSimState(2)-(order: 1) : MTN, MTN
+08-06 19:45:59.849 D/CarrierTextController( 2482): setCarrierText : MTN • MTN, MTN • MTN allSimsMissing : false anySimReady : true
+08-06 19:45:59.849 D/CarrierTextController( 2482): carrierTextForSimState(1)-(order: 0) : MTN, MTN
+08-06 19:45:59.849 D/CarrierTextController( 2482): carrierTextForSimState(2)-(order: 1) : MTN, MTN
+08-06 19:45:59.849 I/LocationAccessPolicy( 2307): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.850 D/CarrierTextController( 2482): setCarrierText : MTN • MTN, MTN • MTN allSimsMissing : false anySimReady : true
+08-06 19:45:59.850 D/CarrierTextController( 2482): carrierTextForSimState(1)-(order: 0) : MTN, MTN
+08-06 19:45:59.850 D/CarrierTextController( 2482): carrierTextForSimState(2)-(order: 1) : MTN, MTN
+08-06 19:45:59.851 D/CarrierTextController( 2482): setCarrierText : MTN • MTN, MTN • MTN allSimsMissing : false anySimReady : true
+08-06 19:45:59.851 D/FaceWidgetPagesController( 2482): onRefreshCarrierInfo()
+08-06 19:45:59.851 D/SatelliteController( 2307): isInCarrierRoamingNbIotNtn: satellite is disabled
+08-06 19:45:59.854 I/LocationAccessPolicy( 2307): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.854 I/LocationAccessPolicy( 2307): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.856 D/SLocation( 1754): CellLocationManager - onCellLocationChanged 2 / 1
+08-06 19:45:59.856 I/EPDG -- SIM1 [EpdgSubscription]( 2991): getIsAirplaneMode: returning: false
+08-06 19:45:59.856 D/DeviceState( 2482): isESIM() :0 : false
+08-06 19:45:59.857 D/NetworkController.MobileSignalController(1)( 2482): isPowerOffServiceState,mCurrentState.getVoiceServiceState() = 0,mCurrentState.airplaneMode = false,mCurrentState.canCellularVoiceService() = true,mCurrentState.getMobileDataRegState() = true
+08-06 19:45:59.857 D/Tile.AirplaneModeTile( 2482):  handleUpdateState mIsWiFiOnlyDevice false isNoSimState false isPowerOffServiceState false mSetting.getValue() 0 isSatelliteModeOn false isChinaDevice false
+08-06 19:45:59.857 D/Tile.AirplaneModeTile( 2482):  handleUpdateState:  value = false, state = 1
+08-06 19:45:59.858 I/LocationAccessPolicy( 2307): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.858 I/HotspotTile( 2482): handleUpdateState
+08-06 19:45:59.862 D/FaceWidgetClockRoamManager( 2482): isNetworkRoamingState id=2
+08-06 19:45:59.862 D/FaceWidgetClockRoamManager( 2482): isNetworkRoamingState false
+08-06 19:45:59.862 D/FaceWidgetClockRoamManager( 2482): onRefreshCarrierInfo(pre, now): false, false
+08-06 19:45:59.862 D/FaceWidgetClockPage( 2482): onRefreshCarrierInfo : isChanged false mIsRoaming false
+08-06 19:45:59.863 D/SemWifiService( 1754): received: android.intent.action.SERVICE_STATE
+08-06 19:45:59.863 I/Telecom ( 1754): SamsungTelecomServiceImpl : isInCall - callingPackage : com.android.systemui / callingUser : UserHandle{0} / hasCrossUserAccess : true
+08-06 19:45:59.864 D/CarrierTextController( 2482): info.location: Keyguard, info.carrierText: MTN • MTN, info.carrierTextShort: MTN • MTN
+08-06 19:45:59.864 I/LocationAccessPolicy( 2307): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.864 I/LocationAccessPolicy( 2307): checkLocationPermission - callingUid: 10050, callingPid: 2482, result: DENIED_SOFT
+08-06 19:45:59.868 D/CarrierTextController( 2482): info.location: null, info.carrierText: MTN • MTN, info.carrierTextShort: MTN • MTN
+08-06 19:45:59.868 D/ShadeCarrierGroup( 2482): handleUpdateCarrierInfo [MTN • MTN] isLatin=false
+08-06 19:45:59.870 D/DataNetwork( 2307): getCallStateForSlot 0
+08-06 19:45:59.873 D/MULTISIM-PROD-REPO( 2482): HANDLE_MSG(2000)
+08-06 19:45:59.874 I/EPDG -- SIM1 [NetController]( 2991): voiceNetType: 13 mActiveVoiceRat: 13
+08-06 19:45:59.874 I/EPDG -- SIM1 [EpdgSubscription]( 2991): getIsAirplaneMode: returning: false
+08-06 19:45:59.879 I/EPDG -- SIM1 [NetController]( 2991): onNetworkStatusChanged : mCellularAvailable = true
+08-06 19:45:59.882 I/ConfigProvider( 2459): queryStorage path content://com.samsung.rcs.autoconfigurationprovider/parameter/version#simslot1
+08-06 19:45:59.885 I/Telephony( 2307): TelecomAccountRegistry$TelecomAccountTelephonyCallback: TelecomAccountRegistry: onServiceStateChanged: newState=0, mServiceState=0
+08-06 19:45:59.888 I/ConfigProvider( 2459): can not find readData from mStorage
+08-06 19:45:59.891 W/View    ( 2482): requestLayout() improperly called by com.android.systemui.qs.SecQSGradationDrawableView{dadb7f3 V.E...... ......ID 0,0-1080,354 #7f0a0a16 app:id/qs_gradation_view} during layout: running second layout pass
+08-06 19:45:59.891 W/View    ( 2482): requestLayout() improperly called by android.widget.FrameLayout{9f58cb0 V.E...... ......I. 0,0-1080,2400 #2} during layout: running second layout pass
+08-06 19:45:59.891 W/View    ( 2482): requestLayout() improperly called by android.widget.FrameLayout{e8ab729 V.E...... ......ID 0,152-1080,2355 #7f0a0a14 app:id/qs_frame} during layout: running second layout pass
+08-06 19:45:59.893 W/RefactorFlag( 2482): New code path expects SceneContainerFlag to be enabled.
+08-06 19:45:59.895 I/Telephony( 2307): TelecomAccountRegistry$AccountEntry: isRttCurrentlySupported -- regular acct,, hasVoiceAvailability: true, isRttSupported: false, alwaysAllowWhileRoaming: false, isRoaming: false, isOnWfc: false
+08-06 19:45:59.899 I/Telephony( 2307): TelecomAccountRegistry$AccountEntry: isRttCurrentlySupported -- regular acct,, hasVoiceAvailability: true, isRttSupported: false, alwaysAllowWhileRoaming: false, isRoaming: false, isOnWfc: false
+08-06 19:45:59.899 V/PhoneGlobals( 2307): handleServiceStateChanged
+08-06 19:45:59.899 D/NotificationMgr( 2307): updateNetworkSelection, Use Samsung codes instead of AOSP codes
+08-06 19:45:59.899 V/PhoneGlobals( 2307): subId=2, mDefaultDataSubId=2, ss roaming=false
+08-06 19:45:59.899 I/RegiGvnRcs( 2459): isReadyToRegister: User don't try RCS service yet
+08-06 19:45:59.899 I/RegiMgr<1>( 2459): [Global GC RCS|IDLE] checkForTryRegister: isReadyToRegister = false
+08-06 19:45:59.900 I/GeolocationCon( 2459): handleMessage : what = SERVICE_STATE_CHANGED
+08-06 19:45:59.902 I/GeolocationCon( 2459): matchTimingReqLocation ,match=0, timing=4
+08-06 19:45:59.902 I/GeolocationCon( 2459): matchTimingReqLocation ,match=0, timing=4
+08-06 19:45:59.902 I/GeolocationCon( 2459): matchTimingReqLocation ,match=0, timing=4
+08-06 19:45:59.902 I/GeolocationCon( 2459): profile is null
+08-06 19:45:59.903 D/DeviceState( 2482): isESIM() :0 : false
+08-06 19:45:59.903 D/NetworkController.MobileSignalController(1)( 2482): isPowerOffServiceState,mCurrentState.getVoiceServiceState() = 0,mCurrentState.airplaneMode = false,mCurrentState.canCellularVoiceService() = true,mCurrentState.getMobileDataRegState() = true
+08-06 19:45:59.903 D/Tile.AirplaneModeTile( 2482):  handleUpdateState mIsWiFiOnlyDevice false isNoSimState false isPowerOffServiceState false mSetting.getValue() 0 isSatelliteModeOn false isChinaDevice false
+08-06 19:45:59.903 D/Tile.AirplaneModeTile( 2482):  handleUpdateState:  value = false, state = 1
+08-06 19:45:59.905 I/GeolocationCon<1>( 2459): onNetworkCountryIsoChanged: mCountryIso = gh, iso = gh
+08-06 19:45:59.905 D/PhoneRestrictionPolicy( 1754): isOperationAllowed >>> slotNum: 1 function: 1
+08-06 19:45:59.910 V/PhoneGlobals( 2307): updateDataRoamingStatus
+08-06 19:45:59.910 V/PhoneGlobals( 2307): updateDataRoamingStatus dataAllowed=true, disallowReasons=[], dataIsNowRoaming=false, RoamingNumeric=62001, CallingReason=3
+08-06 19:46:00.012 I/DateTimeView( 2482): updateAll - getTimeFormat
+08-06 19:46:00.015 I/SemWifiApServiceDetector( 1754): Service update poll status --- isMlLibraryReady: true --- mSoftApEnabled: true --- mServiceUpdateActivated: true
+08-06 19:46:00.021 D/SemWifiApServiceDetector( 1754): TrafficMap: {1681002506_-818802678= [key=1681002506_-818802678, sport=7167, dport=62619, ipv4Address=10.16.50.207, ipv6Address=[0, 0, 0, 0], ipv4sAddress=10.16.50.100, ipv6sAddress=[0, 0, 0, 0], ulPacketCnt=3.0, dlPacketCnt=2.0, ulPacketSizeMax=80.0, ulPacketSizeMin=55.0, ulPacketSizeAvg=71.666664, dlPacketSizeMax=80.0, dlPacketSizeMin=66.0, dlPacketSizeAvg=73.0, interTimeMax=0.2760425, interTimeMin=0.05, interTimeAvg=0.17355053, interTimeDLMax1=0.21036787, interTimeDLMax2=0.0, tcpPacketCnt=2.0, udpPacketCnt=3.0, cliMacAddr=4C:5F:70:C7:E9:99]}
+08-06 19:46:00.021 I/SemWifiApServiceDetector( 1754): Cache traffic:  --- [1681002506_-818802678] [key=1681002506_-818802678, sport=7167, dport=62619, ipv4Address=10.16.50.207, ipv6Address=[0, 0, 0, 0], ipv4sAddress=10.16.50.100, ipv6sAddress=[0, 0, 0, 0], ulPacketCnt=3.0, dlPacketCnt=2.0, ulPacketSizeMax=80.0, ulPacketSizeMin=55.0, ulPacketSizeAvg=71.666664, dlPacketSizeMax=80.0, dlPacketSizeMin=66.0, dlPacketSizeAvg=73.0, interTimeMax=0.2760425, interTimeMin=0.05, interTimeAvg=0.17355053, interTimeDLMax1=0.21036787, interTimeDLMax2=0.0, tcpPacketCnt=2.0, udpPacketCnt=3.0, cliMacAddr=4C:5F:70:C7:E9:99]
+08-06 19:46:00.023 I/SemWifiApServiceDetector( 1754): Cache data poll: Convo: [1681002506_-818802678] --- Buffer content: [[0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 0.05, 0.0, 0.0, 0.0, 2.0]; [0.3466362, 0.2181753, 3.0, 3.0, 55.0, 80.0, 71.666664, 80.0, 66.0, 75.333336, 0.05, 0.2749127, 0.12548237, 2.0, 4.0]; [0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 0.05, 0.0, 0.0, 0.0, 2.0]; [0.10333351, 0.10333351, 2.0, 2.0, 55.0, 80.0, 67.5, 1238.0, 66.0, 652.0, 0.05, 0.04227362, 0.0, 2.0, 2.0]; [0.0, 0.0, 1.0, 2.0, 1238.0, 1238.0, 1238.0, 80.0, 80.0, 80.0, 0.05, 0.4009823, 0.0, 0.0, 3.0]; [0.2760425, 0.17355053, 3.0, 2.0, 55.0, 80.0, 71.666664, 80.0, 66.0, 73.0, 0.05, 0.21036787, 0.0, 2.0, 3.0]];end 
+08-06 19:46:00.024 D/QSClockBellTower( 2482): onReceive(android.intent.action.TIME_TICK) mTimeZoneString:Africa/Accra
+08-06 19:46:00.025 I/EyeComfortSolutionService( 1754): action  :  android.intent.action.TIME_TICK
+08-06 19:46:00.026 D/SemWifiApServiceDetector( 1754): Calculate stats
+08-06 19:46:00.027 I/MhsAiService(29128): predictL1ServiceType, l1Inp length is: 60
+08-06 19:46:00.031 I/MhsAiService(29128): NSD+ cache prediction: Convo: 10.16.50.100_10.16.50.207 --- inp: [0.12100204, 0.0825099, 1.8333334, 1.8333334, 260.5, 273.0, 268.1389, 273.0, 73.0, 173.3889, 2.6666667, 1.0, 0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 2.0, 0.0, 0.01986416, 0.007925127, 0.80555534, 0.4722221, 191226.25, 186245.0, 188146.97, 186245.0, 49.0, 45820.977, 0.55555487, 1.0, 0.0, 0.0, 1.0, 1.0, 55.0, 80.0, 67.5, 80.0, 66.0, 73.0, 2.0, 0.0, 0.3466362, 0.2181753, 3.0, 3.0, 1238.0, 1238.0, 1238.0, 1238.0, 80.0, 652.0, 4.0, 2.0] --- prediction: 0;
+08-06 19:46:00.038 I/SemWifiApServiceDetector( 1754): Current convo-service pred: {1681002506_-818802678=0}
+08-06 19:46:00.041 I/SemWifiApServiceDetector( 1754): Convo Buffer Map: {1681002506_-818802678=Convo Key: 1681002506_-818802678: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] --- ser: 0; }
+08-06 19:46:00.041 I/SemWifiApServiceDetector( 1754): Real-time --- v4: {1681002506_-818802678=7} --- v6: {}
+08-06 19:46:00.043 I/SemWifiApServiceDetector( 1754): Convo-ser map: Convo key 1681002506_-818802678: {Convo Key: 1681002506_-818802678: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] --- ser: 0; }; 
+08-06 19:46:00.058 D/ClockFaceEvents( 2482): onTimeTick. callers : com.android.keyguard.ClockEventController$keyguardUpdateMonitorCallback$1.refreshTime:18
+08-06 19:46:00.058 D/ClockFaceEvents( 2482): com.android.keyguard.ClockEventController$keyguardUpdateMonitorCallback$1.onTimeChanged:0
+08-06 19:46:00.058 D/ClockFaceEvents( 2482): com.android.keyguard.KeyguardUpdateMonitor$16.handleMessage:731
+08-06 19:46:00.059 D/ClockFaceEvents( 2482): onTimeTick. callers : com.android.keyguard.ClockEventController$keyguardUpdateMonitorCallback$1.refreshTime:37
+08-06 19:46:00.059 D/ClockFaceEvents( 2482): com.android.keyguard.ClockEventController$keyguardUpdateMonitorCallback$1.onTimeChanged:0
+08-06 19:46:00.059 D/ClockFaceEvents( 2482): com.android.keyguard.KeyguardUpdateMonitor$16.handleMessage:731
+08-06 19:46:00.059 D/FaceWidgetPagesController( 2482): onTimeChanged()
+08-06 19:46:00.068 D/QSClockBellTower( 2482): He is ready to ring the bell. (((QSClockBellSound - TimeText:19:46, TimeContentDescription:19:46, DateText:Thu 6 August, ShortDateText:Thu 6 Aug, Demo:false)))
+08-06 19:46:00.078 D/QSClock ( 2482): StatusBar clock=19:46 notifyTimeChanged(QSClockBellSound - TimeText:19:46, TimeContentDescription:19:46, DateText:Thu 6 August, ShortDateText:Thu 6 Aug, Demo:false) clockVisibleByPolicy=true, clockVisibleByUser=true, visible=true, parent=android.widget.LinearLayout{a0531f1 V.E...... ......ID 0,0-101,60 #7f0a069b app:id/left_clock_container} caller=com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment.animateShow:51 com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment.updateStatusBarVisibilitiesInner:229 com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment.updateStatusBarVisibilities:64 com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment$$ExternalSyntheticLambda0.onStatusBarWindowStateChanged:5 com.android.systemui.statusbar.window.StatusBarWindowStateController$commandQueueCallback$1.setWindowState:38  
+08-06 19:46:00.079 D/QSClockBellTower( 2482): Everyone heard the bell. run(currentTime:1786045560062, getTime():Thu Aug 06 19:46:00 GMT 2026, getTimeZone():libcore.util.ZoneInfo[mDstSavings=0,mUseDst=false,mDelegate=[id="Africa/Accra",mRawOffset=0,mEarliestRawOffset=-968000,transitions=1]])
+08-06 19:46:00.082 D/{OngoingChipAdapter}( 2482): updateEnableMaxWidth : 331 -:> 330
+08-06 19:46:00.085 W/View    ( 2482): requestLayout() improperly called by androidx.recyclerview.widget.RecyclerView{52de817 V.ED..... ......I. 0,3-182,56 #7f0a0286 app:id/capsule_recyclerview} during layout: running second layout pass
+08-06 19:46:00.086 I/{OngoingChipAdapter}( 2482): onBindViewHolder() notificationArrayList.position = 0
+08-06 19:46:00.096 D/{OngoingChipAdapter}( 2482): hasAvailableSpaceToExpand - enableMax:330 totalWidth250 call:false
+08-06 19:46:00.097 I/{OngoingChipAdapter}( 2482): onBindViewHolder custom chip measuredWidth:156, padding:13, ratio:0.8759124, parentWidth:182
+08-06 19:46:00.103 D/BufferPoolAccessor2.0( 1543): bufferpool2 0xb40000797e99ec58 : 0(0 size) total buffers - 0(0 size) used buffers - 0/0 (recycle/alloc) - 0/0 (fetch/transfer)
+08-06 19:46:00.103 D/BufferPoolAccessor2.0( 1543): evictor expired: 1, evicted: 1
+08-06 19:46:00.117 W/RefactorFlag( 2482): New code path expects SceneContainerFlag to be enabled.
+08-06 19:46:00.135 I/NowBrief.SecWeatherApi( 4901): requestTimeZone, ret: false
+08-06 19:46:00.177 D/SemWifiTrafficPoller( 1754): getSoftApTotalTrafficInBytes:460421292
+08-06 19:46:00.226 I/AudioPathManager(22875): loadAudioPath() : loaded audio path is bluetooth (2)
+08-06 19:46:00.226 I/EffectManager(22875): isSupportDolbyAtmosOnThisAudioPath() : path is bluetooth (2)
+08-06 19:46:00.227 I/UHQUpscalerManager(22875): isUHQCompatibleBluetooth() : support is 0, mode is 1
+08-06 19:46:00.227 I/AudioPathManager(22875): loadAudioPath() : loaded audio path is bluetooth (2)
+08-06 19:46:00.227 I/EffectManager(22875): isSupportVolumeNormalizationOnCurrentAudioPath() : path is bluetooth (2)
+08-06 19:46:00.227 I/DVFSHelper(22875): isNecessaryToBoostCPU() : isDolbyOn? false, isUHQUpscalerOn? false, isVoiceBoostOn? false, isVolumeNormalizationOn? false
+08-06 19:46:00.227 I/DVFSHelper(22875): acquireBoostingCPU() : stop boosting cpu
+08-06 19:46:00.233 I/AudioPathManager(22875): loadAudioPath() : loaded audio path is bluetooth (2)
+08-06 19:46:00.233 I/EffectManager(22875): isSupportDolbyAtmosOnThisAudioPath() : path is bluetooth (2)
+08-06 19:46:00.233 I/UHQUpscalerManager(22875): isUHQCompatibleBluetooth() : support is 0, mode is 1
+08-06 19:46:00.233 I/AudioPathManager(22875): loadAudioPath() : loaded audio path is bluetooth (2)
+08-06 19:46:00.233 I/EffectManager(22875): isSupportVolumeNormalizationOnCurrentAudioPath() : path is bluetooth (2)
+08-06 19:46:00.234 I/DVFSHelper(22875): isNecessaryToBoostCPU() : isDolbyOn? false, isUHQUpscalerOn? false, isVoiceBoostOn? false, isVolumeNormalizationOn? false
+08-06 19:46:00.515 I/NowBrief.SecWeatherApi( 4901): requestSevereAlert, ret: false
+08-06 19:46:00.528 I/SemWifiApServiceDetector( 1754): Service update poll status --- isMlLibraryReady: true --- mSoftApEnabled: true --- mServiceUpdateActivated: true
+08-06 19:46:00.532 D/SemWifiApServiceDetector( 1754): TrafficMap: {1681002506_-818802678= [key=1681002506_-818802678, sport=7167, dport=62619, ipv4Address=10.16.50.207, ipv6Address=[0, 0, 0, 0], ipv4sAddress=10.16.50.100, ipv6sAddress=[0, 0, 0, 0], ulPacketCnt=1.0, dlPacketCnt=1.0, ulPacketSizeMax=80.0, ulPacketSizeMin=80.0, ulPacketSizeAvg=80.0, dlPacketSizeMax=80.0, dlPacketSizeMin=80.0, dlPacketSizeAvg=80.0, interTimeMax=0.0, interTimeMin=0.05, interTimeAvg=0.0, interTimeDLMax1=0.0, interTimeDLMax2=0.0, tcpPacketCnt=0.0, udpPacketCnt=2.0, cliMacAddr=4C:5F:70:C7:E9:99]}
+08-06 19:46:00.532 I/SemWifiApServiceDetector( 1754): Cache traffic:  --- [1681002506_-818802678] [key=1681002506_-818802678, sport=7167, dport=62619, ipv4Address=10.16.50.207, ipv6Address=[0, 0, 0, 0], ipv4sAddress=10.16.50.100, ipv6sAddress=[0, 0, 0, 0], ulPacketCnt=1.0, dlPacketCnt=1.0, ulPacketSizeMax=80.0, ulPacketSizeMin=80.0, ulPacketSizeAvg=80.0, dlPacketSizeMax=80.0, dlPacketSizeMin=80.0, dlPacketSizeAvg=80.0, interTimeMax=0.0, interTimeMin=0.05, interTimeAvg=0.0, interTimeDLMax1=0.0, interTimeDLMax2=0.0, tcpPacketCnt=0.0, udpPacketCnt=2.0, cliMacAddr=4C:5F:70:C7:E9:99]
+08-06 19:46:00.539 I/SemWifiApServiceDetector( 1754): Cache data poll: Convo: [1681002506_-818802678] --- Buffer content: [[0.3466362, 0.2181753, 3.0, 3.0, 55.0, 80.0, 71.666664, 80.0, 66.0, 75.333336, 0.05, 0.2749127, 0.12548237, 2.0, 4.0]; [0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 0.05, 0.0, 0.0, 0.0, 2.0]; [0.10333351, 0.10333351, 2.0, 2.0, 55.0, 80.0, 67.5, 1238.0, 66.0, 652.0, 0.05, 0.04227362, 0.0, 2.0, 2.0]; [0.0, 0.0, 1.0, 2.0, 1238.0, 1238.0, 1238.0, 80.0, 80.0, 80.0, 0.05, 0.4009823, 0.0, 0.0, 3.0]; [0.2760425, 0.17355053, 3.0, 2.0, 55.0, 80.0, 71.666664, 80.0, 66.0, 73.0, 0.05, 0.21036787, 0.0, 2.0, 3.0]; [0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 0.05, 0.0, 0.0, 0.0, 2.0]];end 
+08-06 19:46:00.544 D/SemWifiApServiceDetector( 1754): Calculate stats
+08-06 19:46:00.548 I/MhsAiService(29128): predictL1ServiceType, l1Inp length is: 60
+08-06 19:46:00.549 I/MhsAiService(29128): NSD+ cache prediction: Convo: 10.16.50.100_10.16.50.207 --- inp: [0.12100204, 0.0825099, 1.8333334, 1.8333334, 260.5, 273.0, 268.1389, 273.0, 73.0, 173.3889, 2.6666667, 1.0, 0.0, 0.0, 1.0, 1.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 2.0, 0.0, 0.01986416, 0.007925127, 0.80555534, 0.4722221, 191226.25, 186245.0, 188146.97, 186245.0, 49.0, 45820.977, 0.55555487, 1.0, 0.0, 0.0, 1.0, 1.0, 55.0, 80.0, 67.5, 80.0, 66.0, 73.0, 2.0, 0.0, 0.3466362, 0.2181753, 3.0, 3.0, 1238.0, 1238.0, 1238.0, 1238.0, 80.0, 652.0, 4.0, 2.0] --- prediction: 0;
+08-06 19:46:00.550 I/SemWifiApServiceDetector( 1754): Current convo-service pred: {1681002506_-818802678=0}
+08-06 19:46:00.554 I/SemWifiApServiceDetector( 1754): Convo Buffer Map: {1681002506_-818802678=Convo Key: 1681002506_-818802678: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] --- ser: 0; }
+08-06 19:46:00.554 I/SemWifiApServiceDetector( 1754): Real-time --- v4: {1681002506_-818802678=7} --- v6: {}
+08-06 19:46:00.556 I/SemWifiApServiceDetector( 1754): Convo-ser map: Convo key 1681002506_-818802678: {Convo Key: 1681002506_-818802678: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] --- ser: 0; }; 
+08-06 19:46:00.560 D/SatelliteController( 2307): isInCarrierRoamingNbIotNtn: satellite is disabled
+08-06 19:46:00.683 E/HeatmapThread( 1327): ECT Thread time in milliseconds: 1786045560
+08-06 19:46:00.683 D/HeatmapThread( 1327): !@ batteryplugType : 0
+08-06 19:46:00.683 D/HeatmapThread( 1327): !@ batteryLevel : 0  batteryTemperature : 0 
+08-06 19:46:00.683 D/HeatmapThread( 1327): !@ Heatmap currtime: 29767426
+08-06 19:46:00.683 D/HeatmapThread( 1327): !@ Heatmap prevtime: 29767407
+08-06 19:46:00.683 D/HeatmapThread( 1327): !@ Heatmap plugstarttime: 35791394
+08-06 19:46:00.683 D/HeatmapThread( 1327): !@ Heatmap prevv_dsoh_update_time: 29767047
+08-06 19:46:00.684 E/HeatmapThread( 1327): !@Could not open '/efs/FactoryApp/bsoh', errno = 13
+08-06 19:46:00.684 E/HeatmapThread( 1327): !@ CAM Could not access BSOH EFS
+08-06 19:46:00.684 E/HeatmapThread( 1327): !@ CAM New BSOH: 0
+08-06 19:46:00.741 I/ScanController( 2437): onScanResult to scannerId: 5- eventType=0x10, addressType=1, address=XX:XX:XX:XX:36:1A, primaryPhy=1, secondaryPhy=0, advertisingSid=0xff, txPower=127, rssi=-54, periodicAdvInt=0x0

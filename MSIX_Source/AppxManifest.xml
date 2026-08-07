@@ -1,44 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
-  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
-  xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2"
-  IgnorableNamespaces="uap uap3 rescap desktop desktop2">
-
-  <Identity
-    Name="CodeDeX.DeX"
-    Publisher="CN=CodeDeX"
-    Version="6.6.7.1"
-    ProcessorArchitecture="x64" />
-
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2" IgnorableNamespaces="uap uap3 rescap desktop desktop2">
+  <Identity Name="CodeDeX.DeX" Publisher="CN=CodeDeX" Version="6.6.5.0" ProcessorArchitecture="x64" />
   <Properties>
     <DisplayName>DeX - Next Gen Local Send</DisplayName>
     <PublisherDisplayName>CodeDeX</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
-
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.22621.0" />
   </Dependencies>
-
   <Resources>
-    <Resource Language="en-us"/>
+    <Resource Language="en-us" />
   </Resources>
-
   <Applications>
-    <Application
-      Id="App"
-      Executable="DeXShareTarget.exe"
-      EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements
-        DisplayName="DeX"
-        Description="Send files directly between your devices"
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
+    <Application Id="App" Executable="DeXShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="DeX" Description="Send files directly between your devices" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
       </uap:VisualElements>
       <Extensions>
@@ -51,23 +27,15 @@
             <uap:DataFormat>StorageItems</uap:DataFormat>
           </uap:ShareTarget>
         </uap:Extension>
-        
         <!-- Native MSIX Startup Task -->
         <desktop:Extension Category="windows.startupTask" Executable="DeXShareTarget.exe" EntryPoint="Windows.FullTrustApplication">
           <desktop:StartupTask TaskId="DeXStartup" Enabled="true" DisplayName="DeX Engine" />
         </desktop:Extension>
       </Extensions>
     </Application>
-
     <!-- Invisible Secondary Application to expose ADB Alias natively without Start Menu clutter -->
     <Application Id="AdbConsole" Executable="bin\adb.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements
-        DisplayName="DeX Engine"
-        Description="ADB Background Process"
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png"
-        AppListEntry="none">
+      <uap:VisualElements DisplayName="DeX Engine" Description="ADB Background Process" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
       </uap:VisualElements>
       <Extensions>
@@ -79,40 +47,35 @@
       </Extensions>
     </Application>
   </Applications>
-
   <Extensions>
     <desktop2:Extension Category="windows.firewallRules">
       <desktop2:FirewallRules Executable="bin\adb.exe">
-        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all"/>
-        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all"/>
-        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all"/>
-        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all"/>
+        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all" />
+        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all" />
+        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all" />
+        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all" />
       </desktop2:FirewallRules>
     </desktop2:Extension>
     <desktop2:Extension Category="windows.firewallRules">
       <desktop2:FirewallRules Executable="bin\thru.exe">
-        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all"/>
-        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all"/>
-        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all"/>
-        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all"/>
+        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all" />
+        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all" />
+        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all" />
+        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all" />
       </desktop2:FirewallRules>
     </desktop2:Extension>
     <desktop2:Extension Category="windows.firewallRules">
       <desktop2:FirewallRules Executable="DeXShareTarget.exe">
-        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all"/>
-        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all"/>
-        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all"/>
-        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all"/>
+        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all" />
+        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all" />
+        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all" />
+        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all" />
       </desktop2:FirewallRules>
     </desktop2:Extension>
   </Extensions>
-
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
     <Capability Name="internetClientServer" />
     <Capability Name="privateNetworkClientServer" />
   </Capabilities>
 </Package>
-
-
-

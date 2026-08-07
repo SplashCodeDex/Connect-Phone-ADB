@@ -74,8 +74,12 @@ $script:wpfWindow.AddHandler([System.Windows.Controls.MenuItem]::ClickEvent, [Sy
             }
         }
         $e.Handled = $true
-        return
     }
+})
+
+$script:wpfWindow.AddHandler([System.Windows.Controls.Primitives.ButtonBase]::ClickEvent, [System.Windows.RoutedEventHandler]{
+    param($sender, $e)
+    $src = $e.OriginalSource
     
     if ($src -is [System.Windows.Controls.Button] -or $src -is [System.Windows.Controls.RadioButton]) {
         $dc = $src.DataContext
@@ -99,31 +103,19 @@ $script:wpfWindow.AddHandler([System.Windows.Controls.MenuItem]::ClickEvent, [Sy
                     $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
                     $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
                     $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Visible'
-                    $btnPinCancel = $script:wpfWindow.FindName("btnPinCancel")
-                    $btnPinCancel.Visibility = 'Visible'
-                    $btnPinCancel.Content = "Cancel Request"
-                    
-                    # Show QR Code initially instead of PIN
-                    $localIp = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
-                    if ($localIp) {
-                        $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
-                        if ($imgQrCode) {
-                            $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-                            $bitmap.BeginInit()
-                            $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$localIp")
-                            $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
-                            $bitmap.EndInit()
-                            $imgQrCode.Source = $bitmap
-                        }
-                        $script:wpfWindow.FindName("pinCodeContent").Visibility = 'Collapsed'
-                        $script:wpfWindow.FindName("qrCodeContent").Visibility = 'Visible'
-                        
-                        $txtQrBtnIcon = $script:wpfWindow.FindName("txtQrBtnIcon")
-                        if ($txtQrBtnIcon) { $txtQrBtnIcon.Visibility = 'Collapsed' }
-                        $txtQrBtnText = $script:wpfWindow.FindName("txtQrBtnText")
-                        if ($txtQrBtnText) { $txtQrBtnText.Text = "Request PIN" }
+                    $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
+                    $script:wpfWindow.FindName("btnPinCancel").Content = "Cancel Request"
+
+                    # Start progress bar animation (60s countdown)
+                    $pb = $script:wpfWindow.FindName("pbPinTimeout")
+                    if ($pb) {
+                        $anim = New-Object System.Windows.Media.Animation.DoubleAnimation
+                        $anim.From = 100
+                        $anim.To = 0
+                        $anim.Duration = [TimeSpan]::FromSeconds(60)
+                        $pb.BeginAnimation([System.Windows.Controls.Primitives.RangeBase]::ValueProperty, $anim)
                     }
-                    
+
                     try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
                     
                     # We still want to monitor status but through the backend

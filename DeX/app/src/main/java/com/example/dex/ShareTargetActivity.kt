@@ -15,10 +15,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Computer
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.Computer
+import androidx.compose.material.icons.rounded.Folder
+import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -168,7 +168,7 @@ class ShareTargetActivity : ComponentActivity() {
                 items(2) { index ->
                     DeviceItem(
                         name = "Remote User ${index + 1}",
-                        icon = Icons.Default.Cloud,
+                        icon = Icons.Rounded.Cloud,
                         isDummy = true,
                         onClick = {}
                     )
@@ -195,7 +195,7 @@ class ShareTargetActivity : ComponentActivity() {
                     items(devices, key = { it.info.fingerprint }) { device ->
                         DeviceItem(
                             name = device.info.alias,
-                            icon = if (device.info.deviceType == "desktop") Icons.Default.Computer else Icons.Default.Smartphone,
+                            icon = if (device.info.deviceType == "desktop") Icons.Rounded.Computer else Icons.Rounded.Smartphone,
                             isDummy = false,
                             onClick = { onSendToDevice(device) }
                         )
@@ -211,7 +211,7 @@ class ShareTargetActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
             ) {
-                Icon(Icons.Default.Folder, contentDescription = null)
+                Icon(Icons.Rounded.Folder, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text("Save to Local DeX Sandbox")
             }

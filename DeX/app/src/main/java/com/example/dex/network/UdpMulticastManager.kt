@@ -18,8 +18,7 @@ import java.net.NetworkInterface
 
 class UdpMulticastManager(
     private val context: Context,
-    private val localInfo: RegisterDto,
-    private val onDeviceFound: (DiscoveredDevice) -> Unit
+    private val localInfo: RegisterDto
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private var udpJob: Job? = null
@@ -63,21 +62,6 @@ class UdpMulticastManager(
             val json = JSONObject(msg)
             val fp = json.optString("fingerprint", "")
             if (fp.isNotEmpty() && fp != localInfo.fingerprint) {
-                val incomingHash = if (json.has("identityHash")) json.getString("identityHash") else null
-                val dto = RegisterDto(
-                    alias = json.optString("alias", "Unknown"),
-                    version = json.optString("version", "2.0"),
-                    deviceModel = json.optString("deviceModel", "Unknown"),
-                    deviceType = json.optString("deviceType", "unknown"),
-                    fingerprint = fp,
-                    port = json.optInt("port", 53317),
-                    protocol = json.optString("protocol", "https"),
-                    download = json.optBoolean("download", true),
-                    identityHash = incomingHash
-                )
-                val level = if (incomingHash != null && incomingHash == localInfo.identityHash) "Auto-Trusted" else "Guest"
-                onDeviceFound(DiscoveredDevice(packet.address.hostAddress ?: "", dto, System.currentTimeMillis(), level))
-
                 sendReply(packet)
             }
         }

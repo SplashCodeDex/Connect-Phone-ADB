@@ -1,4 +1,4 @@
-﻿
+
 $script:wpfWindow.FindName("btnCopyIP").Add_Click({
     if (-not [string]::IsNullOrWhiteSpace($script:currentTarget)) {
         try {

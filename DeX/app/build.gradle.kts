@@ -65,6 +65,10 @@ dependencies {
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material.icons.extended)
+  
+  // Liquid Glass Backdrop
+  implementation("io.github.kashif-mehmood-km:backdrop:0.0.1-alpha02")
+
   // Tooling
   debugImplementation(libs.androidx.compose.ui.tooling)
   // Instrumented tests

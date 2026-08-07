@@ -1,42 +1,74 @@
 package com.example.dex.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.dex.R
+import com.example.dex.ui.components.DeXGlassPanel
+import com.kashif_e.backdrop.Backdrop
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NetworkErrorDialog(error: String, onDismiss: () -> Unit, title: String = stringResource(R.string.error_network_title)) {
-    BasicAlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = Modifier.fillMaxWidth()
+fun NetworkErrorDialog(
+    backdrop: Backdrop,
+    error: String, 
+    onDismiss: () -> Unit, 
+    title: String = stringResource(R.string.error_network_title)
+) {
+    // We use a Dialog with usePlatformDefaultWidth = false to overlay the whole screen,
+    // but note: on Android, Dialog creates a new window which cannot sample the backdrop of the main window.
+    // To achieve true spatial glass, we must render this as an in-layout overlay.
+    // We use a full-screen Box that consumes clicks.
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.4f)) // dim layer
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onDismiss
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        Surface(
-            modifier = Modifier.wrapContentSize(),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+        DeXGlassPanel(
+            backdrop = backdrop,
+            shape = RoundedCornerShape(32.dp),
+            blurRadius = 24.dp,
+            lensRadius = 32.dp,
+            lensDisplacement = 48.dp,
+            shadowRadius = 24.dp,
+            darken = true,
+            modifier = Modifier
+                .widthIn(max = 400.dp)
+                .fillMaxWidth(0.9f)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {} // consume clicks on dialog
+                )
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
                 Text(title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.error)
                 Spacer(Modifier.height(16.dp))
-                Text(error)
+                Text(error, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.height(24.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) {
-                        Text(stringResource(R.string.dismiss))
+                        Text(stringResource(R.string.dismiss), color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -44,19 +76,43 @@ fun NetworkErrorDialog(error: String, onDismiss: () -> Unit, title: String = str
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PairingRequestDialog(alias: String, pin: String, onAccept: (String) -> Unit, onReject: () -> Unit) {
+fun PairingRequestDialog(
+    backdrop: Backdrop,
+    alias: String, 
+    pin: String, 
+    onAccept: (String) -> Unit, 
+    onReject: () -> Unit
+) {
     var enteredPin by remember { mutableStateOf("") }
-    BasicAlertDialog(
-        onDismissRequest = onReject,
-        modifier = Modifier.fillMaxWidth()
+    
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.4f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onReject
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        Surface(
-            modifier = Modifier.wrapContentSize(),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+        DeXGlassPanel(
+            backdrop = backdrop,
+            shape = RoundedCornerShape(32.dp),
+            blurRadius = 24.dp,
+            lensRadius = 32.dp,
+            lensDisplacement = 48.dp,
+            shadowRadius = 24.dp,
+            darken = true,
+            modifier = Modifier
+                .widthIn(max = 400.dp)
+                .fillMaxWidth(0.9f)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {} // consume clicks
+                )
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),

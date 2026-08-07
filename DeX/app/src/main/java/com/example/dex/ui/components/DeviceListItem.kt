@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Computer
-import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.rounded.Computer
+import androidx.compose.material.icons.rounded.ContentPaste
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,10 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.dex.R
 import com.example.dex.network.DiscoveredDevice
+import com.kashif_e.backdrop.Backdrop
 
 @Composable
 fun DeviceListItem(
     device: DiscoveredDevice,
+    backdrop: Backdrop,
     onClick: () -> Unit,
     onSendClipboard: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -31,12 +33,13 @@ fun DeviceListItem(
     val context = LocalContext.current
     val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
 
-    Card(
+    DeXGlassPanel(
+        backdrop = backdrop,
+        shape = RoundedCornerShape(24.dp),
+        blurRadius = 8.dp,
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable { onClick() }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -49,7 +52,7 @@ fun DeviceListItem(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Computer,
+                    imageVector = Icons.Rounded.Computer,
                     contentDescription = stringResource(R.string.device_icon),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
@@ -69,14 +72,13 @@ fun DeviceListItem(
                 }
             }) {
                 Icon(
-                    imageVector = Icons.Default.ContentPaste,
+                    imageVector = Icons.Rounded.ContentPaste,
                     contentDescription = stringResource(R.string.send_clipboard),
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
-            @Suppress("DEPRECATION")
             Icon(
-                imageVector = Icons.Default.Send,
+                imageVector = Icons.AutoMirrored.Rounded.Send,
                 contentDescription = stringResource(R.string.send_file),
                 tint = MaterialTheme.colorScheme.primary
             )
