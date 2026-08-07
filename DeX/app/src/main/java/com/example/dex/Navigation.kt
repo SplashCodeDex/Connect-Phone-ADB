@@ -55,11 +55,19 @@ fun MainNavigation() {
     )
   }
 
-  Box(modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color.Black)) {
+  Box(modifier = Modifier.fillMaxSize()) {
+    // Background layer that provides the source for the backdrop effects
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .background(androidx.compose.ui.graphics.Color.Black)
+        .layerBackdrop(backdrop)
+    )
+
     NavDisplay(
       backStack = backStack,
       onBack = { backStack.removeLastOrNull() },
-      modifier = Modifier.layerBackdrop(backdrop),
+      modifier = Modifier,
       entryProvider =
         entryProvider {
           entry<Main> {

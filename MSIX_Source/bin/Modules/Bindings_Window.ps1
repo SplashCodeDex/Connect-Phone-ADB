@@ -374,7 +374,36 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
                             $txtQrBtnText = $script:wpfWindow.FindName("txtQrBtnText")
                             if ($txtQrBtnText) { $txtQrBtnText.Text = "Request PIN" }
                         }
+                        # Start progress bar animation (60s countdown)
+                        $pb = $script:wpfWindow.FindName("pbPinTimeout")
+                        if ($pb) {
+                            $anim = New-Object System.Windows.Media.Animation.DoubleAnimation
+                            $anim.From = 100
+                            $anim.To = 0
+                            $anim.Duration = [TimeSpan]::FromSeconds(60)
+                            $pb.BeginAnimation([System.Windows.Controls.Primitives.RangeBase]::ValueProperty, $anim)
+                        }
+
                         try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
+                        
+                        # Monitor pairing status through the backend
+                        $script:pairWaitTimer = New-Object System.Windows.Threading.DispatcherTimer
+                        $script:pairWaitTimer.Interval = [TimeSpan]::FromMilliseconds(1000)
+                        $script:pairWaitTimer.Add_Tick({
+                            try {
+                                $statusRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-status?ip=${ip}" -Method Get -ErrorAction Stop
+                                if ($statusRes.status -eq "Accepted") {
+                                    $script:pairWaitTimer.Stop()
+                                    Show-Toast -Title "Pairing Successful" -Message "Device trusted and added to Your Devices."
+                                    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+                                } elseif ($statusRes.status -eq "Rejected" -or $statusRes.status -eq "Failed") {
+                                    $script:pairWaitTimer.Stop()
+                                    Show-Toast -Title "Pairing Failed" -Message "The remote device rejected or timed out."
+                                    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+                                }
+                            } catch {}
+                        })
+                        $script:pairWaitTimer.Start()
                         
                         $e.Handled = $true
                         return
