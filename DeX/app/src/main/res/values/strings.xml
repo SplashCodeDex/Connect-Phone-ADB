@@ -13,28 +13,29 @@
 
     <!-- Main Screen -->
     <string name="scan_qr">Scan QR</string>
-    <string name="settings">Settings</string>
     <string name="downloading">Downloading…</string>
     <string name="cancel">Cancel</string>
     <string name="download_success">Successfully Downloaded %1$s</string>
     <string name="download_failed">Download Failed: %1$s</string>
-    <string name="uploading_progress">Uploading %1$d of %2$d files…</string>
+    <plurals name="uploading_progress">
+        <item quantity="one">Uploading %1$d of %2$d file…</item>
+        <item quantity="other">Uploading %1$d of %2$d files…</item>
+    </plurals>
     <string name="upload_success">Successfully Uploaded %1$s</string>
     <string name="upload_failed">Upload Failed: %1$s</string>
-    <string name="nearby_devices">Connection Status</string>
-    <string name="scanning_peers">Waiting for PC to connect…</string>
     <string name="clipboard_sent_success">Clipboard sent!</string>
     <string name="clipboard_sent_failed">Failed to send clipboard</string>
     <string name="clipboard_empty">Clipboard is empty</string>
     <string name="pairing_request">Pairing Request</string>
-    <string name="verify_pin">Verify this PIN on your PC:</string>
-    <string name="scan_qr_instead">Scan QR Code Instead</string>
     <string name="device_icon">Device</string>
     <string name="send_clipboard">Send Clipboard</string>
     <string name="send_file">Send File</string>
     <string name="toast_scanned_ip">Scanned PC IP: %1$s, searching…</string>
     <string name="toast_scan_failed">Scan failed: %1$s</string>
-    <string name="toast_sending_files">Sending %1$d files to %2$s…</string>
+    <plurals name="toast_sending_files">
+        <item quantity="one">Sending %1$d file to %2$s…</item>
+        <item quantity="other">Sending %1$d files to %2$s…</item>
+    </plurals>
     <string name="toast_percent_total">%1$d%% Total</string>
     
     <!-- Notification & Services -->
@@ -42,7 +43,10 @@
     <string name="notif_bg_title">DeX is running</string>
     <string name="notif_bg_desc">Listening for PC connections…</string>
     <string name="notif_incoming_title">Incoming File Transfer</string>
-    <string name="notif_incoming_desc">PC wants to send %1$d files.</string>
+    <plurals name="notif_incoming_desc">
+        <item quantity="one">PC wants to send %1$d file.</item>
+        <item quantity="other">PC wants to send %1$d files.</item>
+    </plurals>
     <string name="notif_action_accept">Accept</string>
     <string name="notif_action_reject">Reject</string>
     <string name="notif_file_received_title">File Received</string>
@@ -52,12 +56,7 @@
     <string name="upload_worker_preparing">Preparing upload…</string>
     <string name="upload_worker_channel">File Uploads</string>
     <string name="upload_worker_progress">Uploading %1$d of %2$d: %3$s</string>
-    <string name="upload_worker_title">Uploading Files</string>
-    <string name="upload_worker_cancel">Cancel Upload</string>
-
     <!-- Error Handling -->
     <string name="error_network_title">Network Error</string>
-    <string name="error_network_message">The transfer failed due to a network connection issue. Make sure the PC is still online and on the same network.</string>
-    <string name="retry">Retry</string>
     <string name="dismiss">Dismiss</string>
 </resources>

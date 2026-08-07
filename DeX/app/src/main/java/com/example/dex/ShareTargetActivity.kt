@@ -47,6 +47,7 @@ import com.example.dex.network.DiscoveryEngine
 import com.example.dex.network.ClientEngine
 import org.koin.android.ext.android.inject
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import com.example.dex.R
 
 class ShareTargetActivity : ComponentActivity() {
@@ -267,7 +268,7 @@ class ShareTargetActivity : ComponentActivity() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(stringResource(R.string.uploading_progress, uploadState.currentFileIndex, uploadState.totalFiles), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                    Text(pluralStringResource(R.plurals.uploading_progress, uploadState.totalFiles, uploadState.currentFileIndex, uploadState.totalFiles), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                     TextButton(onClick = { clientEngine.cancelUpload(this@ShareTargetActivity) }) {
                         Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
                     }

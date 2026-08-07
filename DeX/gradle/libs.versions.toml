@@ -1,6 +1,6 @@
 [versions]
-androidGradlePlugin = "9.1.0"
-androidxCore = "1.18.0"
+androidGradlePlugin = "9.3.1"
+androidxCore = "1.19.0"
 androidxLifecycle = "2.11.0"
 androidxActivity = "1.13.0"
 androidxComposeBom = "2026.06.01"
@@ -10,16 +10,20 @@ androidxTestRunner = "1.7.0"
 androidxTestEspresso = "3.7.0"
 coroutines = "1.11.0"
 junit = "4.13.2"
-kotlin = "2.3.20"
-nav3Core = "1.0.1"
+kotlin = "2.4.10"
+nav3Core = "1.1.5"
 lifecycleViewmodelNav3 = "2.11.0"
-ktor = "3.5.1"
-bouncycastle = "1.78.1"
-serializationJson = "1.6.3"
-cronet = "18.0.1"
+ktor = "3.5.2"
+bouncycastle_bcprov = "1.85.2"
+bouncycastle_bcpkix = "1.85"
+serializationJson = "1.11.0"
+cronet = "18.1.1"
 workManager = "2.11.2"
-koin = "4.0.0"
-mockk = "1.13.13"
+koin = "4.2.2"
+mockk = "1.14.11"
+backdrop = "0.0.1-alpha02"
+datastore = "1.2.1"
+timber = "5.0.1"
 
 [libraries]
 play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version = "16.1.0" }
@@ -54,8 +58,8 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
-bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
-bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle_bcpkix" }
+bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle_bcprov" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationJson" }
 play-services-cronet = { module = "com.google.android.gms:play-services-cronet", version.ref = "cronet" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManager" }
@@ -64,6 +68,9 @@ koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", versi
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+backdrop = { module = "io.github.kashif-mehmood-km:backdrop", version.ref = "backdrop" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

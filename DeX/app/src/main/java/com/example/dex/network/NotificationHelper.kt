@@ -19,15 +19,13 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun createChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                context.getString(R.string.notif_channel_bg),
-                NotificationManager.IMPORTANCE_LOW
-            )
-            val manager = context.getSystemService(NotificationManager::class.java)
-            manager?.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel(
+            channelId,
+            context.getString(R.string.notif_channel_bg),
+            NotificationManager.IMPORTANCE_LOW
+        )
+        val manager = context.getSystemService(NotificationManager::class.java)
+        manager?.createNotificationChannel(channel)
     }
 
     fun getForegroundServiceNotification(): Notification {
@@ -60,7 +58,7 @@ class NotificationHelper(private val context: Context) {
 
         val notification = NotificationCompat.Builder(context, channelId)
             .setContentTitle(context.getString(R.string.notif_incoming_title))
-            .setContentText(context.getString(R.string.notif_incoming_desc, fileCount))
+            .setContentText(context.resources.getQuantityString(R.plurals.notif_incoming_desc, fileCount, fileCount))
             .setSmallIcon(android.R.drawable.ic_menu_share)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setDefaults(NotificationCompat.DEFAULT_ALL)

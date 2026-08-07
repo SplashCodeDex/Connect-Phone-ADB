@@ -7,6 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import androidx.core.net.toUri
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpHeaders
 import io.ktor.http.ContentDisposition
@@ -115,19 +116,15 @@ fun Route.fileTransferRoutes(
         val fileName = request.fileName ?: "downloaded_file"
         val fileSize = request.fileSize?.toLongOrNull() ?: 100L
         
-        if (ip != null && portStr != null && fileId != null) {
-            println("Received TCP download signal: $ip:$portStr for file $fileId")
-            val dirUri = SafStorage.getDownloadsDexUri(context)
-            if (dirUri == null) {
-                promptForDownloadsDexGrant(context)
-                call.respond(HttpStatusCode.PreconditionFailed, "Downloads/DeX folder grant required")
-                return@post
-            }
-            TcpDownloadService.download(context, ip, portStr.toInt(), fileId, fileName, fileSize, dirUri)
-            call.respond(HttpStatusCode.OK)
-        } else {
-            call.respond(HttpStatusCode.BadRequest)
+        println("Received TCP download signal: $ip:$portStr for file $fileId")
+        val dirUri = SafStorage.getDownloadsDexUri(context)
+        if (dirUri == null) {
+            promptForDownloadsDexGrant(context)
+            call.respond(HttpStatusCode.PreconditionFailed, "Downloads/DeX folder grant required")
+            return@post
         }
+        TcpDownloadService.download(context, ip, portStr.toInt(), fileId, fileName, fileSize, dirUri)
+        call.respond(HttpStatusCode.OK)
     }
 
     // --- File explorer (opt-in, SAF-granted folders) ---
@@ -160,7 +157,7 @@ fun Route.fileTransferRoutes(
         }
 
         val path = call.request.queryParameters["path"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Missing path")
-        val treeUri = Uri.parse(path)
+        val treeUri = path.toUri()
         val children = SafStorage.listChildren(context, treeUri)
         call.respond(children)
     }
@@ -175,7 +172,7 @@ fun Route.fileTransferRoutes(
             call.respond(HttpStatusCode.BadRequest, "Missing path parameter")
             return@get
         }
-        val docUri = Uri.parse(path)
+        val docUri = path.toUri()
         val name = docUri.lastPathSegment ?: "file"
         val bytes = SafStorage.readDocumentBytes(context, docUri)
         if (bytes == null) {

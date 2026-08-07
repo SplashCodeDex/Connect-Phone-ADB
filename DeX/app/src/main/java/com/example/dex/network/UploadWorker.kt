@@ -3,6 +3,7 @@ package com.example.dex.network
 import android.content.Context
 import android.content.pm.ServiceInfo
 import android.net.Uri
+import androidx.core.net.toUri
 import android.provider.OpenableColumns
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
@@ -39,7 +40,7 @@ class UploadWorker(
             e.printStackTrace()
             return@withContext Result.failure()
         }
-        val uris = uriStrings.map { Uri.parse(it) }
+        val uris = uriStrings.map { it.toUri() }
 
         // Initial foreground notification
         setForeground(createForegroundInfo(0, applicationContext.getString(R.string.upload_worker_preparing)))
@@ -126,15 +127,13 @@ class UploadWorker(
     private fun createForegroundInfo(progress: Int, text: String): ForegroundInfo {
         val cancelIntent = androidx.work.WorkManager.getInstance(applicationContext).createCancelPendingIntent(id)
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            val channel = android.app.NotificationChannel(
-                channelId,
-                applicationContext.getString(R.string.upload_worker_channel),
-                android.app.NotificationManager.IMPORTANCE_LOW
-            )
-            val manager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-            manager.createNotificationChannel(channel)
-        }
+        val channel = android.app.NotificationChannel(
+            channelId,
+            applicationContext.getString(R.string.upload_worker_channel),
+            android.app.NotificationManager.IMPORTANCE_LOW
+        )
+        val manager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        manager.createNotificationChannel(channel)
 
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setContentTitle("Sending Files")

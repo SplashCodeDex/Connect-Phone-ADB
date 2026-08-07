@@ -9,16 +9,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.kashif_e.backdrop.Backdrop
+import androidx.compose.ui.zIndex
 
 data class NavBarItem(
     val icon: ImageVector,
@@ -29,30 +32,30 @@ data class NavBarItem(
 
 @Composable
 fun FloatingPillNavBar(
-    backdrop: Backdrop,
     items: List<NavBarItem>,
     modifier: Modifier = Modifier
 ) {
-    DeXGlassPanel(
-        backdrop = backdrop,
-        shape = RoundedCornerShape(100.dp),
-        blurRadius = 8.dp,
+    DeXPanel(
+        shape = CircleShape,
         modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(72.dp)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-        items.forEach { item ->
-            NavBarIcon(item = item)
-        }
+            items.forEach { item ->
+                NavBarIcon(item = item, modifier = Modifier.weight(1f))
+            }
         }
     }
 }
 
 @Composable
-private fun NavBarIcon(item: NavBarItem) {
+private fun NavBarIcon(item: NavBarItem, modifier: Modifier = Modifier) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     
@@ -61,27 +64,34 @@ private fun NavBarIcon(item: NavBarItem) {
         label = "scale"
     )
 
-    val tint = if (item.isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-    val bgAlpha = if (item.isSelected) 0.15f else 0f
+    val containerColor = if (item.isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+    val contentColor = if (item.isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
 
-    Box(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .scale(scale)
+            .fillMaxHeight()
             .clip(CircleShape)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null, 
                 onClick = item.onClick
             )
-            .background(tint.copy(alpha = bgAlpha))
-            .padding(12.dp),
-        contentAlignment = Alignment.Center
+            .background(containerColor),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = item.icon,
-            contentDescription = item.contentDescription,
-            tint = tint,
-            modifier = Modifier.size(26.dp)
+            contentDescription = null,
+            tint = contentColor,
+            modifier = Modifier.size(24.dp).padding(bottom = 2.dp)
+        )
+        Text(
+            text = item.contentDescription,
+            color = contentColor,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }

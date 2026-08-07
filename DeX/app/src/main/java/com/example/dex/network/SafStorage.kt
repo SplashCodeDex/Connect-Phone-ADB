@@ -3,6 +3,8 @@ package com.example.dex.network
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toUri
+import androidx.core.content.edit
 import android.provider.DocumentsContract
 import org.json.JSONObject
 import java.io.InputStream
@@ -18,12 +20,12 @@ object SafStorage {
     fun getDownloadsDexUri(context: Context): Uri? {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val s = prefs.getString(KEY_DOWNLOADS_DEX_URI, null) ?: return null
-        return Uri.parse(s)
+        return s.toUri()
     }
 
     fun setDownloadsDexUri(context: Context, uri: Uri) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        prefs.edit().putString(KEY_DOWNLOADS_DEX_URI, uri.toString()).apply()
+        prefs.edit { putString(KEY_DOWNLOADS_DEX_URI, uri.toString()) }
         try {
             context.contentResolver.takePersistableUriPermission(
                 uri,
@@ -85,7 +87,7 @@ object SafStorage {
         current[name] = uri.toString()
         val json = JSONObject()
         current.forEach { (k, v) -> json.put(k, v) }
-        prefs.edit().putString(KEY_GRANTED_FOLDERS, json.toString()).apply()
+        prefs.edit { putString(KEY_GRANTED_FOLDERS, json.toString()) }
         try {
             context.contentResolver.takePersistableUriPermission(
                 uri,
@@ -100,7 +102,7 @@ object SafStorage {
         current.remove(name)
         val json = JSONObject()
         current.forEach { (k, v) -> json.put(k, v) }
-        prefs.edit().putString(KEY_GRANTED_FOLDERS, json.toString()).apply()
+        prefs.edit { putString(KEY_GRANTED_FOLDERS, json.toString()) }
     }
 
     // --- SAF listing / reading for the file explorer ---

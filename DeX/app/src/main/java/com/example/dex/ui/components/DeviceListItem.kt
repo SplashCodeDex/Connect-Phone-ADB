@@ -15,28 +15,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.dex.R
 import com.example.dex.network.DiscoveredDevice
-import com.kashif_e.backdrop.Backdrop
 
 @Composable
 fun DeviceListItem(
     device: DiscoveredDevice,
-    backdrop: Backdrop,
     onClick: () -> Unit,
     onSendClipboard: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+    val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+    val emptyMsg = stringResource(R.string.clipboard_empty)
 
-    DeXGlassPanel(
-        backdrop = backdrop,
-        shape = RoundedCornerShape(24.dp),
-        blurRadius = 8.dp,
+    DeXPanel(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() }
@@ -64,11 +61,11 @@ fun DeviceListItem(
                 Text(text = "${device.ip}:${device.info.port}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             IconButton(onClick = {
-                val text = clipboardManager.getText()?.text
+                val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
                 if (!text.isNullOrEmpty()) {
                     onSendClipboard(text)
                 } else {
-                    Toast.makeText(context, context.getString(R.string.clipboard_empty), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, emptyMsg, Toast.LENGTH_SHORT).show()
                 }
             }) {
                 Icon(

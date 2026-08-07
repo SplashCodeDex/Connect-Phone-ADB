@@ -37,25 +37,21 @@ fun Route.deviceRoutes(deviceConfig: DeviceConfig, context: android.content.Cont
         val pin = request.pin
         val token = request.token
 
-        if (fingerprint != null && pin != null) {
-            if (AuthState.incomingPairRequest.value != null) {
-                call.respond(HttpStatusCode.TooManyRequests, "A pairing request is already pending")
-                return@post
-            }
-            val deferred = kotlinx.coroutines.CompletableDeferred<String>()
-            AuthState.incomingPairRequest.value = PairRequestInfo(alias, fingerprint, pin, deferred)
-            
-            val enteredPin = kotlinx.coroutines.withTimeoutOrNull(60_000) { deferred.await() }
-            AuthState.incomingPairRequest.value = null
-            if (enteredPin != null && enteredPin == pin) {
-                DeviceManager.savePairedFingerprint(fingerprint)
-                if (!token.isNullOrEmpty()) DeviceManager.savePairedToken(fingerprint, token)
-                call.respond(HttpStatusCode.OK)
-            } else {
-                call.respond(HttpStatusCode.Forbidden, "Pairing rejected, timed out, or PIN mismatch")
-            }
+        if (AuthState.incomingPairRequest.value != null) {
+            call.respond(HttpStatusCode.TooManyRequests, "A pairing request is already pending")
+            return@post
+        }
+        val deferred = kotlinx.coroutines.CompletableDeferred<String>()
+        AuthState.incomingPairRequest.value = PairRequestInfo(alias, fingerprint, pin, deferred)
+        
+        val enteredPin = kotlinx.coroutines.withTimeoutOrNull(60_000) { deferred.await() }
+        AuthState.incomingPairRequest.value = null
+        if (enteredPin != null && enteredPin == pin) {
+            DeviceManager.savePairedFingerprint(fingerprint)
+            if (!token.isNullOrEmpty()) DeviceManager.savePairedToken(fingerprint, token)
+            call.respond(HttpStatusCode.OK)
         } else {
-            call.respond(HttpStatusCode.BadRequest, "Missing fingerprint or pin")
+            call.respond(HttpStatusCode.Forbidden, "Pairing rejected, timed out, or PIN mismatch")
         }
     }
 }

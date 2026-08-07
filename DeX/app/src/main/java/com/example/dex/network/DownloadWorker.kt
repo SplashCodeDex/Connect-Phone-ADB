@@ -3,6 +3,7 @@ package com.example.dex.network
 import android.content.Context
 import android.content.pm.ServiceInfo
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -47,7 +48,7 @@ class DownloadWorker(
                 socketChannel.write(buffer)
             }
 
-            val out = SafStorage.openOutputStream(context, Uri.parse(destDirUri), fileName)
+            val out = SafStorage.openOutputStream(context, destDirUri.toUri(), fileName)
             if (out == null) {
                 socketChannel.close()
                 TcpDownloadService.updateState(DownloadState(fileName = fileName, error = "Cannot write to Downloads/DeX", isDownloading = false))

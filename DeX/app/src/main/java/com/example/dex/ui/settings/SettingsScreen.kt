@@ -15,14 +15,12 @@ import androidx.compose.ui.unit.dp
 import com.example.dex.R
 import com.example.dex.network.DeviceConfig
 import com.example.dex.network.DiscoveryEngine
-import com.example.dex.ui.components.DeXGlassPanel
-import com.kashif_e.backdrop.Backdrop
+import com.example.dex.ui.components.DeXPanel
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    backdrop: Backdrop,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     deviceConfig: DeviceConfig = koinInject(),
@@ -55,8 +53,7 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            DeXGlassPanel(
-                backdrop = backdrop,
+            DeXPanel(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(

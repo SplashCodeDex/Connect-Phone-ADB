@@ -2,6 +2,7 @@ package com.example.dex.network
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 object DeviceManager {
     private const val PREFS_NAME = "dex_device_prefs"
@@ -35,20 +36,20 @@ object DeviceManager {
 
     fun savePairedFingerprint(fingerprint: String) {
         AuthState.pairedFingerprints.add(fingerprint)
-        prefs.edit().putStringSet(KEY_PAIRED_FINGERPRINTS, AuthState.pairedFingerprints.toSet()).apply()
+        prefs.edit { putStringSet(KEY_PAIRED_FINGERPRINTS, AuthState.pairedFingerprints.toSet()) }
     }
 
     fun savePairedToken(fingerprint: String, token: String) {
         AuthState.pairedTokens[fingerprint] = token
-        prefs.edit().putString(KEY_PAIRED_TOKENS, com.example.dex.network.TokenCodec.encode(AuthState.pairedTokens)).apply()
+        prefs.edit { putString(KEY_PAIRED_TOKENS, com.example.dex.network.TokenCodec.encode(AuthState.pairedTokens)) }
     }
     
     fun removePairedFingerprint(fingerprint: String) {
         AuthState.pairedFingerprints.remove(fingerprint)
         AuthState.pairedTokens.remove(fingerprint)
-        prefs.edit()
-            .putStringSet(KEY_PAIRED_FINGERPRINTS, AuthState.pairedFingerprints.toSet())
-            .putString(KEY_PAIRED_TOKENS, com.example.dex.network.TokenCodec.encode(AuthState.pairedTokens))
-            .apply()
+        prefs.edit {
+            putStringSet(KEY_PAIRED_FINGERPRINTS, AuthState.pairedFingerprints.toSet())
+            putString(KEY_PAIRED_TOKENS, com.example.dex.network.TokenCodec.encode(AuthState.pairedTokens))
+        }
     }
 }

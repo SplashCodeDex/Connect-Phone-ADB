@@ -19,12 +19,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.dex.R
-import com.example.dex.ui.components.DeXGlassPanel
-import com.kashif_e.backdrop.Backdrop
+import com.example.dex.ui.components.DeXPanel
 
 @Composable
 fun NetworkErrorDialog(
-    backdrop: Backdrop,
     error: String, 
     onDismiss: () -> Unit, 
     title: String = stringResource(R.string.error_network_title)
@@ -44,14 +42,8 @@ fun NetworkErrorDialog(
             ),
         contentAlignment = Alignment.Center
     ) {
-        DeXGlassPanel(
-            backdrop = backdrop,
+        DeXPanel(
             shape = RoundedCornerShape(32.dp),
-            blurRadius = 24.dp,
-            lensRadius = 32.dp,
-            lensDisplacement = 48.dp,
-            shadowRadius = 24.dp,
-            darken = true,
             modifier = Modifier
                 .widthIn(max = 400.dp)
                 .fillMaxWidth(0.9f)
@@ -78,7 +70,6 @@ fun NetworkErrorDialog(
 
 @Composable
 fun PairingRequestDialog(
-    backdrop: Backdrop,
     alias: String, 
     pin: String, 
     onAccept: (String) -> Unit, 
@@ -97,14 +88,8 @@ fun PairingRequestDialog(
             ),
         contentAlignment = Alignment.Center
     ) {
-        DeXGlassPanel(
-            backdrop = backdrop,
+        DeXPanel(
             shape = RoundedCornerShape(32.dp),
-            blurRadius = 24.dp,
-            lensRadius = 32.dp,
-            lensDisplacement = 48.dp,
-            shadowRadius = 24.dp,
-            darken = true,
             modifier = Modifier
                 .widthIn(max = 400.dp)
                 .fillMaxWidth(0.9f)

@@ -21,6 +21,7 @@ import io.ktor.client.plugins.onUpload
 
 class ClientEngine(engine: HttpClientEngine? = null) {
     // LocalSend uses self-signed certificates, so we must trust all certificates on the local network
+    @android.annotation.SuppressLint("TrustAllX509TrustManager", "CustomX509TrustManager")
     private val trustAllManager = object : X509TrustManager {
         override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
         override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}

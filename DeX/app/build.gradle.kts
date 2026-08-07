@@ -37,6 +37,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/INDEX.LIST"
             excludes += "META-INF/io.netty.versions.properties"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/NOTICE.md"
+            excludes += "META-INF/NOTICE.txt"
         }
     }
 }
@@ -67,7 +71,7 @@ dependencies {
   implementation(libs.androidx.compose.material.icons.extended)
   
   // Liquid Glass Backdrop
-  implementation("io.github.kashif-mehmood-km:backdrop:0.0.1-alpha02")
+  implementation(libs.backdrop)
 
   // Tooling
   debugImplementation(libs.androidx.compose.ui.tooling)
@@ -105,10 +109,10 @@ dependencies {
   implementation(libs.ktor.serialization.kotlinx.json)
 
     // Storage
-    implementation("androidx.datastore:datastore-preferences:1.2.1")
+    implementation(libs.androidx.datastore.preferences)
 
     // Logging
-    implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation(libs.timber)
 
   // Ktor Client
   implementation(libs.ktor.client.core)

@@ -1,5 +1,13 @@
 # Changelog
-### [patch] PC-Initiated Pairing Overhaul (v6.6.5.0)
+### [patch] Android Plurals & Dependency Hardening (v6.6.55.0)
+- **[patch]** Bumped Gradle wrapper to 9.7.0 and consolidated dependency versions in `libs.versions.toml`. Separated BouncyCastle `bcpkix-jdk18on` and `bcprov-jdk18on` versions to correctly pull the latest artifacts and resolve Gradle configuration failures.
+- **[patch]** Fixed duplicate `META-INF/LICENSE.md` build failure caused by BouncyCastle by adding a `packaging` block exclusion in `app/build.gradle.kts`.
+- **[fix]** Converted static `strings.xml` strings containing quantities to native `<plurals>` resources (`toast_sending_files`, `notif_incoming_desc`, `uploading_progress`) and integrated `pluralStringResource` directly into Compose UI to resolve Android lint warnings.
+- **[fix]** Refactored redundant null-checks across Ktor network modules (`DeviceApi.kt`, `FileTransferApi.kt`) and switched obsolete `Uri.parse()` to Kotlin's robust `.toUri()` extension function across the app.
+- **[fix]** Suppressed intentional `TrustAllX509TrustManager` warnings in `ClientEngine.kt` as local P2P TLS connections rely on self-signed certificates over the LAN.
+- **[fix]** Removed obsolete `SDK_INT` version checks in WorkManager notification builders now that `minSdk` enforces API 26+ minimums.
+- **[fix]** Cleaned up unused resources and layout XMLs (`backup_rules.xml`, `data_extraction_rules.xml`) flagged by the linter.
+### [patch] PC-Initiated Pairing Overhaul (v6.6.54.0)
 - **[fix]** Removed redundant UDP multicast discovery loop from the Android app, establishing a strict "PC-discovers-Android" architecture for better reliability and lower battery usage.
 - **[fix]** Fixed a bug on the PC side where clicking a discovered device in the UI would fail to initiate pairing due to an improperly scoped click handler.
 - **[fix]** Aligned pairing timeout on both PC and Android to 60 seconds (with UI countdown animation) to prevent phantom paired states.
