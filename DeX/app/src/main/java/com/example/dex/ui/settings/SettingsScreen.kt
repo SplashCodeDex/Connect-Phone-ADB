@@ -110,6 +110,28 @@ fun SettingsScreen(
                             modifier = Modifier.padding(12.dp)
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    var showSharedFoldersDialog by remember { mutableStateOf(false) }
+
+                    DeXTextButton(
+                        onClick = { showSharedFoldersDialog = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_folder),
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text("Manage Shared Folders")
+                    }
+
+                    if (showSharedFoldersDialog) {
+                        SharedFoldersDialog(
+                            onDismiss = { showSharedFoldersDialog = false }
+                        )
+                    }
                 }
             }
         }

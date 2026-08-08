@@ -23,8 +23,7 @@ import com.example.dex.R
 @Composable
 fun FloatingTopAppBar(
     modifier: Modifier = Modifier,
-    onOpenTrustedDevices: (() -> Unit)? = null,
-    onOpenSharedFolders: (() -> Unit)? = null
+    onOpenTrustedDevices: (() -> Unit)? = null
 ) {
     var showProfileDialog by remember { mutableStateOf(false) }
 
@@ -77,31 +76,6 @@ fun FloatingTopAppBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            if (onOpenSharedFolders != null) {
-                val sharedFoldersInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .bubbleFluidity()
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.4f))
-                        .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
-                        .clickable(
-                            interactionSource = sharedFoldersInteractionSource,
-                            indication = LocalIndication.current,
-                            onClick = { onOpenSharedFolders() }
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_folder),
-                        contentDescription = "Manage Shared Folders",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            }
-
             if (onOpenTrustedDevices != null) {
                 val devicesInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
                 Box(

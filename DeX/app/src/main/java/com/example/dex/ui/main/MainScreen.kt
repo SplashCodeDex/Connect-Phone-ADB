@@ -60,7 +60,6 @@ fun MainScreen(
     var pairingDeviceFingerprint by remember { mutableStateOf<String?>(null) }
     var showTroubleshootDialog by remember { mutableStateOf(false) }
     var showTrustedDevicesDialog by remember { mutableStateOf(false) }
-    var showSharedFoldersDialog by remember { mutableStateOf(false) }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -164,8 +163,7 @@ fun MainScreen(
                 .fillMaxSize()
         ) {
             FloatingTopAppBar(
-                onOpenTrustedDevices = { showTrustedDevicesDialog = true },
-                onOpenSharedFolders = { showSharedFoldersDialog = true }
+                onOpenTrustedDevices = { showTrustedDevicesDialog = true }
             )
 
             val devices = (uiState as? MainScreenUiState.Success)?.data ?: emptyList()
@@ -316,12 +314,6 @@ fun MainScreen(
     if (showTrustedDevicesDialog) {
         TrustedDevicesDialog(
             onDismiss = { showTrustedDevicesDialog = false }
-        )
-    }
-
-    if (showSharedFoldersDialog) {
-        SharedFoldersDialog(
-            onDismiss = { showSharedFoldersDialog = false }
         )
     }
 
