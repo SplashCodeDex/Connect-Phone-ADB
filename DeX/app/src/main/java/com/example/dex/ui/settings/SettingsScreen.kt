@@ -49,18 +49,9 @@ fun SettingsScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            DeXPanel(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .bubbleFluidity(targetScale = 0.97f, pullFactor = 0.05f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
                     Text(
                         stringResource(R.string.trust_identity_title),
                         style = MaterialTheme.typography.titleMedium,
@@ -132,8 +123,6 @@ fun SettingsScreen(
                             onDismiss = { showSharedFoldersDialog = false }
                         )
                     }
-                }
-            }
         }
     }
 }
