@@ -59,4 +59,9 @@
     <!-- Error Handling -->
     <string name="error_network_title">Network Error</string>
     <string name="dismiss">Dismiss</string>
+
+    <!-- Pairing Toasts -->
+    <string name="pairing_with">Pairing with %1$s...</string>
+    <string name="paired_successfully">Paired successfully!</string>
+    <string name="pairing_failed">Pairing failed!</string>
 </resources>

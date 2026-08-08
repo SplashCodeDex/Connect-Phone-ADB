@@ -69,20 +69,81 @@ if ($btnSettingsQrCode) {
         $txtQrBtnText = $script:wpfWindow.FindName("txtQrBtnText")
 
         if ($qrCodeContent.Visibility -eq 'Visible') {
-            $qrCodeContent.Visibility = 'Collapsed'
-            $pinCodeContent.Visibility = 'Visible'
-            $txtQrBtnIcon.Visibility = 'Visible'
-            $txtQrBtnIcon.Text = [char]0xED14
-            $txtQrBtnText.Text = "QR CODE"
-            $txtQrBtnText.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "SecondaryTextBrush")
+            # User clicked "Request PIN"
+            try {
+                $ip = $script:activeOutboundPairIp
+                $fp = $script:activeOutboundPairFp
+                if (-not $ip -or -not $fp) { throw "No active device selected." }
+                
+                $initRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-initiate?ip=${ip}&fingerprint=${fp}" -Method Post -TimeoutSec 5 -ErrorAction Stop
+                $pin = $initRes.pin
+                
+                if ($pin) {
+                    $script:wpfWindow.FindName("txtPinCode").Text = $pin
+                    $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for remote acceptance..."
+                    
+                    $qrCodeContent.Visibility = 'Collapsed'
+                    $pinCodeContent.Visibility = 'Visible'
+                    $txtQrBtnIcon.Visibility = 'Visible'
+                    $txtQrBtnIcon.Text = [char]0xED14
+                    $txtQrBtnText.Text = "QR CODE"
+
+                    # Start progress bar animation (60s countdown)
+                    $pb = $script:wpfWindow.FindName("pbPinTimeout")
+                    if ($pb) {
+                        $anim = New-Object System.Windows.Media.Animation.DoubleAnimation
+                        $anim.From = 100
+                        $anim.To = 0
+                        $anim.Duration = [TimeSpan]::FromSeconds(60)
+                        $pb.BeginAnimation([System.Windows.Controls.Primitives.RangeBase]::ValueProperty, $anim)
+                    }
+
+                    # Monitor pairing status through the backend
+                    if ($script:pairWaitTimer) { $script:pairWaitTimer.Stop() }
+                    $script:pairWaitTimer = New-Object System.Windows.Threading.DispatcherTimer
+                    $script:pairWaitTimer.Interval = [TimeSpan]::FromMilliseconds(1000)
+                    $script:pairWaitTimer.Add_Tick({
+                        try {
+                            $statusRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-status?ip=${ip}" -Method Get -ErrorAction Stop
+                            if ($statusRes.status -eq "Accepted") {
+                                $script:pairWaitTimer.Stop()
+                                Show-Toast -Title "Pairing Successful" -Message "Device trusted and added to Your Devices."
+                                try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+                            } elseif ($statusRes.status -eq "Rejected" -or $statusRes.status -eq "Failed") {
+                                $script:pairWaitTimer.Stop()
+                                Show-Toast -Title "Pairing Failed" -Message "The remote device rejected or timed out."
+                                try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
+                            }
+                        } catch {}
+                    })
+                    $script:pairWaitTimer.Start()
+                }
+            } catch {
+                Show-Toast -Title "Request Failed" -Message $_.Exception.Message
+            }
         } else {
-            $ip = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
-            if ($ip) {
+            # User clicked "QR CODE" to go back, cancel pending pairing if any
+            try {
+                if ($script:activeOutboundPairFp) {
+                    Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/unpair?fingerprint=$($script:activeOutboundPairFp)" -Method Post -ErrorAction SilentlyContinue
+                }
+            } catch {}
+
+            if ($script:pairWaitTimer) { $script:pairWaitTimer.Stop() }
+            
+            $pb = $script:wpfWindow.FindName("pbPinTimeout")
+            if ($pb) { 
+                $pb.BeginAnimation([System.Windows.Controls.Primitives.RangeBase]::ValueProperty, $null)
+                $pb.Value = 100 
+            }
+
+            $localIp = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
+            if ($localIp) {
                 $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
                 if ($imgQrCode) {
                     $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
                     $bitmap.BeginInit()
-                    $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$ip")
+                    $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$localIp")
                     $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
                     $bitmap.EndInit()
                     $imgQrCode.Source = $bitmap

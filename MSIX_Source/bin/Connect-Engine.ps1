@@ -159,18 +159,7 @@ if ($global:AppThemeMode -eq "System") {
     # Load UI Bindings in current scope
     . "$PSScriptRoot\TrayUIBindings.ps1"
 
-[System.Net.NetworkInformation.NetworkAddressChangedEventHandler]$script:networkChangeHandler = {
-    param($sender, $e)
-    # Ping the C# host to flush its UDP list cache
-    try { Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:53318/local/devices/flush" -TimeoutSec 1 } catch { }
-    if ($script:wpfWindow -and $script:wpfWindow.Dispatcher) {
-        $script:wpfWindow.Dispatcher.Invoke([Action]{
-            $icUdp = $script:wpfWindow.FindName("icUdpPeers")
-            if ($icUdp) { $icUdp.ItemsSource = @() }
-        })
-    }
-}
-[System.Net.NetworkInformation.NetworkChange]::add_NetworkAddressChanged($script:networkChangeHandler)
+
 # Passive sync initial state on startup
 $script:AutoConnectEnabled = Get-AutoConnectStatus
 Update-WpfUI
@@ -529,9 +518,6 @@ if (-not $Background -and -not $SelfTest) { $script:showUiEvent.Set() | Out-Null
     if ($script:mdnsJob -and $script:mdnsJob.PowerShell) {
         Write-Trace "Disposing mDNS Runspace..."
         $script:mdnsJob.PowerShell.Dispose()
-    }
-    if ($script:networkChangeHandler) {
-        try { [System.Net.NetworkInformation.NetworkChange]::remove_NetworkAddressChanged($script:networkChangeHandler) } catch {}
     }
     # Transfer server is hosted by DeXShareTarget.exe (C# LocalSendServer) — no PS runspace to dispose
 })

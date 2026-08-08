@@ -14,11 +14,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Cloud
-import androidx.compose.material.icons.rounded.Computer
-import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.Smartphone
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import com.example.dex.ui.components.DeXButton
+import com.example.dex.ui.components.DeXTextButton
+import com.example.dex.ui.components.bubbleFluidity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -169,7 +168,7 @@ class ShareTargetActivity : ComponentActivity() {
                 items(2) { index ->
                     DeviceItem(
                         name = "Remote User ${index + 1}",
-                        icon = Icons.Rounded.Cloud,
+                        icon = ImageVector.vectorResource(R.drawable.ic_cloud),
                         isDummy = true,
                         onClick = {}
                     )
@@ -196,7 +195,7 @@ class ShareTargetActivity : ComponentActivity() {
                     items(devices, key = { it.info.fingerprint }) { device ->
                         DeviceItem(
                             name = device.info.alias,
-                            icon = if (device.info.deviceType == "desktop") Icons.Rounded.Computer else Icons.Rounded.Smartphone,
+                            icon = if (device.info.deviceType == "desktop") ImageVector.vectorResource(R.drawable.ic_computer) else ImageVector.vectorResource(R.drawable.ic_smartphone),
                             isDummy = false,
                             onClick = { onSendToDevice(device) }
                         )
@@ -207,12 +206,12 @@ class ShareTargetActivity : ComponentActivity() {
             Spacer(modifier = Modifier.height(24.dp))
 
             // Sandbox
-            Button(
+            DeXButton(
                 onClick = onSaveToSandbox,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
             ) {
-                Icon(Icons.Rounded.Folder, contentDescription = null)
+                Icon(ImageVector.vectorResource(R.drawable.ic_folder), contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text("Save to Local DeX Sandbox")
             }
@@ -226,6 +225,7 @@ class ShareTargetActivity : ComponentActivity() {
             modifier = Modifier
                 .width(80.dp)
                 .clip(RoundedCornerShape(8.dp))
+                .bubbleFluidity()
                 .clickable(enabled = !isDummy, onClick = onClick)
                 .padding(4.dp)
         ) {
@@ -269,7 +269,7 @@ class ShareTargetActivity : ComponentActivity() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(pluralStringResource(R.plurals.uploading_progress, uploadState.totalFiles, uploadState.currentFileIndex, uploadState.totalFiles), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                    TextButton(onClick = { clientEngine.cancelUpload(this@ShareTargetActivity) }) {
+                    DeXTextButton(onClick = { clientEngine.cancelUpload(this@ShareTargetActivity) }) {
                         Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
                     }
                 }

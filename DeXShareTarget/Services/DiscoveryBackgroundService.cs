@@ -78,6 +78,10 @@ namespace DeXShareTarget.Services
                 }
             } catch { }
 
+            NetworkChange.NetworkAddressChanged += (s, e) => {
+                Devices.Clear();
+            };
+
             bool IsSelf(string? fp, string? alias, string? senderIp = null) {
                 if (!string.IsNullOrEmpty(fp) && fp == myInfo.Fingerprint) return true;
                 if (!string.IsNullOrEmpty(alias) && alias == myInfo.Alias && !string.IsNullOrEmpty(senderIp) && localIPs.Contains(senderIp)) return true;

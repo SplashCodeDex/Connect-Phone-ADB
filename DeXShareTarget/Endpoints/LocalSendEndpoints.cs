@@ -360,8 +360,15 @@ namespace DeXShareTarget.Endpoints
                 if (string.IsNullOrEmpty(ip)) return Results.BadRequest();
                 try
                 {
-                    using var handler = new System.Net.Http.HttpClientHandler();
-                    handler.ServerCertificateCustomValidationCallback = (m, c, ch, e) => true;
+                    using var handler = new System.Net.Http.SocketsHttpHandler
+                    {
+                        SslOptions = new System.Net.Security.SslClientAuthenticationOptions
+                        {
+                            RemoteCertificateValidationCallback = (s, c, ch, e) => true,
+                            ApplicationProtocols = new System.Collections.Generic.List<System.Net.Security.SslApplicationProtocol>
+                                { System.Net.Security.SslApplicationProtocol.Http11 }
+                        }
+                    };
                     using var http = new System.Net.Http.HttpClient(handler) { Timeout = TimeSpan.FromSeconds(2) };
                     
                     var response = await http.GetAsync($"https://{ip}:53317/api/localsend/v2/info");
@@ -453,17 +460,19 @@ namespace DeXShareTarget.Endpoints
                 {
                     try
                     {
-                        var handler = new System.Net.Http.HttpClientHandler
+                        var handler = new System.Net.Http.SocketsHttpHandler
                         {
-                            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                            SslOptions = new System.Net.Security.SslClientAuthenticationOptions
+                            {
+                                RemoteCertificateValidationCallback = (sender, cert, chain, errors) => true,
+                                // Lock ALPN to HTTP/1.1 only — prevents .NET from advertising h2,
+                                // which crashes Android Ktor Netty's TLS pipeline (no netty-tcnative)
+                                ApplicationProtocols = new System.Collections.Generic.List<System.Net.Security.SslApplicationProtocol>
+                                    { System.Net.Security.SslApplicationProtocol.Http11 }
+                            }
                         };
                         using var client = new System.Net.Http.HttpClient(handler);
                         client.Timeout = TimeSpan.FromSeconds(60);
-                        
-                        // Prevent ALPN HTTP/2 crash on Android by forcing HTTP/1.1 for this control request
-                        client.DefaultRequestVersion = new Version(1, 1);
-                        client.DefaultVersionPolicy = System.Net.Http.HttpVersionPolicy.RequestVersionExact;
-                        
                         var content = new System.Net.Http.StringContent(JsonSerializer.Serialize(reqDto, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }), System.Text.Encoding.UTF8, "application/json");
                         var response = await client.PostAsync($"https://{targetIp}:53317/api/localsend/v2/pair-prompt", content);
                         

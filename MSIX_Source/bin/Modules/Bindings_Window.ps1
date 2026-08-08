@@ -338,76 +338,52 @@ $script:wpfWindow.Add_PreviewMouseLeftButtonUp({
 
             if ($isGuest) {
                 try {
-                    $fp = $targetPeer.Fingerprint
-                    $initRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-initiate?ip=${ip}&fingerprint=${fp}" -Method Post -TimeoutSec 5 -ErrorAction Stop
-                    $pin = $initRes.pin
-
-                    if ($pin) {
-                        $script:activeOutboundPairIp = $ip
-                        $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing with $($targetPeer.Alias)"
-                        $script:wpfWindow.FindName("txtPinSubtitle").Text = "Verify this code on the target device"
-                        $script:wpfWindow.FindName("txtPinCode").Text = $pin
-                        $script:wpfWindow.FindName("txtPinStatus").Text = "Waiting for remote acceptance..."
-                        
-                        $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
-                        $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
-                        $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Visible'
-                        $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
-                        
-                        # Show QR Code initially instead of PIN
-                        $localIp = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
-                        if ($localIp) {
-                            $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
-                            if ($imgQrCode) {
-                                $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-                                $bitmap.BeginInit()
-                                $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$localIp")
-                                $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
-                                $bitmap.EndInit()
-                                $imgQrCode.Source = $bitmap
-                            }
-                            $script:wpfWindow.FindName("pinCodeContent").Visibility = 'Collapsed'
-                            $script:wpfWindow.FindName("qrCodeContent").Visibility = 'Visible'
-                            
-                            $txtQrBtnIcon = $script:wpfWindow.FindName("txtQrBtnIcon")
-                            if ($txtQrBtnIcon) { $txtQrBtnIcon.Visibility = 'Collapsed' }
-                            $txtQrBtnText = $script:wpfWindow.FindName("txtQrBtnText")
-                            if ($txtQrBtnText) { $txtQrBtnText.Text = "Request PIN" }
+                    $script:activeOutboundPairIp = $ip
+                    $script:activeOutboundPairFp = $targetPeer.Fingerprint
+                    
+                    $script:wpfWindow.FindName("txtPinTitle").Text = "Pairing with $($targetPeer.Alias)"
+                    $script:wpfWindow.FindName("txtPinSubtitle").Text = "Select an option below to connect"
+                    
+                    $script:wpfWindow.FindName("btnPinAccept").Visibility = 'Collapsed'
+                    $script:wpfWindow.FindName("btnPinAcceptOnce").Visibility = 'Collapsed'
+                    $script:wpfWindow.FindName("btnSettingsQrCode").Visibility = 'Visible'
+                    $script:wpfWindow.FindName("btnPinCancel").Visibility = 'Visible'
+                    
+                    # Show QR Code initially instead of PIN
+                    $localIp = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object { $_.AddressFamily -eq 'InterNetwork' -and -not [System.Net.IPAddress]::IsLoopback($_) } | Select-Object -First 1 -ExpandProperty IPAddressToString
+                    if ($localIp) {
+                        $imgQrCode = $script:wpfWindow.FindName("imgQrCode")
+                        if ($imgQrCode) {
+                            $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
+                            $bitmap.BeginInit()
+                            $bitmap.UriSource = New-Object Uri("http://127.0.0.1:53318/local/qr?ip=$localIp")
+                            $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
+                            $bitmap.EndInit()
+                            $imgQrCode.Source = $bitmap
                         }
-                        # Start progress bar animation (60s countdown)
-                        $pb = $script:wpfWindow.FindName("pbPinTimeout")
-                        if ($pb) {
-                            $anim = New-Object System.Windows.Media.Animation.DoubleAnimation
-                            $anim.From = 100
-                            $anim.To = 0
-                            $anim.Duration = [TimeSpan]::FromSeconds(60)
-                            $pb.BeginAnimation([System.Windows.Controls.Primitives.RangeBase]::ValueProperty, $anim)
-                        }
-
-                        try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
+                        $script:wpfWindow.FindName("pinCodeContent").Visibility = 'Collapsed'
+                        $script:wpfWindow.FindName("qrCodeContent").Visibility = 'Visible'
                         
-                        # Monitor pairing status through the backend
-                        $script:pairWaitTimer = New-Object System.Windows.Threading.DispatcherTimer
-                        $script:pairWaitTimer.Interval = [TimeSpan]::FromMilliseconds(1000)
-                        $script:pairWaitTimer.Add_Tick({
-                            try {
-                                $statusRes = Invoke-RestMethod -Uri "http://127.0.0.1:53318/local/pair-status?ip=${ip}" -Method Get -ErrorAction Stop
-                                if ($statusRes.status -eq "Accepted") {
-                                    $script:pairWaitTimer.Stop()
-                                    Show-Toast -Title "Pairing Successful" -Message "Device trusted and added to Your Devices."
-                                    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
-                                } elseif ($statusRes.status -eq "Rejected" -or $statusRes.status -eq "Failed") {
-                                    $script:pairWaitTimer.Stop()
-                                    Show-Toast -Title "Pairing Failed" -Message "The remote device rejected or timed out."
-                                    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideOutPinAnim").Begin($script:wpfWindow) } catch {}
-                                }
-                            } catch {}
-                        })
-                        $script:pairWaitTimer.Start()
-                        
-                        $e.Handled = $true
-                        return
+                        $txtQrBtnIcon = $script:wpfWindow.FindName("txtQrBtnIcon")
+                        if ($txtQrBtnIcon) { $txtQrBtnIcon.Visibility = 'Collapsed' }
+                        $txtQrBtnText = $script:wpfWindow.FindName("txtQrBtnText")
+                        if ($txtQrBtnText) { $txtQrBtnText.Text = "Request PIN" }
                     }
+                    
+                    # Stop any running timer from previous sessions
+                    if ($script:pairWaitTimer) { $script:pairWaitTimer.Stop() }
+                    
+                    # Reset progress bar to full (100)
+                    $pb = $script:wpfWindow.FindName("pbPinTimeout")
+                    if ($pb) { 
+                        $pb.BeginAnimation([System.Windows.Controls.Primitives.RangeBase]::ValueProperty, $null)
+                        $pb.Value = 100 
+                    }
+
+                    try { $script:wpfWindow.FindName("menuViewsContainer").FindResource("SlideInPinAnim").Begin($script:wpfWindow) } catch {}
+                    
+                    $e.Handled = $true
+                    return
                 } catch {
                     Show-Toast -Title "Pairing Failed" -Message $_.Exception.Message
                     $e.Handled = $true

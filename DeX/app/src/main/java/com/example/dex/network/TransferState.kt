@@ -17,7 +17,7 @@ data class PairRequestInfo(
 
 object AuthState {
     val guestTokens = mutableSetOf<String>()
-    val pairedFingerprints = mutableSetOf<String>()
+    val pairedFingerprints = androidx.compose.runtime.mutableStateSetOf<String>()
     val pairedTokens = mutableMapOf<String, String>()
     val incomingPairRequest = kotlinx.coroutines.flow.MutableStateFlow<PairRequestInfo?>(null)
 }

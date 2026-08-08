@@ -5,10 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Computer
-import androidx.compose.material.icons.rounded.ContentPaste
-import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.dex.R
+import com.example.dex.network.AuthState
 import com.example.dex.network.DiscoveredDevice
 
 @Composable
@@ -27,7 +26,8 @@ fun DeviceListItem(
     device: DiscoveredDevice,
     onClick: () -> Unit,
     onSendClipboard: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isTrusted: Boolean = AuthState.pairedFingerprints.contains(device.info.fingerprint)
 ) {
     val context = LocalContext.current
     val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
@@ -36,6 +36,7 @@ fun DeviceListItem(
     DeXPanel(
         modifier = modifier
             .fillMaxWidth()
+            .bubbleFluidity()
             .clickable { onClick() }
     ) {
         Row(
@@ -49,7 +50,7 @@ fun DeviceListItem(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Computer,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_computer),
                     contentDescription = stringResource(R.string.device_icon),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
@@ -57,10 +58,42 @@ fun DeviceListItem(
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = device.info.alias, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(text = device.info.alias, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
+                    if (isTrusted) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ) {
+                            Text(
+                                text = "Paired",
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    } else {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ) {
+                            Text(
+                                text = "Guest",
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
                 Text(text = "${device.ip}:${device.info.port}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            IconButton(onClick = {
+            DeXIconButton(onClick = {
                 val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
                 if (!text.isNullOrEmpty()) {
                     onSendClipboard(text)
@@ -69,13 +102,13 @@ fun DeviceListItem(
                 }
             }) {
                 Icon(
-                    imageVector = Icons.Rounded.ContentPaste,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_content_paste),
                     contentDescription = stringResource(R.string.send_clipboard),
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.Send,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_send),
                 contentDescription = stringResource(R.string.send_file),
                 tint = MaterialTheme.colorScheme.primary
             )

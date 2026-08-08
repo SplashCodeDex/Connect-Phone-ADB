@@ -1,4 +1,18 @@
 # Changelog
+
+## [1.1.0.0] - 2026-08-08
+### Added
+- **[minor] Trusted Devices Manager**: In-layout dialog with unpairing support (`DeviceManager.removePairedFingerprint`).
+- **[minor] Manage Shared Folders**: In-layout dialog with SAF access revocation support (`SafStorage.removeGrantedFolder`).
+- **[minor] Connection Handshake & Untrusted Device Pairing**: Interactive pairing flow (`ClientEngine.registerDevice`, Compose `SnapshotStateSet` reactivity for `AuthState.pairedFingerprints`, double-tap race condition prevention).
+- **[patch] Localized Resources**: Added localized Toast feedback resources in `strings.xml`.
+- **[minor] Unit Test Suite**: Comprehensive test suite (16/16 tests passing across `DeviceManagerTest`, `SafStorageTest`, `MainScreenViewModelTest`).
+
+### [patch] UI Font Color Fix (v6.6.58.0)
+- **[fix]** Set the foreground of the 'Request PIN' / 'QR CODE' button to Black as requested by the user, overriding the default secondary text brush.
+
+- **[fix]** Replaced `HttpClientHandler` with `SocketsHttpHandler` in `LocalSendEndpoints.cs` and `TransferWindow.cs` to accurately enforce HTTP/1.1 ALPN negotiation and resolve silent TLS handshake crashes with the Android server.
+
 ### [patch] HTTP/2 ALPN Pairing Fix (v6.6.56.0)
 - **[fix]** Forced HTTP/1.1 for outbound pairing requests in the C# `LocalSendEndpoints.cs` to prevent Ktor Netty on Android from crashing during ALPN negotiation when attempting to use HTTP/2.
 ### [patch] Android Plurals & Dependency Hardening (v6.6.55.0)

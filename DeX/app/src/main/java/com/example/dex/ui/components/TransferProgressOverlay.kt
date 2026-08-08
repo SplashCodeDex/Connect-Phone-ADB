@@ -43,7 +43,7 @@ fun TransferProgressOverlay(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(stringResource(R.string.downloading), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                        TextButton(onClick = onCancelDownload) {
+                        DeXTextButton(onClick = onCancelDownload) {
                             Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
                         }
                     }
@@ -84,7 +84,7 @@ fun TransferProgressOverlay(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(pluralStringResource(R.plurals.uploading_progress, uploadState.totalFiles, uploadState.currentFileIndex, uploadState.totalFiles), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                        TextButton(onClick = onCancelUpload) {
+                        DeXTextButton(onClick = onCancelUpload) {
                             Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
                         }
                     }

@@ -59,7 +59,7 @@ fun NetworkErrorDialog(
                 Text(error, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.height(24.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = onDismiss) {
+                    DeXTextButton(onClick = onDismiss) {
                         Text(stringResource(R.string.dismiss), color = MaterialTheme.colorScheme.primary)
                     }
                 }
@@ -71,7 +71,6 @@ fun NetworkErrorDialog(
 @Composable
 fun PairingRequestDialog(
     alias: String, 
-    pin: String, 
     onAccept: (String) -> Unit, 
     onReject: () -> Unit
 ) {
@@ -84,7 +83,7 @@ fun PairingRequestDialog(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onReject
+                onClick = {} // Do not reject on background tap
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -134,13 +133,13 @@ fun PairingRequestDialog(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    OutlinedButton(
+                    DeXOutlinedButton(
                         onClick = onReject,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
                     }
-                    Button(
+                    DeXButton(
                         onClick = { onAccept(enteredPin) },
                         modifier = Modifier.weight(1f),
                         enabled = enteredPin.length == 6

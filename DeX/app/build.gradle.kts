@@ -11,8 +11,8 @@ android {
         applicationId = "com.example.dex"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
 
     buildTypes {
@@ -21,6 +21,12 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -68,7 +74,6 @@ dependencies {
   implementation(libs.koin.androidx.compose)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.compose.material3)
-  implementation(libs.androidx.compose.material.icons.extended)
   
   // Liquid Glass Backdrop
   implementation(libs.backdrop)
@@ -85,6 +90,7 @@ dependencies {
   testImplementation(libs.mockk)
   testImplementation(libs.koin.test.junit4)
   testImplementation(libs.ktor.client.mock)
+  testImplementation("org.json:json:20240303")
 
   // Instrumented tests: jUnit rules and runners
   androidTestImplementation(libs.androidx.test.core)

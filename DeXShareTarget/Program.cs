@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,13 +19,34 @@ namespace DeXShareTarget
     {
         private static Mutex? _instanceMutex;
 
+        private static void LogCrash(Exception ex, string context)
+        {
+            try 
+            {
+                string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log");
+                File.AppendAllText(logPath, $"[{DateTime.Now:O}] [{context}] {ex.Message}\n{ex.StackTrace}\n");
+            } 
+            catch { }
+        }
+
         [STAThread]
         static void Main(string[] args)
         {
             _instanceMutex = new Mutex(true, "DeXShareTarget_SingleInstance_Mutex", out bool isNewInstance);
             if (!isNewInstance && (args == null || args.Length == 0))
             {
-                // Another background instance is already running
+                // Another background instance is already running, signal it to show UI
+                try 
+                {
+                    using (EventWaitHandle showUiEvent = new EventWaitHandle(false, EventResetMode.AutoReset, "Global\\CodeDeX_DeX_ShowUI"))
+                    {
+                        showUiEvent.Set();
+                    }
+                } 
+                catch 
+                {
+                    // Ignore errors if event doesn't exist
+                }
                 return;
             }
 
@@ -33,9 +55,9 @@ namespace DeXShareTarget
                 var program = new Program();
                 program.Run(args);
             }
-            catch
+            catch (Exception ex)
             {
-                // Silent catch in production
+                LogCrash(ex, "Global Main");
             }
         }
 
@@ -123,9 +145,9 @@ namespace DeXShareTarget
                     {
                         _ = LocalSendServer.StartAsync();
                     } 
-                    catch 
+                    catch (Exception ex)
                     {
-                        // Ignore server start failures in production
+                        LogCrash(ex, "LocalSendServer Startup");
                     }
                 };
                 app.Run();

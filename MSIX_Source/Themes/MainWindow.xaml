@@ -941,7 +941,7 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Button x:Name="btnPinCancel" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="1" MinWidth="110" Content="Cancel" Foreground="{DynamicResource PrimaryTextBrush}" Background="{DynamicResource AccentBrush}" />
-                            <Button x:Name="btnSettingsQrCode" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="3" MinWidth="110" Foreground="{DynamicResource SecondaryForegroundBrush}" Background="{DynamicResource SecondaryBrush}">
+                            <Button x:Name="btnSettingsQrCode" Style="{StaticResource AnimatedActionBtn}" Grid.Row="0" Grid.Column="3" MinWidth="110" Foreground="Black" Background="{DynamicResource SecondaryBrush}">
                                 <StackPanel Orientation="Horizontal" Margin="0,-2">
                                     <TextBlock x:Name="txtQrBtnIcon" Text="&#xED14;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,6,0" />
                                     <TextBlock x:Name="txtQrBtnText" Text="QR CODE" VerticalAlignment="Center" />

@@ -24,7 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
 data class NavBarItem(
-    val icon: ImageVector,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
     val contentDescription: String,
     val isSelected: Boolean,
     val onClick: () -> Unit
@@ -59,17 +60,13 @@ private fun NavBarIcon(item: NavBarItem, modifier: Modifier = Modifier) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.85f else 1f,
-        label = "scale"
-    )
-
     val containerColor = if (item.isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
     val contentColor = if (item.isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    val currentIcon = if (item.isSelected) item.selectedIcon else item.unselectedIcon
 
     Column(
         modifier = modifier
-            .scale(scale)
+            .bubbleFluidity()
             .fillMaxHeight()
             .clip(CircleShape)
             .clickable(
@@ -82,7 +79,7 @@ private fun NavBarIcon(item: NavBarItem, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = item.icon,
+            imageVector = currentIcon,
             contentDescription = null,
             tint = contentColor,
             modifier = Modifier.size(24.dp).padding(bottom = 2.dp)

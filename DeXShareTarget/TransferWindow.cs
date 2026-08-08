@@ -125,9 +125,14 @@ namespace DeXShareTarget
             Stopwatch globalSw = Stopwatch.StartNew();
 
             // Ignore cert errors
-            var handler = new HttpClientHandler
+            var handler = new SocketsHttpHandler
             {
-                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                SslOptions = new System.Net.Security.SslClientAuthenticationOptions
+                {
+                    RemoteCertificateValidationCallback = (sender, cert, chain, errors) => true,
+                    ApplicationProtocols = new System.Collections.Generic.List<System.Net.Security.SslApplicationProtocol>
+                        { System.Net.Security.SslApplicationProtocol.Http11 }
+                }
             };
             using var http = new HttpClient(handler);
             http.Timeout = TimeSpan.FromSeconds(15);
